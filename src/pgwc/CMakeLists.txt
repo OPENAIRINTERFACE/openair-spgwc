@@ -18,17 +18,27 @@
 # For more information about the OpenAirInterface (OAI) Software Alliance:
 #      contact@openairinterface.org
 ################################################################################
-cmake_minimum_required (VERSION 3.0.2)
-# Override options for SPGW
-set (  PACKAGE_NAME                    "S/P-GW-U" )
-set (  STATIC_LINKING                   False )
-#############################################
-# Base directories, compatible with legacy OAI building
-################################################
-set (OPENAIRCN_DIR   $ENV{OPENAIRCN_DIR})
-set (BUILD_TOP_DIR   ${OPENAIRCN_DIR}/build)
-set (SRC_TOP_DIR     $ENV{OPENAIRCN_DIR}/src)
+include_directories(${SRC_TOP_DIR}/common)
+include_directories(${SRC_TOP_DIR}/common/msg)
+include_directories(${SRC_TOP_DIR}/common/utils)
+include_directories(${SRC_TOP_DIR}/itti)
+include_directories(${SRC_TOP_DIR}/gtpv2c)
+include_directories(${SRC_TOP_DIR}/pfcp)
+include_directories(${SRC_TOP_DIR}/pgwc)
+include_directories(${SRC_TOP_DIR}/sgwc)
+include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../src/oai_spgwu/CMakeLists.txt)
 
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/spgwu ${CMAKE_CURRENT_BINARY_DIR}/spgw_u)
+add_library (PGWC STATIC
+  pgw_app.cpp
+  pgw_config.cpp
+  pgw_context.cpp
+  pgw_paa_static.cpp
+  pgw_pfcp_association.cpp
+  pgw_pco.cpp
+  pgw_s5s8.cpp
+  pgwc_procedure.cpp
+  pgwc_sxab.cpp
+  #pgw_pcef_emulation.cpp
+)
+
