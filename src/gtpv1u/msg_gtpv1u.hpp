@@ -3,11 +3,11 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the Apache License, Version 2.0  (the "License"); you may not use this file
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this file
  * except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.openairinterface.org/?page_id=698
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,7 +66,7 @@ public:
   gtpv1u_echo_request(): private_extension() {}
   gtpv1u_echo_request(const gtpv1u_echo_request& i) : private_extension(i.private_extension) {}
 
-  const char* get_msg_name() const {return "GTPU_ECHO_REQUEST";};
+  static const char* get_msg_name() {return "GTPU_ECHO_REQUEST";};
 
   bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
 
@@ -84,7 +84,7 @@ public:
   gtpv1u_echo_response(): recovery(), private_extension()  {}
   
   gtpv1u_echo_response(const gtpv1u_echo_response& i): recovery(i.recovery), private_extension(i.private_extension) {}
-  const char* get_msg_name() const {return "GTPU_ECHO_RESPONSE";};
+  static const char* get_msg_name() {return "GTPU_ECHO_RESPONSE";};
 
   bool get(core::recovery_t& v)  const {if (recovery.first) {v = recovery.second;return true;}return false;}
   bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
@@ -110,7 +110,7 @@ public:
     gtp_u_peer_address(i.gtp_u_peer_address),
     private_extension(i.private_extension) {}
   
-  const char* get_msg_name() const {return "GTPU_ERROR_INDICATION";};
+  static const char* get_msg_name() {return "GTPU_ERROR_INDICATION";};
 
   bool get(core::tunnel_endpoint_identifier_data_i_t& v)  const {if (tunnel_endpoint_identifier_data_i.first) {v = tunnel_endpoint_identifier_data_i.second;return true;}return false;}
   bool get(core::gtp_u_peer_address_t& v)  const {if (gtp_u_peer_address.first) {v = gtp_u_peer_address.second;return true;}return false;}
@@ -133,7 +133,7 @@ public:
   gtpv1u_supported_extension_headers_notification(const gtpv1u_supported_extension_headers_notification& i) :
     extension_header_type_list(i.extension_header_type_list) {}
 
-  const char* get_msg_name() const {return "GTPU_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION";};
+  static const char* get_msg_name() {return "GTPU_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION";};
 
   bool get(core::extension_header_type_list_t& v)  const {if (extension_header_type_list.first) {v = extension_header_type_list.second;return true;}return false;}
 
@@ -150,10 +150,10 @@ public:
   gtpv1u_end_marker() :
     private_extension() {}
 
-  gtpv1u_end_marker(const gtpv1u_error_indication& i) :
+  explicit gtpv1u_end_marker(const gtpv1u_error_indication& i) :
     private_extension(i.private_extension) {}
 
-  const char* get_msg_name() const {return "GTPU_END_MARKER";};
+  static const char* get_msg_name() {return "GTPU_END_MARKER";};
 
   bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
 

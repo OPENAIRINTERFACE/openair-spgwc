@@ -126,19 +126,19 @@ spgwu_app::spgwu_app (const std::string& config_file)
     spgwu_sx_inst = new spgwu_sx();
   } catch (std::exception& e) {
     Logger::spgwu_app().error( "Cannot create SPGWU_SX: %s", e.what() );
-    throw e;
+    throw;
   }
   try {
     spgwu_s1u_inst = new spgwu_s1u();
   } catch (std::exception& e) {
     Logger::spgwu_app().error( "Cannot create SPGWU_S1U: %s", e.what() );
-    throw e;
+    throw;
   }
   try {
     pfcp_switch_inst = new pfcp_switch();
   } catch (std::exception& e) {
     Logger::spgwu_app().error( "Cannot create PFCP_SWITCH: %s", e.what() );
-    throw e;
+    throw;
   }
   Logger::spgwu_app().startup( "Started" );
 }

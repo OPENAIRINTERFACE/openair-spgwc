@@ -96,7 +96,7 @@ public:
 
   //gtpv1u_data_t    gtpv1u_data;
 
-  sgwc_app(const std::string& config_file);
+  explicit sgwc_app(const std::string& config_file);
   ~sgwc_app();
   sgwc_app(sgwc_app const&) = delete;
   void operator=(sgwc_app const&) = delete;

@@ -106,10 +106,10 @@ public:
   gtpv1u_ie() :
     tlv() {}
 
-  gtpv1u_ie(const gtpv1u_tlv& t) :
+  explicit gtpv1u_ie(const gtpv1u_tlv& t) :
     tlv(t) {}
     
-  gtpv1u_ie(const uint8_t tlv_type) : 
+  explicit gtpv1u_ie(const uint8_t tlv_type) : 
     tlv() {
     tlv.type = tlv_type;
   }
@@ -297,13 +297,13 @@ public:
     remote_port(m.remote_port),
     ies(m.ies) {}
 
-  gtpv1u_msg(const gtpv1u_msg_header& hdr) : gtpv1u_msg_header(hdr), remote_port(0), ies() {}
+  explicit gtpv1u_msg(const gtpv1u_msg_header& hdr) : gtpv1u_msg_header(hdr), remote_port(0), ies() {}
 
-  gtpv1u_msg(const gtpv1u_echo_request& gtp_ies);
-  gtpv1u_msg(const gtpv1u_echo_response& gtp_ies);
-  gtpv1u_msg(const gtpv1u_error_indication& gtp_ies);
-  gtpv1u_msg(const gtpv1u_supported_extension_headers_notification& gtp_ies);
-  gtpv1u_msg(const gtpv1u_end_marker& gtp_ies);
+  explicit gtpv1u_msg(const gtpv1u_echo_request& gtp_ies);
+  explicit gtpv1u_msg(const gtpv1u_echo_response& gtp_ies);
+  explicit gtpv1u_msg(const gtpv1u_error_indication& gtp_ies);
+  explicit gtpv1u_msg(const gtpv1u_supported_extension_headers_notification& gtp_ies);
+  explicit gtpv1u_msg(const gtpv1u_end_marker& gtp_ies);
 
   ~gtpv1u_msg() {
     ies.clear();
@@ -393,18 +393,18 @@ public:
   uint8_t restart_counter;
 
   //--------
-  gtpv1u_recovery_ie(const core::recovery_t& i) : gtpv1u_ie(GTPU_IE_RECOVERY) {
+  explicit gtpv1u_recovery_ie(const core::recovery_t& i) : gtpv1u_ie(GTPU_IE_RECOVERY) {
     // avoid using b[]
     restart_counter = i.restart_counter;
     tlv.set_length(1);
   };
   //--------
-  gtpv1u_recovery_ie() : gtpv1u_ie(GTPU_IE_RECOVERY) {
+  explicit gtpv1u_recovery_ie() : gtpv1u_ie(GTPU_IE_RECOVERY) {
     restart_counter = 0;
     tlv.set_length(1);
   };
   //--------
-  gtpv1u_recovery_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
+  explicit gtpv1u_recovery_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
     restart_counter = 0;
   };
   //--------
@@ -437,7 +437,7 @@ public:
 
 
   //--------
-  gtpv1u_tunnel_endpoint_identifier_data_i_ie(const core::tunnel_endpoint_identifier_data_i_t& i) : gtpv1u_ie(GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I) {
+  explicit gtpv1u_tunnel_endpoint_identifier_data_i_ie(const core::tunnel_endpoint_identifier_data_i_t& i) : gtpv1u_ie(GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I) {
     tunnel_endpoint_identifier_data_i = i.tunnel_endpoint_identifier_data_i;
   }
   //--------
@@ -445,7 +445,7 @@ public:
     tunnel_endpoint_identifier_data_i = 0;
   };
   //--------
-  gtpv1u_tunnel_endpoint_identifier_data_i_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
+  explicit gtpv1u_tunnel_endpoint_identifier_data_i_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
     tunnel_endpoint_identifier_data_i = 0;
   };
   void to_core_type(core::tunnel_endpoint_identifier_data_i_t& c) {
@@ -478,7 +478,7 @@ public:
   struct in6_addr ipv6_address;
   struct in_addr  ipv4_address;
   //--------
-  gtpv1u_gtp_u_peer_address_ie(const core::gtp_u_peer_address_t& p) :
+  explicit gtpv1u_gtp_u_peer_address_ie(const core::gtp_u_peer_address_t& p) :
 gtpv1u_ie(GTPU_IE_GTP_U_PEER_ADDRESS){
     is_v4 = p.is_v4;
     if (is_v4) {
@@ -497,7 +497,7 @@ gtpv1u_ie(GTPU_IE_GTP_U_PEER_ADDRESS){
     tlv.set_length(4);
   }
   //--------
-  gtpv1u_gtp_u_peer_address_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
+  explicit gtpv1u_gtp_u_peer_address_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
     is_v4 = true;
     ipv4_address.s_addr = INADDR_ANY;
     ipv6_address = in6addr_any;
@@ -550,7 +550,7 @@ public:
   std::string  extension_value;
 
   //--------
-  gtpv1u_private_extension_ie(const core::private_extension_t& i) : gtpv1u_ie(GTPU_IE_PRIVATE_EXTENSION),
+  explicit gtpv1u_private_extension_ie(const core::private_extension_t& i) : gtpv1u_ie(GTPU_IE_PRIVATE_EXTENSION),
     extension_identifier(i.enterprise_id),
     extension_value(i.proprietary_value)
   {
@@ -564,7 +564,7 @@ public:
     tlv.set_length(sizeof(extension_identifier));
   };
   //--------
-  gtpv1u_private_extension_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t),
+  explicit gtpv1u_private_extension_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t),
     extension_identifier(0),
     extension_value() {}
 

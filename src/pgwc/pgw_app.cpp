@@ -363,7 +363,7 @@ pgw_app::pgw_app (const std::string& config_file) : m_s5s8_cp_teid_generator(), 
     pgwc_sxab_inst = new pgwc_sxab();
   } catch (std::exception& e) {
     Logger::pgwc_app().error( "Cannot create PGW_APP: %s", e.what() );
-    throw e;
+    throw;
   }
 
   Logger::pgwc_app().startup( "Started" );

@@ -275,7 +275,7 @@ sgwc_app::sgwc_app (const std::string& config_file) : s11lteid2sgw_eps_bearer_co
 #endif
   } catch (std::exception& e) {
     Logger::sgwc_app().error( "Cannot create SGW_APP: %s", e.what() );
-    throw e;
+    throw;
   }
 
   if (itti_inst->create_task(TASK_SGWC_APP, sgwc_app_task, nullptr) ) {

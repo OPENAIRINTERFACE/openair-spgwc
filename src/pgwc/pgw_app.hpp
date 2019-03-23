@@ -92,7 +92,7 @@ private:
 
 
 public:
-  pgw_app(const std::string& config_file);
+  explicit pgw_app(const std::string& config_file);
   pgw_app(pgw_app const&)    = delete;
   void operator=(pgw_app const&)     = delete;
 

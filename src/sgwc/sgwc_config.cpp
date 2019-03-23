@@ -108,12 +108,12 @@ int sgwc_config::load(const string& config_file)
   catch(const FileIOException &fioex)
   {
     Logger::sgwc_app().error("I/O error while reading file %s - %s", config_file.c_str(), fioex.what());
-    throw fioex;
+    throw;
   }
   catch(const ParseException &pex)
   {
     Logger::sgwc_app().error("Parse error at %s:%d - %s", pex.getFile(), pex.getLine(), pex.getError());
-    throw pex;
+    throw;
   }
 
   const Setting& root = cfg.getRoot();

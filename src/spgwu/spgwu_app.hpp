@@ -95,7 +95,7 @@ public:
 
   //gtpv1u_data_t    gtpv1u_data;
 
-  spgwu_app(const std::string& config_file);
+  explicit spgwu_app(const std::string& config_file);
   ~spgwu_app();
   spgwu_app(spgwu_app const&) = delete;
   void operator=(spgwu_app const&) = delete;

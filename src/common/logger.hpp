@@ -30,8 +30,8 @@
 class LoggerException : public std::runtime_error
 {
 public:
-   LoggerException(const char *m) : std::runtime_error(m) {}
-   LoggerException(const std::string &m) : std::runtime_error(m) {}
+   explicit LoggerException(const char *m) : std::runtime_error(m) {}
+   explicit LoggerException(const std::string &m) : std::runtime_error(m) {}
 };
 
 class _Logger

@@ -55,7 +55,7 @@ namespace oai::cn::nf::spgwu {
 
     oai::cn::core::itti::timer_id_t                             timer_association;
 
-    pfcp_association(const oai::cn::core::pfcp::node_id_t& node_id) :
+    explicit pfcp_association(const oai::cn::core::pfcp::node_id_t& node_id) :
       node_id(node_id), recovery_time_stamp(), function_features(), m_sessions(), sessions() {
       hash_node_id = std::hash<oai::cn::core::pfcp::node_id_t>{}(node_id);
       timer_heartbeat = ITTI_INVALID_TIMER_ID;
