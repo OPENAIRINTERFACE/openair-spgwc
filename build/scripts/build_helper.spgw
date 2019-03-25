@@ -93,8 +93,9 @@ install_spdlog_from_git() {
     then
       $SUDO rm -rf spdlog
     fi
-    
+
     git clone $GIT_URL
+    cd spdlog && git checkout master
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
   fi
@@ -108,7 +109,7 @@ install_spdlog_from_git() {
 #arg2 is debug (0 or 1) (install debug libraries)
 check_install_spgwc_deps() {
 
-  if [ $1 -gt 0 ]; then 
+  if [ $1 -gt 0 ]; then
     OPTION="-y"
   else
     OPTION=""
@@ -123,7 +124,7 @@ check_install_spgwc_deps() {
   check_supported_distribution
   [[ $? -ne 0 ]] && return $?
 
-  # prevent lock on /var/lib/dpkg/lock 
+  # prevent lock on /var/lib/dpkg/lock
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     #$SUDO systemctl mask apt-daily.service
     #$SUDO systemctl mask apt-daily.timer
@@ -131,10 +132,10 @@ check_install_spgwc_deps() {
     #$SUDO systemctl mask apt-daily-upgrade.timer
     $SUDO sed -i 's/1/0/g' /etc/apt/apt.conf.d/10periodic
   fi
-  
+
   update_package_db
-  
-  
+
+
   check_enable_epel_repos
 
   # Compilers, generators, ...
@@ -166,7 +167,7 @@ check_install_spgwc_deps() {
   echo "Install build tools"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
-  
+
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
@@ -218,14 +219,14 @@ check_install_spgwc_deps() {
   echo "Install distro libs"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
-  
+
   # Use fmt lib included in spdlog
   #install_fmt $1
   #ret=$?;[[ $ret -ne 0 ]] && return $ret
 
   install_spdlog_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
- 
+
   return 0
 }
 #-------------------------------------------------------------------------------
@@ -233,7 +234,7 @@ check_install_spgwc_deps() {
 #arg2 is debug (0 or 1) (install debug libraries)
 check_install_spgwc_min_deps() {
 
-  if [ $1 -gt 0 ]; then 
+  if [ $1 -gt 0 ]; then
     OPTION="-y"
   else
     OPTION=""
@@ -248,7 +249,7 @@ check_install_spgwc_min_deps() {
   check_supported_distribution
   [[ $? -ne 0 ]] && return $?
 
-  # prevent lock on /var/lib/dpkg/lock 
+  # prevent lock on /var/lib/dpkg/lock
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     #$SUDO systemctl mask apt-daily.service
     #$SUDO systemctl mask apt-daily.timer
@@ -256,7 +257,7 @@ check_install_spgwc_min_deps() {
     #$SUDO systemctl mask apt-daily-upgrade.timer
     $SUDO sed -i 's/1/0/g' /etc/apt/apt.conf.d/10periodic
   fi
-  
+
   update_package_db
 
   check_enable_epel_repos
@@ -274,7 +275,7 @@ check_install_spgwc_min_deps() {
   echo "Install build tools"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
-  
+
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
@@ -330,7 +331,7 @@ check_install_spgwc_min_deps() {
 #arg2 is debug (0 or 1) (install debug libraries)
 check_install_spgwu_deps() {
 
-  if [ $1 -gt 0 ]; then 
+  if [ $1 -gt 0 ]; then
     OPTION="-y"
   else
     OPTION=""
@@ -345,7 +346,7 @@ check_install_spgwu_deps() {
   check_supported_distribution
   [[ $? -ne 0 ]] && return $?
 
-  # prevent lock on /var/lib/dpkg/lock 
+  # prevent lock on /var/lib/dpkg/lock
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     #$SUDO systemctl mask apt-daily.service
     #$SUDO systemctl mask apt-daily.timer
@@ -353,9 +354,9 @@ check_install_spgwu_deps() {
     #$SUDO systemctl mask apt-daily-upgrade.timer
     $SUDO sed -i 's/1/0/g' /etc/apt/apt.conf.d/10periodic
   fi
-  
+
   update_package_db
-  
+
   check_enable_epel_repos
 
   # Compilers, generators, ...
@@ -386,7 +387,7 @@ check_install_spgwu_deps() {
   echo "Install build tools"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
-  
+
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
@@ -439,7 +440,7 @@ check_install_spgwu_deps() {
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
-  
+
   # Use fmt lib included in spdlog
   #install_fmt $1
   #ret=$?;[[ $ret -ne 0 ]] && return $ret
@@ -449,7 +450,7 @@ check_install_spgwu_deps() {
 
   install_spdlog_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
- 
+
   return 0
 }
 #-------------------------------------------------------------------------------
@@ -457,7 +458,7 @@ check_install_spgwu_deps() {
 #arg2 is debug (0 or 1) (install debug libraries)
 check_install_spgwu_min_deps() {
 
-  if [ $1 -gt 0 ]; then 
+  if [ $1 -gt 0 ]; then
     OPTION="-y"
   else
     OPTION=""
@@ -467,7 +468,7 @@ check_install_spgwu_min_deps() {
   check_supported_distribution
   [[ $? -ne 0 ]] && return $?
 
-  # prevent lock on /var/lib/dpkg/lock 
+  # prevent lock on /var/lib/dpkg/lock
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     #$SUDO systemctl mask apt-daily.service
     #$SUDO systemctl mask apt-daily.timer
@@ -475,9 +476,9 @@ check_install_spgwu_min_deps() {
     #$SUDO systemctl mask apt-daily-upgrade.timer
     $SUDO sed -i 's/1/0/g' /etc/apt/apt.conf.d/10periodic
   fi
-  
+
   update_package_db
-  
+
   check_enable_epel_repos
 
   # Compilers, generators, ...
@@ -493,7 +494,7 @@ check_install_spgwu_min_deps() {
   echo "Install build tools"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
-  
+
 
   # Networking
   if [[ $OS_DISTRO == "ubuntu" ]]; then
