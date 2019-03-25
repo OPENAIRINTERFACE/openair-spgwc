@@ -219,6 +219,18 @@ public:
     next_extension_header_type = h.next_extension_header_type;
   }
 
+  gtpv1u_msg_header& operator=(gtpv1u_msg_header other)
+  {
+    std::swap(u1, other.u1);
+    std::swap(message_type, other.message_type);
+    std::swap(message_length, other.message_length);
+    std::swap(teid, other.teid);
+    std::swap(sequence_number, other.sequence_number);
+    std::swap(npdu_number, other.npdu_number);
+    std::swap(next_extension_header_type, other.next_extension_header_type);
+    return *this;
+  }
+
   void set_teid(const uint32_t& tid) {
    teid = tid;
   }
@@ -296,6 +308,13 @@ public:
   gtpv1u_msg(const gtpv1u_msg& m) : gtpv1u_msg_header(m), 
     remote_port(m.remote_port),
     ies(m.ies) {}
+    
+  gtpv1u_msg& operator=(gtpv1u_msg other)
+  {
+    std::swap(remote_port, other.remote_port);
+    std::swap(ies, other.ies);
+    return *this;
+  }    
 
   explicit gtpv1u_msg(const gtpv1u_msg_header& hdr) : gtpv1u_msg_header(hdr), remote_port(0), ies() {}
 

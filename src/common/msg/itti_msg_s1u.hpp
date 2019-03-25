@@ -44,9 +44,21 @@ public:
     l_endpoint = {};
     l_endpoint_addr_len = sizeof(l_endpoint);
     r_endpoint = {};
-    l_endpoint_addr_len = sizeof(r_endpoint);
+    r_endpoint_addr_len = sizeof(r_endpoint);
     teid = UNASSIGNED_TEID;
     gtpu_tx_id = 0;
+  }
+
+  itti_s1u_msg& operator=(itti_s1u_msg other)
+  {
+    this->itti_msg::operator=(other);
+    std::swap(l_endpoint, other.l_endpoint);
+    std::swap(l_endpoint_addr_len, other.l_endpoint_addr_len);
+    std::swap(r_endpoint, other.r_endpoint);
+    std::swap(r_endpoint_addr_len, other.r_endpoint_addr_len);
+    std::swap(teid, other.teid);
+    std::swap(gtpu_tx_id, other.gtpu_tx_id);
+    return *this;
   }
 
   itti_s1u_msg(const itti_s1u_msg& i) : itti_msg(i)  {
@@ -76,8 +88,14 @@ public:
   itti_s1u_echo_request(const task_id_t orig, const task_id_t dest):
     itti_s1u_msg(S1U_ECHO_REQUEST, orig, dest) {
   }
-  itti_s1u_echo_request(const itti_s1u_echo_request& i) : itti_s1u_msg(i)  {
+  explicit itti_s1u_echo_request(const itti_s1u_echo_request& i) : itti_s1u_msg(i)  {
     gtp_ies = i.gtp_ies;
+  }
+  itti_s1u_echo_request& operator=(itti_s1u_echo_request other)
+  {
+    this->itti_s1u_msg::operator=(other);
+    std::swap(gtp_ies, other.gtp_ies);
+    return *this;
   }
   itti_s1u_echo_request(const itti_s1u_echo_request& i, const task_id_t orig, const task_id_t dest) :
     itti_s1u_msg(i, orig, dest)  {
@@ -93,8 +111,14 @@ public:
   itti_s1u_echo_response(const task_id_t orig, const task_id_t dest):
     itti_s1u_msg(S1U_ECHO_RESPONSE, orig, dest) {
   }
-  itti_s1u_echo_response(const itti_s1u_echo_response& i) : itti_s1u_msg(i)  {
+  explicit itti_s1u_echo_response(const itti_s1u_echo_response& i) : itti_s1u_msg(i)  {
     gtp_ies = i.gtp_ies;
+  }
+  itti_s1u_echo_response& operator=(itti_s1u_echo_response other)
+  {
+    this->itti_s1u_msg::operator=(other);
+    std::swap(gtp_ies, other.gtp_ies);
+    return *this;
   }
   itti_s1u_echo_response(const itti_s1u_echo_response& i, const task_id_t orig, const task_id_t dest) :
     itti_s1u_msg(i, orig, dest)  {
@@ -110,8 +134,14 @@ public:
   itti_s1u_error_indication(const task_id_t orig, const task_id_t dest):
     itti_s1u_msg(S1U_ERROR_INDICATION, orig, dest) {
   }
-  itti_s1u_error_indication(const itti_s1u_error_indication& i) : itti_s1u_msg(i)  {
+  explicit itti_s1u_error_indication(const itti_s1u_error_indication& i) : itti_s1u_msg(i)  {
     gtp_ies = i.gtp_ies;
+  }
+  itti_s1u_error_indication& operator=(itti_s1u_error_indication other)
+  {
+    this->itti_s1u_msg::operator=(other);
+    std::swap(gtp_ies, other.gtp_ies);
+    return *this;
   }
   itti_s1u_error_indication(const itti_s1u_error_indication& i, const task_id_t orig, const task_id_t dest) :
     itti_s1u_msg(i, orig, dest)  {
@@ -127,8 +157,14 @@ public:
   itti_s1u_supported_extension_headers_notification(const task_id_t orig, const task_id_t dest):
     itti_s1u_msg(S1U_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION, orig, dest) {
   }
-  itti_s1u_supported_extension_headers_notification(const itti_s1u_supported_extension_headers_notification& i) : itti_s1u_msg(i)  {
+  explicit itti_s1u_supported_extension_headers_notification(const itti_s1u_supported_extension_headers_notification& i) : itti_s1u_msg(i)  {
     gtp_ies = i.gtp_ies;
+  }
+  itti_s1u_supported_extension_headers_notification& operator=(itti_s1u_supported_extension_headers_notification other)
+  {
+    this->itti_s1u_msg::operator=(other);
+    std::swap(gtp_ies, other.gtp_ies);
+    return *this;
   }
   itti_s1u_supported_extension_headers_notification(const itti_s1u_supported_extension_headers_notification& i, const task_id_t orig, const task_id_t dest) :
     itti_s1u_msg(i, orig, dest)  {
@@ -144,9 +180,17 @@ public:
   itti_s1u_end_marker(const task_id_t orig, const task_id_t dest):
     itti_s1u_msg(S1U_END_MARKER, orig, dest) {
   }
-  itti_s1u_end_marker(const itti_s1u_end_marker& i) : itti_s1u_msg(i)  {
+  explicit itti_s1u_end_marker(const itti_s1u_end_marker& i) : itti_s1u_msg(i)  {
     gtp_ies = i.gtp_ies;
   }
+
+  itti_s1u_end_marker& operator=(itti_s1u_end_marker other)
+  {
+    this->itti_s1u_msg::operator=(other);
+    std::swap(gtp_ies, other.gtp_ies);
+    return *this;
+  }
+
   itti_s1u_end_marker(const itti_s1u_end_marker& i, const task_id_t orig, const task_id_t dest) :
     itti_s1u_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;

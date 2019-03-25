@@ -118,7 +118,7 @@ ENDIF(STATIC_LINKING)
 ################################################################
 # Build type
 ################################################################
-add_list_string_option(CMAKE_BUILD_TYPE "RelWithDebInfo" "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." Debug Release 
+add_list_string_option(CMAKE_BUILD_TYPE "RelWithDebInfo" "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." Debug Release
 RelWithDebInfo MinSizeRel)
 Message("Build type is ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
@@ -177,7 +177,7 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -std=c++17 -Os -s")
 
 
 ################################################################
-# Git Version 
+# Git Version
 ################################################################
 set(GIT_BRANCH        "UNKNOWN")
 set(GIT_COMMIT_HASH   "UNKNOWN")
@@ -201,7 +201,7 @@ if(GIT_FOUND)
     OUTPUT_VARIABLE GIT_COMMIT_HASH
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-  
+
   # Get the latest commit date of the working branch
   execute_process(
     COMMAND git log -1 --format=%cd
@@ -283,6 +283,7 @@ include_directories(${SRC_TOP_DIR}/common)
 include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/common/msg)
 include_directories(${SRC_TOP_DIR}/common/utils)
+include_directories(${SRC_TOP_DIR}/gtpv1u)
 include_directories(${SRC_TOP_DIR}/pfcp)
 include_directories(${SRC_TOP_DIR}/spgwu)
 include_directories(${SRC_TOP_DIR}/spgwu/simpleswitch)
@@ -304,6 +305,6 @@ ENDIF(STATIC_LINKING)
 
 
 # folly glog dl double-conversion for FB folly library
-target_link_libraries (spgwu ${ASAN}  -Wl,--start-group CN_UTILS SPGWU SPGW_SWITCH GTPV2C GTPV1U PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group   
+target_link_libraries (spgwu ${ASAN}  -Wl,--start-group CN_UTILS SPGWU SPGW_SWITCH GTPV2C GTPV1U PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group
 pthread m rt config++  event boost_system)
 

@@ -65,7 +65,11 @@ public:
 
   gtpv1u_echo_request(): private_extension() {}
   gtpv1u_echo_request(const gtpv1u_echo_request& i) : private_extension(i.private_extension) {}
-
+  gtpv1u_echo_request& operator=(gtpv1u_echo_request other)
+  {
+    std::swap(private_extension, other.private_extension);
+    return *this;
+  }
   static const char* get_msg_name() {return "GTPU_ECHO_REQUEST";};
 
   bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
@@ -81,10 +85,17 @@ public:
   std::pair<bool, core::recovery_t>              recovery;
   std::pair<bool, core::private_extension_t>     private_extension;
 
-  gtpv1u_echo_response(): recovery(), private_extension()  {}
-  
+  gtpv1u_echo_response(): recovery(), private_extension() {}
+
   gtpv1u_echo_response(const gtpv1u_echo_response& i): recovery(i.recovery), private_extension(i.private_extension) {}
   static const char* get_msg_name() {return "GTPU_ECHO_RESPONSE";};
+
+  gtpv1u_echo_response& operator=(gtpv1u_echo_response other)
+  {
+    std::swap(recovery, other.recovery);
+    std::swap(private_extension, other.private_extension);
+    return *this;
+  }
 
   bool get(core::recovery_t& v)  const {if (recovery.first) {v = recovery.second;return true;}return false;}
   bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
@@ -104,12 +115,20 @@ public:
   std::pair<bool, core::private_extension_t>                   private_extension;
 
   gtpv1u_error_indication(): tunnel_endpoint_identifier_data_i(), gtp_u_peer_address(), private_extension() {}
-  
+
   gtpv1u_error_indication(const gtpv1u_error_indication& i) :
     tunnel_endpoint_identifier_data_i(i.tunnel_endpoint_identifier_data_i),
     gtp_u_peer_address(i.gtp_u_peer_address),
     private_extension(i.private_extension) {}
-  
+
+  gtpv1u_error_indication& operator=(gtpv1u_error_indication other)
+  {
+    std::swap(tunnel_endpoint_identifier_data_i, other.tunnel_endpoint_identifier_data_i);
+    std::swap(gtp_u_peer_address, other.gtp_u_peer_address);
+    std::swap(private_extension, other.private_extension);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "GTPU_ERROR_INDICATION";};
 
   bool get(core::tunnel_endpoint_identifier_data_i_t& v)  const {if (tunnel_endpoint_identifier_data_i.first) {v = tunnel_endpoint_identifier_data_i.second;return true;}return false;}
@@ -133,6 +152,12 @@ public:
   gtpv1u_supported_extension_headers_notification(const gtpv1u_supported_extension_headers_notification& i) :
     extension_header_type_list(i.extension_header_type_list) {}
 
+  gtpv1u_supported_extension_headers_notification& operator=(gtpv1u_supported_extension_headers_notification other)
+  {
+    std::swap(extension_header_type_list, other.extension_header_type_list);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "GTPU_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION";};
 
   bool get(core::extension_header_type_list_t& v)  const {if (extension_header_type_list.first) {v = extension_header_type_list.second;return true;}return false;}
@@ -150,8 +175,14 @@ public:
   gtpv1u_end_marker() :
     private_extension() {}
 
-  explicit gtpv1u_end_marker(const gtpv1u_error_indication& i) :
+  gtpv1u_end_marker(const gtpv1u_end_marker& i) :
     private_extension(i.private_extension) {}
+
+  gtpv1u_end_marker& operator=(gtpv1u_end_marker other)
+  {
+    std::swap(private_extension, other.private_extension);
+    return *this;
+  }
 
   static const char* get_msg_name() {return "GTPU_END_MARKER";};
 

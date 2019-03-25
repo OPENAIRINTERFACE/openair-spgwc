@@ -156,6 +156,16 @@ public:
   itti_msg();
   itti_msg(const itti_msg_type_t  msg_type, const task_id_t origin, const task_id_t destination);
   itti_msg(const itti_msg& i);
+
+  itti_msg& operator=(itti_msg other)
+  {
+    std::swap(msg_num, other.msg_num);
+    std::swap(origin, other.origin);
+    std::swap(destination, other.destination);
+    std::swap(msg_type, other.msg_type);
+    return *this;
+  }
+
   virtual ~itti_msg() = default;
   static const char* get_msg_name();
 
