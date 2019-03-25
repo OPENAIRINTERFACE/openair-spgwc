@@ -163,11 +163,11 @@ public:
   // TODO GTP_IE_REMOTE_UE_CONTEXT
   // TODO GTP_IE_REMOTE_USER_ID
   // TODO GTP_IE_REMOTE_UE_IP_INFORMATION
-  virtual bool get(core::ciot_optimizations_support_indication_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION, __FILE__, 
+  virtual bool get(core::ciot_optimizations_support_indication_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION, __FILE__,
 __LINE__);}
   // TODO GTP_IE_SCEF_PDN_CONNECTION
   // TODO GTP_IE_HEADER_COMPRESSION_CONFIGURATION
-  virtual bool get(core::extended_protocol_configuration_options_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_EXTENDED_PROTOCOL_CONFIGURATION_OPTIONS, 
+  virtual bool get(core::extended_protocol_configuration_options_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_EXTENDED_PROTOCOL_CONFIGURATION_OPTIONS,
 __FILE__, __LINE__);}
   // TODO GTP_IE_SERVING_PLMN_RATE_CONTROL
   // TODO GTP_IE_COUNTER
@@ -259,7 +259,7 @@ __FILE__, __LINE__);}
   // TODO GTP_IE_CSG_MEMBERSHIP_INDICATION
   // TODO GTP_IE_SERVICE_INDICATOR
   // TODO GTP_IE_DETACH_TYPE
-  virtual void set(const core::local_distinguished_name_t& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_LOCAL_DISTINGUISHED_NAME, __FILE__, __LINE__);}  
+  virtual void set(const core::local_distinguished_name_t& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_LOCAL_DISTINGUISHED_NAME, __FILE__, __LINE__);}
   virtual void set(const core::node_features_t& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_NODE_FEATURES, __FILE__, __LINE__);}
   // TODO GTP_IE_MBMS_TIME_TO_DATA_TRANSFER
   // TODO GTP_IE_THROTTLING
@@ -342,7 +342,7 @@ public:
   {
     for (int i = 0; i < BEARER_CONTEXT_MAX_FTEID_INSTANCES; i++) fteid[i] = {};
   }
-  
+
   bearer_context(const bearer_context& b) :
     eps_bearer_id(b.eps_bearer_id),
     tft(b.tft),
@@ -356,6 +356,22 @@ public:
   {
     for (int i = 0; i < BEARER_CONTEXT_MAX_FTEID_INSTANCES; i++) fteid[i] = b.fteid[i];
   }
+
+  bearer_context& operator=(bearer_context other)
+  {
+    std::swap(eps_bearer_id, other.eps_bearer_id);
+    std::swap(tft, other.tft);
+    std::swap(bearer_level_qos, other.bearer_level_qos);
+    std::swap(cause, other.cause);
+    std::swap(charging_id, other.charging_id);
+    std::swap(bearer_flags, other.bearer_flags);
+    std::swap(pco, other.pco);
+    std::swap(epco, other.epco);
+    std::swap(ran_nas_cause, other.ran_nas_cause);
+    for (int i = 0; i < BEARER_CONTEXT_MAX_FTEID_INSTANCES; i++) std::swap(fteid[i],other.fteid[i]);
+    return *this;
+  }
+
   //virtual ~bearer_context() {};
   virtual void set(const core::ebi_t& v, const uint8_t instance = 0) {eps_bearer_id.first = true; eps_bearer_id.second = v;}
   virtual void set(const core::traffic_flow_template_t& v, const uint8_t instance = 0) {tft.first = true; tft.second = v;}
@@ -967,7 +983,7 @@ public:
       std::swap(uci, i.uci);
       return *this;
     }
-    
+
   static const char* get_msg_name() {return "CREATE_SESSION_REQUEST";};
 
   bool get(core::imsi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_IMSI) {v = imsi;return true;}return false;}
@@ -983,7 +999,7 @@ public:
   bool get(core::selection_mode_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SELECTION_MODE) {v = selection_mode;return true;}return false;}
   bool get(core::pdn_type_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PDN_TYPE) {v = pdn_type;return true;}return false;}
   bool get(core::paa_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PAA) {v = paa;return true;}return false;}
-  bool get(core::apn_restriction_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_RESTRICTION) {v = apn_restriction;return true;}return 
+  bool get(core::apn_restriction_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_RESTRICTION) {v = apn_restriction;return true;}return
 false;}
   bool get(core::ambr_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_AMBR) {v = ambr;return true;}return false;}
   bool get(core::ebi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID) {v = linked_eps_bearer_id;return true;}return false;}
@@ -1388,10 +1404,10 @@ public:
   // Private Extension                          ///< This IE may be sent on the S5/S8, S4/S11 and S2b
   ///< interfaces.
 
-  gtpv2c_create_session_response(): cause(), 
-    pgw_back_off_time(), 
-    indication_flags(),
+  gtpv2c_create_session_response(): cause(),
     sender_fteid_for_cp(),
+    pgw_back_off_time(),
+    indication_flags(),
     s5_s8_pgw_fteid(),
     paa(),
     apn_restriction(),
@@ -1404,11 +1420,11 @@ public:
     sgw_fq_csid(),
     sgw_ldn(),
     pgw_ldn() {}
-    
+
   gtpv2c_create_session_response(const gtpv2c_create_session_response& i): cause(i.cause),
-    pgw_back_off_time(i.pgw_back_off_time), 
-    indication_flags(i.indication_flags),
     sender_fteid_for_cp(i.sender_fteid_for_cp),
+    pgw_back_off_time(i.pgw_back_off_time),
+    indication_flags(i.indication_flags),
     s5_s8_pgw_fteid(i.s5_s8_pgw_fteid),
     paa(i.paa),
     apn_restriction(i.apn_restriction),
@@ -1421,6 +1437,27 @@ public:
     sgw_fq_csid(i.sgw_fq_csid),
     sgw_ldn(i.sgw_ldn),
     pgw_ldn(i.pgw_ldn) {}
+
+  gtpv2c_create_session_response& operator=(gtpv2c_create_session_response other)
+  {
+    std::swap(cause, other.cause);
+    std::swap(pgw_back_off_time, other.pgw_back_off_time);
+    std::swap(indication_flags, other.indication_flags);
+    std::swap(sender_fteid_for_cp, other.sender_fteid_for_cp);
+    std::swap(s5_s8_pgw_fteid, other.s5_s8_pgw_fteid);
+    std::swap(paa, other.paa);
+    std::swap(apn_restriction, other.apn_restriction);
+    std::swap(apn_ambr, other.apn_ambr);
+    std::swap(linked_eps_bearer_id, other.linked_eps_bearer_id);
+    std::swap(pco, other.pco);
+    std::swap(bearer_contexts_created, other.bearer_contexts_created);
+    std::swap(bearer_contexts_marked_for_removal, other.bearer_contexts_marked_for_removal);
+    std::swap(pgw_fq_csid, other.pgw_fq_csid);
+    std::swap(sgw_fq_csid, other.sgw_fq_csid);
+    std::swap(sgw_ldn, other.sgw_ldn);
+    std::swap(pgw_ldn, other.pgw_ldn);
+    return *this;
+  }
 
   static const char* get_msg_name() {return "CREATE_SESSION_RESPONSE";};
 
@@ -1561,10 +1598,16 @@ public:
   static const uint8_t msg_id = GTP_ECHO_REQUEST;
 
   std::pair<bool, core::recovery_t>             recovery_restart_counter;
-  std::pair<bool, core::node_features_t>        sending_node_features; 
+  std::pair<bool, core::node_features_t>        sending_node_features;
 
   gtpv2c_echo_request() : recovery_restart_counter(), sending_node_features() {}
   gtpv2c_echo_request(const gtpv2c_echo_request& i): recovery_restart_counter(i.recovery_restart_counter), sending_node_features(i.sending_node_features) {}
+  gtpv2c_echo_request& operator=(gtpv2c_echo_request other)
+  {
+    std::swap(recovery_restart_counter, other.recovery_restart_counter);
+    std::swap(sending_node_features, other.sending_node_features);
+    return *this;
+  }
   static const char* get_msg_name() {return "ECHO_REQUEST";};
 
   bool get(core::recovery_t& v) const {if (recovery_restart_counter.first) {v = recovery_restart_counter.second;return true;}return false;}
@@ -1578,17 +1621,23 @@ class gtpv2c_echo_response : public gtpv2c_ies_container {
 public:
   static const uint8_t msg_id = GTP_ECHO_RESPONSE;
 
-  std::pair<bool, core::recovery_t>             recovery_restart_counter; 
-  std::pair<bool, core::node_features_t>        sending_node_features;  
+  std::pair<bool, core::recovery_t>             recovery_restart_counter;
+  std::pair<bool, core::node_features_t>        sending_node_features;
 
   gtpv2c_echo_response() :
     recovery_restart_counter(),
     sending_node_features() {}
-  
+
   gtpv2c_echo_response(const gtpv2c_echo_response& i) :
     recovery_restart_counter(i.recovery_restart_counter),
     sending_node_features(i.sending_node_features) {}
-  
+
+  gtpv2c_echo_response& operator=(gtpv2c_echo_response other)
+  {
+    std::swap(recovery_restart_counter, other.recovery_restart_counter);
+    std::swap(sending_node_features, other.sending_node_features);
+    return *this;
+  }
   static const char* get_msg_name() {return "ECHO_RESPONSE";};
 
   bool get(core::recovery_t& v) const {if (recovery_restart_counter.first) {v = recovery_restart_counter.second;return true;}return false;}
@@ -1724,6 +1773,19 @@ public:
     pgw_fq_csid(i.pgw_fq_csid),
     sgw_fq_csid(i.sgw_fq_csid),
     indication_flags(i.indication_flags) {}
+
+    gtpv2c_create_bearer_request& operator=(gtpv2c_create_bearer_request other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(pti, other.pti);
+    std::swap(linked_eps_bearer_id, other.linked_eps_bearer_id);
+    std::swap(pco, other.pco);
+    std::swap(bearer_contexts, other.bearer_contexts);
+    std::swap(pgw_fq_csid, other.pgw_fq_csid);
+    std::swap(sgw_fq_csid, other.sgw_fq_csid);
+    std::swap(indication_flags, other.indication_flags);
+    return *this;
+  }
 
   static const char* get_msg_name() {return "CREATE_BEARER_REQUEST";};
 
@@ -1983,6 +2045,21 @@ public:
     ue_time_zone(i.ue_time_zone),
     uli(i.uli) {}
 
+  gtpv2c_create_bearer_response& operator=(gtpv2c_create_bearer_response other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(cause, other.cause);
+    std::swap(bearer_contexts, other.bearer_contexts);
+    std::swap(mme_fq_csid, other.mme_fq_csid);
+    std::swap(sgw_fq_csid, other.sgw_fq_csid);
+    std::swap(epdg_fq_csid, other.epdg_fq_csid);
+    std::swap(twan_fq_csid, other.twan_fq_csid);
+    std::swap(pco, other.pco);
+    std::swap(ue_time_zone, other.ue_time_zone);
+    std::swap(uli, other.uli);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "CREATE_BEARER_RESPONSE";};
 
 #define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_CAUSE                              ((uint64_t)1)
@@ -2213,6 +2290,28 @@ public:
     sgw_fq_csid(i.sgw_fq_csid),
     uci(i.uci),
     imsi(i.imsi) {}
+
+  gtpv2c_modify_bearer_request& operator=(gtpv2c_modify_bearer_request other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(mei, other.mei);
+    std::swap(uli, other.uli);
+    std::swap(serving_network, other.serving_network);
+    std::swap(rat_type, other.rat_type);
+    std::swap(rat_type, other.rat_type);
+    std::swap(indication_flags, other.indication_flags);
+    std::swap(sender_fteid_for_cp, other.sender_fteid_for_cp);
+    std::swap(apn_ambr, other.apn_ambr);
+    std::swap(delay_dl_packet_notif_req, other.delay_dl_packet_notif_req);
+    std::swap(bearer_contexts_to_be_modified, other.bearer_contexts_to_be_modified);
+    std::swap(bearer_contexts_to_be_removed, other.bearer_contexts_to_be_removed);
+    std::swap(ue_time_zone, other.ue_time_zone);
+    std::swap(mme_fq_csid, other.mme_fq_csid);
+    std::swap(sgw_fq_csid, other.sgw_fq_csid);
+    std::swap(uci, other.uci);
+    std::swap(imsi, other.imsi);
+    return *this;
+  }
 
   static const char* get_msg_name() {return "MODIFY_BEARER_REQUEST";};
 
@@ -2524,7 +2623,7 @@ public:
 } ;
 
 //-----------------------------------------------------------------------------
-/** @class gtpv2c_modify_bearer_response
+/** @class bearer_context_modified_within_modify_bearer_response
  *  @brief Modify Bearer Response
  *
  * The Modify Bearer Response will be sent on S11 interface as
@@ -2580,6 +2679,29 @@ public:
     if (b.get(s4_u_sgw_fteid.second, 2)) s4_u_sgw_fteid.first = true;
     if (b.get(s11_u_sgw_fteid.second, 3)) s11_u_sgw_fteid.first = true;
   }
+
+//   explicit bearer_context_modified_within_modify_bearer_response(const bearer_context_modified_within_modify_bearer_response& b) :
+//     eps_bearer_id(b.eps_bearer_id),
+//     cause(b.cause),
+//     s1_u_sgw_fteid(b.s1_u_sgw_fteid),
+//     s12_sgw_fteid(b.s12_sgw_fteid),
+//     s4_u_sgw_fteid(b.s4_u_sgw_fteid),
+//     charging_id(b.charging_id),
+//     bearer_flags(b.bearer_flags),
+//     s11_u_sgw_fteid(b.s11_u_sgw_fteid) {}
+//
+//   bearer_context_modified_within_modify_bearer_response& operator=(bearer_context_modified_within_modify_bearer_response other)
+//   {
+//     std::swap(eps_bearer_id, other.eps_bearer_id);
+//     std::swap(cause, other.cause);
+//     std::swap(s1_u_sgw_fteid, other.s1_u_sgw_fteid);
+//     std::swap(s12_sgw_fteid, other.s12_sgw_fteid);
+//     std::swap(s4_u_sgw_fteid, other.s4_u_sgw_fteid);
+//     std::swap(charging_id, other.charging_id);
+//     std::swap(bearer_flags, other.bearer_flags);
+//     std::swap(s11_u_sgw_fteid, other.s11_u_sgw_fteid);
+//     return *this;
+//   }
 };
 
 class bearer_context_marked_for_removal_within_modify_bearer_response {
@@ -2600,6 +2722,18 @@ public:
   explicit bearer_context_marked_for_removal_within_modify_bearer_response(const bearer_context& b) :
     eps_bearer_id(b.eps_bearer_id),
     cause(b.cause) {}
+
+//   explicit bearer_context_marked_for_removal_within_modify_bearer_response(const bearer_context_marked_for_removal_within_modify_bearer_response& b) :
+//     eps_bearer_id(b.eps_bearer_id),
+//     cause(b.cause) {}
+
+
+//   bearer_context_marked_for_removal_within_modify_bearer_response& operator=(bearer_context_marked_for_removal_within_modify_bearer_response other)
+//   {
+//     std::swap(eps_bearer_id, other.eps_bearer_id);
+//     std::swap(cause, other.cause);
+//     return *this;
+//   }
 };
 
 class gtpv2c_modify_bearer_response : public gtpv2c_ies_container {
@@ -2629,6 +2763,22 @@ public:
     sgw_fq_csid(i.sgw_fq_csid),
     indication_flags(i.indication_flags),
     pdn_connection_charging_id(i.pdn_connection_charging_id) {}
+
+  gtpv2c_modify_bearer_response& operator=(gtpv2c_modify_bearer_response other)
+  {
+    std::swap(cause, other.cause);
+    std::swap(msisdn, other.msisdn);
+    std::swap(linked_eps_bearer_id, other.linked_eps_bearer_id);
+    std::swap(apn_restriction, other.apn_restriction);
+    std::swap(pco, other.pco);
+    std::swap(bearer_contexts_modified, other.bearer_contexts_modified);
+    std::swap(bearer_contexts_marked_for_removal, other.bearer_contexts_marked_for_removal);
+    std::swap(pgw_fq_csid, other.pgw_fq_csid);
+    std::swap(sgw_fq_csid, other.sgw_fq_csid);
+    std::swap(indication_flags, other.indication_flags);
+    std::swap(pdn_connection_charging_id, other.pdn_connection_charging_id);
+    return *this;
+  }
 
   static const char* get_msg_name() {return "MODIFY_BEARER_RESPONSE";};
 
@@ -2817,7 +2967,23 @@ public:
     ue_time_zone(i.ue_time_zone),
     ran_nas_release_cause(i.ran_nas_release_cause),
     epco(i.epco) {}
-    
+
+  gtpv2c_delete_session_request& operator=(gtpv2c_delete_session_request other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(cause, other.cause);
+    std::swap(linked_eps_bearer_id, other.linked_eps_bearer_id);
+    std::swap(uli, other.uli);
+    std::swap(indication_flags, other.indication_flags);
+    std::swap(pco, other.pco);
+    std::swap(originating_node, other.originating_node);
+    std::swap(sender_fteid_for_cp, other.sender_fteid_for_cp);
+    std::swap(ue_time_zone, other.ue_time_zone);
+    std::swap(ran_nas_release_cause, other.ran_nas_release_cause);
+    std::swap(epco, other.epco);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "DELETE_SESSION_REQUEST";};
 
 #define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_CAUSE                              ((uint64_t)1)
@@ -2912,6 +3078,16 @@ public:
     indication_flags(i.indication_flags),
     epco(i.epco) {}
 
+  gtpv2c_delete_session_response& operator=(gtpv2c_delete_session_response other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(cause, other.cause);
+    std::swap(pco, other.pco);
+    std::swap(indication_flags, other.indication_flags);
+    std::swap(epco, other.epco);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "DELETE_SESSION_RESPONSE";};
 
 #define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_CAUSE                             ((uint64_t)1)
@@ -2979,7 +3155,14 @@ public:
   gtpv2c_release_access_bearers_request(const gtpv2c_release_access_bearers_request& i) :
     originating_node(i.originating_node),
     indication_flags(i.indication_flags) {}
-  
+
+  gtpv2c_release_access_bearers_request& operator=(gtpv2c_release_access_bearers_request other)
+  {
+    std::swap(originating_node, other.originating_node);
+    std::swap(indication_flags, other.indication_flags);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "RELEASE_ACCESS_BEARERS_REQUEST";};
   static const uint8_t msg_id = GTP_RELEASE_ACCESS_BEARERS_REQUEST;
 
@@ -3018,10 +3201,17 @@ public:
   gtpv2c_release_access_bearers_response() :
     cause(),
     indication_flags() {}
-  
+
   gtpv2c_release_access_bearers_response(const gtpv2c_release_access_bearers_response& i) :
     cause(i.cause),
     indication_flags(i.indication_flags) {}
+
+  gtpv2c_release_access_bearers_response& operator=(gtpv2c_release_access_bearers_response other)
+  {
+    std::swap(cause, other.cause);
+    std::swap(indication_flags, other.indication_flags);
+    return *this;
+  }
 
   static const char* get_msg_name() {return "RELEASE_ACCESS_BEARERS_RESPONSE";};
 
@@ -3064,6 +3254,7 @@ public:
   void set(const core::ran_nas_cause_t& v, const uint8_t instance = 0) {ran_nas_release_cause = v;ie_presence_mask |= GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_RAN_NAS_RELEASE_CAUSE;}
   bearer_context_within_delete_bearer_command() :
     ie_presence_mask(0),
+    eps_bearer_id(),
     bearer_flags(),
     ran_nas_release_cause() {}
 
@@ -3073,6 +3264,21 @@ public:
     if (b.get(eps_bearer_id, 0)) ie_presence_mask |= GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_EPS_BEARER_ID;
     if (b.get(bearer_flags, 0)) ie_presence_mask |= GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_BEARER_FLAGS;
     if (b.get(ran_nas_release_cause, 0)) ie_presence_mask |= GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_RAN_NAS_RELEASE_CAUSE;
+  }
+
+  explicit bearer_context_within_delete_bearer_command(const bearer_context_within_delete_bearer_command& b) :
+    ie_presence_mask(b.ie_presence_mask),
+    eps_bearer_id(b.eps_bearer_id),
+    bearer_flags(b.bearer_flags),
+    ran_nas_release_cause(b.ran_nas_release_cause) {}
+
+  bearer_context_within_delete_bearer_command& operator=(bearer_context_within_delete_bearer_command other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(eps_bearer_id, other.eps_bearer_id);
+    std::swap(bearer_flags, other.bearer_flags);
+    std::swap(ran_nas_release_cause, other.ran_nas_release_cause);
+    return *this;
   }
 };
 
@@ -3085,12 +3291,23 @@ public:
     ue_time_zone = {};
     sender_fteid_for_cp = {};
   }
-  gtpv2c_delete_bearer_command(const gtpv2c_delete_bearer_command& i) : bearer_contexts(i.bearer_contexts) {
-    ie_presence_mask = i.ie_presence_mask;
-    uli = i.uli;
-    uli_timestamp = i.uli_timestamp;
-    ue_time_zone = i.ue_time_zone;
-    sender_fteid_for_cp = i.sender_fteid_for_cp;
+  gtpv2c_delete_bearer_command(const gtpv2c_delete_bearer_command& i) :
+    ie_presence_mask(i.ie_presence_mask),
+    bearer_contexts(i.bearer_contexts),
+    uli(i.uli),
+    uli_timestamp(i.uli_timestamp),
+    ue_time_zone(i.ue_time_zone),
+    sender_fteid_for_cp(i.sender_fteid_for_cp) {}
+
+  gtpv2c_delete_bearer_command& operator=(gtpv2c_delete_bearer_command other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(bearer_contexts, other.bearer_contexts);
+    std::swap(uli, other.uli);
+    std::swap(uli_timestamp, other.uli_timestamp);
+    std::swap(ue_time_zone, other.ue_time_zone);
+    std::swap(sender_fteid_for_cp, other.sender_fteid_for_cp);
+    return *this;
   }
   static const char* get_msg_name() {return "DELETE_BEARER_COMMAND";};
 
@@ -3133,7 +3350,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-/** @class gtpv2c_delete_bearer_failure_indication
+/** @class bearer_context_within_delete_bearer_failure_indication
  */
 class bearer_context_within_delete_bearer_failure_indication {
 public:
@@ -3158,7 +3375,23 @@ public:
     if (b.get(eps_bearer_id, 0)) ie_presence_mask |= GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_FAILURE_INDICATION_PR_IE_EPS_BEARER_ID;
     if (b.get(cause, 0)) ie_presence_mask |= GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_FAILURE_INDICATION_PR_IE_CAUSE;
   }
+
+  explicit bearer_context_within_delete_bearer_failure_indication(const bearer_context_within_delete_bearer_failure_indication& b) :
+    ie_presence_mask(b.ie_presence_mask),
+    eps_bearer_id(b.eps_bearer_id),
+    cause(b.cause) {}
+
+  bearer_context_within_delete_bearer_failure_indication& operator=(bearer_context_within_delete_bearer_failure_indication other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(eps_bearer_id, other.eps_bearer_id);
+    std::swap(cause, other.cause);
+    return *this;
+  }
 };
+//-----------------------------------------------------------------------------
+/** @class gtpv2c_delete_bearer_failure_indication
+ */
 class gtpv2c_delete_bearer_failure_indication : public gtpv2c_ies_container {
 public:
   gtpv2c_delete_bearer_failure_indication() : bearer_contexts() {
@@ -3166,11 +3399,21 @@ public:
     cause = {};
     indication_flags = {};
   }
-  gtpv2c_delete_bearer_failure_indication(const gtpv2c_delete_bearer_failure_indication& i) : bearer_contexts(i.bearer_contexts) {
-    ie_presence_mask = i.ie_presence_mask;
-    cause = i.cause;
-    indication_flags = i.indication_flags;
+  explicit gtpv2c_delete_bearer_failure_indication(const gtpv2c_delete_bearer_failure_indication& i) :
+    ie_presence_mask(i.ie_presence_mask),
+    bearer_contexts(i.bearer_contexts),
+    cause(i.cause),
+    indication_flags(i.indication_flags) {}
+
+  gtpv2c_delete_bearer_failure_indication& operator=(gtpv2c_delete_bearer_failure_indication other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(bearer_contexts, other.bearer_contexts);
+    std::swap(cause, other.cause);
+    std::swap(indication_flags, other.indication_flags);
+    return *this;
   }
+
   static const char* get_msg_name() {return "DELETE_BEARER_FAILURE_INDICATION";};
 
   static const uint8_t msg_id = GTP_DELETE_BEARER_FAILURE_INDICATION;
@@ -3224,14 +3467,25 @@ public:
     sender_fteid_for_cp = {};
     indication_flags = {};
   }
-  gtpv2c_downlink_data_notification(const gtpv2c_downlink_data_notification& i) {
-    ie_presence_mask = i.ie_presence_mask;
-    cause = i.cause;
-    eps_bearer_id = i.eps_bearer_id;
-    arp = i.arp;
-    imsi = i.imsi;
-    sender_fteid_for_cp = i.sender_fteid_for_cp;
-    indication_flags = i.indication_flags;
+  gtpv2c_downlink_data_notification(const gtpv2c_downlink_data_notification& i) :
+    ie_presence_mask(i.ie_presence_mask),
+    cause(i.cause),
+    eps_bearer_id(i.eps_bearer_id),
+    arp(i.arp),
+    imsi(i.imsi),
+    sender_fteid_for_cp(i.sender_fteid_for_cp),
+    indication_flags(i.indication_flags) {}
+
+  gtpv2c_downlink_data_notification& operator=(gtpv2c_downlink_data_notification other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(cause, other.cause);
+    std::swap(eps_bearer_id, other.eps_bearer_id);
+    std::swap(arp, other.arp);
+    std::swap(imsi, other.imsi);
+    std::swap(sender_fteid_for_cp, other.sender_fteid_for_cp);
+    std::swap(indication_flags, other.indication_flags);
+    return *this;
   }
   static const char* get_msg_name() {return "DOWNLINK_DATA_NOTIFICATION";};
 
@@ -3277,11 +3531,19 @@ public:
     cause = {};
     imsi = {};
   }
-  gtpv2c_downlink_data_notification_acknowledge(const gtpv2c_downlink_data_notification_acknowledge& i) {
-    ie_presence_mask = i.ie_presence_mask;
-    cause = i.cause;
-    imsi = i.imsi;
+  gtpv2c_downlink_data_notification_acknowledge(const gtpv2c_downlink_data_notification_acknowledge& i) :
+    ie_presence_mask(i.ie_presence_mask),
+    cause(i.cause),
+    imsi(i.imsi) {}
+
+  gtpv2c_downlink_data_notification_acknowledge& operator=(gtpv2c_downlink_data_notification_acknowledge other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(cause, other.cause);
+    std::swap(imsi, other.imsi);
+    return *this;
   }
+
   static const char* get_msg_name() {return "DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE";};
 
 #define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE                                 ((uint64_t)1)
@@ -3320,15 +3582,25 @@ public:
     cause(),
     originating_node(),
     imsi() {}
-  
+
   gtpv2c_downlink_data_notification_failure_indication(const gtpv2c_downlink_data_notification_failure_indication& i) :
     ie_presence_mask(i.ie_presence_mask),
     cause(i.cause),
     originating_node(i.originating_node),
     imsi(i.imsi) {}
 
+  gtpv2c_downlink_data_notification_failure_indication& operator=(gtpv2c_downlink_data_notification_failure_indication other)
+  {
+    std::swap(ie_presence_mask, other.ie_presence_mask);
+    std::swap(cause, other.cause);
+    std::swap(originating_node, other.originating_node);
+    std::swap(imsi, other.imsi);
+    return *this;
+  }
+
   static const char* get_msg_name() {return "DOWNLINK_DATA_NOTIFICATION_FAILURE_INDICATION";};
 
+  uint64_t            ie_presence_mask;
   core::cause_t         cause;
   core::node_type_t     originating_node;
   core::imsi_t          imsi;
@@ -3338,7 +3610,6 @@ public:
 #define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_IMSI                 ((uint64_t)1 << 2)
 #define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_PRIVATE_EXTENSION    ((uint64_t)1 << 3)
   static const uint8_t msg_id = GTP_DOWNLINK_DATA_NOTIFICATION_FAILURE_INDICATION;
-  uint64_t            ie_presence_mask;
 
   void set(const core::cause_t& v, const uint8_t instance = 0) {cause = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_CAUSE;}
   void set(const core::node_type_t& v, const uint8_t instance = 0) {originating_node = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_ORIGINATING_NODE;}
