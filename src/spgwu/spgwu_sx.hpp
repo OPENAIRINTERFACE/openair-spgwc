@@ -50,7 +50,7 @@ private:
   std::thread                          thread;
 
   uint64_t                             recovery_time_stamp; //timestamp in seconds
-  core::pfcp::up_function_features_t   up_function_features;
+  core::pfcp::up_function_features_s   up_function_features;
 
   void start_association(const core::pfcp::node_id_t& node_id);
 
@@ -92,7 +92,7 @@ public:
   void send_sx_msg (core::itti::itti_sxab_session_report_request& s) {};
 
   void send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const oai::cn::proto::pfcp::pfcp_session_report_request& s);
-  
+
   void send_heartbeat_request(std::shared_ptr<pfcp_association>& a);
   void send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id);
 
