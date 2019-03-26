@@ -144,7 +144,6 @@ class gtpu_l4_stack {
 #define GTPV1U_PROC_TIME_OUT_MS          ((GTPV1U_T3_RESPONSE_MS) * (GTPV1U_N3_REQUESTS + 1))
 
 protected:
-  static uint64_t                   gtpu_tx_id_generator;
   uint32_t                          id;
   udp_server                        udp_s;
 
@@ -171,9 +170,7 @@ public:
   void send_g_pdu(const struct sockaddr_in& peer_addr, const teid_t teid, const char* payload, const ssize_t payload_len);
   void send_g_pdu(const struct sockaddr_in6& peer_addr, const teid_t teid, const char* payload, const ssize_t payload_len);
 
-  //virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv1u_create_session_request& gtp_ies, const core::itti::task_id_t& task_id, const uint64_t gtp_tx_id);
-  //virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv1u_create_session_response& gtp_ies, const uint64_t gtp_tx_id);
-  //virtual uint32_t send_gpdu(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv1u_create_session_request& gtp_ies, const core::itti::task_id_t& task_id, const uint64_t gtp_tx_id);
+  void send_response(const gtpv1u_echo_response& gtp_ies);
 
 };
 } // namespace gtpv1u

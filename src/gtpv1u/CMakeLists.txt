@@ -19,6 +19,7 @@
 #      contact@openairinterface.org
 ################################################################################
 add_library(GTPV1U STATIC
+    3gpp_29.281.cpp
     gtpv1u.cpp
     )
 

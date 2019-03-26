@@ -43,12 +43,12 @@ using namespace std;
 
 // C includes
 
-spgwu_sx   *spgwu_sx_inst = nullptr;
+spgwu_sx    *spgwu_sx_inst = nullptr;
 spgwu_s1u   *spgwu_s1u_inst = nullptr;
 
-extern itti_mw *itti_inst;
+extern itti_mw     *itti_inst;
 extern pfcp_switch *pfcp_switch_inst;
-extern spgwu_app *spgwu_app_inst;
+extern spgwu_app   *spgwu_app_inst;
 extern spgwu_config spgwu_cfg;
 
 
@@ -64,6 +64,10 @@ void spgwu_app_task (void *args_p)
     std::shared_ptr<itti_msg> shared_msg = itti_inst->receive_msg(task_id);
     auto *msg = shared_msg.get();
     switch (msg->msg_type) {
+
+    case S1U_ECHO_REQUEST:
+      spgwu_app_inst->handle_itti_msg(std::static_pointer_cast<itti_s1u_echo_request>(shared_msg));
+      break;
 
     case SXAB_SESSION_ESTABLISHMENT_REQUEST:
       spgwu_app_inst->handle_itti_msg(std::static_pointer_cast<itti_sxab_session_establishment_request>(shared_msg));
@@ -111,13 +115,6 @@ spgwu_app::spgwu_app (const std::string& config_file)
   spgwu_cfg.execute();
   spgwu_cfg.display();
 
-//  teid_s11_cp = 0;
-//  teid_s5s8_cp = 0;
-//  teid_s5s8_up = 0;
-//  imsi2sgwu_eps_bearer_context = {};
-//  s11lteid2sgwu_eps_bearer_context = {};
-//  s5s8lteid2sgwu_contexts = {};
-//  s5s8uplteid = {};
   if (itti_inst->create_task(TASK_SPGWU_APP, spgwu_app_task, nullptr) ) {
     Logger::spgwu_app().error( "Cannot create task TASK_SPGWU_APP" );
     throw std::runtime_error( "Cannot create task TASK_SPGWU_APP" );
@@ -149,9 +146,27 @@ spgwu_app::~spgwu_app()
   if (spgwu_sx_inst) delete spgwu_sx_inst;
 }
 //------------------------------------------------------------------------------
+void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_request> m)
+{
+  Logger::spgwu_app().debug("Received %s ", m->get_msg_name());
+  itti_s1u_echo_response *s1u_resp = new itti_s1u_echo_response(TASK_SPGWU_APP, TASK_SPGWU_S1U);
+
+  // May insert a call to a function here(throttle for example)
+  s1u_resp->gtp_ies.r_endpoint = m->gtp_ies.r_endpoint;
+  s1u_resp->gtp_ies.r_endpoint_addr_len = m->gtp_ies.r_endpoint_addr_len;
+  s1u_resp->gtp_ies.teid = m->gtp_ies.teid;
+  s1u_resp->gtp_ies.sequence_number = m->gtp_ies.sequence_number;
+
+  std::shared_ptr<itti_s1u_echo_response> msg = std::shared_ptr<itti_s1u_echo_response>(s1u_resp);
+  int ret = itti_inst->send_msg(msg);
+  if (RETURNok != ret) {
+    Logger::spgwu_app().error( "Could not send ITTI message %s to task TASK_SPGWU_S1U", s1u_resp->get_msg_name());
+  }
+}
+//------------------------------------------------------------------------------
 void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_establishment_request> m)
 {
-  Logger::spgwu_sx().info("Received SXAB_SESSION_ESTABLISHMENT_REQUEST seid " SEID_FMT " ", m->seid);
+  Logger::spgwu_app().info("Received SXAB_SESSION_ESTABLISHMENT_REQUEST seid " SEID_FMT " ", m->seid);
   itti_sxab_session_establishment_response *sx_resp = new itti_sxab_session_establishment_response(TASK_SPGWU_APP, TASK_SPGWU_SX);
   pfcp_switch_inst->handle_pfcp_session_establishment_request(m, sx_resp);
 
@@ -172,7 +187,7 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_e
 //------------------------------------------------------------------------------
 void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_modification_request> m)
 {
-  Logger::spgwu_sx().info("Received SXAB_SESSION_MODIFICATION_REQUEST seid " SEID_FMT " ", m->seid);
+  Logger::spgwu_app().info("Received SXAB_SESSION_MODIFICATION_REQUEST seid " SEID_FMT " ", m->seid);
   itti_sxab_session_modification_response *sx_resp = new itti_sxab_session_modification_response(TASK_SPGWU_APP, TASK_SPGWU_SX);
   pfcp_switch_inst->handle_pfcp_session_modification_request(m, sx_resp);
 
@@ -188,7 +203,7 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_m
 //------------------------------------------------------------------------------
 void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_deletion_request> m)
 {
-  Logger::spgwu_sx().info("Received SXAB_SESSION_DELETION_REQUEST seid " SEID_FMT " ", m->seid);
+  Logger::spgwu_app().info("Received SXAB_SESSION_DELETION_REQUEST seid " SEID_FMT " ", m->seid);
   itti_sxab_session_deletion_response *sx_resp = new itti_sxab_session_deletion_response(TASK_SPGWU_APP, TASK_SPGWU_SX);
   pfcp_switch_inst->handle_pfcp_session_deletion_request(m, sx_resp);
 

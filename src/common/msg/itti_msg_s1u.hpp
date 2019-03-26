@@ -40,47 +40,20 @@ namespace oai::cn::core::itti {
 class itti_s1u_msg : public itti_msg {
 public:
   itti_s1u_msg(const itti_msg_type_t  msg_type, const task_id_t orig, const task_id_t dest):
-    itti_msg(msg_type, orig, dest) {
-    l_endpoint = {};
-    l_endpoint_addr_len = sizeof(l_endpoint);
-    r_endpoint = {};
-    r_endpoint_addr_len = sizeof(r_endpoint);
-    teid = UNASSIGNED_TEID;
-    gtpu_tx_id = 0;
-  }
+    itti_msg(msg_type, orig, dest) {}
 
   itti_s1u_msg& operator=(itti_s1u_msg other)
   {
     this->itti_msg::operator=(other);
-    std::swap(l_endpoint, other.l_endpoint);
-    std::swap(l_endpoint_addr_len, other.l_endpoint_addr_len);
-    std::swap(r_endpoint, other.r_endpoint);
-    std::swap(r_endpoint_addr_len, other.r_endpoint_addr_len);
-    std::swap(teid, other.teid);
-    std::swap(gtpu_tx_id, other.gtpu_tx_id);
     return *this;
   }
 
-  itti_s1u_msg(const itti_s1u_msg& i) : itti_msg(i)  {
-    l_endpoint = i.l_endpoint;
-    l_endpoint_addr_len = i.l_endpoint_addr_len;
-    r_endpoint = i.r_endpoint;
-    r_endpoint_addr_len = i.r_endpoint_addr_len;
-    teid = i.teid;
-    gtpu_tx_id = i.gtpu_tx_id;
-  }
+  itti_s1u_msg(const itti_s1u_msg& i) : itti_msg(i)  {}
 
   itti_s1u_msg(const itti_s1u_msg& i, const task_id_t orig, const task_id_t dest) : itti_s1u_msg(i)  {
     origin = orig;
     destination = dest;
   }
-
-  struct sockaddr_storage l_endpoint;
-  socklen_t               l_endpoint_addr_len;
-  struct sockaddr_storage r_endpoint;
-  socklen_t               r_endpoint_addr_len;
-  teid_t                  teid;
-  uint64_t                gtpu_tx_id;
 };
 //------------------------------------------------------------------------------
 class itti_s1u_echo_request : public itti_s1u_msg {
@@ -101,7 +74,7 @@ public:
     itti_s1u_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
   }
-  const char* get_msg_name() {return typeid(itti_s1u_echo_request).name();};
+  const char* get_msg_name() {return "S1U_ECHO_REQUEST";};
 
   proto::gtpv1u::gtpv1u_echo_request gtp_ies;
 };
@@ -124,7 +97,7 @@ public:
     itti_s1u_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
   }
-  const char* get_msg_name() {return typeid(itti_s1u_echo_response).name();};
+  const char* get_msg_name() {return "S1U_ECHO_RESPONSE";};
 
   proto::gtpv1u::gtpv1u_echo_response gtp_ies;
 };
@@ -147,7 +120,7 @@ public:
     itti_s1u_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
   }
-  const char* get_msg_name() {return typeid(itti_s1u_error_indication).name();};
+  const char* get_msg_name() {return "S1U_ERROR_INDICATION";};
 
   proto::gtpv1u::gtpv1u_error_indication gtp_ies;
 };
@@ -170,7 +143,7 @@ public:
     itti_s1u_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
   }
-  const char* get_msg_name() {return typeid(itti_s1u_supported_extension_headers_notification).name();};
+  const char* get_msg_name() {return "S1U_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION";};
 
   proto::gtpv1u::gtpv1u_supported_extension_headers_notification gtp_ies;
 };
@@ -195,7 +168,7 @@ public:
     itti_s1u_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
   }
-  const char* get_msg_name() {return typeid(itti_s1u_end_marker).name();};
+  const char* get_msg_name() {return "S1U_END_MARKER";};
 
   proto::gtpv1u::gtpv1u_end_marker gtp_ies;
 };

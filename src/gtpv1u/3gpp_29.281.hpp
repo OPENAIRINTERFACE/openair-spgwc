@@ -38,6 +38,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <sys/socket.h>
 
 #include "3gpp_29.281.h"
 #include "msg_gtpv1u.hpp"
@@ -108,8 +109,8 @@ public:
 
   explicit gtpv1u_ie(const gtpv1u_tlv& t) :
     tlv(t) {}
-    
-  explicit gtpv1u_ie(const uint8_t tlv_type) : 
+
+  explicit gtpv1u_ie(const uint8_t tlv_type) :
     tlv() {
     tlv.type = tlv_type;
   }
@@ -194,19 +195,19 @@ private:
   // GTP-PDU.
   uint8_t                         next_extension_header_type;
 
-    
+  bool has_teid_;
 public:
 
   gtpv1u_msg_header() {
     u1.b = 0;
     message_type = 0;
-    message_length = GTPV1U_MSG_HEADER_MIN_SIZE; //
+    message_length = 0; //
     teid = 0;
     sequence_number = 0;
     npdu_number = 0;
     next_extension_header_type = 0;
-
     u1.bf.version = 1;
+    u1.bf.pt = 1;
   }
 
   gtpv1u_msg_header(const gtpv1u_msg_header& h) {
@@ -217,6 +218,7 @@ public:
     sequence_number = h.sequence_number;
     npdu_number = h.npdu_number;
     next_extension_header_type = h.next_extension_header_type;
+    has_teid_ = h.has_teid_;
   }
 
   gtpv1u_msg_header& operator=(gtpv1u_msg_header other)
@@ -232,12 +234,23 @@ public:
   }
 
   void set_teid(const uint32_t& tid) {
-   teid = tid;
+    teid = tid;
   }
-  
 
   uint32_t get_teid() const {
     return teid;
+  }
+
+  bool get_sequence_number(uint16_t& vsequence_number) const {
+    if (u1.bf.s) { // if inter rat then check in more details
+      vsequence_number = sequence_number;
+      return true;
+    }
+    // if (...) {
+    //   vsequence_number = 0;
+    //  return true;
+    // }
+    return false;
   }
 
   void set_message_type(const uint8_t& t) {
@@ -256,8 +269,19 @@ public:
     return message_length;
   }
 
+  // get payload length without extra header length
+  uint16_t get_message_length_wo_xheader() const {
+    uint16_t ml = message_length;
+    if (u1.bf.s) {
+      ml -= sizeof(sequence_number);
+    }
+    return ml;
+  }
+
   void set_sequence_number(const uint16_t& s) {
+    message_length += sizeof(sequence_number);
     sequence_number = s;
+    u1.bf.s = 1;
   }
 
   uint16_t get_sequence_number() const {
@@ -274,9 +298,11 @@ public:
     auto be_teid = htobe32(teid);
     os.write(reinterpret_cast<const char*>(&be_teid), sizeof(be_teid));
 
-    if (u1.b & 0x07) {
+    if (u1.bf.s) {
       auto be_sequence_number = htobe16(sequence_number);
       os.write(reinterpret_cast<const char*>(&be_sequence_number), sizeof(be_sequence_number));
+    }
+    if (u1.b & 0x05) {
       os.write(reinterpret_cast<const char*>(&npdu_number), sizeof(npdu_number));
       os.write(reinterpret_cast<const char*>(&next_extension_header_type), sizeof(next_extension_header_type));
     }
@@ -287,9 +313,24 @@ public:
     is.read(reinterpret_cast<char*>(&message_type), sizeof(message_type));
     is.read(reinterpret_cast<char*>(&message_length), sizeof(message_length));
     message_length = be16toh(message_length);
-    if (u1.b & 0x07) {
+    is.read(reinterpret_cast<char*>(&teid), sizeof(teid));
+    teid = be32toh(teid);
+//     if (message_length >= sizeof(teid)){
+//       switch (message_type) {
+//         case GTPU_ECHO_REQUEST:
+//         case GTPU_ECHO_RESPONSE:
+//         case GTPU_ERROR_INDICATION:
+//         case GTPU_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION:
+//           break;
+//         default:;
+//       }
+//     }
+    if (u1.bf.s) {
       is.read(reinterpret_cast<char*>(&sequence_number), sizeof(sequence_number));
       sequence_number = be16toh(sequence_number);
+    }
+
+    if (u1.b & 0x05) {
       is.read(reinterpret_cast<char*>(&npdu_number), sizeof(npdu_number));
       is.read(reinterpret_cast<char*>(&next_extension_header_type), sizeof(next_extension_header_type));
     }
@@ -299,25 +340,27 @@ public:
 class gtpv1u_msg : public gtpv1u_msg_header
 {
 public:
-  uint16_t remote_port;
-    
+  struct sockaddr_storage r_endpoint;
+  socklen_t               r_endpoint_addr_len;
+
   std::vector<std::shared_ptr<gtpv1u_ie>>         ies;
 
-  gtpv1u_msg() : gtpv1u_msg_header(), remote_port(0), ies() {}
-  
-  gtpv1u_msg(const gtpv1u_msg& m) : gtpv1u_msg_header(m), 
-    remote_port(m.remote_port),
+  gtpv1u_msg() : gtpv1u_msg_header(), r_endpoint(), r_endpoint_addr_len(0), ies() {}
+
+  gtpv1u_msg(const gtpv1u_msg& m) : gtpv1u_msg_header(m),
+    r_endpoint(m.r_endpoint),
+    r_endpoint_addr_len(m.r_endpoint_addr_len),
     ies(m.ies) {}
-    
+
   gtpv1u_msg& operator=(gtpv1u_msg other)
   {
-    std::swap(remote_port, other.remote_port);
+    std::swap(r_endpoint, other.r_endpoint);
+    std::swap(r_endpoint_addr_len, other.r_endpoint_addr_len);
     std::swap(ies, other.ies);
     return *this;
-  }    
+  }
 
-  explicit gtpv1u_msg(const gtpv1u_msg_header& hdr) : gtpv1u_msg_header(hdr), remote_port(0), ies() {}
-
+  explicit gtpv1u_msg(const gtpv1u_msg_header& hdr) : gtpv1u_msg_header(hdr), r_endpoint(), r_endpoint_addr_len(0), ies() {}
   explicit gtpv1u_msg(const gtpv1u_echo_request& gtp_ies);
   explicit gtpv1u_msg(const gtpv1u_echo_response& gtp_ies);
   explicit gtpv1u_msg(const gtpv1u_error_indication& gtp_ies);
@@ -333,7 +376,7 @@ public:
     //std::cout << std::dec<< " add_ie   = " << get_message_length() << " -> "<< get_message_length() + gtpv1u_tlv::tlv_ie_length + ie.get()->tlv.get_length() << std::endl;
     set_message_length(get_message_length() + gtpv1u_tlv::tlv_ie_length + ie.get()->tlv.get_length());
   }
-  
+
   void to_core_type(gtpv1u_echo_request& s) {
     for (auto i : ies) {
       i.get()->to_core_type(s);
@@ -359,7 +402,7 @@ public:
       i.get()->to_core_type(s);
     }
   }
-  
+
   void dump_to(std::ostream& os)  {
     gtpv1u_msg_header::dump_to(os);
     for (auto i : ies) {
@@ -369,7 +412,7 @@ public:
   void load_from(std::istream& is) {
     gtpv1u_msg_header::load_from(is);
 
-    uint16_t check_msg_length = get_message_length(); // total length of message - fixed part of the gtpu header (GTPV1U_MSG_HEADER_MIN_SIZE)
+    uint16_t check_msg_length = get_message_length_wo_xheader(); // total length of message - fixed part of the gtpu header (GTPV1U_MSG_HEADER_MIN_SIZE)
     gtpv1u_ie * ie = nullptr;
     uint16_t ies_length = 0;
     //std::cout << std::dec<< " check_msg_length  = " << check_msg_length << std::endl;
@@ -382,7 +425,7 @@ public:
       }
     } while((ie) && (ies_length < check_msg_length));
 
-    if (ies_length != check_msg_length) {
+    if (ies_length > check_msg_length) { // should be <= (padding)
       //std::cout << " check_msg_length  = " << check_msg_length << " ies_length  = " << ies_length << std::endl;
       throw gtpu_msg_bad_length_exception(get_message_type(), get_message_length());
     }
@@ -441,7 +484,7 @@ public:
     //tlv.load_from(is);
     is.read(reinterpret_cast<char*>(&restart_counter), sizeof(restart_counter));
   }
-  
+
   void to_core_type(gtpv1u_ies_container& s) {
       core::recovery_t v = {};
       to_core_type(v);
@@ -576,7 +619,7 @@ public:
     tlv.set_length(sizeof(extension_identifier) + extension_value.size());
   }
   //--------
-  gtpv1u_private_extension_ie() : gtpv1u_ie(GTPU_IE_PRIVATE_EXTENSION), 
+  gtpv1u_private_extension_ie() : gtpv1u_ie(GTPU_IE_PRIVATE_EXTENSION),
     extension_identifier(0),
     extension_value()
   {

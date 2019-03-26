@@ -25,6 +25,7 @@
   \email: lionel.gauthier@eurecom.fr
 */
 
+#include "common_root_types.h"
 #include "gtpu.h"
 #include "gtpv1u.hpp"
 
@@ -36,8 +37,6 @@ using namespace oai::cn::core::itti;
 using namespace std;
 
 extern itti_mw *itti_inst;
-
-uint64_t oai::cn::proto::gtpv1u::gtpu_l4_stack::gtpu_tx_id_generator = 1; //odd in any case.
 
 //------------------------------------------------------------------------------
 static std::string string_to_hex(const std::string& input)
@@ -61,7 +60,7 @@ void udp_server::udp_read_loop(int cpu)
   socklen_t                               r_endpoint_addr_len = 0;
   struct sockaddr_storage                 r_endpoint = {};
   size_t                                  bytes_received = 0;
-  
+
   if (cpu) {
     cpu_set_t cpuset;
     CPU_SET(cpu,&cpuset);
@@ -71,9 +70,9 @@ void udp_server::udp_read_loop(int cpu)
   struct sched_param sparam;
   memset(&sparam, 0, sizeof(sparam));
   sparam.sched_priority = sched_get_priority_max(SCHED_FIFO);
-  policy = SCHED_FIFO ; 
+  policy = SCHED_FIFO ;
   pthread_setschedparam(pthread_self(), policy, &sparam);
-  
+
   while (1) {
     r_endpoint_addr_len = sizeof(struct sockaddr_storage);
     if ((bytes_received = recvfrom (socket_, recv_buffer_, UDP_RECV_BUFFER_SIZE, 0, (struct sockaddr *)&r_endpoint, &r_endpoint_addr_len)) > 0) {
@@ -311,4 +310,33 @@ void gtpu_l4_stack::send_g_pdu(const struct sockaddr_in6& peer_addr, const teid_
   gtpuhdr->teid = htobe32(teid);
   udp_s.async_send_to(reinterpret_cast<const char*>(gtpuhdr), payload_len + sizeof(struct gtpuhdr), peer_addr);
 }
-
+//------------------------------------------------------------------------------
+void gtpu_l4_stack::send_response(const gtpv1u_echo_response& gtp_ies)
+{
+  std::ostringstream oss(std::ostringstream::binary);
+  gtpv1u_msg msg(gtp_ies);
+  uint32_t teid = UNASSIGNED_TEID;
+  if (gtp_ies.get_teid(teid)) {
+    msg.set_teid(teid);
+  }
+  uint16_t sn = 0;
+  if (gtp_ies.get_sequence_number(sn)) {
+    msg.set_sequence_number(sn);
+  }
+  msg.dump_to(oss);
+  std::string bstream = oss.str();
+  switch (gtp_ies.r_endpoint.ss_family) {
+    case AF_INET: {
+      const struct sockaddr_in * const sin = reinterpret_cast<const sockaddr_in* const>(&gtp_ies.r_endpoint);
+      udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), *sin);
+    }
+    break;
+    case AF_INET6: {
+      const struct sockaddr_in6 * const sin6 = reinterpret_cast<const sockaddr_in6* const>(&gtp_ies.r_endpoint);
+      udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), *sin6);
+    }
+    break;
+    default:
+      Logger::gtpv1_u().debug( "gtpu_l4_stack::send_response %s, no known peer addr", gtp_ies.get_msg_name());
+  }
+}
