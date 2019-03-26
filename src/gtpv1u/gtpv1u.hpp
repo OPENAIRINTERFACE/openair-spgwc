@@ -171,6 +171,7 @@ public:
   void send_g_pdu(const struct sockaddr_in6& peer_addr, const teid_t teid, const char* payload, const ssize_t payload_len);
 
   void send_response(const gtpv1u_echo_response& gtp_ies);
+  void send_indication(const gtpv1u_error_indication& gtp_ies);
 
 };
 } // namespace gtpv1u

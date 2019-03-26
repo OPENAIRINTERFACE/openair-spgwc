@@ -469,18 +469,18 @@ public:
     if (has_teid()) check_msg_length -= 4;
     gtpv2c_ie * ie = nullptr;
     uint16_t ies_length = 0;
-    std::cout << std::dec<< " check_msg_length  = " << check_msg_length << std::endl;
+    //std::cout << std::dec<< " check_msg_length  = " << check_msg_length << std::endl;
     do {
       ie = gtpv2c_ie::new_gtpv2c_ie_from_stream(is);
       if (ie) {
         ies_length += (gtpv2c_tlv::tlv_ie_length + ie->tlv.get_length());
         ies.push_back(std::shared_ptr<gtpv2c_ie>(ie));
-        std::cout << std::dec << " ies length  = " << ies_length << " IE length = " << ie->tlv.get_length() << std::endl;
+        //std::cout << std::dec << " ies length  = " << ies_length << " IE length = " << ie->tlv.get_length() << std::endl;
       }
     } while((ie) && (ies_length < check_msg_length));
 
     if (ies_length != check_msg_length) {
-      std::cout << " check_msg_length  = " << check_msg_length << " ies_length  = " << ies_length << std::endl;
+      //std::cout << " check_msg_length  = " << check_msg_length << " ies_length  = " << ies_length << std::endl;
       throw gtpc_msg_bad_length_exception(get_message_type(), get_message_length());
     }
   }

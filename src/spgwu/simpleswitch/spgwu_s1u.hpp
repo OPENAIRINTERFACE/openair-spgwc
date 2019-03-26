@@ -54,7 +54,7 @@ public:
 
   //void handle_itti_msg (oai::cn::core::itti::itti_s1u_echo_request& s) {};
   void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_s1u_echo_response> m);
-  //void handle_itti_msg (oai::cn::core::itti::itti_s1u_error_indication& s) {};
+  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_s1u_error_indication> m);
   //void handle_itti_msg (oai::cn::core::itti::itti_s1u_supported_extension_headers_notification& s) {};
   //void handle_itti_msg (oai::cn::core::itti::itti_s1u_end_marker& s) {};
 
@@ -71,6 +71,7 @@ public:
   void send_g_pdu(const struct in6_addr& peer_addr, const uint16_t peer_udp_port, const uint32_t tunnel_id, const char* send_buffer, const ssize_t num_bytes);
 
   void time_out_itti_event(const uint32_t timer_id);
+  void report_error_indication(const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
 };
 }
 #endif /* FILE_SGWU_S1U_HPP_SEEN */

@@ -31,6 +31,7 @@
 #include "3gpp_23.003.h"
 #include "3gpp_24.008.h"
 #include "3gpp_29.274.h"
+#include "3gpp_29.281.h"
 #include "3gpp_29.244.h"
 
 #ifdef __cplusplus
@@ -421,8 +422,10 @@ do { \
 #endif
 
 void paa_to_pfcp_ue_ip_address(const oai::cn::core::paa_t& paa, oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address);
-void pdn_ip_to_pfcp_ue_ip_address(const oai::cn::core::pdn_type_t& pdn_type, 
+void pdn_ip_to_pfcp_ue_ip_address(const oai::cn::core::pdn_type_t& pdn_type,
                                   const struct in_addr&  ipv4_address,
-                                  const struct in6_addr ipv6_address, 
+                                  const struct in6_addr ipv6_address,
                                   oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address);
+bool sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, oai::cn::core::gtp_u_peer_address_t& peer_address);
+
 #endif /* FILE_CONVERSIONS_HPP_SEEN */
