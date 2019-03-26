@@ -340,3 +340,33 @@ void gtpu_l4_stack::send_response(const gtpv1u_echo_response& gtp_ies)
       Logger::gtpv1_u().debug( "gtpu_l4_stack::send_response %s, no known peer addr", gtp_ies.get_msg_name());
   }
 }
+//------------------------------------------------------------------------------
+void gtpu_l4_stack::send_indication(const gtpv1u_error_indication& gtp_ies)
+{
+  std::ostringstream oss(std::ostringstream::binary);
+  gtpv1u_msg msg(gtp_ies);
+  uint32_t teid = UNASSIGNED_TEID;
+  if (gtp_ies.get_teid(teid)) {
+    msg.set_teid(teid);
+  }
+  uint16_t sn = 0;
+  if (gtp_ies.get_sequence_number(sn)) {
+    msg.set_sequence_number(sn);
+  }
+  msg.dump_to(oss);
+  std::string bstream = oss.str();
+  switch (gtp_ies.r_endpoint.ss_family) {
+    case AF_INET: {
+      const struct sockaddr_in * const sin = reinterpret_cast<const sockaddr_in* const>(&gtp_ies.r_endpoint);
+      udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), *sin);
+    }
+    break;
+    case AF_INET6: {
+      const struct sockaddr_in6 * const sin6 = reinterpret_cast<const sockaddr_in6* const>(&gtp_ies.r_endpoint);
+      udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), *sin6);
+    }
+    break;
+    default:
+      Logger::gtpv1_u().debug( "gtpu_l4_stack::send_indication %s, no known peer addr", gtp_ies.get_msg_name());
+  }
+}

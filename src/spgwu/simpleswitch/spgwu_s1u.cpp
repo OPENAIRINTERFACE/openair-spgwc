@@ -27,6 +27,7 @@
 */
 
 #include "common_defs.h"
+#include "conversions.hpp"
 #include "gtpu.h"
 #include "itti.hpp"
 #include "logger.hpp"
@@ -63,6 +64,10 @@ void spgwu_s1u_task (void *args_p)
 
     case S1U_ECHO_RESPONSE:
       spgwu_s1u_inst->handle_itti_msg(std::static_pointer_cast<itti_s1u_echo_response>(shared_msg));
+      break;
+
+    case S1U_ERROR_INDICATION:
+      spgwu_s1u_inst->handle_itti_msg(std::static_pointer_cast<itti_s1u_error_indication>(shared_msg));
       break;
 
     case TIME_OUT:
@@ -210,5 +215,37 @@ void spgwu_s1u::handle_receive_echo_request(gtpv1u_msg& msg, const struct sockad
 void spgwu_s1u::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_response> m)
 {
   send_response(m->gtp_ies);
+}
+//------------------------------------------------------------------------------
+void spgwu_s1u::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_error_indication> m)
+{
+  send_indication(m->gtp_ies);
+}
+//------------------------------------------------------------------------------
+void spgwu_s1u::report_error_indication(const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id)
+{
+  itti_s1u_error_indication *error_ind = new itti_s1u_error_indication(TASK_SPGWU_S1U, TASK_SPGWU_S1U);
+  error_ind->gtp_ies.r_endpoint = r_endpoint;
+  error_ind->gtp_ies.r_endpoint_addr_len = r_endpoint_addr_len;
+  error_ind->gtp_ies.set_teid(0);
+
+  core::tunnel_endpoint_identifier_data_i_t tun_data = {};
+  tun_data.tunnel_endpoint_identifier_data_i = tunnel_id;
+  error_ind->gtp_ies.set(tun_data);
+
+  core::gtp_u_peer_address_t peer_address = {};
+  if (sockaddr_storage_to_gtp_u_peer_address(r_endpoint, peer_address)) {
+    error_ind->gtp_ies.set(peer_address);
+  } else {
+    // mandatory ie
+    free(error_ind);
+    return;
+  }
+
+  std::shared_ptr<itti_s1u_error_indication> serror_ind = std::shared_ptr<itti_s1u_error_indication>(error_ind);
+  int ret = itti_inst->send_msg(serror_ind);
+  if (RETURNok != ret) {
+    Logger::spgwu_s1u().error( "Could not send ITTI message %s to task TASK_SPGWU_S1U", error_ind->get_msg_name());
+  }
 }
 
