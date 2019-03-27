@@ -96,7 +96,7 @@ int spgwu_config::get_pfcp_fseid(oai::cn::core::pfcp::fseid_t& fseid)
   return rc;
 }
 //------------------------------------------------------------------------------
-int spgwu_config::load_thread_sched_params(const Setting& thread_sched_params_cfg, thread_sched_params_t& cfg)
+int spgwu_config::load_thread_sched_params(const Setting& thread_sched_params_cfg, oai::cn::util::thread_sched_params& cfg)
 {
 
   thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
@@ -127,14 +127,21 @@ int spgwu_config::load_thread_sched_params(const Setting& thread_sched_params_cf
 //------------------------------------------------------------------------------
 int spgwu_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
 {
-  const Setting& sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SCHED_PARAMS];
-  load_thread_sched_params(sched_params_cfg, cfg.core_sched_params);
+  const Setting& sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
+  load_thread_sched_params(sched_params_cfg, cfg.itti_timer_sched_params);
 
   const Setting& s1u_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS];
   load_thread_sched_params(s1u_sched_params_cfg, cfg.s1u_sched_params);
 
   const Setting& sx_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
   load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+
+  const Setting& spgwu_app_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
+  load_thread_sched_params(spgwu_app_sched_params_cfg, cfg.spgwu_app_sched_params);
+
+  const Setting& async_cmd_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
+  load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
+
   return RETURNok;
 }
 
@@ -208,7 +215,7 @@ int spgwu_config::load(const string& config_file)
     spgwu_cfg.lookupValue(SPGWU_CONFIG_STRING_PID_DIRECTORY, pid_dir);
     util::trim(pid_dir);
 
-    const Setting& itti_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_ITTI];
+    const Setting& itti_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_ITTI_TASKS];
     load_itti(itti_cfg, itti);
 
     const Setting& nw_if_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_INTERFACES];
@@ -325,24 +332,57 @@ void spgwu_config::display ()
   Logger::spgwu_app().info( "Configuration:");
   Logger::spgwu_app().info( "- Instance ..............: %d", instance);
   Logger::spgwu_app().info( "- PID dir ...............: %s", pid_dir.c_str());
-  Logger::spgwu_app().info( "-S1u_S12_S4:");
+  Logger::spgwu_app().info( "- ITTI tasks:");
+  Logger::spgwu_app().info( "    ITTI Timer task:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", itti.itti_timer_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", itti.itti_timer_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", itti.itti_timer_sched_params.sched_priority);
+  Logger::spgwu_app().info( "    SPGWU-S1U task:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", itti.s1u_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", itti.s1u_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", itti.s1u_sched_params.sched_priority);
+  Logger::spgwu_app().info( "    SPGWU-SX task:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", itti.sx_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", itti.sx_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", itti.sx_sched_params.sched_priority);
+  Logger::spgwu_app().info( "    SPGWU_APP task:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", itti.spgwu_app_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", itti.spgwu_app_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", itti.spgwu_app_sched_params.sched_priority);
+  Logger::spgwu_app().info( "    ASYNC_SHELL_CMD task:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", itti.async_cmd_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", itti.async_cmd_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", itti.async_cmd_sched_params.sched_priority);
+  Logger::spgwu_app().info( "- S1u_S12_S4:");
   Logger::spgwu_app().info( "    iface ............: %s", s1_up.if_name.c_str());
   Logger::spgwu_app().info( "    ipv4.addr ........: %s", inet_ntoa (s1_up.addr4));
   Logger::spgwu_app().info( "    ipv4.mask ........: %s", inet_ntoa (s1_up.network4));
   Logger::spgwu_app().info( "    mtu ..............: %d", s1_up.mtu);
   Logger::spgwu_app().info( "    port .............: %d", s1_up.port);
+  Logger::spgwu_app().info( "    Reader thread:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", s1_up.thread_rd_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", s1_up.thread_rd_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", s1_up.thread_rd_sched_params.sched_priority);
   Logger::spgwu_app().info( "- SXA-SXB:");
   Logger::spgwu_app().info( "    iface ............: %s", sx.if_name.c_str());
   Logger::spgwu_app().info( "    ipv4.addr ........: %s", inet_ntoa (sx.addr4));
   Logger::spgwu_app().info( "    ipv4.mask ........: %s", inet_ntoa (sx.network4));
   Logger::spgwu_app().info( "    mtu ..............: %d", sx.mtu);
   Logger::spgwu_app().info( "    port .............: %u", sx.port);
+  Logger::spgwu_app().info( "    Reader thread:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d (TODO)", sx.thread_rd_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d (TODO)", sx.thread_rd_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d (TODO)", sx.thread_rd_sched_params.sched_priority);
   Logger::spgwu_app().info( "- SGi:");
   Logger::spgwu_app().info( "    iface ............: %s", sgi.if_name.c_str());
   Logger::spgwu_app().info( "    ipv4.addr ........: %s", inet_ntoa (sgi.addr4));
   Logger::spgwu_app().info( "    ipv4.mask ........: %s", inet_ntoa (sgi.network4));
   Logger::spgwu_app().info( "    mtu ..............: %d", sgi.mtu);
   Logger::spgwu_app().info( "    gateway ..........: %s", gateway.c_str());
+  Logger::spgwu_app().info( "    Reader thread:");
+  Logger::spgwu_app().info( "      CPU ID .........: %d", sgi.thread_rd_sched_params.cpu_id);
+  Logger::spgwu_app().info( "      sched policy....: %d", sgi.thread_rd_sched_params.sched_policy);
+  Logger::spgwu_app().info( "      sched priority..: %d", sgi.thread_rd_sched_params.sched_priority);
   Logger::spgwu_app().info( "- PDN networks:");
   int i = 1;
   for (auto it : pdns) {

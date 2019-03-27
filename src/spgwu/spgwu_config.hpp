@@ -29,8 +29,9 @@
 #ifndef FILE_SPGWU_CONFIG_HPP_SEEN
 #define FILE_SPGWU_CONFIG_HPP_SEEN
 
+
 #include "3gpp_29.244.h"
-#include "thread_sched.h"
+#include "thread_sched.hpp"
 #include <libconfig.h++>
 #include <mutex>
 #include <netinet/in.h>
@@ -49,11 +50,9 @@ namespace oai::cn::nf::spgwu {
 #define SPGWU_CONFIG_STRING_IPV4_ADDRESS                          "IPV4_ADDRESS"
 #define SPGWU_CONFIG_STRING_PORT                                  "PORT"
 #define SPGWU_CONFIG_STRING_SCHED_PARAMS                          "SCHED_PARAMS"
-#define SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS                      "S1U_SCHED_PARAMS"
-#define SPGWU_CONFIG_STRING_SX_SCHED_PARAMS                       "SX_SCHED_PARAMS"
-#define SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID                      "THREAD_RD_CPU_ID"
-#define SPGWU_CONFIG_STRING_THREAD_RD_SCHED_POLICY                "THREAD_RD_SCHED_POLICY"
-#define SPGWU_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY              "THREAD_RD_SCHED_PRIORITY"
+#define SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID                      "CPU_ID"
+#define SPGWU_CONFIG_STRING_THREAD_RD_SCHED_POLICY                "SCHED_POLICY"
+#define SPGWU_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY              "SCHED_PRIORITY"
 #define SPGWU_CONFIG_STRING_INTERFACE_SGI                         "SGI"
 #define SPGWU_CONFIG_STRING_INTERFACE_SX                          "SX"
 #define SPGWU_CONFIG_STRING_INTERFACE_S1U_S12_S4_UP               "S1U_S12_S4_UP"
@@ -64,7 +63,12 @@ namespace oai::cn::nf::spgwu {
 #define SPGWU_CONFIG_STRING_SNAT                                  "SNAT"
 #define SPGWU_CONFIG_STRING_MAX_PFCP_SESSIONS                     "MAX_PFCP_SESSIONS"
 #define SPGWU_CONFIG_STRING_SPGWC_LIST                            "SPGW-C_LIST"
-#define SPGWU_CONFIG_STRING_ITTI                                  "ITTI"
+#define SPGWU_CONFIG_STRING_ITTI_TASKS                            "ITTI_TASKS"
+#define SPGWU_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS               "ITTI_TIMER_SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS                      "S1U_SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_SX_SCHED_PARAMS                       "SX_SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_SPGWU_APP_SCHED_PARAMS                "SPGWU_APP_SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS                "ASYNC_CMD_SCHED_PARAMS"
 
 #define SPGW_ABORT_ON_ERROR true
 #define SPGW_WARN_ON_ERROR false
@@ -76,7 +80,7 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int    mtu;
   unsigned int    port;
-  thread_sched_params_t thread_rd_sched_params;
+  oai::cn::util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
 
 typedef struct pdn_cfg_s {
@@ -88,9 +92,11 @@ typedef struct pdn_cfg_s {
 } pdn_cfg_t;
 
 typedef struct itti_cfg_s {
-  thread_sched_params_t core_sched_params;
-  thread_sched_params_t s1u_sched_params;
-  thread_sched_params_t sx_sched_params;
+  oai::cn::util::thread_sched_params itti_timer_sched_params;
+  oai::cn::util::thread_sched_params s1u_sched_params;
+  oai::cn::util::thread_sched_params sx_sched_params;
+  oai::cn::util::thread_sched_params spgwu_app_sched_params;
+  oai::cn::util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 
 class spgwu_config {
@@ -99,7 +105,7 @@ private:
 
   int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
   int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
-  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, thread_sched_params_t& cfg);
+  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, oai::cn::util::thread_sched_params& cfg);
 
 public:
 

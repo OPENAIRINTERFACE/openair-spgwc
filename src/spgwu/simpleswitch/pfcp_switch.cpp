@@ -124,24 +124,11 @@ void pfcp_switch::commit_changes()
 }
 
 //------------------------------------------------------------------------------
-void pfcp_switch::pdn_read_loop(const thread_sched_params_t& thread_sched_params)
+void pfcp_switch::pdn_read_loop(const oai::cn::util::thread_sched_params& sched_params)
 {
   int        bytes_received = 0;
 
-  if (thread_sched_params.cpu_id >= 0) {
-    cpu_set_t cpuset;
-    CPU_SET(thread_sched_params.cpu_id,&cpuset);
-    if (int rc = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset)) {
-      Logger::pfcp_switch().warn( "Could not set affinity to thread polling SGi interface, err=%d", rc);
-    }
-  }
-
-  struct sched_param sparam;
-  memset(&sparam, 0, sizeof(sparam));
-  sparam.sched_priority = thread_sched_params.sched_priority;
-  if (int rc = pthread_setschedparam(pthread_self(), thread_sched_params.sched_policy, &sparam)) {
-    Logger::pfcp_switch().warn( "Could not set schedparam to thread polling SGi interface, err=%d", rc);
-  }
+  sched_params.apply(TASK_NONE, Logger::pfcp_switch());
 
   struct msghdr msg = {};
   msg.msg_iov = &msg_iov_;

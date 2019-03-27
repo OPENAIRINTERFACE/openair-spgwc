@@ -31,7 +31,7 @@
 #include "3gpp_29.281.hpp"
 #include "itti.hpp"
 #include "msg_gtpv1u.hpp"
-#include "thread_sched.h"
+#include "thread_sched.hpp"
 
 #include <iostream>
 #include <map>
@@ -94,7 +94,7 @@ public:
     close(socket_);
   }
 
-  void udp_read_loop(const thread_sched_params_t& thread_sched_params);
+  void udp_read_loop(const oai::cn::util::thread_sched_params& thread_sched_params);
 
   void async_send_to(const char* send_buffer, const ssize_t num_bytes, const struct sockaddr_in& peer_addr)
   {
@@ -114,7 +114,7 @@ public:
   }
 
 
-  void start_receive(gtpu_l4_stack * gtp_stack, const thread_sched_params_t& thread_sched_params);
+  void start_receive(gtpu_l4_stack * gtp_stack, const oai::cn::util::thread_sched_params& sched_params);
 
 protected:
   int create_socket (const struct in_addr& address, const uint16_t port);
@@ -162,9 +162,9 @@ protected:
 
 public:
   static const uint8_t version = 1;
-  gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const thread_sched_params_t& thread_sched_params);
-  gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const thread_sched_params_t& thread_sched_params);
-  gtpu_l4_stack(char * ip_address, const uint16_t port_num, const thread_sched_params_t& thread_sched_params);
+  gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params);
+  gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params);
+  gtpu_l4_stack(char * ip_address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params);
   virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
   void handle_receive_message_cb(const gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const core::itti::task_id_t& task_id, bool &error, uint64_t& gtpc_tx_id);
 
