@@ -95,6 +95,48 @@ int spgwu_config::get_pfcp_fseid(oai::cn::core::pfcp::fseid_t& fseid)
   }
   return rc;
 }
+//------------------------------------------------------------------------------
+int spgwu_config::load_thread_sched_params(const Setting& thread_sched_params_cfg, thread_sched_params_t& cfg)
+{
+
+  thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
+  std::string thread_rd_sched_policy;
+  thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
+  util::trim(thread_rd_sched_policy);
+  if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
+    cfg.sched_policy = SCHED_OTHER;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
+    cfg.sched_policy = SCHED_IDLE;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
+    cfg.sched_policy = SCHED_BATCH;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
+    cfg.sched_policy = SCHED_FIFO;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
+    cfg.sched_policy = SCHED_RR;
+  } else {
+    Logger::spgwu_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
+    return RETURNerror;
+  }
+  thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
+  if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
+    Logger::spgwu_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
+    return RETURNerror;
+  }
+  return RETURNok;
+}
+//------------------------------------------------------------------------------
+int spgwu_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
+{
+  const Setting& sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SCHED_PARAMS];
+  load_thread_sched_params(sched_params_cfg, cfg.core_sched_params);
+
+  const Setting& s1u_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS];
+  load_thread_sched_params(s1u_sched_params_cfg, cfg.s1u_sched_params);
+
+  const Setting& sx_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
+  load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+  return RETURNok;
+}
 
 //------------------------------------------------------------------------------
 int spgwu_config::load_interface(const Setting& if_cfg, interface_cfg_t& cfg)
@@ -127,7 +169,8 @@ int spgwu_config::load_interface(const Setting& if_cfg, interface_cfg_t& cfg)
       cfg.network4.s_addr = htons(ntohs(cfg.addr4.s_addr) & 0xFFFFFFFF << (32 - std::stoi (util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(SPGWU_CONFIG_STRING_PORT, cfg.port);
-    if_cfg.lookupValue(SPGWU_CONFIG_STRING_CPU_ID_THREAD_LOOP_READ, cfg.cpu_id_thread_loop_read);
+    const Setting& sched_params_cfg = if_cfg[SPGWU_CONFIG_STRING_SCHED_PARAMS];
+    load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
   }
   return RETURNok;
 }
@@ -164,6 +207,9 @@ int spgwu_config::load(const string& config_file)
     spgwu_cfg.lookupValue(SPGWU_CONFIG_STRING_INSTANCE, instance);
     spgwu_cfg.lookupValue(SPGWU_CONFIG_STRING_PID_DIRECTORY, pid_dir);
     util::trim(pid_dir);
+
+    const Setting& itti_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_ITTI];
+    load_itti(itti_cfg, itti);
 
     const Setting& nw_if_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_INTERFACES];
 

@@ -30,6 +30,7 @@
 #define FILE_SPGWU_CONFIG_HPP_SEEN
 
 #include "3gpp_29.244.h"
+#include "thread_sched.h"
 #include <libconfig.h++>
 #include <mutex>
 #include <netinet/in.h>
@@ -47,7 +48,12 @@ namespace oai::cn::nf::spgwu {
 #define SPGWU_CONFIG_STRING_INTERFACE_NAME                        "INTERFACE_NAME"
 #define SPGWU_CONFIG_STRING_IPV4_ADDRESS                          "IPV4_ADDRESS"
 #define SPGWU_CONFIG_STRING_PORT                                  "PORT"
-#define SPGWU_CONFIG_STRING_CPU_ID_THREAD_LOOP_READ               "CPU_ID_THREAD_LOOP_READ"
+#define SPGWU_CONFIG_STRING_SCHED_PARAMS                          "SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS                      "S1U_SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_SX_SCHED_PARAMS                       "SX_SCHED_PARAMS"
+#define SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID                      "THREAD_RD_CPU_ID"
+#define SPGWU_CONFIG_STRING_THREAD_RD_SCHED_POLICY                "THREAD_RD_SCHED_POLICY"
+#define SPGWU_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY              "THREAD_RD_SCHED_PRIORITY"
 #define SPGWU_CONFIG_STRING_INTERFACE_SGI                         "SGI"
 #define SPGWU_CONFIG_STRING_INTERFACE_SX                          "SX"
 #define SPGWU_CONFIG_STRING_INTERFACE_S1U_S12_S4_UP               "S1U_S12_S4_UP"
@@ -58,6 +64,7 @@ namespace oai::cn::nf::spgwu {
 #define SPGWU_CONFIG_STRING_SNAT                                  "SNAT"
 #define SPGWU_CONFIG_STRING_MAX_PFCP_SESSIONS                     "MAX_PFCP_SESSIONS"
 #define SPGWU_CONFIG_STRING_SPGWC_LIST                            "SPGW-C_LIST"
+#define SPGWU_CONFIG_STRING_ITTI                                  "ITTI"
 
 #define SPGW_ABORT_ON_ERROR true
 #define SPGW_WARN_ON_ERROR false
@@ -69,7 +76,7 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int    mtu;
   unsigned int    port;
-  int             cpu_id_thread_loop_read;
+  thread_sched_params_t thread_rd_sched_params;
 } interface_cfg_t;
 
 typedef struct pdn_cfg_s {
@@ -80,11 +87,19 @@ typedef struct pdn_cfg_s {
   bool            snat;
 } pdn_cfg_t;
 
+typedef struct itti_cfg_s {
+  thread_sched_params_t core_sched_params;
+  thread_sched_params_t s1u_sched_params;
+  thread_sched_params_t sx_sched_params;
+} itti_cfg_t;
+
 class spgwu_config {
 
 private:
 
+  int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
   int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
+  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, thread_sched_params_t& cfg);
 
 public:
 
@@ -95,6 +110,8 @@ public:
   interface_cfg_t s1_up;
   interface_cfg_t sgi;
   interface_cfg_t sx;
+  itti_cfg_t      itti;
+
   std::string gateway;
 
   uint32_t        max_pfcp_sessions;
@@ -103,7 +120,7 @@ public:
   std::vector<oai::cn::core::pfcp::node_id_t> spgwcs;
 
 
-  spgwu_config() : m_rw_lock(), pid_dir(), instance(0), s1_up(), sgi(), gateway(),sx(), pdns(), spgwcs(), max_pfcp_sessions(100) {};
+  spgwu_config() : m_rw_lock(), pid_dir(), instance(0), s1_up(), sgi(), gateway(), sx(), itti(), pdns(), spgwcs(), max_pfcp_sessions(100) {};
   void lock() {m_rw_lock.lock();};
   void unlock() {m_rw_lock.unlock();};
   int load(const std::string& config_file);

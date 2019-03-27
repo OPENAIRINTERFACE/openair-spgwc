@@ -55,6 +55,23 @@ void spgwu_s1u_task (void*);
 void spgwu_s1u_task (void *args_p)
 {
   const task_id_t task_id = TASK_SPGWU_S1U;
+  const thread_sched_params_t* const thread_sched_params = (const thread_sched_params_t* const)args_p;
+
+  if (thread_sched_params->cpu_id >= 0) {
+    cpu_set_t cpuset;
+    CPU_SET(thread_sched_params->cpu_id,&cpuset);
+    if (int rc = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset)) {
+      Logger::spgwu_s1u().warn( "Could not set affinity to ITTI task TASK_SPGWU_S1U, err=%d", rc);
+    }
+  }
+
+  struct sched_param sparam;
+  memset(&sparam, 0, sizeof(sparam));
+  sparam.sched_priority = thread_sched_params->sched_priority;
+  if (int rc = pthread_setschedparam(pthread_self(), thread_sched_params->sched_policy, &sparam)) {
+    Logger::spgwu_s1u().warn( "Could not set schedparam to ITTI task TASK_SPGWU_S1U, err=%d", rc);
+  }
+
   itti_inst->notify_task_ready(task_id);
 
   do {
@@ -88,10 +105,10 @@ void spgwu_s1u_task (void *args_p)
 }
 
 //------------------------------------------------------------------------------
-spgwu_s1u::spgwu_s1u () : gtpu_l4_stack(spgwu_cfg.s1_up.addr4, spgwu_cfg.s1_up.port, spgwu_cfg.s1_up.cpu_id_thread_loop_read)
+spgwu_s1u::spgwu_s1u () : gtpu_l4_stack(spgwu_cfg.s1_up.addr4, spgwu_cfg.s1_up.port, spgwu_cfg.s1_up.thread_rd_sched_params)
 {
   Logger::spgwu_s1u().startup("Starting...");
-  if (itti_inst->create_task(TASK_SPGWU_S1U, spgwu_s1u_task, nullptr) ) {
+  if (itti_inst->create_task(TASK_SPGWU_S1U, spgwu_s1u_task, &spgwu_cfg.itti.s1u_sched_params) ) {
     Logger::spgwu_s1u().error( "Cannot create task TASK_SPGWU_S1U" );
     throw std::runtime_error( "Cannot create task TASK_SPGWU_S1U" );
   }
@@ -238,7 +255,7 @@ void spgwu_s1u::report_error_indication(const struct sockaddr_storage& r_endpoin
     error_ind->gtp_ies.set(peer_address);
   } else {
     // mandatory ie
-    free(error_ind);
+    delete error_ind;
     return;
   }
 
