@@ -55,23 +55,13 @@ static std::string string_to_hex(const std::string& input)
     return output;
 }
 //------------------------------------------------------------------------------
-void udp_server::udp_read_loop(const thread_sched_params_t& thread_sched_params)
+void udp_server::udp_read_loop(const oai::cn::util::thread_sched_params& sched_params)
 {
   socklen_t                               r_endpoint_addr_len = 0;
   struct sockaddr_storage                 r_endpoint = {};
   size_t                                  bytes_received = 0;
 
-  if (thread_sched_params.cpu_id >= 0) {
-    cpu_set_t cpuset;
-    CPU_SET(thread_sched_params.cpu_id ,&cpuset);
-    pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
-  }
-
-  struct sched_param sparam;
-  memset(&sparam, 0, sizeof(sparam));
-  sparam.sched_priority = thread_sched_params.sched_priority;
-  pthread_setschedparam(pthread_self(), thread_sched_params.sched_policy, &sparam);
-
+  sched_params.apply(TASK_NONE, Logger::udp());
 
   while (1) {
     r_endpoint_addr_len = sizeof(struct sockaddr_storage);
@@ -169,11 +159,11 @@ int udp_server::create_socket (char * address, const uint16_t port_num)
   }
 }
 //------------------------------------------------------------------------------
-void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const thread_sched_params_t& thread_sched_params)
+void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const oai::cn::util::thread_sched_params& sched_params)
 {
   app_ = gtp_stack;
   Logger::udp().trace( "udp_server::start_receive");
-  thread_ = thread(&udp_server::udp_read_loop,this, thread_sched_params);
+  thread_ = thread(&udp_server::udp_read_loop,this, sched_params);
   thread_.detach();
 }
 
@@ -196,7 +186,7 @@ void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const thread_sched_par
 //}
 
 //------------------------------------------------------------------------------
-gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const thread_sched_params_t& thread_sched_params) :
+gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params) :
     udp_s(udp_server(address, port_num))
 {
   Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", oai::cn::core::toString(address).c_str(), port_num);
@@ -205,10 +195,10 @@ gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_
   srand (time(NULL));
   seq_num = rand() & 0x7FFFFFFF;
   restart_counter = 0;
-  udp_s.start_receive(this, thread_sched_params);
+  udp_s.start_receive(this, sched_params);
 }
 //------------------------------------------------------------------------------
-gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const thread_sched_params_t& thread_sched_params) :
+gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params) :
     udp_s(udp_server(address, port_num))
 {
   Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", oai::cn::core::toString(address).c_str(), port_num);
@@ -217,10 +207,10 @@ gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port
   srand (time(NULL));
   seq_num = rand() & 0x7FFFFFFF;
   restart_counter = 0;
-  udp_s.start_receive(this, thread_sched_params);
+  udp_s.start_receive(this, sched_params);
 }
 //------------------------------------------------------------------------------
-gtpu_l4_stack::gtpu_l4_stack(char * address, const uint16_t port_num, const thread_sched_params_t& thread_sched_params) :
+gtpu_l4_stack::gtpu_l4_stack(char * address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params) :
         udp_s(udp_server(address, port_num))
 {
   Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", address, port_num);
@@ -229,7 +219,7 @@ gtpu_l4_stack::gtpu_l4_stack(char * address, const uint16_t port_num, const thre
   srand (time(NULL));
   seq_num = rand() & 0x7FFFFFFF;
   restart_counter = 0;
-  udp_s.start_receive(this, thread_sched_params);
+  udp_s.start_receive(this, sched_params);
 
 }
 

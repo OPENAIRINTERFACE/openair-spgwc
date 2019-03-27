@@ -82,13 +82,15 @@ int main(int argc, char **argv)
   sigaction(SIGINT, &sigIntHandler, NULL);
 
   // Config
+  spgwu_cfg.load(Options::getlibconfigConfig());
+  spgwu_cfg.display();
 
   // Inter task Interface
   itti_inst = new itti_mw();
-  itti_inst->start();
+  itti_inst->start(spgwu_cfg.itti.itti_timer_sched_params);
 
   // system command
-  async_shell_cmd_inst = new async_shell_cmd();
+  async_shell_cmd_inst = new async_shell_cmd(spgwu_cfg.itti.async_cmd_sched_params);
 
   // PGW application layer
   spgwu_app_inst = new spgwu_app(Options::getlibconfigConfig());

@@ -55,22 +55,9 @@ void spgwu_s1u_task (void*);
 void spgwu_s1u_task (void *args_p)
 {
   const task_id_t task_id = TASK_SPGWU_S1U;
-  const thread_sched_params_t* const thread_sched_params = (const thread_sched_params_t* const)args_p;
 
-  if (thread_sched_params->cpu_id >= 0) {
-    cpu_set_t cpuset;
-    CPU_SET(thread_sched_params->cpu_id,&cpuset);
-    if (int rc = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset)) {
-      Logger::spgwu_s1u().warn( "Could not set affinity to ITTI task TASK_SPGWU_S1U, err=%d", rc);
-    }
-  }
-
-  struct sched_param sparam;
-  memset(&sparam, 0, sizeof(sparam));
-  sparam.sched_priority = thread_sched_params->sched_priority;
-  if (int rc = pthread_setschedparam(pthread_self(), thread_sched_params->sched_policy, &sparam)) {
-    Logger::spgwu_s1u().warn( "Could not set schedparam to ITTI task TASK_SPGWU_S1U, err=%d", rc);
-  }
+  const oai::cn::util::thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+  sched_params->apply(task_id, Logger::spgwu_s1u());
 
   itti_inst->notify_task_ready(task_id);
 

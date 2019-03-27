@@ -56,6 +56,10 @@ void spgwu_sx_task (void*);
 void spgwu_sx_task (void *args_p)
 {
   const task_id_t task_id = TASK_SPGWU_SX;
+
+  const oai::cn::util::thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+  sched_params->apply(task_id, Logger::spgwu_sx());
+
   itti_inst->notify_task_ready(task_id);
 
   do {
@@ -216,7 +220,7 @@ spgwu_sx::spgwu_sx () : pfcp_l4_stack(std::string(inet_ntoa(spgwu_cfg.sx.addr4))
   up_function_features.trace = 0;
   up_function_features.frrt = 0;
 
-  if (itti_inst->create_task(TASK_SPGWU_SX, spgwu_sx_task, nullptr) ) {
+  if (itti_inst->create_task(TASK_SPGWU_SX, spgwu_sx_task, &spgwu_cfg.itti.sx_sched_params) ) {
     Logger::spgwu_sx().error( "Cannot create task TASK_SPGWU_SX" );
     throw std::runtime_error( "Cannot create task TASK_SPGWU_SX" );
   }

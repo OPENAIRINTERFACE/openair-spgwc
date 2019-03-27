@@ -53,9 +53,13 @@ extern  itti_mw *itti_inst;
 void async_cmd_task (void*);
 
 //------------------------------------------------------------------------------
-void async_cmd_task (void*)
+void async_cmd_task (void* args_p)
 {
   const task_id_t task_id = TASK_ASYNC_SHELL_CMD;
+
+  const thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+  sched_params->apply(task_id, Logger::async_cmd());
+
   itti_inst->notify_task_ready(task_id);
 
   do {
@@ -95,11 +99,11 @@ void async_cmd_task (void*)
 }
 
 //------------------------------------------------------------------------------
-async_shell_cmd::async_shell_cmd (void)
+async_shell_cmd::async_shell_cmd (oai::cn::util::thread_sched_params& sched_params)
 {
   Logger::async_cmd().startup( "Starting..." );
 
-  if (itti_inst->create_task(TASK_ASYNC_SHELL_CMD, async_cmd_task, nullptr) ) {
+  if (itti_inst->create_task(TASK_ASYNC_SHELL_CMD, async_cmd_task, &sched_params) ) {
     Logger::async_cmd().error( "Cannot create task TASK_ASYNC_SHELL_CMD" );
     throw std::runtime_error( "Cannot create task TASK_ASYNC_SHELL_CMD" );
   }

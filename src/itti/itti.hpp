@@ -41,6 +41,7 @@
 #include <chrono>
 #include <iomanip>
 #include "itti_msg.hpp"
+#include "thread_sched.hpp"
 
 namespace oai::cn::core::itti {
 
@@ -131,7 +132,7 @@ private:
 
   bool                                      terminate;
 
-  static void timer_manager_task(void);
+  static void timer_manager_task(const oai::cn::util::thread_sched_params& sched_params);
 
 public:
   itti_mw();
@@ -139,7 +140,7 @@ public:
   void operator=(itti_mw const&)     = delete;
   ~itti_mw();
 
-  void start(void);
+  void start(const oai::cn::util::thread_sched_params& sched_params);
 
   timer_id_t increment_timer_id ();
   unsigned int increment_message_number ();

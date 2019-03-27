@@ -19,20 +19,27 @@
  *      contact@openairinterface.org
  */
 
-/*! \file thread_sched.h
+/*! \file thread_sched.hpp
   \brief
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
 
-#ifndef FILE_THREAD_SCHED_SEEN
-#define FILE_THREAD_SCHED_SEEN
+#ifndef FILE_THREAD_SCHED_HPP_SEEN
+#define FILE_THREAD_SCHED_HPP_SEEN
 
 #include <sched.h>
+#include "logger.hpp"
 
-typedef struct thread_sched_params_s {
+namespace oai::cn::util {
+
+class thread_sched_params {
+public:
   int             cpu_id;
   int             sched_policy;
   int             sched_priority;
-} thread_sched_params_t;
-#endif /* FILE_COMMON_ROOT_TYPES_SEEN */
+  void apply(const int task_id, _Logger& logger) const;
+};
+
+}
+#endif /* FILE_THREAD_SCHED_HPP_SEEN */

@@ -58,6 +58,11 @@ void spgwu_app_task (void*);
 void spgwu_app_task (void *args_p)
 {
   const task_id_t task_id = TASK_SPGWU_APP;
+
+  const oai::cn::util::thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+
+  sched_params->apply(task_id, Logger::spgwu_app());
+
   itti_inst->notify_task_ready(task_id);
 
   do {
@@ -111,11 +116,9 @@ void spgwu_app_task (void *args_p)
 spgwu_app::spgwu_app (const std::string& config_file)
 {
   Logger::spgwu_app().startup("Starting...");
-  spgwu_cfg.load(config_file);
   spgwu_cfg.execute();
-  spgwu_cfg.display();
 
-  if (itti_inst->create_task(TASK_SPGWU_APP, spgwu_app_task, nullptr) ) {
+  if (itti_inst->create_task(TASK_SPGWU_APP, spgwu_app_task, &spgwu_cfg.itti.spgwu_app_sched_params) ) {
     Logger::spgwu_app().error( "Cannot create task TASK_SPGWU_APP" );
     throw std::runtime_error( "Cannot create task TASK_SPGWU_APP" );
   }

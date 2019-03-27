@@ -32,6 +32,7 @@
 #define FILE_ASYNC_SHELL_CMD_HPP_SEEN
 
 #include "itti_msg.hpp"
+#include "thread_sched.hpp"
 #include <string>
 #include <thread>
 
@@ -43,7 +44,7 @@ private:
   std::thread                          thread;
 
 public:
-  async_shell_cmd();
+  explicit async_shell_cmd(oai::cn::util::thread_sched_params& sched_params);
   ~async_shell_cmd() {}
   async_shell_cmd(async_shell_cmd const&)    = delete;
   void operator=(async_shell_cmd const&)     = delete;

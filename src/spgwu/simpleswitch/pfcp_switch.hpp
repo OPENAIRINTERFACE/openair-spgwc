@@ -34,7 +34,7 @@
 #include "msg_pfcp.hpp"
 #include "pfcp_session.hpp"
 #include "uint_generator.hpp"
-#include "thread_sched.h"
+#include "thread_sched.hpp"
 
 #include <folly/AtomicHashMap.h>
 #include <linux/ip.h>
@@ -109,7 +109,7 @@ private:
 
   //moodycamel::ConcurrentQueue<core::pfcp::pfcp_session*>            create_session_q;
 
-  void pdn_read_loop(const thread_sched_params_t& thread_sched_params);
+  void pdn_read_loop(const oai::cn::util::thread_sched_params& sched_params);
   int create_pdn_socket (const char * const ifname, const bool promisc, int& if_index);
   int create_pdn_socket (const char * const ifname);
   void setup_pdn_interfaces();
