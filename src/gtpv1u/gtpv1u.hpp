@@ -55,9 +55,9 @@ public:
   {
     socket_ = create_socket (address, port_);
     if (socket_ > 0) {
-      Logger::udp().debug( "udp_server::udp_server(%s:%d)", oai::cn::core::toString(address).c_str(), port_);
+      Logger::udp().debug( "udp_server::udp_server(%s:%d)", core::toString(address).c_str(), port_);
     } else {
-      Logger::udp().error( "udp_server::udp_server(%s:%d)", oai::cn::core::toString(address).c_str(), port_);
+      Logger::udp().error( "udp_server::udp_server(%s:%d)", core::toString(address).c_str(), port_);
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       throw std::system_error(socket_, std::generic_category(), "GTPV1-U socket creation failed!");
     }
@@ -68,9 +68,9 @@ public:
   {
     socket_ = create_socket (address, port_);
     if (socket_ > 0) {
-      Logger::udp().debug( "udp_server::udp_server(%s:%d)", oai::cn::core::toString(address).c_str(), port_);
+      Logger::udp().debug( "udp_server::udp_server(%s:%d)", core::toString(address).c_str(), port_);
     } else {
-      Logger::udp().error( "udp_server::udp_server(%s:%d)", oai::cn::core::toString(address).c_str(), port_);
+      Logger::udp().error( "udp_server::udp_server(%s:%d)", core::toString(address).c_str(), port_);
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
       throw std::system_error(socket_, std::generic_category(), "GTPV1-U socket creation failed!");
     }
@@ -94,11 +94,11 @@ public:
     close(socket_);
   }
 
-  void udp_read_loop(const oai::cn::util::thread_sched_params& thread_sched_params);
+  void udp_read_loop(const util::thread_sched_params& thread_sched_params);
 
   void async_send_to(const char* send_buffer, const ssize_t num_bytes, const struct sockaddr_in& peer_addr)
   {
-    //Logger::udp().trace( "udp_server::async_send_to(%s:%d) %d bytes", oai::cn::core::toString(peer_addr.sin_addr).c_str(), peer_addr.sin_port, num_bytes);
+    //Logger::udp().trace( "udp_server::async_send_to(%s:%d) %d bytes", core::toString(peer_addr.sin_addr).c_str(), peer_addr.sin_port, num_bytes);
     ssize_t bytes_written = sendto (socket_, send_buffer, num_bytes, 0, (struct sockaddr *)&peer_addr, sizeof (struct sockaddr_in));
     if (bytes_written != num_bytes) {
       Logger::udp().error( "sendto failed(%d:%s)\n", errno, strerror (errno));
@@ -114,7 +114,7 @@ public:
   }
 
 
-  void start_receive(gtpu_l4_stack * gtp_stack, const oai::cn::util::thread_sched_params& sched_params);
+  void start_receive(gtpu_l4_stack * gtp_stack, const util::thread_sched_params& sched_params);
 
 protected:
   int create_socket (const struct in_addr& address, const uint16_t port);
@@ -162,9 +162,9 @@ protected:
 
 public:
   static const uint8_t version = 1;
-  gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params);
-  gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params);
-  gtpu_l4_stack(char * ip_address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params);
+  gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const util::thread_sched_params& sched_params);
+  gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const util::thread_sched_params& sched_params);
+  gtpu_l4_stack(char * ip_address, const uint16_t port_num, const util::thread_sched_params& sched_params);
   virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
   void handle_receive_message_cb(const gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const core::itti::task_id_t& task_id, bool &error, uint64_t& gtpc_tx_id);
 

@@ -238,7 +238,7 @@ void spgwu_s1u::report_error_indication(const struct sockaddr_storage& r_endpoin
   error_ind->gtp_ies.set(tun_data);
 
   core::gtp_u_peer_address_t peer_address = {};
-  if (sockaddr_storage_to_gtp_u_peer_address(r_endpoint, peer_address)) {
+  if (oai::cn::util::sockaddr_storage_to_gtp_u_peer_address(r_endpoint, peer_address)) {
     error_ind->gtp_ies.set(peer_address);
   } else {
     // mandatory ie

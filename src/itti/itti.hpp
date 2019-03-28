@@ -123,7 +123,7 @@ private:
   std::atomic<int>                          ready_tasks;
 
   std::set<itti_timer, timer_comparator>    timers;
-  oai::cn::core::itti::itti_timer                 current_timer;
+  core::itti::itti_timer                 current_timer;
   std::mutex                                m_timers;
   std::condition_variable                   c_timers;
 
@@ -132,7 +132,7 @@ private:
 
   bool                                      terminate;
 
-  static void timer_manager_task(const oai::cn::util::thread_sched_params& sched_params);
+  static void timer_manager_task(const util::thread_sched_params& sched_params);
 
 public:
   itti_mw();
@@ -140,7 +140,7 @@ public:
   void operator=(itti_mw const&)     = delete;
   ~itti_mw();
 
-  void start(const oai::cn::util::thread_sched_params& sched_params);
+  void start(const util::thread_sched_params& sched_params);
 
   timer_id_t increment_timer_id ();
   unsigned int increment_message_number ();

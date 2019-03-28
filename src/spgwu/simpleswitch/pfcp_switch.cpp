@@ -124,7 +124,7 @@ void pfcp_switch::commit_changes()
 }
 
 //------------------------------------------------------------------------------
-void pfcp_switch::pdn_read_loop(const oai::cn::util::thread_sched_params& sched_params)
+void pfcp_switch::pdn_read_loop(const util::thread_sched_params& sched_params)
 {
   int        bytes_received = 0;
 
@@ -266,14 +266,14 @@ void pfcp_switch::setup_pdn_interfaces()
       struct in_addr address4 = {};
       address4.s_addr = it.network_ipv4.s_addr + be32toh(1);
 
-      std::string cmd = fmt::format("ip -4 addr add {}/{} dev {}", oai::cn::core::toString(address4).c_str(), it.prefix_ipv4, PDN_INTERFACE_NAME);
+      std::string cmd = fmt::format("ip -4 addr add {}/{} dev {}", core::toString(address4).c_str(), it.prefix_ipv4, PDN_INTERFACE_NAME);
       rc = system ((const char*)cmd.c_str());
 
       if (it.snat) {
         cmd = fmt::format("iptables -t nat -A POSTROUTING -s {}/{} -j SNAT --to-source {}",
-            oai::cn::core::toString(address4).c_str(),
+            core::toString(address4).c_str(),
             it.prefix_ipv4,
-            oai::cn::core::toString(spgwu_cfg.sgi.addr4).c_str());
+            core::toString(spgwu_cfg.sgi.addr4).c_str());
         rc = system ((const char*)cmd.c_str());
       }
     }
@@ -283,10 +283,10 @@ void pfcp_switch::setup_pdn_interfaces()
 
       struct in6_addr addr6 = it.network_ipv6;
       addr6.s6_addr[15] = 1;
-      cmd = fmt::format("ip -6 addr add {}/{} dev {}", oai::cn::core::toString(addr6).c_str(), it.prefix_ipv6, PDN_INTERFACE_NAME);
+      cmd = fmt::format("ip -6 addr add {}/{} dev {}", core::toString(addr6).c_str(), it.prefix_ipv6, PDN_INTERFACE_NAME);
       rc = system ((const char*)cmd.c_str());
 //      if ((it.snat) && (/* SGI has IPv6 address*/)){
-//        cmd = fmt::format("ip6tables -t nat -A POSTROUTING -s {}/{} -o {} -j SNAT --to-source {}", oai::cn::core::toString(addr6).c_str(), it.prefix_ipv6, xxx);
+//        cmd = fmt::format("ip6tables -t nat -A POSTROUTING -s {}/{} -o {} -j SNAT --to-source {}", core::toString(addr6).c_str(), it.prefix_ipv6, xxx);
 //        rc = system ((const char*)cmd.c_str());
 //      }
     }
@@ -321,7 +321,7 @@ void pfcp_switch::setup_pdn_interfaces()
 //------------------------------------------------------------------------------
 oai::cn::core::pfcp::fteid_t pfcp_switch::generate_fteid_s1u()
 {
-  oai::cn::core::pfcp::fteid_t fteid = {};
+  core::pfcp::fteid_t fteid = {};
   fteid.teid = generate_teid_s1u();
   if (spgwu_cfg.s1_up.addr4.s_addr) {
     fteid.v4 = 1;
@@ -414,7 +414,7 @@ void pfcp_switch::remove_pfcp_session(std::shared_ptr<core::pfcp::pfcp_session>&
   up_seid2pfcp_sessions.erase(session->seid);
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::remove_pfcp_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
+void pfcp_switch::remove_pfcp_session(const core::pfcp::fseid_t& cp_fseid)
 {
   std::shared_ptr<core::pfcp::pfcp_session> session = {};
   if (get_pfcp_session_by_cp_fseid(cp_fseid, session)) {
@@ -565,7 +565,7 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core
         resp->pfcp_ies.set(up_fseid);
 
         // Register session
-        oai::cn::core::pfcp::node_id_t node_id = {};
+        core::pfcp::node_id_t node_id = {};
         req->pfcp_ies.get(node_id);
         pfcp_associations::get_instance().notify_add_session(node_id, fseid);
       }

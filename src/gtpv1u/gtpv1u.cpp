@@ -55,7 +55,7 @@ static std::string string_to_hex(const std::string& input)
     return output;
 }
 //------------------------------------------------------------------------------
-void udp_server::udp_read_loop(const oai::cn::util::thread_sched_params& sched_params)
+void udp_server::udp_read_loop(const util::thread_sched_params& sched_params)
 {
   socklen_t                               r_endpoint_addr_len = 0;
   struct sockaddr_storage                 r_endpoint = {};
@@ -93,7 +93,7 @@ int udp_server::create_socket (const struct in_addr &address, const uint16_t por
   addr.sin_port = htons (port);
   addr.sin_addr.s_addr = address.s_addr;
 
-  std::string ipv4 = oai::cn::core::toString(address);
+  std::string ipv4 = core::toString(address);
   Logger::udp().debug("Creating new listen socket on address %s and port %" PRIu16 "\n", ipv4.c_str(), port);
 
   if (bind (sd, (struct sockaddr *)&addr, sizeof (struct sockaddr_in)) < 0) {
@@ -127,7 +127,7 @@ int udp_server::create_socket (const struct in6_addr &address, const uint16_t po
   addr.sin6_port = htons (port);
   addr.sin6_addr = address;
 
-  std::string ipv6 = oai::cn::core::toString(address);
+  std::string ipv6 = core::toString(address);
   Logger::udp().debug("Creating new listen socket on address %s and port %" PRIu16 "\n", ipv6.c_str(), port);
 
   if (bind (sd, (struct sockaddr *)&addr, sizeof (struct sockaddr_in6)) < 0) {
@@ -159,7 +159,7 @@ int udp_server::create_socket (char * address, const uint16_t port_num)
   }
 }
 //------------------------------------------------------------------------------
-void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const oai::cn::util::thread_sched_params& sched_params)
+void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const util::thread_sched_params& sched_params)
 {
   app_ = gtp_stack;
   Logger::udp().trace( "udp_server::start_receive");
@@ -186,10 +186,10 @@ void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const oai::cn::util::t
 //}
 
 //------------------------------------------------------------------------------
-gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params) :
+gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const util::thread_sched_params& sched_params) :
     udp_s(udp_server(address, port_num))
 {
-  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", oai::cn::core::toString(address).c_str(), port_num);
+  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", core::toString(address).c_str(), port_num);
 
   id = 0;
   srand (time(NULL));
@@ -198,10 +198,10 @@ gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_
   udp_s.start_receive(this, sched_params);
 }
 //------------------------------------------------------------------------------
-gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params) :
+gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const util::thread_sched_params& sched_params) :
     udp_s(udp_server(address, port_num))
 {
-  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", oai::cn::core::toString(address).c_str(), port_num);
+  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", core::toString(address).c_str(), port_num);
 
   id = 0;
   srand (time(NULL));
@@ -210,7 +210,7 @@ gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port
   udp_s.start_receive(this, sched_params);
 }
 //------------------------------------------------------------------------------
-gtpu_l4_stack::gtpu_l4_stack(char * address, const uint16_t port_num, const oai::cn::util::thread_sched_params& sched_params) :
+gtpu_l4_stack::gtpu_l4_stack(char * address, const uint16_t port_num, const util::thread_sched_params& sched_params) :
         udp_s(udp_server(address, port_num))
 {
   Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", address, port_num);

@@ -80,7 +80,7 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int    mtu;
   unsigned int    port;
-  oai::cn::util::thread_sched_params thread_rd_sched_params;
+  util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
 
 typedef struct pdn_cfg_s {
@@ -92,11 +92,11 @@ typedef struct pdn_cfg_s {
 } pdn_cfg_t;
 
 typedef struct itti_cfg_s {
-  oai::cn::util::thread_sched_params itti_timer_sched_params;
-  oai::cn::util::thread_sched_params s1u_sched_params;
-  oai::cn::util::thread_sched_params sx_sched_params;
-  oai::cn::util::thread_sched_params spgwu_app_sched_params;
-  oai::cn::util::thread_sched_params async_cmd_sched_params;
+  util::thread_sched_params itti_timer_sched_params;
+  util::thread_sched_params s1u_sched_params;
+  util::thread_sched_params sx_sched_params;
+  util::thread_sched_params spgwu_app_sched_params;
+  util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 
 class spgwu_config {
@@ -105,7 +105,7 @@ private:
 
   int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
   int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
-  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, oai::cn::util::thread_sched_params& cfg);
+  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, util::thread_sched_params& cfg);
 
 public:
 
@@ -123,7 +123,7 @@ public:
   uint32_t        max_pfcp_sessions;
 
   std::vector<pdn_cfg_t> pdns;
-  std::vector<oai::cn::core::pfcp::node_id_t> spgwcs;
+  std::vector<core::pfcp::node_id_t> spgwcs;
 
 
   spgwu_config() : m_rw_lock(), pid_dir(), instance(0), s1_up(), sgi(), gateway(), sx(), itti(), pdns(), spgwcs(), max_pfcp_sessions(100) {};
@@ -132,8 +132,8 @@ public:
   int load(const std::string& config_file);
   int execute();
   void display();
-  int  get_pfcp_node_id(oai::cn::core::pfcp::node_id_t& node_id);
-  int get_pfcp_fseid(oai::cn::core::pfcp::fseid_t& fseid);
+  int  get_pfcp_node_id(core::pfcp::node_id_t& node_id);
+  int get_pfcp_fseid(core::pfcp::fseid_t& fseid);
 
 };
 } // namespace spgwu

@@ -75,6 +75,6 @@ std::string &oai::cn::util::rtrim(std::string &s) {
 
 // trim from both ends
 std::string &oai::cn::util::trim(std::string &s) {
-    return oai::cn::util::ltrim(oai::cn::util::rtrim(s));
+    return util::ltrim(util::rtrim(s));
 }
 

@@ -39,7 +39,7 @@
 
 namespace oai::cn::nf::spgwu {
 
-class spgwu_s1u : public oai::cn::proto::gtpv1u::gtpu_l4_stack {
+class spgwu_s1u : public proto::gtpv1u::gtpu_l4_stack {
 private:
   std::thread::id                      thread_id;
   std::thread                          thread;
@@ -52,17 +52,17 @@ public:
   spgwu_s1u(spgwu_s1u const&)    = delete;
   void operator=(spgwu_s1u const&)     = delete;
 
-  //void handle_itti_msg (oai::cn::core::itti::itti_s1u_echo_request& s) {};
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_s1u_echo_response> m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_s1u_error_indication> m);
-  //void handle_itti_msg (oai::cn::core::itti::itti_s1u_supported_extension_headers_notification& s) {};
-  //void handle_itti_msg (oai::cn::core::itti::itti_s1u_end_marker& s) {};
+  //void handle_itti_msg (core::itti::itti_s1u_echo_request& s) {};
+  void handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_response> m);
+  void handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_error_indication> m);
+  //void handle_itti_msg (core::itti::itti_s1u_supported_extension_headers_notification& s) {};
+  //void handle_itti_msg (core::itti::itti_s1u_end_marker& s) {};
 
-  //void send_msg (oai::cn::core::itti::itti_s1u_echo_request& s) {};
-  //void send_msg (oai::cn::core::itti::itti_s1u_echo_response& s);
-  //void send_msg (oai::cn::core::itti::itti_s1u_error_indication& s) {};
-  //void send_msg (oai::cn::core::itti::itti_s1u_supported_extension_headers_notification& s) {};
-  //void send_msg (oai::cn::core::itti::itti_s1u_end_marker& s) {};
+  //void send_msg (core::itti::itti_s1u_echo_request& s) {};
+  //void send_msg (core::itti::itti_s1u_echo_response& s);
+  //void send_msg (core::itti::itti_s1u_error_indication& s) {};
+  //void send_msg (core::itti::itti_s1u_supported_extension_headers_notification& s) {};
+  //void send_msg (core::itti::itti_s1u_end_marker& s) {};
 
   void handle_receive_s1u_msg( proto::gtpv1u::gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
   void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);

@@ -344,7 +344,6 @@ do {                                                    \
 /* Convert the IMSI contained by a char string NULL terminated to uint64_t */
 #define IMSI_STRING_TO_IMSI64(sTRING, iMSI64_pTr) sscanf(sTRING, IMSI_64_FMT, iMSI64_pTr)
 #define IMSI64_TO_STRING(iMSI64, sTRING) snprintf(sTRING, IMSI_BCD_DIGITS_MAX+1, IMSI_64_FMT, iMSI64)
-imsi64_t imsi_to_imsi64(oai::cn::core::imsi_t * const imsi);
 
 #define IMSI_TO_STRING(iMsI_t_PtR,iMsI_sTr, MaXlEn) \
         do { \
@@ -388,9 +387,6 @@ imsi64_t imsi_to_imsi64(oai::cn::core::imsi_t * const imsi);
         }
 
 
-void hexa_to_ascii(uint8_t *from, char *to, size_t length);
-
-int ascii_to_hex(uint8_t *dst, const char *h);
 #define UINT8_TO_BINARY_FMT "%c%c%c%c%c%c%c%c"
 #define UINT8_TO_BINARY_ARG(bYtE) \
     ((bYtE) & 0x80 ? '1':'0'),\
@@ -421,11 +417,17 @@ do { \
 }
 #endif
 
-void paa_to_pfcp_ue_ip_address(const oai::cn::core::paa_t& paa, oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address);
-void pdn_ip_to_pfcp_ue_ip_address(const oai::cn::core::pdn_type_t& pdn_type,
+namespace oai::cn::util {
+  void hexa_to_ascii(uint8_t *from, char *to, size_t length);
+  int ascii_to_hex(uint8_t *dst, const char *h);
+
+  imsi64_t imsi_to_imsi64(core::imsi_t * const imsi);
+
+  void paa_to_pfcp_ue_ip_address(const core::paa_t& paa, core::pfcp::ue_ip_address_t& ue_ip_address);
+  void pdn_ip_to_pfcp_ue_ip_address(const core::pdn_type_t& pdn_type,
                                   const struct in_addr&  ipv4_address,
                                   const struct in6_addr ipv6_address,
-                                  oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address);
-bool sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, oai::cn::core::gtp_u_peer_address_t& peer_address);
-
+                                  core::pfcp::ue_ip_address_t& ue_ip_address);
+  bool sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, core::gtp_u_peer_address_t& peer_address);
+}
 #endif /* FILE_CONVERSIONS_HPP_SEEN */

@@ -58,7 +58,7 @@ public:
 
   teid_t generate_s5s8_up_teid();
 
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_s1u_echo_request> m);
+  void handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_request> m);
 
 
 //  void handle_itti_msg core::(itti::itti_sxab_heartbeat_request& m);
@@ -74,9 +74,9 @@ public:
 //  void handle_itti_msg (core::itti::itti_sxab_pfcp_version_not_supported_response& m);
 //  void handle_itti_msg (core::itti::itti_sxab_pfcp_node_report_request& m);
 //  void handle_itti_msg (core::itti::itti_sxab_pfcp_node_report_response& m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_sxab_session_establishment_request> m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_sxab_session_modification_request> m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_sxab_session_deletion_request> m);
+  void handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_establishment_request> m);
+  void handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_modification_request> m);
+  void handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_deletion_request> m);
 //  void handle_itti_msg (core::itti::itti_sxab_session_deletion_response& m);
 //  void handle_itti_msg (core::itti::itti_sxab_session_report_request& m);
 //  void handle_itti_msg (core::itti::itti_sxab_session_report_response& m);

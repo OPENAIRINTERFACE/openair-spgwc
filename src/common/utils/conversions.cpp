@@ -55,8 +55,7 @@ static const signed char                ascii_to_hex_table[0x100] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-void
-hexa_to_ascii (
+void oai::cn::util::hexa_to_ascii (
   uint8_t * from,
   char *to,
   size_t length)
@@ -72,8 +71,7 @@ hexa_to_ascii (
   }
 }
 
-int
-ascii_to_hex (
+int oai::cn::util::ascii_to_hex (
   uint8_t * dst,
   const char *h)
 {
@@ -110,13 +108,13 @@ ascii_to_hex (
   }
 }
 //------------------------------------------------------------------------------
-imsi64_t imsi_to_imsi64(imsi_t * const imsi)
+imsi64_t oai::cn::util::imsi_to_imsi64(oai::cn::core::imsi_t * const imsi)
 {
   imsi64_t imsi64 = INVALID_IMSI64;
   if (imsi) {
     imsi64 = 0;
     for (int i=0; i < IMSI_BCD8_SIZE; i++) {
-      uint8_t d2 = imsi->u.value[i];
+      uint8_t d2 = imsi->u1.b[i];
       uint8_t d1 = (d2 & 0xf0) >> 4;
       d2 = d2 & 0x0f;
       if (10 > d1) {
@@ -135,56 +133,57 @@ imsi64_t imsi_to_imsi64(imsi_t * const imsi)
 }
 
 //------------------------------------------------------------------------------
-void paa_to_pfcp_ue_ip_address(const oai::cn::core::paa_t& paa, oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address)
+void oai::cn::util::paa_to_pfcp_ue_ip_address(const core::paa_t& paa, core::pfcp::ue_ip_address_t& ue_ip_address)
 {
   switch (paa.pdn_type.pdn_type) {
-  case oai::cn::core::PDN_TYPE_E_IPV4:
+  case core::PDN_TYPE_E_IPV4:
     ue_ip_address.v4 = 1;
     ue_ip_address.ipv4_address = paa.ipv4_address;
     break;
-  case oai::cn::core::PDN_TYPE_E_IPV6:
+  case core::PDN_TYPE_E_IPV6:
     ue_ip_address.v6 = 1;
     ue_ip_address.ipv6_address = paa.ipv6_address;
     break;
-  case oai::cn::core::PDN_TYPE_E_IPV4V6:
+  case core::PDN_TYPE_E_IPV4V6:
     ue_ip_address.v4 = 1;
     ue_ip_address.v6 = 1;
     ue_ip_address.ipv4_address = paa.ipv4_address;
     ue_ip_address.ipv6_address = paa.ipv6_address;
     break;
-  case oai::cn::core::PDN_TYPE_E_NON_IP:
+  case core::PDN_TYPE_E_NON_IP:
   default:
     ;
   }
 }
 //------------------------------------------------------------------------------
-void pdn_ip_to_pfcp_ue_ip_address(const oai::cn::core::pdn_type_t& pdn_type,
+void oai::cn::util::pdn_ip_to_pfcp_ue_ip_address(const core::pdn_type_t& pdn_type,
                                   const struct in_addr&  ipv4_address,
                                   const struct in6_addr ipv6_address,
-                                  oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address)
+                                  core::pfcp::ue_ip_address_t& ue_ip_address)
 {
   switch (pdn_type.pdn_type) {
-  case oai::cn::core::PDN_TYPE_E_IPV4:
+  case core::PDN_TYPE_E_IPV4:
     ue_ip_address.v4 = 1;
     ue_ip_address.ipv4_address = ipv4_address;
     break;
-  case oai::cn::core::PDN_TYPE_E_IPV6:
+  case core::PDN_TYPE_E_IPV6:
     ue_ip_address.v6 = 1;
     ue_ip_address.ipv6_address = ipv6_address;
     break;
-  case oai::cn::core::PDN_TYPE_E_IPV4V6:
+  case core::PDN_TYPE_E_IPV4V6:
     ue_ip_address.v4 = 1;
     ue_ip_address.v6 = 1;
     ue_ip_address.ipv4_address = ipv4_address;
     ue_ip_address.ipv6_address = ipv6_address;
     break;
-  case oai::cn::core::PDN_TYPE_E_NON_IP:
+  case core::PDN_TYPE_E_NON_IP:
   default:
     ;
   }
 }
 
-bool sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, oai::cn::core::gtp_u_peer_address_t& peer_address)
+//------------------------------------------------------------------------------
+bool oai::cn::util::sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, core::gtp_u_peer_address_t& peer_address)
 {
   switch (peer_sockaddr.ss_family) {
     case AF_INET: {

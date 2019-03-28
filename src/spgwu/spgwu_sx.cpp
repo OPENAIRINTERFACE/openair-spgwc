@@ -225,7 +225,7 @@ spgwu_sx::spgwu_sx () : pfcp_l4_stack(std::string(inet_ntoa(spgwu_cfg.sx.addr4))
     throw std::runtime_error( "Cannot create task TASK_SPGWU_SX" );
   }
 
-  for (std::vector<oai::cn::core::pfcp::node_id_t>::const_iterator it = spgwu_cfg.spgwcs.begin(); it != spgwu_cfg.spgwcs.end(); ++it) {
+  for (std::vector<core::pfcp::node_id_t>::const_iterator it = spgwu_cfg.spgwcs.begin(); it != spgwu_cfg.spgwcs.end(); ++it) {
     start_association(*it);
   }
   Logger::spgwu_sx().startup( "Started" );
@@ -461,7 +461,7 @@ void spgwu_sx::start_association(const core::pfcp::node_id_t& node_id)
   itti_sxab_association_setup_request a(TASK_SPGWU_SX, TASK_SPGWU_SX);
   a.trxn_id = generate_trxn_id();
 
-  oai::cn::core::pfcp::node_id_t this_node_id = {};
+  core::pfcp::node_id_t this_node_id = {};
   if (spgwu_cfg.get_pfcp_node_id(this_node_id) == RETURNok) {
     a.pfcp_ies.set(this_node_id);
     core::pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
@@ -482,13 +482,13 @@ void spgwu_sx::send_sx_msg(itti_sxab_association_setup_request& i)
   send_request(i.r_endpoint, i.pfcp_ies, TASK_SPGWU_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const oai::cn::proto::pfcp::pfcp_session_report_request& s)
+void spgwu_sx::send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const proto::pfcp::pfcp_session_report_request& s)
 {
   itti_sxab_session_report_request isrr(TASK_SPGWU_SX, TASK_SPGWU_SX);
   isrr.trxn_id = generate_trxn_id();
   isrr.pfcp_ies = s;
 
-  oai::cn::core::pfcp::node_id_t this_node_id = {};
+  core::pfcp::node_id_t this_node_id = {};
   if (spgwu_cfg.get_pfcp_node_id(this_node_id) == RETURNok) {
     if (this_node_id.node_id_type == core::pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
       //a.l_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(spgwu_cfg.sx.addr4), 0);
@@ -502,7 +502,7 @@ void spgwu_sx::send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const oai::cn::p
 //------------------------------------------------------------------------------
 void spgwu_sx::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
 {
-  oai::cn::proto::pfcp::pfcp_heartbeat_request h = {};
+  proto::pfcp::pfcp_heartbeat_request h = {};
   core::pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
   h.set(r);
 
@@ -521,7 +521,7 @@ void spgwu_sx::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
 //------------------------------------------------------------------------------
 void spgwu_sx::send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id)
 {
-  oai::cn::proto::pfcp::pfcp_heartbeat_response h = {};
+  proto::pfcp::pfcp_heartbeat_response h = {};
   core::pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
   h.set(r);
   send_response(r_endpoint, h, trxn_id);

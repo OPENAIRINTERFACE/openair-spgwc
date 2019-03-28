@@ -88,7 +88,7 @@ bool oai::cn::util::is_pid_file_lock_success(const char * pid_file_name)
     return false;
   }
 
-  if ( 0 > oai::cn::util::lockfile(g_fd_pid_file, F_TLOCK)) {
+  if ( 0 > util::lockfile(g_fd_pid_file, F_TLOCK)) {
     Logger::sgwc_app().error( "lockfile filename %s failed %d:%s\n", pid_file_name, errno, strerror(errno));
     if ( EACCES == errno || EAGAIN == errno ) {
       close(g_fd_pid_file);

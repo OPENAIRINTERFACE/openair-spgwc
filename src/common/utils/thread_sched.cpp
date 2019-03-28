@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file thread_sched.c
+/*! \file thread_sched.cpp
   \brief
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr

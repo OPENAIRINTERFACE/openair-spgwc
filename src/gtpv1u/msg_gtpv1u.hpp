@@ -34,6 +34,7 @@
 #include "3gpp_29.281.h"
 #include "common_defs.h"
 
+#include <utility>
 #include <vector>
 #include <sys/socket.h>
 

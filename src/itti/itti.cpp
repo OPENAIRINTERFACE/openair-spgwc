@@ -35,14 +35,13 @@
 #include <csignal>
 
 using namespace oai::cn::core::itti;
-using namespace std;
 
 extern itti_mw *itti_inst;
 
 static itti_timer null_timer(ITTI_INVALID_TIMER_ID, TASK_NONE, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0);
 
 //------------------------------------------------------------------------------
-void itti_mw::timer_manager_task(const oai::cn::util::thread_sched_params& sched_params)
+void itti_mw::timer_manager_task(const util::thread_sched_params& sched_params)
 {
   Logger::itti().info("Starting timer_manager_task");
   sched_params.apply(TASK_ITTI_TIMER, Logger::itti());
@@ -54,17 +53,17 @@ void itti_mw::timer_manager_task(const oai::cn::util::thread_sched_params& sched
         itti_inst->c_timers.wait(lx);
       }
       std::set<itti_timer>::iterator it = itti_inst->timers.begin();
-      itti_inst->current_timer = ref(*it);
+      itti_inst->current_timer = std::ref(*it);
       itti_inst->timers.erase(it);
       lx.unlock();
 
       // check time-out
-      if (itti_inst->current_timer.time_out > chrono::system_clock::now()) {
+      if (itti_inst->current_timer.time_out > std::chrono::system_clock::now()) {
         std::unique_lock<std::mutex> lto(itti_inst->m_timeout);
-        auto diff =  itti_inst->current_timer.time_out - chrono::system_clock::now();
+        auto diff =  itti_inst->current_timer.time_out - std::chrono::system_clock::now();
         auto rc = itti_inst->c_timeout.wait_for( lto, diff);
         lto.unlock();
-        if ( cv_status::timeout == rc) {
+        if ( std::cv_status::timeout == rc) {
           // signal time-out
           itti_msg_timeout mto(TASK_ITTI_TIMER, itti_inst->current_timer.task_id, itti_inst->current_timer.id, itti_inst->current_timer.arg1_user, itti_inst->current_timer.arg2_user);
           std::shared_ptr<itti_msg_timeout> msgsh = std::make_shared<itti_msg_timeout>(mto);
@@ -110,9 +109,9 @@ itti_mw::~itti_mw() {
 }
 
 //------------------------------------------------------------------------------
-void itti_mw::start(const oai::cn::util::thread_sched_params& sched_params) {
+void itti_mw::start(const util::thread_sched_params& sched_params) {
   Logger::itti().startup( "Starting..." );
-  timer_thread = thread(timer_manager_task, sched_params);
+  timer_thread = std::thread(timer_manager_task, sched_params);
   Logger::itti().startup( "Started" );
 }
 //------------------------------------------------------------------------------
@@ -145,7 +144,7 @@ int itti_mw::create_task (const task_id_t task_id,
         created_tasks++;
         lk.unlock();
       }
-      itti_task_ctxts[task_id]->thread = thread(start_routine,args_p);
+      itti_task_ctxts[task_id]->thread = std::thread(start_routine,args_p);
       while ((itti_task_ctxts[task_id]->task_state != TASK_STATE_READY) && (itti_task_ctxts[task_id]->task_state != TASK_STATE_ENDED))
         usleep (1000);
       return 0;

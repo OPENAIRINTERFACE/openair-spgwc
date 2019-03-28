@@ -44,7 +44,7 @@ namespace oai::cn::nf::spgwu {
 #define TASK_SPGWU_SX_TIMEOUT_ASSOCIATION_REQUEST   (2)
 
 
-class spgwu_sx : public oai::cn::proto::pfcp::pfcp_l4_stack {
+class spgwu_sx : public proto::pfcp::pfcp_l4_stack {
 private:
   std::thread::id                      thread_id;
   std::thread                          thread;
@@ -91,7 +91,7 @@ public:
   void send_sx_msg (core::itti::itti_sxab_session_deletion_response& s);
   void send_sx_msg (core::itti::itti_sxab_session_report_request& s) {};
 
-  void send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const oai::cn::proto::pfcp::pfcp_session_report_request& s);
+  void send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const proto::pfcp::pfcp_session_report_request& s);
 
   void send_heartbeat_request(std::shared_ptr<pfcp_association>& a);
   void send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id);

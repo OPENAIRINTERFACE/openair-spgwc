@@ -91,8 +91,8 @@ private:
   int                                       pdn_if_index;
 
 
-  oai::cn::util::uint_generator<uint64_t>   seid_generator_;
-  oai::cn::util::uint_generator<teid_t>     teid_s1u_generator_;
+  util::uint_generator<uint64_t>   seid_generator_;
+  util::uint_generator<teid_t>     teid_s1u_generator_;
 
 #define TASK_SPGWU_PFCP_SWITCH_MAX_COMMIT_INTERVAL     (0)
 #define TASK_SPGWU_PFCP_SWITCH_MIN_COMMIT_INTERVAL     (1)
@@ -109,13 +109,13 @@ private:
 
   //moodycamel::ConcurrentQueue<core::pfcp::pfcp_session*>            create_session_q;
 
-  void pdn_read_loop(const oai::cn::util::thread_sched_params& sched_params);
+  void pdn_read_loop(const util::thread_sched_params& sched_params);
   int create_pdn_socket (const char * const ifname, const bool promisc, int& if_index);
   int create_pdn_socket (const char * const ifname);
   void setup_pdn_interfaces();
 
-  oai::cn::core::itti::timer_id_t timer_max_commit_interval_id;
-  oai::cn::core::itti::timer_id_t timer_min_commit_interval_id;
+  core::itti::timer_id_t timer_max_commit_interval_id;
+  core::itti::timer_id_t timer_min_commit_interval_id;
 
   void stop_timer_min_commit_interval();
   void start_timer_min_commit_interval();
@@ -169,7 +169,7 @@ public:
   void time_out_min_commit_interval(const uint32_t timer_id);
   void time_out_max_commit_interval(const uint32_t timer_id);
 
-  void remove_pfcp_session(const oai::cn::core::pfcp::fseid_t& cp_fseid);
+  void remove_pfcp_session(const core::pfcp::fseid_t& cp_fseid);
   void remove_pfcp_ul_pdrs_by_up_teid(const teid_t) {};
   void remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t) {};
 
