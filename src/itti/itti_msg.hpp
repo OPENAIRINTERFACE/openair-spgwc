@@ -30,8 +30,6 @@
 #include <stdint.h>
 #include <utility>
 
-namespace oai::cn::core::itti {
-
 typedef enum {
   TASK_FIRST = 0,
   TASK_ITTI_TIMER = TASK_FIRST,
@@ -192,5 +190,5 @@ public:
   itti_msg_terminate(const itti_msg_terminate& i) : itti_msg(i) {}
   static const char* get_msg_name() {return "TERMINATE";};
 };
-}
+
 #endif /* SRC_ITTI_ITTI_MSG_HPP_INCLUDED_ */

@@ -29,8 +29,9 @@
 #ifndef FILE_PGW_CONFIG_HPP_SEEN
 #define FILE_PGW_CONFIG_HPP_SEEN
 
-#include "3gpp_29.244.hpp"
-#include "3gpp_29.274.hpp"
+#include "3gpp_29.244.h"
+#include "3gpp_29.274.h"
+#include "thread_sched.hpp"
 
 #include <arpa/inet.h>
 #include <libconfig.h++>
@@ -39,8 +40,6 @@
 
 #include <mutex>
 #include <vector>
-
-namespace oai::cn::nf::pgwc {
 
 
 #define PGW_CONFIG_STRING_PGW_CONFIG                            "P-GW"
@@ -107,24 +106,24 @@ namespace oai::cn::nf::pgwc {
 #define PGW_CONFIG_STRING_IP                                    "IP"
 #define PGW_CONFIG_STRING_MAC                                   "MAC"
 
-// may be more
+#define PGW_CONFIG_STRING_SCHED_PARAMS                          "SCHED_PARAMS"
+#define PGW_CONFIG_STRING_THREAD_RD_CPU_ID                      "CPU_ID"
+#define PGW_CONFIG_STRING_THREAD_RD_SCHED_POLICY                "SCHED_POLICY"
+#define PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY              "SCHED_PRIORITY"
+
+#define PGW_CONFIG_STRING_ITTI_TASKS                            "ITTI_TASKS"
+#define PGW_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS               "ITTI_TIMER_SCHED_PARAMS"
+#define PGW_CONFIG_STRING_S11_SCHED_PARAMS                      "S11_SCHED_PARAMS"
+#define PGW_CONFIG_STRING_S5S8_SCHED_PARAMS                     "S5S8_SCHED_PARAMS"
+#define PGW_CONFIG_STRING_SX_SCHED_PARAMS                       "SX_SCHED_PARAMS"
+#define PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS                  "PGW_APP_SCHED_PARAMS"
+#define PGW_CONFIG_STRING_SGW_APP_SCHED_PARAMS                  "SGW_APP_SCHED_PARAMS"
+#define PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS                "ASYNC_CMD_SCHED_PARAMS"
+
+
 #define PGW_MAX_ALLOCATED_PDN_ADDRESSES 1024
 
-typedef struct sgi_arp_boot_cache_s {
-#define PGW_ARP_BOOT_CACHE_NUM_ENTRIES_MAX 16
-  struct in_addr    ip[PGW_ARP_BOOT_CACHE_NUM_ENTRIES_MAX];
-  std::string       mac[PGW_ARP_BOOT_CACHE_NUM_ENTRIES_MAX];
-  int num_entries;
-} sgi_arp_boot_cache_t;
-
-typedef struct spgw_ovs_config_s {
-  std::string    bridge_name;
-  int            egress_port_num;
-  std::string    l2_egress_port;
-  int            gtp_port_num;
-  std::string    uplink_mac; // next (first) hop
-  sgi_arp_boot_cache_t sgi_arp_boot_cache;
-} spgw_ovs_config_t;
+namespace pgwc {
 
 typedef struct interface_cfg_s {
   std::string     if_name;
@@ -133,11 +132,24 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int    mtu;
   unsigned int    port;
+  util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
+
+typedef struct itti_cfg_s {
+  util::thread_sched_params itti_timer_sched_params;
+  util::thread_sched_params s11_sched_params;
+  util::thread_sched_params sx_sched_params;
+  util::thread_sched_params s5s8_sched_params;
+  util::thread_sched_params sgw_app_sched_params;
+  util::thread_sched_params pgw_app_sched_params;
+  util::thread_sched_params async_cmd_sched_params;
+} itti_cfg_t;
 
 class pgw_config {
 private:
-  int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t & cfg);
+  int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
+  int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
+  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, util::thread_sched_params& cfg);
 
 public:
   /* Reader/writer lock for this configuration */
@@ -147,17 +159,13 @@ public:
 
   interface_cfg_t s5s8_cp;
   interface_cfg_t sx;
+  itti_cfg_t      itti;
 
   struct in_addr default_dnsv4;
   struct in_addr default_dns_secv4;
   struct in6_addr default_dnsv6;
   struct in6_addr default_dns_secv6;
 
-
-#if ENABLE_LIBGTPNL
-  bool      ue_tcp_mss_clamp; // for UE TCP traffic
-  bool      masquerade_SGI;
-#endif
 
 #define PGW_NUM_APN_MAX 5
   int              num_apn;
@@ -166,7 +174,7 @@ public:
     std::string    apn_label;
     int            pool_id_iv4;
     int            pool_id_iv6;
-    core::pdn_type_t     pdn_type;
+    pdn_type_t     pdn_type;
   } apn[PGW_NUM_APN_MAX];
 
   int              num_ue_pool;
@@ -183,13 +191,10 @@ public:
   struct in6_addr  paa_pool6_prefix[PGW_NUM_UE_POOL_MAX];
   uint8_t          paa_pool6_prefix_len[PGW_NUM_UE_POOL_MAX];
 
-  bool             arp_ue_linux;
-  bool             arp_ue_oai;
+
 
   bool             force_push_pco;
   uint             ue_mtu;
-  bool             use_gtp_kernel_module;
-  bool             enable_loading_gtp_kernel_module;
 
   struct {
     bool      tcp_ecn_enabled = false;           // test for CoDel qdisc
@@ -197,11 +202,8 @@ public:
     unsigned int  apn_ambr_dl;
   } pcef;
 
-#if ENABLE_OPENFLOW
-  spgw_ovs_config_t ovs_config;
-#endif
 
-  pgw_config() : m_rw_lock(), pcef(), num_apn(0), pid_dir(), instance(0), s5s8_cp(), sx() {
+  pgw_config() : m_rw_lock(), pcef(), num_apn(0), pid_dir(), instance(0), s5s8_cp(), sx(), itti() {
     for (int i = 0; i < PGW_NUM_APN_MAX; i++) {
       apn[i] = {};
     }
@@ -221,20 +223,8 @@ public:
       paa_pool6_prefix_len[i] = {};
       ue_pool_excluded[i] = {};
     }
-    arp_ue_linux = false;
-    arp_ue_oai = false;
-
     force_push_pco = true;
     ue_mtu = 1500;
-    use_gtp_kernel_module = true;
-    enable_loading_gtp_kernel_module = true;
-#if ENABLE_LIBGTPNL
-    ue_tcp_mss_clamp = true;
-    masquerade_SGI = true;
-#endif
-#if ENABLE_OPENFLOW
-    ovs_config = {};
-#endif
   };
   ~pgw_config();
   void lock() {m_rw_lock.lock();};
@@ -242,10 +232,10 @@ public:
   int load(const std::string& config_file);
   int finalize();
   void display();
-  bool is_dotted_apn_handled(const std::string& apn, const core::pdn_type_t& pdn_type);
+  bool is_dotted_apn_handled(const std::string& apn, const pdn_type_t& pdn_type);
   int get_pa_pool_id(const std::string& apn, int& pool_id_ipv4, int& pool_id_ipv6);
-  int get_pfcp_node_id(oai::cn::core::pfcp::node_id_t& node_id);
-  int get_pfcp_fseid(oai::cn::core::pfcp::fseid_t& fseid);
+  int get_pfcp_node_id(pfcp::node_id_t& node_id);
+  int get_pfcp_fseid(pfcp::fseid_t& fseid);
 };
 
 } // namespace pgw

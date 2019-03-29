@@ -34,8 +34,6 @@
 #include <algorithm>
 #include <csignal>
 
-using namespace oai::cn::core::itti;
-
 extern itti_mw *itti_inst;
 
 static itti_timer null_timer(ITTI_INVALID_TIMER_ID, TASK_NONE, 0xFFFFFFFF, 0xFFFFFFFF, 0, 0);

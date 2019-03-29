@@ -36,10 +36,8 @@
 #include <ctime>
 #include <stdexcept>
 
-using namespace oai::cn::core;
-using namespace oai::cn::proto::pfcp;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::pgwc;
+using namespace pfcp;
+using namespace pgwc;
 using namespace std;
 
 extern itti_mw *itti_inst;
@@ -253,7 +251,7 @@ void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg, const boost::asio::ip::ud
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_heartbeat_request(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -271,7 +269,7 @@ void pgwc_sxab::handle_receive_heartbeat_request(proto::pfcp::pfcp_msg& msg, con
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_heartbeat_response(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -289,7 +287,7 @@ void pgwc_sxab::handle_receive_heartbeat_response(proto::pfcp::pfcp_msg& msg, co
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_association_setup_request(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_association_setup_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -320,15 +318,15 @@ void pgwc_sxab::handle_receive_association_setup_request(proto::pfcp::pfcp_msg& 
     // always yes (for the time being)
     itti_sxab_association_setup_response a(TASK_SPGWU_SX, TASK_SPGWU_SX);
     a.trxn_id = trxn_id;
-    oai::cn::core::pfcp::cause_t cause = {.cause_value = oai::cn::core::pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
+    pfcp::cause_t cause = {.cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
     a.pfcp_ies.set(cause);
-    oai::cn::core::pfcp::node_id_t node_id = {};
+    pfcp::node_id_t node_id = {};
     if (pgw_cfg.get_pfcp_node_id(node_id) == RETURNok) {
       a.pfcp_ies.set(node_id);
-      core::pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
+      pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
       a.pfcp_ies.set(r);
       a.pfcp_ies.set(cp_function_features);
-      if (node_id.node_id_type == core::pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
+      if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
         //a.l_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(pgw_cfg.sx.addr4), 0);
         a.r_endpoint = remote_endpoint;
         send_sx_msg(a);
@@ -348,7 +346,7 @@ void pgwc_sxab::handle_receive_association_setup_request(proto::pfcp::pfcp_msg& 
 }
 
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_session_establishment_response(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_session_establishment_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -371,7 +369,7 @@ void pgwc_sxab::handle_receive_session_establishment_response(proto::pfcp::pfcp_
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_session_modification_response(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_session_modification_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -394,7 +392,7 @@ void pgwc_sxab::handle_receive_session_modification_response(proto::pfcp::pfcp_m
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_session_deletion_response(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -424,12 +422,12 @@ void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i)
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
 {
-  oai::cn::proto::pfcp::pfcp_heartbeat_request h = {};
-  core::pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
+  pfcp::pfcp_heartbeat_request h = {};
+  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
   h.set(r);
 
-  core::pfcp::node_id_t& node_id = a->node_id;
-  if (node_id.node_id_type == core::pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
+  pfcp::node_id_t& node_id = a->node_id;
+  if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
     a->timer_heartbeat = itti_inst->timer_setup(5,0, TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST, a->hash_node_id);
 
     boost::asio::ip::udp::endpoint r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(node_id.u1.ipv4_address.s_addr)), 8805);
@@ -443,8 +441,8 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id)
 {
-  oai::cn::proto::pfcp::pfcp_heartbeat_response h = {};
-  core::pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
+  pfcp::pfcp_heartbeat_response h = {};
+  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
   h.set(r);
   send_response(r_endpoint, h, trxn_id);
 }

@@ -39,7 +39,7 @@
 #include <stdbool.h>
 #include <string>
 
-namespace oai::cn::nf::spgwu {
+namespace spgwu {
 
 
 #define SPGWU_CONFIG_STRING_SPGWU_CONFIG                          "SPGW-U"
@@ -123,7 +123,7 @@ public:
   uint32_t        max_pfcp_sessions;
 
   std::vector<pdn_cfg_t> pdns;
-  std::vector<core::pfcp::node_id_t> spgwcs;
+  std::vector<pfcp::node_id_t> spgwcs;
 
 
   spgwu_config() : m_rw_lock(), pid_dir(), instance(0), s1_up(), sgi(), gateway(), sx(), itti(), pdns(), spgwcs(), max_pfcp_sessions(100) {};
@@ -132,8 +132,8 @@ public:
   int load(const std::string& config_file);
   int execute();
   void display();
-  int  get_pfcp_node_id(core::pfcp::node_id_t& node_id);
-  int get_pfcp_fseid(core::pfcp::fseid_t& fseid);
+  int  get_pfcp_node_id(pfcp::node_id_t& node_id);
+  int get_pfcp_fseid(pfcp::fseid_t& fseid);
 
 };
 } // namespace spgwu

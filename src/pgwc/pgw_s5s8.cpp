@@ -34,9 +34,8 @@
 
 #include <stdexcept>
 
-using namespace oai::cn::proto::gtpv2c;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::pgwc;
+using namespace gtpv2c;
+using namespace pgwc;
 using namespace std;
 
 

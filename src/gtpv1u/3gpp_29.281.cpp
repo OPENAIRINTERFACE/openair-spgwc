@@ -32,8 +32,7 @@
 #include <string>
 #include <string.h>
 
-using namespace oai::cn::proto::gtpv1u;
-using namespace oai::cn::core;
+using namespace gtpv1u;
 //------------------------------------------------------------------------------
 gtpv1u_ie * gtpv1u_ie::new_gtpv1u_ie_from_stream(std::istream& is) {
   gtpv1u_tlv    tlv;

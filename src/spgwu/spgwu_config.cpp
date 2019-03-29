@@ -29,6 +29,7 @@
 #include "3gpp_29.274.hpp"
 #include "async_shell_cmd.hpp"
 #include "common_defs.h"
+#include "conversions.hpp"
 #include "get_gateway_netlink.hpp"
 #include "if.hpp"
 #include "logger.hpp"
@@ -46,7 +47,7 @@
 
 using namespace std;
 using namespace libconfig;
-using namespace oai::cn::nf::spgwu;
+using namespace spgwu;
 
 // C includes
 #include <arpa/inet.h>
@@ -63,23 +64,23 @@ int spgwu_config::execute ()
 }
 
 //------------------------------------------------------------------------------
-int  spgwu_config::get_pfcp_node_id(core::pfcp::node_id_t& node_id)
+int  spgwu_config::get_pfcp_node_id(pfcp::node_id_t& node_id)
 {
   node_id = {};
   if (sx.addr4.s_addr) {
-    node_id.node_id_type = core::pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
+    node_id.node_id_type = pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
     node_id.u1.ipv4_address = sx.addr4;
     return RETURNok;
   }
   if (sx.addr6.s6_addr32[0] | sx.addr6.s6_addr32[1] | sx.addr6.s6_addr32[2] | sx.addr6.s6_addr32[3]) {
-    node_id.node_id_type = core::pfcp::NODE_ID_TYPE_IPV6_ADDRESS;
+    node_id.node_id_type = pfcp::NODE_ID_TYPE_IPV6_ADDRESS;
     node_id.u1.ipv6_address = sx.addr6;
     return RETURNok;
   }
   return RETURNerror;
 }
 //------------------------------------------------------------------------------
-int spgwu_config::get_pfcp_fseid(core::pfcp::fseid_t& fseid)
+int spgwu_config::get_pfcp_fseid(pfcp::fseid_t& fseid)
 {
   int rc = RETURNerror;
   fseid = {};
@@ -230,7 +231,7 @@ int spgwu_config::load(const string& config_file)
     load_interface(sgi_cfg, sgi);
 
     if ((boost::iequals(sgi.if_name, "none")) || (boost::iequals(sgi.if_name, "default_gateway")))  {
-      if (cn::util::get_gateway_and_iface(gateway, sgi.if_name)) {
+      if (util::get_gateway_and_iface(gateway, sgi.if_name)) {
         std::string copy = sgi.if_name;
         if (get_inet_addr_infos_from_iface(sgi.if_name, sgi.addr4, sgi.network4, sgi.mtu)) {
           Logger::spgwu_app().error("Could not read %s network interface configuration from system", sgi.if_name);
@@ -282,7 +283,7 @@ int spgwu_config::load(const string& config_file)
           throw ("CONFIG: BAD IPV6 NETWORK ADDRESS in " SPGWU_CONFIG_STRING_PDN_NETWORK_LIST);
         }
         pdn_cfg.prefix_ipv6 = std::stoul (ips.at(1),nullptr,0);
-        Logger::spgwu_app().info( "  %s......: %s/%d", ips.at(0).c_str(), core::toString(pdn_cfg.network_ipv6).c_str(), pdn_cfg.prefix_ipv6);
+        Logger::spgwu_app().info( "  %s......: %s/%d", ips.at(0).c_str(), conv::toString(pdn_cfg.network_ipv6).c_str(), pdn_cfg.prefix_ipv6);
       }
       pdn_cfg.snat = false;
       std::string astring = {};
@@ -302,8 +303,8 @@ int spgwu_config::load(const string& config_file)
 
       string address = {};
       if (spgwc_cfg.lookupValue(SPGWU_CONFIG_STRING_IPV4_ADDRESS, address)) {
-        core::pfcp::node_id_t n = {};
-        n.node_id_type = core::pfcp::NODE_ID_TYPE_IPV4_ADDRESS; // actually
+        pfcp::node_id_t n = {};
+        n.node_id_type = pfcp::NODE_ID_TYPE_IPV4_ADDRESS; // actually
         if (inet_pton (AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
           memcpy (&n.u1.ipv4_address, buf_in_addr, sizeof (struct in_addr));
         } else {
@@ -388,10 +389,10 @@ void spgwu_config::display ()
   for (auto it : pdns) {
     Logger::spgwu_app().info( "    PDN %d ............: snat %s", i, (it.snat) ? "yes":"no");
     if (it.prefix_ipv4) {
-      Logger::spgwu_app().info( "       NW .............: %s/%d", core::toString(it.network_ipv4).c_str(), it.prefix_ipv4);
+      Logger::spgwu_app().info( "       NW .............: %s/%d", conv::toString(it.network_ipv4).c_str(), it.prefix_ipv4);
     }
     if (it.prefix_ipv6) {
-      Logger::spgwu_app().info( "       NW .............: %s/%d", core::toString(it.network_ipv6).c_str(), it.prefix_ipv6);
+      Logger::spgwu_app().info( "       NW .............: %s/%d", conv::toString(it.network_ipv6).c_str(), it.prefix_ipv6);
     }
     i++;
   }

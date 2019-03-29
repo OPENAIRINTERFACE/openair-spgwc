@@ -37,75 +37,75 @@
 #include <boost/asio/ip/address.hpp>
 #include <thread>
 
-namespace oai::cn::nf::spgwu {
+namespace spgwu {
 
 #define TASK_SPGWU_SX_TRIGGER_HEARTBEAT_REQUEST     (0)
 #define TASK_SPGWU_SX_TIMEOUT_HEARTBEAT_REQUEST     (1)
 #define TASK_SPGWU_SX_TIMEOUT_ASSOCIATION_REQUEST   (2)
 
 
-class spgwu_sx : public proto::pfcp::pfcp_l4_stack {
+class spgwu_sx : public pfcp::pfcp_l4_stack {
 private:
   std::thread::id                      thread_id;
   std::thread                          thread;
 
   uint64_t                             recovery_time_stamp; //timestamp in seconds
-  core::pfcp::up_function_features_s   up_function_features;
+  pfcp::up_function_features_s   up_function_features;
 
-  void start_association(const core::pfcp::node_id_t& node_id);
+  void start_association(const pfcp::node_id_t& node_id);
 
 public:
   spgwu_sx();
   spgwu_sx(spgwu_sx const&)    = delete;
   void operator=(spgwu_sx const&)     = delete;
 
-  void handle_itti_msg (core::itti::itti_sxab_heartbeat_request& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_heartbeat_response& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_association_setup_request& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_association_setup_response& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_association_update_request& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_association_update_response& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_association_release_request& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_association_release_response& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_version_not_supported_response& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_node_report_response& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_session_set_deletion_request& s) {};
-  void handle_itti_msg (core::itti::itti_sxab_session_establishment_response& s);
-  void handle_itti_msg (core::itti::itti_sxab_session_modification_response& s);
-  void handle_itti_msg (core::itti::itti_sxab_session_deletion_response& s);
-  void handle_itti_msg (core::itti::itti_sxab_session_report_response& s) {};
+  void handle_itti_msg (itti_sxab_heartbeat_request& s) {};
+  void handle_itti_msg (itti_sxab_heartbeat_response& s) {};
+  void handle_itti_msg (itti_sxab_association_setup_request& s) {};
+  void handle_itti_msg (itti_sxab_association_setup_response& s) {};
+  void handle_itti_msg (itti_sxab_association_update_request& s) {};
+  void handle_itti_msg (itti_sxab_association_update_response& s) {};
+  void handle_itti_msg (itti_sxab_association_release_request& s) {};
+  void handle_itti_msg (itti_sxab_association_release_response& s) {};
+  void handle_itti_msg (itti_sxab_version_not_supported_response& s) {};
+  void handle_itti_msg (itti_sxab_node_report_response& s) {};
+  void handle_itti_msg (itti_sxab_session_set_deletion_request& s) {};
+  void handle_itti_msg (itti_sxab_session_establishment_response& s);
+  void handle_itti_msg (itti_sxab_session_modification_response& s);
+  void handle_itti_msg (itti_sxab_session_deletion_response& s);
+  void handle_itti_msg (itti_sxab_session_report_response& s) {};
 
-  void send_sx_msg (core::itti::itti_sxab_heartbeat_request& s) {};
-  void send_sx_msg (core::itti::itti_sxab_heartbeat_response& s) {};
-  void send_sx_msg (core::itti::itti_sxab_association_setup_request& s);
-  void send_sx_msg (core::itti::itti_sxab_association_setup_response& s) {};
-  void send_sx_msg (core::itti::itti_sxab_association_update_request& s) {};
-  void send_sx_msg (core::itti::itti_sxab_association_update_response& s) {};
-  void send_sx_msg (core::itti::itti_sxab_association_release_request& s) {};
-  void send_sx_msg (core::itti::itti_sxab_association_release_response& s) {};
-  void send_sx_msg (core::itti::itti_sxab_version_not_supported_response& s) {};
-  void send_sx_msg (core::itti::itti_sxab_node_report_request& s) {};
-  void send_sx_msg (core::itti::itti_sxab_session_set_deletion_response& s) {};
-  void send_sx_msg (core::itti::itti_sxab_session_establishment_response& s);
-  void send_sx_msg (core::itti::itti_sxab_session_modification_response& s);
-  void send_sx_msg (core::itti::itti_sxab_session_deletion_response& s);
-  void send_sx_msg (core::itti::itti_sxab_session_report_request& s) {};
+  void send_sx_msg (itti_sxab_heartbeat_request& s) {};
+  void send_sx_msg (itti_sxab_heartbeat_response& s) {};
+  void send_sx_msg (itti_sxab_association_setup_request& s);
+  void send_sx_msg (itti_sxab_association_setup_response& s) {};
+  void send_sx_msg (itti_sxab_association_update_request& s) {};
+  void send_sx_msg (itti_sxab_association_update_response& s) {};
+  void send_sx_msg (itti_sxab_association_release_request& s) {};
+  void send_sx_msg (itti_sxab_association_release_response& s) {};
+  void send_sx_msg (itti_sxab_version_not_supported_response& s) {};
+  void send_sx_msg (itti_sxab_node_report_request& s) {};
+  void send_sx_msg (itti_sxab_session_set_deletion_response& s) {};
+  void send_sx_msg (itti_sxab_session_establishment_response& s);
+  void send_sx_msg (itti_sxab_session_modification_response& s);
+  void send_sx_msg (itti_sxab_session_deletion_response& s);
+  void send_sx_msg (itti_sxab_session_report_request& s) {};
 
-  void send_sx_msg(const core::pfcp::fseid_t& cp_fseid, const proto::pfcp::pfcp_session_report_request& s);
+  void send_sx_msg(const pfcp::fseid_t& cp_fseid, const pfcp::pfcp_session_report_request& s);
 
   void send_heartbeat_request(std::shared_ptr<pfcp_association>& a);
   void send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id);
 
-  void handle_receive_pfcp_msg( proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_pfcp_msg( pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
   void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
   // node related
-  void handle_receive_heartbeat_request(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_heartbeat_response(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_association_setup_response(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_association_setup_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
   // session related
-  void handle_receive_session_establishment_request(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_session_modification_request(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_session_deletion_request(proto::pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_session_establishment_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_session_modification_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_session_deletion_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
 
 
 

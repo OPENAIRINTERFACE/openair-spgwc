@@ -19,47 +19,31 @@
  *      contact@openairinterface.org
  */
 
-/*! \file conversions.h
+/*! \file 3gpp_conversions.hpp
   \brief
   \author Lionel Gauthier
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
 
-#ifndef FILE_EPC_CONVERSIONS_HPP_SEEN
-#define FILE_EPC_CONVERSIONS_HPP_SEEN
-#include "common_types.h"
-#include "3gpp_23.003.h"
-#include "3gpp_24.008.h"
+#ifndef FILE_3GPP_CONVERSIONS_HPP_SEEN
+#define FILE_3GPP_CONVERSIONS_HPP_SEEN
 #include "3gpp_29.274.h"
-#include "EpsQualityOfService.h"
+#include "3gpp_29.244.h"
+#include "3gpp_29.281.h"
 
-namespace oai {
-namespace cn {
-namespace util {
+namespace xgpp_conv {
 
-inline void build_fteid(core::fteid_t& fteid, const core::ip_address_t ip,const teid_t teid) {
-
-  fteid.teid = teid;
-  fteid.ipv4 = ip.ipv4;
-  fteid.ipv4_address = ip.address;
-}
-#define FTEID_T_2_IP_ADDRESS_T(fte_p,ip_p) \
-do { \
-    (ip_p)->ipv4 = false; \
-    (ip_p)->ipv6 = false; \
-    if ((fte_p)->ipv4) { \
-      (ip_p)->ipv4 = true; \
-      (ip_p)->address.ipv4_address.s_addr = (fte_p)->ipv4_address.s_addr;         \
-    } \
-    else if ((fte_p)->ipv6) { \
-      (ip_p)->ipv6 = true; \
-      memcpy(&(ip_p)->address.ipv6_address, &(fte_p)->ipv6_address, sizeof((fte_p)->ipv6_address)); \
-    } \
-} while (0)
+  void paa_to_pfcp_ue_ip_address(const paa_t& paa, pfcp::ue_ip_address_t& ue_ip_address);
+  void pdn_ip_to_pfcp_ue_ip_address(const pdn_type_t& pdn_type,
+                                                 const struct in_addr&  ipv4_address,
+                                                 const struct in6_addr ipv6_address,
+                                                 pfcp::ue_ip_address_t& ue_ip_address);
+  void pfcp_to_core_fteid(const pfcp::fteid_t& pfteid, fteid_t& fteid);
+  void pfcp_from_core_fteid(pfcp::fteid_t& pfteid, const fteid_t& fteid);
+  void pfcp_cause_to_core_cause(const pfcp::cause_t& pc, cause_t& c);
+  bool sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, gtp_u_peer_address_t& peer_address);
 
 }
-}
-}
 
-#endif /* FILE_CONVERSIONS_SEEN */
+#endif /* FILE_3GPP_CONVERSIONS_HPP_SEEN */

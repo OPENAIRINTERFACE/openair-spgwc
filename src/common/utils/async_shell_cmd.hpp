@@ -36,7 +36,7 @@
 #include <string>
 #include <thread>
 
-namespace oai::cn::util {
+namespace util {
 
 class async_shell_cmd {
 private:
@@ -49,7 +49,7 @@ public:
   async_shell_cmd(async_shell_cmd const&)    = delete;
   void operator=(async_shell_cmd const&)     = delete;
 
-  int run_command (const core::itti::task_id_t sender_itti_task, const bool is_abort_on_error, const char* src_file, const int src_line, const std::string& cmd_str);
+  int run_command (const task_id_t sender_itti_task, const bool is_abort_on_error, const char* src_file, const int src_line, const std::string& cmd_str);
 
 };
 

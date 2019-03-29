@@ -50,6 +50,7 @@ function help()
   echo_error "  -h, --help                                Print this help."
   echo_error "  -I, --install-deps                        Check installed software necessary to build and run S/P-GW-C (support $SUPPORTED_DISTRO)."
   echo_error "  -i, --install-min-deps                    Check installed software necessary to run a statically linked S/P-GW-C (support $SUPPORTED_DISTRO)."
+  echo_error "  -j, --jobs                                Multiple jobs for compiling."
   echo_error "  -v, --verbose                             Build process verbose."
   echo_error "  -V, --Verbose                             CMake only build process verbose, display compilation warnings and errors."
   echo_error " "
@@ -64,7 +65,7 @@ function main()
   local -i var_check_install_min_deps=0
   local -i var_check_install_deps=0
   local    cmake_args=" "
-  export make_args="-j`nproc`"
+  export   make_args=" "
 
 
   until [ -z "$1" ]
@@ -109,6 +110,10 @@ function main()
         var_check_install_min_deps=1
         shift;
         ;;
+      -j | --jobs)
+        make_args="$make_args -j`nproc`"
+        shift;
+        ;;
       -v | --verbose)
         echo "Make build process verbose"
         cmake_args="$cmake_args -DCMAKE_VERBOSE_MAKEFILE=ON"
@@ -121,7 +126,7 @@ function main()
         verbose=1
         shift;
         ;;
-      *)   
+      *)
         echo "Unknown option $1"
         help
         return 1
@@ -129,16 +134,16 @@ function main()
     esac
   done
 
-  
+
   if [ ! -d /usr/local/etc/oai ]; then
     $SUDO mkdir -m 777 -p /usr/local/etc/oai
   fi
-  
-  set_openair_env 
-  
+
+  set_openair_env
+
   local dlog=$OPENAIRCN_DIR/build/log
   local dext=$OPENAIRCN_DIR/build/ext
-  
+
   mkdir -m 777 -p $dlog
   mkdir -m 777 -p $dext
 
@@ -154,7 +159,7 @@ function main()
         return 0
     fi
   fi
-  
+
   if [ $var_check_install_deps -gt 0 ];then
     disable_ipv6
     check_install_spgwc_deps  $force $debug
@@ -167,7 +172,7 @@ function main()
         return 0
     fi
   fi
-  
+
   cmake_args="$cmake_args  -DBUILD_SHARED_LIBS=OFF"
 
   ##############################################################################
@@ -189,7 +194,7 @@ function main()
   if [ ! -d ./build ]; then
     mkdir -m 777 -p -v build
   fi
-  
+
   cd ./build
   $CMAKE $cmake_args .. > /dev/null
   ret=$?;[[ $ret -ne 0 ]] && return $ret

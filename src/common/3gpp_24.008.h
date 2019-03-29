@@ -31,8 +31,6 @@
 #include <stdint.h>
 #include <string>
 
-namespace oai::cn::core {
-
 //------------------------------------------------------------------------------
 // 10.5.1.3 Location Area Identification
 //------------------------------------------------------------------------------
@@ -341,5 +339,5 @@ typedef struct traffic_flow_template_s {
 #define TFT_ENCODE_IEI_FALSE    false
 #define TFT_ENCODE_LENGTH_TRUE  true
 #define TFT_ENCODE_LENGTH_FALSE false
-}
+
 #endif /* FILE_3GPP_24_008_SEEN */

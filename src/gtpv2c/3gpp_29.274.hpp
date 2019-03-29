@@ -45,7 +45,7 @@
 #include "serializable.hpp"
 
 
-namespace oai::cn::proto::gtpv2c {
+namespace gtpv2c {
 
 //------------------------------------------------------------------------------
 class gtpv2c_tlv : public stream_serializable {
@@ -61,18 +61,13 @@ public:
     uint8_t b;
   } u1;
 
-  gtpv2c_tlv() {
-    type = 0;
-    length = 0;
-    u1.b = 0;
-  };
+  gtpv2c_tlv() : type(0), length(0), u1() {}
 
-  gtpv2c_tlv(uint8_t t, uint16_t l = 0, uint8_t i = 0) {
-    type = t;
-    length = l;
+  gtpv2c_tlv(uint8_t t, uint16_t l = 0, uint8_t i = 0) : type(t), length(l)
+  {
     u1.bf.instance = i;
     u1.bf.spare = 0;
-  };
+  }
 
   //~gtpv2c_tlv() {};
 
@@ -533,7 +528,7 @@ public:
   uint num_digits;
 
   //--------
-  explicit gtpv2c_imsi_ie(const core::imsi_t& i) : gtpv2c_ie(GTP_IE_IMSI) {
+  explicit gtpv2c_imsi_ie(const imsi_t& i) : gtpv2c_ie(GTP_IE_IMSI) {
     // avoid using b[]
     u1.digits.filler = i.u1.digits.filler;
     u1.digits.digit1 = i.u1.digits.digit1;
@@ -566,7 +561,7 @@ public:
     num_digits = 0;
   };
   //--------
-  void to_core_type(core::imsi_t& i) {
+  void to_core_type(imsi_t& i) {
     i.u1.digits.digit1 = u1.digits.digit1;
     i.u1.digits.digit2 = u1.digits.digit2;
     i.u1.digits.digit3 = u1.digits.digit3;
@@ -603,7 +598,7 @@ public:
   }
 
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::imsi_t imsi = {};
+      imsi_t imsi = {};
       to_core_type(imsi);
       s.set(imsi, instance);
   }
@@ -633,7 +628,7 @@ public:
   } u2;
 
   //--------
-  explicit gtpv2c_cause_ie(const core::cause_t& i) : gtpv2c_ie(GTP_IE_CAUSE) {
+  explicit gtpv2c_cause_ie(const cause_t& i) : gtpv2c_ie(GTP_IE_CAUSE) {
     cause_value = i.cause_value;
     u1.bf.spare1 = 0;
     u1.bf.pce = i.pce;
@@ -644,7 +639,7 @@ public:
     u2.bf.spare2 = 0;
     u2.bf.instance = i.offending_ie_instance;
     //if (type_of_the_offending_ie) { choose right test?
-    if (core::MANDATORY_IE_INCORRECT == cause_value) {
+    if (MANDATORY_IE_INCORRECT == cause_value) {
       tlv.length = 6;
     } else {
       tlv.length = 2;
@@ -667,7 +662,7 @@ public:
     length_of_the_offending_ie = 0;
     u2.b = 0;
   };
-  void to_core_type(core::cause_t& c) {
+  void to_core_type(cause_t& c) {
     c.cause_value = cause_value;
     c.pce = u1.bf.pce;
     c.bce = u1.bf.bce;
@@ -678,7 +673,7 @@ public:
   }
   //--------
   void dump_to(std::ostream& os) {
-    if (core::MANDATORY_IE_INCORRECT == cause_value) {
+    if (MANDATORY_IE_INCORRECT == cause_value) {
       tlv.length = 6;
     } else {
       tlv.length = 2;
@@ -707,7 +702,7 @@ public:
   }
 
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::cause_t cause = {};
+      cause_t cause = {};
       to_core_type(cause);
       s.set(cause, instance);
   }
@@ -720,7 +715,7 @@ class gtpv2c_recovery_ie : public gtpv2c_ie {
 public:
   uint8_t recovery_restart_counter;
   //--------
-  explicit gtpv2c_recovery_ie(const core::recovery_t& i) : gtpv2c_ie(GTP_IE_RECOVERY_RESTART_COUNTER) {
+  explicit gtpv2c_recovery_ie(const recovery_t& i) : gtpv2c_ie(GTP_IE_RECOVERY_RESTART_COUNTER) {
     recovery_restart_counter = i.restart_counter;
     tlv.length = 1;
   }
@@ -734,7 +729,7 @@ public:
     recovery_restart_counter = 0;
   };
 
-  void to_core_type(core::recovery_t& c) {
+  void to_core_type(recovery_t& c) {
     c.restart_counter = recovery_restart_counter;
   }
   //--------
@@ -749,7 +744,7 @@ public:
   }
 
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::recovery_t v = {};
+      recovery_t v = {};
       to_core_type(v);
       s.set(v, instance);
   }
@@ -761,7 +756,7 @@ class gtpv2c_access_point_name_ie : public gtpv2c_ie {
 public:
   std::string access_point_name;
   //--------
-  explicit gtpv2c_access_point_name_ie(const core::apn_t& apn) :
+  explicit gtpv2c_access_point_name_ie(const apn_t& apn) :
 gtpv2c_ie(GTP_IE_ACCESS_POINT_NAME), access_point_name(apn.access_point_name) {
     tlv.length = access_point_name.size();
   };
@@ -770,7 +765,7 @@ gtpv2c_ie(GTP_IE_ACCESS_POINT_NAME), access_point_name(apn.access_point_name) {
   //--------
   explicit gtpv2c_access_point_name_ie(const gtpv2c_tlv& t) : gtpv2c_ie(t) {};
   //--------
-  void to_core_type(core::apn_t& a) {
+  void to_core_type(apn_t& a) {
     a.access_point_name = access_point_name;
   }
   //--------
@@ -788,7 +783,7 @@ gtpv2c_ie(GTP_IE_ACCESS_POINT_NAME), access_point_name(apn.access_point_name) {
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::apn_t apn = {};
+      apn_t apn = {};
       to_core_type(apn);
       s.set(apn, instance);
   }
@@ -801,7 +796,7 @@ public:
   uint32_t apn_ambr_for_uplink;
   uint32_t apn_ambr_for_downlink;
   //--------
-  explicit gtpv2c_aggregate_maximum_bit_rate_ie(const core::ambr_t& ambr) :
+  explicit gtpv2c_aggregate_maximum_bit_rate_ie(const ambr_t& ambr) :
 gtpv2c_ie(GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE) {
     // force length
     tlv.length = 8;
@@ -821,7 +816,7 @@ gtpv2c_ie(GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE) {
     apn_ambr_for_downlink = 0;
   };
   //--------
-  void to_core_type(core::ambr_t& ambr) {
+  void to_core_type(ambr_t& ambr) {
     ambr.br_ul = apn_ambr_for_uplink;
     ambr.br_dl = apn_ambr_for_downlink;
   }
@@ -843,7 +838,7 @@ gtpv2c_ie(GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE) {
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::ambr_t v = {};
+      ambr_t v = {};
       to_core_type(v);
       s.set(v, instance);
   }
@@ -861,7 +856,7 @@ public:
     uint8_t b;
   } u1;
   //--------
-  explicit gtpv2c_eps_bearer_id_ie(const core::ebi_t& e) :
+  explicit gtpv2c_eps_bearer_id_ie(const ebi_t& e) :
 gtpv2c_ie(GTP_IE_EPS_BEARER_ID){
     tlv.length = 1;
     u1.b = 0;
@@ -877,7 +872,7 @@ gtpv2c_ie(GTP_IE_EPS_BEARER_ID){
     u1.b = 0;
   };
   //--------
-  void to_core_type(core::ebi_t& e) {
+  void to_core_type(ebi_t& e) {
     e.ebi = u1.bf.eps_bearer_id;
   }
   //--------
@@ -892,7 +887,7 @@ gtpv2c_ie(GTP_IE_EPS_BEARER_ID){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::ebi_t ebi = {};
+      ebi_t ebi = {};
       to_core_type(ebi);
       s.set(ebi, instance);
   }
@@ -908,7 +903,7 @@ public:
   } u1;
   bool is_ipv4;
   //--------
-  explicit gtpv2c_ip_address_ie(const core::ip_address_t& i) :
+  explicit gtpv2c_ip_address_ie(const ip_address_t& i) :
 gtpv2c_ie(GTP_IE_IP_ADDRESS) {
     is_ipv4 = i.is_ipv4;
     if (is_ipv4) {
@@ -932,7 +927,7 @@ gtpv2c_ie(GTP_IE_IP_ADDRESS) {
     is_ipv4 = true;
   };
   //--------
-  void to_core_type(core::ip_address_t& i) {
+  void to_core_type(ip_address_t& i) {
     i.is_ipv4 = is_ipv4;
     if (is_ipv4) {
       i.address.ipv6_address = in6addr_any;
@@ -962,7 +957,7 @@ gtpv2c_ie(GTP_IE_IP_ADDRESS) {
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::ip_address_t ip_address = {};
+      ip_address_t ip_address = {};
       to_core_type(ip_address);
       s.set(ip_address, instance);
   }
@@ -996,7 +991,7 @@ public:
   uint num_digits;
 
   //--------
-  explicit gtpv2c_mei_ie(const core::mei_t& i) :
+  explicit gtpv2c_mei_ie(const mei_t& i) :
 gtpv2c_ie(GTP_IE_MOBILE_EQUIPMENT_IDENTITY) {
     // avoid using b[]
     u1.digits.digit1 = i.u1.digits.digit1;
@@ -1034,7 +1029,7 @@ gtpv2c_ie(GTP_IE_MOBILE_EQUIPMENT_IDENTITY) {
     num_digits = 0;
   };
   //--------
-  void to_core_type(core::mei_t& i) {
+  void to_core_type(mei_t& i) {
     i.u1.digits.digit1 = u1.digits.digit1;
     i.u1.digits.digit2 = u1.digits.digit2;
     i.u1.digits.digit3 = u1.digits.digit3;
@@ -1070,7 +1065,7 @@ gtpv2c_ie(GTP_IE_MOBILE_EQUIPMENT_IDENTITY) {
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::mei_t mei = {};
+      mei_t mei = {};
       to_core_type(mei);
       s.set(mei, instance);
   }
@@ -1103,7 +1098,7 @@ public:
   uint num_digits;
 
   //--------
-  explicit gtpv2c_msisdn_ie(const core::msisdn_t& m) : gtpv2c_ie(GTP_IE_MSISDN) {
+  explicit gtpv2c_msisdn_ie(const msisdn_t& m) : gtpv2c_ie(GTP_IE_MSISDN) {
     // avoid using b[]
     u1.digits.digit1 = m.u1.digits.digit1;
     u1.digits.digit2 = m.u1.digits.digit2;
@@ -1140,7 +1135,7 @@ public:
     num_digits = 0;
   };
   //--------
-  void to_core_type(core::msisdn_t& m) {
+  void to_core_type(msisdn_t& m) {
     m.u1.digits.digit1 = u1.digits.digit1;
     m.u1.digits.digit2 = u1.digits.digit2;
     m.u1.digits.digit3 = u1.digits.digit3;
@@ -1181,7 +1176,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::msisdn_t msisdn = {};
+      msisdn_t msisdn = {};
       to_core_type(msisdn);
       s.set(msisdn, instance);
   }
@@ -1283,7 +1278,7 @@ public:
   } u7;
 
   //--------
-  explicit gtpv2c_indication_ie(const core::indication_t& i) :
+  explicit gtpv2c_indication_ie(const indication_t& i) :
 gtpv2c_ie(GTP_IE_INDICATION) {
     u1.bf.daf = i.daf;
     u1.bf.dtf = i.dtf;
@@ -1371,7 +1366,7 @@ gtpv2c_ie(GTP_IE_INDICATION) {
     u7.b = 0;
   };
   //--------
-  void to_core_type(core::indication_t& i) {
+  void to_core_type(indication_t& i) {
     i.daf = u1.bf.daf;
     i.dtf = u1.bf.dtf;
     i.hi = u1.bf.hi;
@@ -1486,7 +1481,7 @@ gtpv2c_ie(GTP_IE_INDICATION) {
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::indication_t indication = {};
+      indication_t indication = {};
       to_core_type(indication);
       s.set(indication, instance);
   }
@@ -1517,7 +1512,7 @@ public:
     length_of_protocol_id_contents(p.length_of_protocol_id_contents),
     protocol_id_contents(p.protocol_id_contents) {}
 
-  explicit protocol_or_container_id(const core::pco_protocol_or_container_id_t& p) :
+  explicit protocol_or_container_id(const pco_protocol_or_container_id_t& p) :
     protocol_id(p.protocol_id),
     length_of_protocol_id_contents(p.length_of_protocol_id_contents),
     protocol_id_contents(p.protocol_id_contents) {}
@@ -1569,7 +1564,7 @@ public:
     protocol_or_container_ids.reserve(PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID);
   }
   //--------
-  explicit gtpv2c_pco_ie(const core::protocol_configuration_options_t& p) :
+  explicit gtpv2c_pco_ie(const protocol_configuration_options_t& p) :
 gtpv2c_pco_ie(){
     tlv.length = 1;
     u1.b = 0;
@@ -1590,7 +1585,7 @@ gtpv2c_pco_ie(){
     protocol_or_container_ids.reserve(PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID);
   };
   //--------
-  void to_core_type(core::protocol_configuration_options_t& p) {
+  void to_core_type(protocol_configuration_options_t& p) {
     p = {0};
     p.ext = u1.bf.ext;
     p.configuration_protocol = u1.bf.configuration_protocol;
@@ -1631,7 +1626,7 @@ gtpv2c_pco_ie(){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::protocol_configuration_options_t pco = {};
+      protocol_configuration_options_t pco = {};
       to_core_type(pco);
       s.set(pco, instance);
   }
@@ -1657,7 +1652,7 @@ public:
     u1.b = 0;
   }
   //--------
-  explicit gtpv2c_bearer_tft_ie(const core::traffic_flow_template_t& t) :
+  explicit gtpv2c_bearer_tft_ie(const traffic_flow_template_t& t) :
 gtpv2c_bearer_tft_ie(){
     tlv.length = 2;
     u1.bf.tftoperationcode = t.tftoperationcode;
@@ -1669,7 +1664,7 @@ gtpv2c_bearer_tft_ie(){
     u1.b = 0;
   };
   //--------
-  void to_core_type(core::traffic_flow_template_t& p) {
+  void to_core_type(traffic_flow_template_t& p) {
     p = {0};
     p.tftoperationcode = u1.bf.tftoperationcode;
     p.ebit = u1.bf.ebit;
@@ -1702,7 +1697,7 @@ gtpv2c_bearer_tft_ie(){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::traffic_flow_template_t tft = {};
+      traffic_flow_template_t tft = {};
       to_core_type(tft);
       s.set(tft, instance);
   }
@@ -1745,7 +1740,7 @@ public:
   uint32_t charging_id;
 
   //--------
-  explicit gtpv2c_charging_id_ie(const core::charging_id_t& c) :
+  explicit gtpv2c_charging_id_ie(const charging_id_t& c) :
 gtpv2c_ie(GTP_IE_CHARGING_ID){
     charging_id = c.charging_id_value;
     tlv.length = 4;
@@ -1760,7 +1755,7 @@ gtpv2c_ie(GTP_IE_CHARGING_ID){
     charging_id = 0;
   };
   //--------
-  void to_core_type(core::charging_id_t& c) {
+  void to_core_type(charging_id_t& c) {
     c.charging_id_value = charging_id;
   }
   //--------
@@ -1780,7 +1775,7 @@ gtpv2c_ie(GTP_IE_CHARGING_ID){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::charging_id_t charging_id = {};
+      charging_id_t charging_id = {};
       to_core_type(charging_id);
       s.set(charging_id, instance);
   }
@@ -1802,7 +1797,7 @@ public:
   } u1;
 
   //--------
-  explicit gtpv2c_bearer_flags_ie(const core::bearer_flags_t& b) :
+  explicit gtpv2c_bearer_flags_ie(const bearer_flags_t& b) :
 gtpv2c_ie(GTP_IE_CHARGING_ID){
     u1.b = 0;
     u1.bf.asi = b.asi;
@@ -1821,7 +1816,7 @@ gtpv2c_ie(GTP_IE_CHARGING_ID){
     u1.b = 0;
   };
   //--------
-  void to_core_type(core::bearer_flags_t& b) {
+  void to_core_type(bearer_flags_t& b) {
     b.spare1 = u1.bf.spare1;
     b.asi = u1.bf.asi;
     b.vind = u1.bf.vind;
@@ -1843,7 +1838,7 @@ gtpv2c_ie(GTP_IE_CHARGING_ID){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::bearer_flags_t bearer_flags = {};
+      bearer_flags_t bearer_flags = {};
       to_core_type(bearer_flags);
       s.set(bearer_flags, instance);
   }
@@ -1862,7 +1857,7 @@ public:
   } u1;
 
   //--------
-  explicit gtpv2c_pdn_type_ie(const core::pdn_type_t& p) : gtpv2c_ie(GTP_IE_PDN_TYPE){
+  explicit gtpv2c_pdn_type_ie(const pdn_type_t& p) : gtpv2c_ie(GTP_IE_PDN_TYPE){
     u1.bf.pdn_type = p.pdn_type;
     u1.bf.spare = 0;
     tlv.length = 1;
@@ -1877,7 +1872,7 @@ public:
     u1.b = 0;
   };
   //--------
-  void to_core_type(core::pdn_type_t& p) {
+  void to_core_type(pdn_type_t& p) {
     p.pdn_type = u1.bf.pdn_type;
   }
   //--------
@@ -1895,7 +1890,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::pdn_type_t pdn_type = {};
+      pdn_type_t pdn_type = {};
       to_core_type(pdn_type);
       s.set(pdn_type, instance);
   }
@@ -1916,30 +1911,30 @@ public:
   in6_addr ipv6_address;
   in_addr  ipv4_address; //network byte order
   //--------
-  explicit gtpv2c_paa_ie(const core::paa_t& p) :
+  explicit gtpv2c_paa_ie(const paa_t& p) :
 gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
     u1.b = 0;
     u1.bf.pdn_type = p.pdn_type.pdn_type;
     switch (u1.bf.pdn_type) {
-    case core::PDN_TYPE_E_IPV4:
+    case PDN_TYPE_E_IPV4:
       ipv6_prefix_length = 0;
       ipv6_address = in6addr_any;
       ipv4_address = p.ipv4_address;
       tlv.length = 5;
       break;
-    case core::PDN_TYPE_E_IPV6:
+    case PDN_TYPE_E_IPV6:
       ipv6_prefix_length = p.ipv6_prefix_length;
       ipv6_address = p.ipv6_address;
       ipv4_address.s_addr = INADDR_ANY;
       tlv.length = 18;
       break;
-    case core::PDN_TYPE_E_IPV4V6:
+    case PDN_TYPE_E_IPV4V6:
       ipv6_prefix_length = p.ipv6_prefix_length;
       ipv6_address = p.ipv6_address;
       ipv4_address = p.ipv4_address;
       tlv.length = 22;
       break;
-    case core::PDN_TYPE_E_NON_IP:
+    case PDN_TYPE_E_NON_IP:
       ipv6_prefix_length = 0;
       ipv6_address = in6addr_any;
       tlv.length = 1;
@@ -1951,7 +1946,7 @@ gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
   }
   //--------
   gtpv2c_paa_ie() : gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
-    u1.bf.pdn_type = core::PDN_TYPE_E_NON_IP;
+    u1.bf.pdn_type = PDN_TYPE_E_NON_IP;
     ipv6_prefix_length = 0;
     ipv6_address = in6addr_any;
     tlv.length = 1;
@@ -1959,31 +1954,31 @@ gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
   }
   //--------
   explicit gtpv2c_paa_ie(const gtpv2c_tlv& t) : gtpv2c_ie(t) {
-    u1.bf.pdn_type = core::PDN_TYPE_E_NON_IP;
+    u1.bf.pdn_type = PDN_TYPE_E_NON_IP;
     ipv6_prefix_length = 0;
     ipv6_address = in6addr_any;
     ipv4_address.s_addr = INADDR_ANY;
   };
   //--------
-  void to_core_type(core::paa_t& p) {
+  void to_core_type(paa_t& p) {
     p.pdn_type.pdn_type = u1.bf.pdn_type;
     switch (u1.bf.pdn_type) {
-    case core::PDN_TYPE_E_IPV4:
+    case PDN_TYPE_E_IPV4:
       p.ipv6_prefix_length = 0;
       p.ipv6_address = in6addr_any;
       p.ipv4_address = ipv4_address;
       break;
-    case core::PDN_TYPE_E_IPV6:
+    case PDN_TYPE_E_IPV6:
       p.ipv6_prefix_length = ipv6_prefix_length;
       p.ipv6_address = ipv6_address;
       p.ipv4_address.s_addr = INADDR_ANY;
       break;
-    case core::PDN_TYPE_E_IPV4V6:
+    case PDN_TYPE_E_IPV4V6:
       p.ipv6_prefix_length = ipv6_prefix_length;
       p.ipv6_address = ipv6_address;
       p.ipv4_address = ipv4_address;
       break;
-    case core::PDN_TYPE_E_NON_IP:
+    case PDN_TYPE_E_NON_IP:
       p.ipv6_prefix_length = 0;
       p.ipv6_address = in6addr_any;
       p.ipv4_address.s_addr = INADDR_ANY;
@@ -1997,19 +1992,19 @@ gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
     tlv.dump_to(os);
     os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
     switch (u1.bf.pdn_type) {
-    case core::PDN_TYPE_E_IPV4:
+    case PDN_TYPE_E_IPV4:
       ipv4_address_dump_to(os, ipv4_address);
       break;
-    case core::PDN_TYPE_E_IPV6:
+    case PDN_TYPE_E_IPV6:
       os <<  ipv6_prefix_length;
       ipv6_address_dump_to(os, ipv6_address);
       break;
-    case core::PDN_TYPE_E_IPV4V6:
+    case PDN_TYPE_E_IPV4V6:
       os.write(reinterpret_cast<const char*>(&ipv6_prefix_length), sizeof(ipv6_prefix_length));
       ipv6_address_dump_to(os, ipv6_address);
       ipv4_address_dump_to(os, ipv4_address);
       break;
-    case core::PDN_TYPE_E_NON_IP:
+    case PDN_TYPE_E_NON_IP:
       break;
     default:
       throw gtpc_ie_value_exception(GTP_IE_PDN_ADDRESS_ALLOCATION, "pdn_type");
@@ -2020,25 +2015,25 @@ gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
     //tlv.load_from(is);
     is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
     switch (u1.bf.pdn_type) {
-    case core::PDN_TYPE_E_IPV4:
+    case PDN_TYPE_E_IPV4:
       if (tlv.length != 5) throw gtpc_tlv_bad_length_exception(GTP_IE_PDN_ADDRESS_ALLOCATION, tlv.length);
       ipv6_prefix_length = 0;
       ipv6_address = in6addr_any;
       ipv4_address_load_from(is, ipv4_address);
       break;
-    case core::PDN_TYPE_E_IPV6:
+    case PDN_TYPE_E_IPV6:
       if (tlv.length != 18) throw gtpc_tlv_bad_length_exception(GTP_IE_PDN_ADDRESS_ALLOCATION, tlv.length);
       is.read(reinterpret_cast<char*>(&ipv6_prefix_length), sizeof(ipv6_prefix_length));
       ipv6_address_load_from(is, ipv6_address);
       ipv4_address.s_addr = INADDR_ANY;
       break;
-    case core::PDN_TYPE_E_IPV4V6:
+    case PDN_TYPE_E_IPV4V6:
       if (tlv.length != 22) throw gtpc_tlv_bad_length_exception(GTP_IE_PDN_ADDRESS_ALLOCATION, tlv.length);
       is.read(reinterpret_cast<char*>(&ipv6_prefix_length), sizeof(ipv6_prefix_length));
       ipv6_address_load_from(is, ipv6_address);
       ipv4_address_load_from(is, ipv4_address);
       break;
-    case core::PDN_TYPE_E_NON_IP:
+    case PDN_TYPE_E_NON_IP:
       if (tlv.length != 1) throw gtpc_tlv_bad_length_exception(GTP_IE_PDN_ADDRESS_ALLOCATION, tlv.length);
       ipv6_prefix_length = 0;
       ipv6_address = in6addr_any;
@@ -2050,7 +2045,7 @@ gtpv2c_ie(GTP_IE_PDN_ADDRESS_ALLOCATION){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::paa_t paa = {};
+      paa_t paa = {};
       to_core_type(paa);
       s.set(paa, instance);
   }
@@ -2076,7 +2071,7 @@ public:
   uint8_t guaranted_bit_rate_for_downlink[5];
 
   //--------
-  explicit gtpv2c_bearer_qos_ie(const core::bearer_qos_t& b) :
+  explicit gtpv2c_bearer_qos_ie(const bearer_qos_t& b) :
 gtpv2c_ie(GTP_IE_BEARER_QUALITY_OF_SERVICE){
     u1.b = 0;
     u1.bf.pci = b.pci;
@@ -2125,7 +2120,7 @@ gtpv2c_ie(GTP_IE_BEARER_QUALITY_OF_SERVICE){
     }
   };
   //--------
-  void to_core_type(core::bearer_qos_t& b) {
+  void to_core_type(bearer_qos_t& b) {
     b = {0};
     b.pci = u1.bf.pci;
     b.pl = u1.bf.pl;
@@ -2176,7 +2171,7 @@ gtpv2c_ie(GTP_IE_BEARER_QUALITY_OF_SERVICE){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::bearer_qos_t bearer_qos = {};
+      bearer_qos_t bearer_qos = {};
       to_core_type(bearer_qos);
       s.set(bearer_qos, instance);
   }
@@ -2193,7 +2188,7 @@ public:
   uint8_t guaranted_bit_rate_for_downlink[5];
 
   //--------
-  explicit gtpv2c_flow_qos_ie(const core::flow_qos_t& b) :
+  explicit gtpv2c_flow_qos_ie(const flow_qos_t& b) :
 gtpv2c_ie(GTP_IE_FLOW_QUALITY_OF_SERVICE){
     label_qci = b.label_qci;
     uint64_t max_uplink = b.maximum_bit_rate_for_uplink & 0x000000FFFFFFFFFF;
@@ -2236,7 +2231,7 @@ gtpv2c_ie(GTP_IE_FLOW_QUALITY_OF_SERVICE){
     }
   };
   //--------
-  void to_core_type(core::flow_qos_t& b) {
+  void to_core_type(flow_qos_t& b) {
     b = {0};
     b.label_qci = label_qci;
 
@@ -2282,7 +2277,7 @@ gtpv2c_ie(GTP_IE_FLOW_QUALITY_OF_SERVICE){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::flow_qos_t flow_qos = {};
+      flow_qos_t flow_qos = {};
       to_core_type(flow_qos);
       s.set(flow_qos, instance);
   }
@@ -2295,21 +2290,21 @@ public:
   uint8_t rat_type;
 
   //--------
-  explicit gtpv2c_rat_type_ie(const core::rat_type_t& r) : gtpv2c_ie(GTP_IE_RAT_TYPE){
+  explicit gtpv2c_rat_type_ie(const rat_type_t& r) : gtpv2c_ie(GTP_IE_RAT_TYPE){
     rat_type = r.rat_type;
     tlv.length = 1;
   }
   //--------
   gtpv2c_rat_type_ie() : gtpv2c_ie(GTP_IE_RAT_TYPE){
-    rat_type = core::RAT_TYPE_E_RESERVED;
+    rat_type = RAT_TYPE_E_RESERVED;
     tlv.length = 1;
   }
   //--------
   explicit gtpv2c_rat_type_ie(const gtpv2c_tlv& t) : gtpv2c_ie(t) {
-    rat_type = core::RAT_TYPE_E_RESERVED;
+    rat_type = RAT_TYPE_E_RESERVED;
   };
   //--------
-  void to_core_type(core::rat_type_t& r) {
+  void to_core_type(rat_type_t& r) {
     r.rat_type = rat_type;
   }
   //--------
@@ -2325,7 +2320,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::rat_type_t rat_type = {};
+      rat_type_t rat_type = {};
       to_core_type(rat_type);
       s.set(rat_type, instance);
   }
@@ -2357,7 +2352,7 @@ public:
   } u3;
 
   //--------
-  explicit gtpv2c_serving_network_ie(const core::serving_network_t& s) :
+  explicit gtpv2c_serving_network_ie(const serving_network_t& s) :
 gtpv2c_ie(GTP_IE_SERVING_NETWORK){
     u1.bf.mcc_digit_2 = s.mcc_digit_2;
     u1.bf.mcc_digit_1 = s.mcc_digit_1;
@@ -2395,7 +2390,7 @@ gtpv2c_ie(GTP_IE_SERVING_NETWORK){
     return *this;
   }
   //--------
-  void to_core_type(core::serving_network_t& s) {
+  void to_core_type(serving_network_t& s) {
     s.mcc_digit_2 = u1.bf.mcc_digit_2;
     s.mcc_digit_1 = u1.bf.mcc_digit_1;
     s.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2420,7 +2415,7 @@ gtpv2c_ie(GTP_IE_SERVING_NETWORK){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::serving_network_t serving_network = {};
+      serving_network_t serving_network = {};
       to_core_type(serving_network);
       s.set(serving_network, instance);
   }
@@ -2455,7 +2450,7 @@ public:
   uint16_t cell_identity;
 
   //--------
-  explicit gtpv2c_cgi_field_ie(const core::cgi_field_t& c){
+  explicit gtpv2c_cgi_field_ie(const cgi_field_t& c){
     u1.bf.mcc_digit_2 = c.mcc_digit_2;
     u1.bf.mcc_digit_1 = c.mcc_digit_1;
     u2.bf.mnc_digit_3 = c.mnc_digit_3;
@@ -2474,7 +2469,7 @@ public:
     cell_identity = 0;
   }
   //--------
-  void to_core_type(core::cgi_field_t& c) {
+  void to_core_type(cgi_field_t& c) {
     c.mcc_digit_2 = u1.bf.mcc_digit_2;
     c.mcc_digit_1 = u1.bf.mcc_digit_1;
     c.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2534,7 +2529,7 @@ public:
   uint16_t service_area_code;
 
   //--------
-  explicit gtpv2c_sai_field_ie(const core::sai_field_t& c){
+  explicit gtpv2c_sai_field_ie(const sai_field_t& c){
     u1.bf.mcc_digit_2 = c.mcc_digit_2;
     u1.bf.mcc_digit_1 = c.mcc_digit_1;
     u2.bf.mnc_digit_3 = c.mnc_digit_3;
@@ -2553,7 +2548,7 @@ public:
     service_area_code = 0;
   }
   //--------
-  void to_core_type(core::sai_field_t& c) {
+  void to_core_type(sai_field_t& c) {
     c.mcc_digit_2 = u1.bf.mcc_digit_2;
     c.mcc_digit_1 = u1.bf.mcc_digit_1;
     c.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2613,7 +2608,7 @@ public:
   uint16_t routing_area_code;
 
   //--------
-  explicit gtpv2c_rai_field_ie(const core::rai_field_t& c){
+  explicit gtpv2c_rai_field_ie(const rai_field_t& c){
     u1.bf.mcc_digit_2 = c.mcc_digit_2;
     u1.bf.mcc_digit_1 = c.mcc_digit_1;
     u2.bf.mnc_digit_3 = c.mnc_digit_3;
@@ -2632,7 +2627,7 @@ public:
     routing_area_code = 0;
   }
   //--------
-  void to_core_type(core::rai_field_t& c) {
+  void to_core_type(rai_field_t& c) {
     c.mcc_digit_2 = u1.bf.mcc_digit_2;
     c.mcc_digit_1 = u1.bf.mcc_digit_1;
     c.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2691,7 +2686,7 @@ public:
   uint16_t tracking_area_code;
 
   //--------
-  explicit gtpv2c_tai_field_ie(const core::tai_field_t& t){
+  explicit gtpv2c_tai_field_ie(const tai_field_t& t){
     u1.bf.mcc_digit_2 = t.mcc_digit_2;
     u1.bf.mcc_digit_1 = t.mcc_digit_1;
     u2.bf.mnc_digit_3 = t.mnc_digit_3;
@@ -2708,7 +2703,7 @@ public:
     tracking_area_code = 0;
   }
   //--------
-  void to_core_type(core::tai_field_t& t) {
+  void to_core_type(tai_field_t& t) {
     t.mcc_digit_2 = u1.bf.mcc_digit_2;
     t.mcc_digit_1 = u1.bf.mcc_digit_1;
     t.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2770,7 +2765,7 @@ public:
   uint8_t e_utran_cell_identifier[3];
 
   //--------
-  explicit gtpv2c_ecgi_field_ie(const core::ecgi_field_t& t){
+  explicit gtpv2c_ecgi_field_ie(const ecgi_field_t& t){
     u1.bf.mcc_digit_2 = t.mcc_digit_2;
     u1.bf.mcc_digit_1 = t.mcc_digit_1;
     u2.bf.mnc_digit_3 = t.mnc_digit_3;
@@ -2794,7 +2789,7 @@ public:
     e_utran_cell_identifier[2] = 0;
   }
   //--------
-  void to_core_type(core::ecgi_field_t& t) {
+  void to_core_type(ecgi_field_t& t) {
     t.mcc_digit_2 = u1.bf.mcc_digit_2;
     t.mcc_digit_1 = u1.bf.mcc_digit_1;
     t.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2853,7 +2848,7 @@ public:
   uint16_t location_area_code;
 
   //--------
-  explicit gtpv2c_lai_field_ie(const core::lai_field_t& t){
+  explicit gtpv2c_lai_field_ie(const lai_field_t& t){
     u1.bf.mcc_digit_2 = t.mcc_digit_2;
     u1.bf.mcc_digit_1 = t.mcc_digit_1;
     u2.bf.mnc_digit_3 = t.mnc_digit_3;
@@ -2870,7 +2865,7 @@ public:
     location_area_code = 0;
   }
   //--------
-  void to_core_type(core::lai_field_t& t) {
+  void to_core_type(lai_field_t& t) {
     t.mcc_digit_2 = u1.bf.mcc_digit_2;
     t.mcc_digit_1 = u1.bf.mcc_digit_1;
     t.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -2931,7 +2926,7 @@ public:
   uint16_t macro_enodeb_id;
 
   //--------
-  explicit gtpv2c_macro_enodeb_id_field_ie(const core::macro_enodeb_id_field_t& t){
+  explicit gtpv2c_macro_enodeb_id_field_ie(const macro_enodeb_id_field_t& t){
     u1.bf.mcc_digit_2 = t.mcc_digit_2;
     u1.bf.mcc_digit_1 = t.mcc_digit_1;
     u2.bf.mnc_digit_3 = t.mnc_digit_3;
@@ -2951,7 +2946,7 @@ public:
     macro_enodeb_id = 0;
   }
   //--------
-  void to_core_type(core::macro_enodeb_id_field_t& t) {
+  void to_core_type(macro_enodeb_id_field_t& t) {
     t.mcc_digit_2 = u1.bf.mcc_digit_2;
     t.mcc_digit_1 = u1.bf.mcc_digit_1;
     t.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -3015,7 +3010,7 @@ public:
 
   //--------
   explicit gtpv2c_extended_macro_enodeb_id_field_ie(const
-core::extended_macro_enodeb_id_field_t& t){
+extended_macro_enodeb_id_field_t& t){
     u1.bf.mcc_digit_2 = t.mcc_digit_2;
     u1.bf.mcc_digit_1 = t.mcc_digit_1;
     u2.bf.mnc_digit_3 = t.mnc_digit_3;
@@ -3036,7 +3031,7 @@ core::extended_macro_enodeb_id_field_t& t){
     extended_macro_enodeb_id = 0;
   }
   //--------
-  void to_core_type(core::extended_macro_enodeb_id_field_t& t) {
+  void to_core_type(extended_macro_enodeb_id_field_t& t) {
     t.mcc_digit_2 = u1.bf.mcc_digit_2;
     t.mcc_digit_1 = u1.bf.mcc_digit_1;
     t.mnc_digit_3 = u2.bf.mnc_digit_3;
@@ -3095,7 +3090,7 @@ public:
   gtpv2c_extended_macro_enodeb_id_field_ie extended_macro_enodeb_id;
 
   //--------
-  explicit gtpv2c_user_location_information_ie(const core::uli_t& u) :
+  explicit gtpv2c_user_location_information_ie(const uli_t& u) :
 gtpv2c_ie(GTP_IE_USER_LOCATION_INFORMATION){
     tlv.length = 1;
     u1.bf.extended_macro_enodeb_id = u.user_location_information_ie_hdr.extended_macro_enodeb_id;
@@ -3192,7 +3187,7 @@ gtpv2c_ie(GTP_IE_USER_LOCATION_INFORMATION){
     return *this;
   }
   //--------
-  void to_core_type(core::uli_t& u) {
+  void to_core_type(uli_t& u) {
     u = {0};
     u.user_location_information_ie_hdr.extended_macro_enodeb_id = u1.bf.extended_macro_enodeb_id;
     u.user_location_information_ie_hdr.macro_enodeb_id = u1.bf.macro_enodeb_id;
@@ -3288,7 +3283,7 @@ gtpv2c_ie(GTP_IE_USER_LOCATION_INFORMATION){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::uli_t uli = {};
+      uli_t uli = {};
       to_core_type(uli);
       s.set(uli, instance);
   }
@@ -3310,7 +3305,7 @@ public:
   struct in6_addr ipv6_address;
 
   //--------
-  explicit gtpv2c_fully_qualified_teid_ie(const core::fteid_t& f) :
+  explicit gtpv2c_fully_qualified_teid_ie(const fteid_t& f) :
 gtpv2c_ie(GTP_IE_FULLY_QUALIFIED_TUNNEL_ENDPOINT_IDENTIFIER){
     tlv.length = 5;
     u1.b = 0;
@@ -3353,7 +3348,7 @@ gtpv2c_ie(GTP_IE_FULLY_QUALIFIED_TUNNEL_ENDPOINT_IDENTIFIER){
     return *this;
   }
   //--------
-  void to_core_type(core::fteid_t& f) {
+  void to_core_type(fteid_t& f) {
     f = {0};
     f.v4 = u1.bf.v4;
     f.v6 = u1.bf.v6;
@@ -3396,7 +3391,7 @@ gtpv2c_ie(GTP_IE_FULLY_QUALIFIED_TUNNEL_ENDPOINT_IDENTIFIER){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::fteid_t fteid = {};
+      fteid_t fteid = {};
       to_core_type(fteid);
       s.set(fteid, instance);
   }
@@ -3408,7 +3403,7 @@ public:
   uint8_t delay_value;
 
   //--------
-  explicit gtpv2c_delay_value_ie(const core::delay_value_t& d) :
+  explicit gtpv2c_delay_value_ie(const delay_value_t& d) :
 gtpv2c_ie(GTP_IE_DELAY_VALUE){
     tlv.length = 1;
     delay_value = d.delay_value;
@@ -3430,7 +3425,7 @@ gtpv2c_ie(GTP_IE_DELAY_VALUE){
     return *this;
   }
   //--------
-  void to_core_type(core::delay_value_t& d) {
+  void to_core_type(delay_value_t& d) {
     d = {0};
     d.delay_value = delay_value;
   }
@@ -3449,7 +3444,7 @@ gtpv2c_ie(GTP_IE_DELAY_VALUE){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::delay_value_t delay_value = {};
+      delay_value_t delay_value = {};
       to_core_type(delay_value);
       s.set(delay_value, instance);
   }
@@ -3470,7 +3465,7 @@ public:
   } u1;
 
   //--------
-  explicit gtpv2c_ue_time_zone_ie(const core::ue_time_zone_t& t) :
+  explicit gtpv2c_ue_time_zone_ie(const ue_time_zone_t& t) :
 gtpv2c_ie(GTP_IE_UE_TIME_ZONE){
     tlv.length = 2;
     time_zone = t.time_zone;
@@ -3497,7 +3492,7 @@ gtpv2c_ie(GTP_IE_UE_TIME_ZONE){
     return *this;
   }
   //--------
-  void to_core_type(core::ue_time_zone_t& t) {
+  void to_core_type(ue_time_zone_t& t) {
     t = {0};
     t.time_zone = time_zone;
     t.spare1 = 0;
@@ -3520,7 +3515,7 @@ gtpv2c_ie(GTP_IE_UE_TIME_ZONE){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::ue_time_zone_t ue_time_zone = {};
+      ue_time_zone_t ue_time_zone = {};
       to_core_type(ue_time_zone);
       s.set(ue_time_zone, instance);
   }
@@ -3532,7 +3527,7 @@ public:
   uint8_t restriction_type_value;
 
   //--------
-  explicit gtpv2c_apn_restriction_ie(const core::access_point_name_restriction_t& a) :
+  explicit gtpv2c_apn_restriction_ie(const access_point_name_restriction_t& a) :
 gtpv2c_ie(GTP_IE_APN_RESTRICTION){
     tlv.length = 1;
     restriction_type_value = a.restriction_type_value;
@@ -3554,7 +3549,7 @@ gtpv2c_ie(GTP_IE_APN_RESTRICTION){
     return *this;
   }
   //--------
-  void to_core_type(core::access_point_name_restriction_t& a) {
+  void to_core_type(access_point_name_restriction_t& a) {
     a = {0};
     a.restriction_type_value = restriction_type_value;
   }
@@ -3573,7 +3568,7 @@ gtpv2c_ie(GTP_IE_APN_RESTRICTION){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::access_point_name_restriction_t access_point_name_restriction = {};
+      access_point_name_restriction_t access_point_name_restriction = {};
       to_core_type(access_point_name_restriction);
       s.set(access_point_name_restriction, instance);
   }
@@ -3591,7 +3586,7 @@ public:
   } u1;
 
   //--------
-  explicit gtpv2c_selection_mode_ie(const core::selection_mode_t& s) :
+  explicit gtpv2c_selection_mode_ie(const selection_mode_t& s) :
 gtpv2c_ie(GTP_IE_SELECTION_MODE){
     tlv.length = 1;
     u1.b = 0;
@@ -3614,7 +3609,7 @@ gtpv2c_ie(GTP_IE_SELECTION_MODE){
     return *this;
   }
   //--------
-  void to_core_type(core::selection_mode_t& s) {
+  void to_core_type(selection_mode_t& s) {
     s = {0};
     s.selec_mode = u1.bf.selec_mode;
   }
@@ -3633,7 +3628,7 @@ gtpv2c_ie(GTP_IE_SELECTION_MODE){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::selection_mode_t selection_mode = {};
+      selection_mode_t selection_mode = {};
       to_core_type(selection_mode);
       s.set(selection_mode, instance);
   }
@@ -3661,22 +3656,22 @@ public:
   } u2;
   std::vector<uint16_t> pdn_connection_set_identifier;
   //--------
-  explicit gtpv2c_fq_csid_ie(const core::fq_csid_t& f) : gtpv2c_ie(GTP_IE_FQ_CSID){
+  explicit gtpv2c_fq_csid_ie(const fq_csid_t& f) : gtpv2c_ie(GTP_IE_FQ_CSID){
     tlv.length = 1;
     u1.b = 0;
     u1.bf.node_id_type = f.fq_csid_ie_hdr.node_id_type;
     u1.bf.number_of_csids = f.fq_csid_ie_hdr.number_of_csids;
     tlv.length += sizeof(uint16_t)*u1.bf.number_of_csids;
     switch (u1.bf.node_id_type) {
-    case core::GLOBAL_UNICAST_IPv4:
+    case GLOBAL_UNICAST_IPv4:
       u2.unicast_ipv4 = f.fq_csid_ie_hdr.node_id.unicast_ipv4;
       tlv.length += 4;
       break;
-    case core::GLOBAL_UNICAST_IPv6:
+    case GLOBAL_UNICAST_IPv6:
       u2.unicast_ipv6 = f.fq_csid_ie_hdr.node_id.unicast_ipv6;
       tlv.length += 16;
       break;
-    case core::TYPE_EXOTIC:
+    case TYPE_EXOTIC:
       u2.exotic.mcc = f.fq_csid_ie_hdr.node_id.exotic.mcc;
       u2.exotic.mnc = f.fq_csid_ie_hdr.node_id.exotic.mnc;
       u2.exotic.operator_specific_id = f.fq_csid_ie_hdr.node_id.exotic.operator_specific_id;
@@ -3712,18 +3707,18 @@ public:
     return *this;
   }
   //--------
-  void to_core_type(core::fq_csid_t& f) {
+  void to_core_type(fq_csid_t& f) {
     f = {0};
     f.fq_csid_ie_hdr.node_id_type = u1.bf.node_id_type;
     f.fq_csid_ie_hdr.number_of_csids = u1.bf.number_of_csids;
     switch (u1.bf.node_id_type) {
-    case core::GLOBAL_UNICAST_IPv4:
+    case GLOBAL_UNICAST_IPv4:
       f.fq_csid_ie_hdr.node_id.unicast_ipv4 = u2.unicast_ipv4;
       break;
-    case core::GLOBAL_UNICAST_IPv6:
+    case GLOBAL_UNICAST_IPv6:
       f.fq_csid_ie_hdr.node_id.unicast_ipv6 = u2.unicast_ipv6;
       break;
-    case core::TYPE_EXOTIC:
+    case TYPE_EXOTIC:
       f.fq_csid_ie_hdr.node_id.exotic.mcc = u2.exotic.mcc;
       f.fq_csid_ie_hdr.node_id.exotic.mnc = u2.exotic.mnc;
       f.fq_csid_ie_hdr.node_id.exotic.operator_specific_id = u2.exotic.operator_specific_id;
@@ -3741,13 +3736,13 @@ public:
     tlv.dump_to(os);
     os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
     switch (u1.bf.node_id_type) {
-    case core::GLOBAL_UNICAST_IPv4:
+    case GLOBAL_UNICAST_IPv4:
       ipv4_address_dump_to(os, u2.unicast_ipv4);
       break;
-    case core::GLOBAL_UNICAST_IPv6:
+    case GLOBAL_UNICAST_IPv6:
       ipv6_address_dump_to(os, u2.unicast_ipv6);
       break;
-    case core::TYPE_EXOTIC: {
+    case TYPE_EXOTIC: {
         uint32_t exo = ((1000*u2.exotic.mcc+u2.exotic.mnc) << 12) | u2.exotic.operator_specific_id;
         exo = htonl(exo);
         os.write(reinterpret_cast<const char*>(&exo), sizeof(exo));
@@ -3766,19 +3761,19 @@ public:
     //tlv.load_from(is);
     is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
     switch (u1.bf.node_id_type) {
-    case core::GLOBAL_UNICAST_IPv4:
+    case GLOBAL_UNICAST_IPv4:
       if (tlv.get_length() < (5+u1.bf.number_of_csids*2)) {
         throw gtpc_tlv_bad_length_exception(tlv.type, tlv.length);
       }
       ipv4_address_load_from(is, u2.unicast_ipv4);
       break;
-    case core::GLOBAL_UNICAST_IPv6:
+    case GLOBAL_UNICAST_IPv6:
       if (tlv.get_length() < (17+u1.bf.number_of_csids*2)) {
         throw gtpc_tlv_bad_length_exception(tlv.type, tlv.length);
       }
       ipv6_address_load_from(is, u2.unicast_ipv6);
       break;
-    case core::TYPE_EXOTIC: {
+    case TYPE_EXOTIC: {
         if (tlv.get_length() < (5+u1.bf.number_of_csids*2)) {
           throw gtpc_tlv_bad_length_exception(tlv.type, tlv.length);
         }
@@ -3803,7 +3798,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::fq_csid_t fq_csid = {};
+      fq_csid_t fq_csid = {};
       to_core_type(fq_csid);
       s.set(fq_csid, instance);
   }
@@ -3816,7 +3811,7 @@ public:
   uint8_t node_type;
 
   //--------
-  explicit gtpv2c_node_type_ie(const core::node_type_t& n) : gtpv2c_ie(GTP_IE_NODE_TYPE){
+  explicit gtpv2c_node_type_ie(const node_type_t& n) : gtpv2c_ie(GTP_IE_NODE_TYPE){
     tlv.length = 1;
     node_type = n.node_type;
   }
@@ -3837,7 +3832,7 @@ public:
     return *this;
   }
   //--------
-  void to_core_type(core::node_type_t& n) {
+  void to_core_type(node_type_t& n) {
     n = {0};
     n.node_type = node_type;
   }
@@ -3856,7 +3851,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::node_type_t node_type = {};
+      node_type_t node_type = {};
       to_core_type(node_type);
       s.set(node_type, instance);
   }
@@ -3879,7 +3874,7 @@ public:
   } u1;
 
   //--------
-  explicit gtpv2c_node_features_ie(const core::node_features_t& s) : gtpv2c_ie(GTP_IE_NODE_FEATURES){
+  explicit gtpv2c_node_features_ie(const node_features_t& s) : gtpv2c_ie(GTP_IE_NODE_FEATURES){
     tlv.length = 1;
     u1.b = 0;
     u1.bf.prn = s.prn;
@@ -3905,7 +3900,7 @@ public:
     return *this;
   }
   //--------
-  void to_core_type(core::node_features_t& s) {
+  void to_core_type(node_features_t& s) {
     s = {0};
     s.prn = u1.bf.prn;
     s.mabr = u1.bf.mabr;
@@ -3928,7 +3923,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::node_features_t v = {};
+      node_features_t v = {};
       to_core_type(v);
       s.set(v, instance);
   }
@@ -3955,29 +3950,29 @@ public:
 
 
   //--------
-  explicit gtpv2c_ran_nas_cause_ie(const core::ran_nas_cause_t& c) :
+  explicit gtpv2c_ran_nas_cause_ie(const ran_nas_cause_t& c) :
 gtpv2c_ie(GTP_IE_RAN_NAS_CAUSE){
     tlv.length = 1;
     u1.bf.protocol_type = c.protocol_type;
     u1.bf.cause_type  = c.cause_type;
     switch (c.protocol_type) {
-        case core::PROTOCOL_TYPE_E_S1AP:
+        case PROTOCOL_TYPE_E_S1AP:
             cause_value.s1ap = c.cause_value.s1ap;
             tlv.length += sizeof(cause_value.s1ap);
             break;
-        case core::PROTOCOL_TYPE_E_EMM:
+        case PROTOCOL_TYPE_E_EMM:
             cause_value.emm = c.cause_value.emm;
             tlv.length += sizeof(cause_value.emm);
             break;
-        case core::PROTOCOL_TYPE_E_ESM:
+        case PROTOCOL_TYPE_E_ESM:
             cause_value.esm = c.cause_value.esm;
             tlv.length += sizeof(cause_value.esm);
             break;
-        case core::PROTOCOL_TYPE_E_DIAMETER:
+        case PROTOCOL_TYPE_E_DIAMETER:
             cause_value.diameter = c.cause_value.diameter;
             tlv.length += sizeof(cause_value.diameter);
             break;
-        case core::PROTOCOL_TYPE_E_IKEV2:
+        case PROTOCOL_TYPE_E_IKEV2:
             cause_value.ikev2 = c.cause_value.ikev2;
             tlv.length += sizeof(cause_value.ikev2);
             break;
@@ -4008,24 +4003,24 @@ gtpv2c_ie(GTP_IE_RAN_NAS_CAUSE){
     return *this;
   }
   //--------
-  void to_core_type(core::ran_nas_cause_t& c) {
+  void to_core_type(ran_nas_cause_t& c) {
     c = {0};
     c.protocol_type = u1.bf.protocol_type;
     c.cause_type = u1.bf.cause_type;
     switch (u1.bf.protocol_type) {
-        case core::PROTOCOL_TYPE_E_S1AP:
+        case PROTOCOL_TYPE_E_S1AP:
             c.cause_value.s1ap = cause_value.s1ap;
             break;
-        case core::PROTOCOL_TYPE_E_EMM:
+        case PROTOCOL_TYPE_E_EMM:
             c.cause_value.emm = cause_value.emm;
             break;
-        case core::PROTOCOL_TYPE_E_ESM:
+        case PROTOCOL_TYPE_E_ESM:
             c.cause_value.esm = cause_value.esm;
             break;
-        case core::PROTOCOL_TYPE_E_DIAMETER:
+        case PROTOCOL_TYPE_E_DIAMETER:
             c.cause_value.diameter = cause_value.diameter;
             break;
-        case core::PROTOCOL_TYPE_E_IKEV2:
+        case PROTOCOL_TYPE_E_IKEV2:
             c.cause_value.ikev2 = cause_value.ikev2;
             break;
         default:
@@ -4037,23 +4032,23 @@ gtpv2c_ie(GTP_IE_RAN_NAS_CAUSE){
     tlv.dump_to(os);
     os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
     switch (u1.bf.protocol_type) {
-        case core::PROTOCOL_TYPE_E_S1AP: {
+        case PROTOCOL_TYPE_E_S1AP: {
             auto ns_s1ap = htons(cause_value.s1ap);
             os.write(reinterpret_cast<const char*>(&ns_s1ap), sizeof(ns_s1ap));
           }
           break;
-        case core::PROTOCOL_TYPE_E_EMM:
+        case PROTOCOL_TYPE_E_EMM:
           os.write(reinterpret_cast<const char*>(&cause_value.emm), sizeof(cause_value.emm));
           break;
-        case core::PROTOCOL_TYPE_E_ESM:
+        case PROTOCOL_TYPE_E_ESM:
           os.write(reinterpret_cast<const char*>(&cause_value.esm), sizeof(cause_value.esm));
           break;
-        case core::PROTOCOL_TYPE_E_DIAMETER: {
+        case PROTOCOL_TYPE_E_DIAMETER: {
             auto ns_diameter = htons(cause_value.diameter);
             os.write(reinterpret_cast<const char*>(&ns_diameter), sizeof(ns_diameter));
           }
           break;
-        case core::PROTOCOL_TYPE_E_IKEV2: {
+        case PROTOCOL_TYPE_E_IKEV2: {
             auto ns_ikev2 = htons(cause_value.ikev2);
             os.write(reinterpret_cast<const char*>(&ns_ikev2), sizeof(ns_ikev2));
           }
@@ -4067,21 +4062,21 @@ gtpv2c_ie(GTP_IE_RAN_NAS_CAUSE){
     //tlv.load_from(is);
     is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
     switch (u1.bf.protocol_type) {
-        case core::PROTOCOL_TYPE_E_S1AP:
+        case PROTOCOL_TYPE_E_S1AP:
             is.read(reinterpret_cast<char*>(&cause_value.s1ap), sizeof(cause_value.s1ap));
             cause_value.s1ap = ntohs(cause_value.s1ap);
             break;
-        case core::PROTOCOL_TYPE_E_EMM:
+        case PROTOCOL_TYPE_E_EMM:
             is.read(reinterpret_cast<char*>(&cause_value.emm), sizeof(cause_value.emm));
             break;
-        case core::PROTOCOL_TYPE_E_ESM:
+        case PROTOCOL_TYPE_E_ESM:
             is.read(reinterpret_cast<char*>(&cause_value.esm), sizeof(cause_value.esm));
             break;
-        case core::PROTOCOL_TYPE_E_DIAMETER:
+        case PROTOCOL_TYPE_E_DIAMETER:
             is.read(reinterpret_cast<char*>(&cause_value.diameter), sizeof(cause_value.diameter));
             cause_value.diameter = ntohs(cause_value.diameter);
             break;
-        case core::PROTOCOL_TYPE_E_IKEV2:
+        case PROTOCOL_TYPE_E_IKEV2:
             is.read(reinterpret_cast<char*>(&cause_value.ikev2), sizeof(cause_value.ikev2));
             cause_value.ikev2 = ntohs(cause_value.ikev2);
             break;
@@ -4091,7 +4086,7 @@ gtpv2c_ie(GTP_IE_RAN_NAS_CAUSE){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::ran_nas_cause_t ran_nas_cause = {};
+      ran_nas_cause_t ran_nas_cause = {};
       to_core_type(ran_nas_cause);
       s.set(ran_nas_cause, instance);
   }
@@ -4114,7 +4109,7 @@ public:
 
   //--------
   explicit gtpv2c_ciot_optimizations_support_indication_ie(const
-core::ciot_optimizations_support_indication_t& s) :
+ciot_optimizations_support_indication_t& s) :
 gtpv2c_ie(GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION){
     tlv.length = 1;
     u1.b = 0;
@@ -4140,7 +4135,7 @@ gtpv2c_ie(GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION){
     return *this;
   }
   //--------
-  void to_core_type(core::ciot_optimizations_support_indication_t& s) {
+  void to_core_type(ciot_optimizations_support_indication_t& s) {
     s = {0};
     s.ihcsi = u1.bf.ihcsi;
     s.awopdn = u1.bf.awopdn;
@@ -4162,7 +4157,7 @@ gtpv2c_ie(GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION){
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::ciot_optimizations_support_indication_t
+      ciot_optimizations_support_indication_t
 ciot_optimizations_support_indication = {};
       to_core_type(ciot_optimizations_support_indication);
       s.set(ciot_optimizations_support_indication, instance);
@@ -4175,7 +4170,7 @@ class gtpv2c_epco_ie : public gtpv2c_ie {
 public:
   std::string extended_protocol_configuration_options;
   //--------
-  explicit gtpv2c_epco_ie(const core::extended_protocol_configuration_options_t& e) :
+  explicit gtpv2c_epco_ie(const extended_protocol_configuration_options_t& e) :
       gtpv2c_ie(GTP_IE_EXTENDED_PROTOCOL_CONFIGURATION_OPTIONS),
       extended_protocol_configuration_options(e.extended_protocol_configuration_options) {
     tlv.length = extended_protocol_configuration_options.size();
@@ -4194,7 +4189,7 @@ public:
     return *this;
   }
   //--------
-  void to_core_type(core::extended_protocol_configuration_options_t& e) {
+  void to_core_type(extended_protocol_configuration_options_t& e) {
     e.extended_protocol_configuration_options = extended_protocol_configuration_options;
   }
   //--------
@@ -4212,7 +4207,7 @@ public:
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
-      core::extended_protocol_configuration_options_t
+      extended_protocol_configuration_options_t
 extended_protocol_configuration_options = {};
       to_core_type(extended_protocol_configuration_options);
       s.set(extended_protocol_configuration_options, instance);

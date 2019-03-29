@@ -30,7 +30,7 @@
 
 #include <string>
 
-namespace oai::cn::util {
+namespace util {
 
 std::string string_format( const char *format, ... );
 

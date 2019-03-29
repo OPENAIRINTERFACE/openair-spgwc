@@ -29,13 +29,14 @@
 #ifndef FILE_SGWC_CONFIG_HPP_SEEN
 #define FILE_SGWC_CONFIG_HPP_SEEN
 
+#include "thread_sched.hpp"
 #include <libconfig.h++>
 #include <mutex>
 #include <netinet/in.h>
 #include <stdint.h>
 #include <stdbool.h>
 
-namespace oai::cn::nf::sgwc {
+namespace sgwc {
 
 
 #define SGWC_CONFIG_STRING_SGW_CONFIG                            "S-GW"
@@ -49,6 +50,19 @@ namespace oai::cn::nf::sgwc {
 #define SGWC_CONFIG_STRING_INTERFACE_S11_UP                      "S11_UP"
 #define SGWC_CONFIG_STRING_INTERFACE_S5_S8_CP                    "S5_S8_CP"
 
+#define SGWC_CONFIG_STRING_ITTI_TASKS                            "ITTI_TASKS"
+#define SGWC_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS               "ITTI_TIMER_SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_S11_SCHED_PARAMS                      "S11_SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_S5S8_SCHED_PARAMS                     "S5S8_SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_SX_SCHED_PARAMS                       "SX_SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_SPGWC_APP_SCHED_PARAMS                "SPGWC_APP_SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS                "ASYNC_CMD_SCHED_PARAMS"
+
+#define SGWC_CONFIG_STRING_SCHED_PARAMS                          "SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_THREAD_RD_CPU_ID                      "CPU_ID"
+#define SGWC_CONFIG_STRING_THREAD_RD_SCHED_POLICY                "SCHED_POLICY"
+#define SGWC_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY              "SCHED_PRIORITY"
+
 #define SPGW_ABORT_ON_ERROR true
 #define SPGW_WARN_ON_ERROR false
 
@@ -59,12 +73,24 @@ typedef struct interface_cfg_s {
   struct in6_addr addr6;
   unsigned int    mtu;
   unsigned int    port;
+  util::thread_sched_params thread_rd_sched_params;
 } interface_cfg_t;
+
+typedef struct itti_cfg_s {
+  util::thread_sched_params itti_timer_sched_params;
+  util::thread_sched_params s11_sched_params;
+  util::thread_sched_params s5s8_sched_params;
+  util::thread_sched_params sx_sched_params;
+  util::thread_sched_params spgwc_app_sched_params;
+  util::thread_sched_params async_cmd_sched_params;
+} itti_cfg_t;
 
 class sgwc_config {
 
 private:
 
+  int load_thread_sched_params(const libconfig::Setting& thread_sched_params_cfg, util::thread_sched_params& cfg);
+  int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
   int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
 
 public:
@@ -78,6 +104,7 @@ public:
   interface_cfg_t s5s8_cp;
   //interface_cfg_t sxa;
   bool            local_to_eNB;
+  itti_cfg_t      itti;
 
   sgwc_config() : m_rw_lock(), pid_dir(), instance(0), s11_cp(), s11_up(), s5s8_cp(), local_to_eNB(false) {};
   void lock() {m_rw_lock.lock();};

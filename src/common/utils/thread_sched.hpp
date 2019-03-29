@@ -31,7 +31,7 @@
 #include <sched.h>
 #include "logger.hpp"
 
-namespace oai::cn::util {
+namespace util {
 
 class thread_sched_params {
 public:

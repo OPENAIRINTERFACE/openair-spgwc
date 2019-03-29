@@ -39,7 +39,7 @@ private:
    T *mbuf;
 };
 
-std::string oai::cn::util::string_format( const char *format, ... )
+std::string util::string_format( const char *format, ... )
 {
    va_list args;
 
@@ -60,21 +60,21 @@ std::string oai::cn::util::string_format( const char *format, ... )
 //https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring#217605
 
 // trim from start
-std::string &oai::cn::util::ltrim(std::string &s) {
+std::string &util::ltrim(std::string &s) {
     s.erase(s.begin(), std::find_if(s.begin(), s.end(),
             std::not1(std::ptr_fun<int, int>(std::isspace))));
     return s;
 }
 
 // trim from end
-std::string &oai::cn::util::rtrim(std::string &s) {
+std::string &util::rtrim(std::string &s) {
     s.erase(std::find_if(s.rbegin(), s.rend(),
             std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
     return s;
 }
 
 // trim from both ends
-std::string &oai::cn::util::trim(std::string &s) {
+std::string &util::trim(std::string &s) {
     return util::ltrim(util::rtrim(s));
 }
 

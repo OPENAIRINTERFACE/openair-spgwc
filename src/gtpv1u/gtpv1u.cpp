@@ -26,14 +26,14 @@
 */
 
 #include "common_root_types.h"
+#include "conversions.hpp"
 #include "gtpu.h"
 #include "gtpv1u.hpp"
 
 #include <cstdlib>
 #include <sched.h>
 
-using namespace oai::cn::proto::gtpv1u;
-using namespace oai::cn::core::itti;
+using namespace gtpv1u;
 using namespace std;
 
 extern itti_mw *itti_inst;
@@ -93,7 +93,7 @@ int udp_server::create_socket (const struct in_addr &address, const uint16_t por
   addr.sin_port = htons (port);
   addr.sin_addr.s_addr = address.s_addr;
 
-  std::string ipv4 = core::toString(address);
+  std::string ipv4 = conv::toString(address);
   Logger::udp().debug("Creating new listen socket on address %s and port %" PRIu16 "\n", ipv4.c_str(), port);
 
   if (bind (sd, (struct sockaddr *)&addr, sizeof (struct sockaddr_in)) < 0) {
@@ -127,7 +127,7 @@ int udp_server::create_socket (const struct in6_addr &address, const uint16_t po
   addr.sin6_port = htons (port);
   addr.sin6_addr = address;
 
-  std::string ipv6 = core::toString(address);
+  std::string ipv6 = conv::toString(address);
   Logger::udp().debug("Creating new listen socket on address %s and port %" PRIu16 "\n", ipv6.c_str(), port);
 
   if (bind (sd, (struct sockaddr *)&addr, sizeof (struct sockaddr_in6)) < 0) {
@@ -189,7 +189,7 @@ void udp_server::start_receive(gtpu_l4_stack * gtp_stack, const util::thread_sch
 gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_num, const util::thread_sched_params& sched_params) :
     udp_s(udp_server(address, port_num))
 {
-  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", core::toString(address).c_str(), port_num);
+  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", conv::toString(address).c_str(), port_num);
 
   id = 0;
   srand (time(NULL));
@@ -201,7 +201,7 @@ gtpu_l4_stack::gtpu_l4_stack(const struct in_addr& address, const uint16_t port_
 gtpu_l4_stack::gtpu_l4_stack(const struct in6_addr& address, const uint16_t port_num, const util::thread_sched_params& sched_params) :
     udp_s(udp_server(address, port_num))
 {
-  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", core::toString(address).c_str(), port_num);
+  Logger::gtpv1_u().info( "gtpu_l4_stack created listening to %s:%d", conv::toString(address).c_str(), port_num);
 
   id = 0;
   srand (time(NULL));

@@ -31,7 +31,7 @@
 #include <mutex>
 #include <set>
 
-namespace oai::cn::util {
+namespace util {
 
   template <class UINT> class uint_generator {
   private:

@@ -29,12 +29,12 @@
 #include "pfcp_switch.hpp"
 #include "logger.hpp"
 
-using namespace oai::cn::core::pfcp;
+using namespace pfcp;
 
-extern oai::cn::nf::spgwu::pfcp_switch *pfcp_switch_inst;
+extern spgwu::pfcp_switch *pfcp_switch_inst;
 
 //------------------------------------------------------------------------------
-bool pfcp_session::get(const uint32_t far_id, std::shared_ptr<core::pfcp::pfcp_far>& far) const
+bool pfcp_session::get(const uint32_t far_id, std::shared_ptr<pfcp::pfcp_far>& far) const
 {
   for (auto it : fars) {
     if (it->far_id.far_id == far_id) {
@@ -45,7 +45,7 @@ bool pfcp_session::get(const uint32_t far_id, std::shared_ptr<core::pfcp::pfcp_f
   return false;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::get(const uint16_t pdr_id, std::shared_ptr<core::pfcp::pfcp_pdr>& pdr) const
+bool pfcp_session::get(const uint16_t pdr_id, std::shared_ptr<pfcp::pfcp_pdr>& pdr) const
 {
   for (auto it : pdrs) {
     if (it->pdr_id.rule_id == pdr_id) {
@@ -56,72 +56,72 @@ bool pfcp_session::get(const uint16_t pdr_id, std::shared_ptr<core::pfcp::pfcp_p
   return false;
 }
 //------------------------------------------------------------------------------
-void pfcp_session::add(std::shared_ptr<core::pfcp::pfcp_far> far)
+void pfcp_session::add(std::shared_ptr<pfcp::pfcp_far> far)
 {
   Logger::spgwu_sx().info( "pfcp_session::add(far) seid " SEID_FMT " ", seid);
   fars.push_back(far);
 }
 //------------------------------------------------------------------------------
-void pfcp_session::add(std::shared_ptr<core::pfcp::pfcp_pdr> pdr)
+void pfcp_session::add(std::shared_ptr<pfcp::pfcp_pdr> pdr)
 {
   Logger::spgwu_sx().info( "pfcp_session::add(pdr) seid " SEID_FMT " ", seid);
   pdrs.push_back(pdr);
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::remove(const core::pfcp::far_id_t& far_id, uint8_t& cause_value)
+bool pfcp_session::remove(const pfcp::far_id_t& far_id, uint8_t& cause_value)
 {
-  for (std::vector<std::shared_ptr<core::pfcp::pfcp_far>>::iterator it = fars.begin(); it!=fars.end(); ++it) {
+  for (std::vector<std::shared_ptr<pfcp::pfcp_far>>::iterator it = fars.begin(); it!=fars.end(); ++it) {
     if ((*it)->far_id.far_id == far_id.far_id) {
       Logger::spgwu_sx().info( "pfcp_session::remove(far) seid " SEID_FMT " ", seid);
       fars.erase(it);
       return true;
     }
   }
-  cause_value = core::pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;//??
+  cause_value = pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;//??
   return false;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::remove(const core::pfcp::pdr_id_t& pdr_id, uint8_t& cause_value)
+bool pfcp_session::remove(const pfcp::pdr_id_t& pdr_id, uint8_t& cause_value)
 {
-  for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::iterator it = pdrs.begin(); it!=pdrs.end(); ++it) {
+  for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it = pdrs.begin(); it!=pdrs.end(); ++it) {
     if ((*it)->pdr_id.rule_id == pdr_id.rule_id) {
       Logger::spgwu_sx().info( "pfcp_session::remove(pdr) seid " SEID_FMT " ", seid);
       pdrs.erase(it);
       return true;
     }
   }
-  cause_value = core::pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;//??
+  cause_value = pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;//??
   return false;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::update(const core::pfcp::update_far& update, uint8_t& cause_value)
+bool pfcp_session::update(const pfcp::update_far& update, uint8_t& cause_value)
 {
-  std::shared_ptr<core::pfcp::pfcp_far> far = {};
+  std::shared_ptr<pfcp::pfcp_far> far = {};
   if (get(update.far_id.far_id, far)) {
     if (far->update(update, cause_value)) {
       return true;
     }
     return false;
   }
-  cause_value = core::pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;
+  cause_value = pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;
   return false;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::update(const core::pfcp::update_pdr& update, uint8_t& cause_value)
+bool pfcp_session::update(const pfcp::update_pdr& update, uint8_t& cause_value)
 {
 
-  std::shared_ptr<core::pfcp::pfcp_pdr> pdr = {};
+  std::shared_ptr<pfcp::pfcp_pdr> pdr = {};
   if (get(update.pdr_id.rule_id, pdr)) {
     if (pdr->update(update, cause_value)) {
       return true;
     }
     return false;
   }
-  cause_value = core::pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;
+  cause_value = pfcp::CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE;
   return false;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::create(const core::pfcp::create_far& cr_far, core::pfcp::cause_t& cause, uint16_t& offending_ie)
+bool pfcp_session::create(const pfcp::create_far& cr_far, pfcp::cause_t& cause, uint16_t& offending_ie)
 {
   if (not cr_far.far_id.first) {
     //should be caught in lower layer
@@ -157,7 +157,7 @@ bool pfcp_session::create(const core::pfcp::create_far& cr_far, core::pfcp::caus
   return true;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::create(const core::pfcp::create_pdr& cr_pdr, core::pfcp::cause_t& cause, uint16_t& offending_ie, core::pfcp::fteid_t& allocated_fteid)
+bool pfcp_session::create(const pfcp::create_pdr& cr_pdr, pfcp::cause_t& cause, uint16_t& offending_ie, pfcp::fteid_t& allocated_fteid)
 {
   if (not cr_pdr.pdr_id.first) {
     //should be caught in lower layer
@@ -185,7 +185,7 @@ bool pfcp_session::create(const core::pfcp::create_pdr& cr_pdr, core::pfcp::caus
     return false;
   }
   // already checked but !!! keep this code in comment !!!
-//  core::pfcp::far_id_t    far_id = {};
+//  pfcp::far_id_t    far_id = {};
 //  if (not cr_pdr.get(far_id)) {
 //    //should be caught in lower layer
 //    cause.cause_value = CAUSE_VALUE_MANDATORY_IE_MISSING;
@@ -207,7 +207,7 @@ bool pfcp_session::create(const core::pfcp::create_pdr& cr_pdr, core::pfcp::caus
       offending_ie = PFCP_IE_F_TEID;
       return false;
     }
-    const core::pfcp::fteid_t& local_fteid = pdi.local_fteid.second;
+    const pfcp::fteid_t& local_fteid = pdi.local_fteid.second;
     allocated_fteid = {};
     if (local_fteid.ch) {
       // TODO if (local_fteid.choose_id) {
@@ -251,7 +251,7 @@ bool pfcp_session::create(const core::pfcp::create_pdr& cr_pdr, core::pfcp::caus
   return true;
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::remove(const core::pfcp::remove_far& rm_far, core::pfcp::cause_t& cause, uint16_t& offending_ie)
+bool pfcp_session::remove(const pfcp::remove_far& rm_far, pfcp::cause_t& cause, uint16_t& offending_ie)
 {
   if (not rm_far.far_id.first) {
     //should be caught in lower layer
@@ -262,7 +262,7 @@ bool pfcp_session::remove(const core::pfcp::remove_far& rm_far, core::pfcp::caus
   return remove(rm_far.far_id.second, cause.cause_value);
 }
 //------------------------------------------------------------------------------
-bool pfcp_session::remove(const core::pfcp::remove_pdr& rm_pdr, core::pfcp::cause_t& cause, uint16_t& offending_ie)
+bool pfcp_session::remove(const pfcp::remove_pdr& rm_pdr, pfcp::cause_t& cause, uint16_t& offending_ie)
 {
   if (not rm_pdr.pdr_id.first) {
     //should be caught in lower layer
@@ -275,7 +275,7 @@ bool pfcp_session::remove(const core::pfcp::remove_pdr& rm_pdr, core::pfcp::caus
 //------------------------------------------------------------------------------
 void pfcp_session::cleanup()
 {
-  for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::iterator it = pdrs.begin(); it!=pdrs.end(); ++it) {
+  for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it = pdrs.begin(); it!=pdrs.end(); ++it) {
     if (((*it)->pdi.first) && ((*it)->pdi.second.source_interface.first)) {
       if ((*it)->pdi.second.source_interface.second.interface_value == INTERFACE_VALUE_ACCESS) {
         if ((*it)->pdi.second.local_fteid.first) {
@@ -302,10 +302,10 @@ std::string pfcp_session::to_string() const
   s.append("|  SEID          |pdr |  far   |predence|   action   |        create outer hdr         tun id| rmv outer hdr  tun id|    UE IPv4     |                                                             |\n");
   s.append("+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+---------------------------------------------------------------------+\n");
   //for (auto it_pdr : pdrs) {
-  for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::const_iterator it_pdr = pdrs.begin(); it_pdr!=pdrs.end(); ++it_pdr) {
+  for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::const_iterator it_pdr = pdrs.begin(); it_pdr!=pdrs.end(); ++it_pdr) {
     s.append(fmt::format("|{:016x}", seid)); // TODO continue this line
-    std::shared_ptr<core::pfcp::pfcp_pdr> pdr = *it_pdr;
-    std::shared_ptr<core::pfcp::pfcp_far> far = {};
+    std::shared_ptr<pfcp::pfcp_pdr> pdr = *it_pdr;
+    std::shared_ptr<pfcp::pfcp_far> far = {};
 
     s.append(fmt::format("|{:04x}", pdr->pdr_id.rule_id));
     s.append(fmt::format("|{:08x}", pdr->far_id.second.far_id));
@@ -318,19 +318,19 @@ std::string pfcp_session::to_string() const
     if (pdr->pdi.first) {
       if (pdr->pdi.second.source_interface.first) {
         switch (pdr->pdi.second.source_interface.second.interface_value) {
-        case core::pfcp::INTERFACE_VALUE_ACCESS:
+        case pfcp::INTERFACE_VALUE_ACCESS:
           s.append("|ACC>");
           break;
-        case core::pfcp::INTERFACE_VALUE_CORE:
+        case pfcp::INTERFACE_VALUE_CORE:
           s.append("|COR>");
           break;
-        case core::pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN:
+        case pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN:
           s.append("|LAN>");
           break;
-        case core::pfcp::INTERFACE_VALUE_CP_FUNCTION:
+        case pfcp::INTERFACE_VALUE_CP_FUNCTION:
           s.append("|CPF>");
           break;
-        case core::pfcp::INTERFACE_VALUE_LI_FUNCTION:
+        case pfcp::INTERFACE_VALUE_LI_FUNCTION:
           s.append("|LIF>");
           break;
         default:
@@ -367,19 +367,19 @@ std::string pfcp_session::to_string() const
       if (far->apply_action.forw) {
         if ((far->forwarding_parameters.first) && (far->forwarding_parameters.second.destination_interface.first)) {
           switch (far->forwarding_parameters.second.destination_interface.second.interface_value) {
-          case core::pfcp::INTERFACE_VALUE_ACCESS:
+          case pfcp::INTERFACE_VALUE_ACCESS:
             s.append(">ACC");
             break;
-          case core::pfcp::INTERFACE_VALUE_CORE:
+          case pfcp::INTERFACE_VALUE_CORE:
             s.append(">COR");
             break;
-          case core::pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN:
+          case pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN:
             s.append(">LAN");
             break;
-          case core::pfcp::INTERFACE_VALUE_CP_FUNCTION:
+          case pfcp::INTERFACE_VALUE_CP_FUNCTION:
             s.append(">CPF");
             break;
-          case core::pfcp::INTERFACE_VALUE_LI_FUNCTION:
+          case pfcp::INTERFACE_VALUE_LI_FUNCTION:
             s.append(">LIF");
             break;
           default:
@@ -391,32 +391,32 @@ std::string pfcp_session::to_string() const
       }
       if ((far->forwarding_parameters.first) && (far->forwarding_parameters.second.outer_header_creation.first)) {
         switch (far->forwarding_parameters.second.outer_header_creation.second.outer_header_creation_description) {
-        case core::pfcp::OUTER_HEADER_CREATION_GTPU_UDP_IPV4: {
+        case pfcp::OUTER_HEADER_CREATION_GTPU_UDP_IPV4: {
           s.append("|GTPU_UDP_IPV4:");
-          std::string ip = toString(far->forwarding_parameters.second.outer_header_creation.second.ipv4_address);
+          std::string ip = conv::toString(far->forwarding_parameters.second.outer_header_creation.second.ipv4_address);
           ip.resize (INET_ADDRSTRLEN,' ');
           s.append(ip);
           s.append(fmt::format(":{:08x}", far->forwarding_parameters.second.outer_header_creation.second.teid));
           }
           break;
-        case core::pfcp::OUTER_HEADER_CREATION_GTPU_UDP_IPV6: {
+        case pfcp::OUTER_HEADER_CREATION_GTPU_UDP_IPV6: {
             s.append("|GTPU_UDP_IPV6:");
-            std::string ip = toString(far->forwarding_parameters.second.outer_header_creation.second.ipv6_address);
+            std::string ip = conv::toString(far->forwarding_parameters.second.outer_header_creation.second.ipv6_address);
             ip.resize (INET_ADDRSTRLEN,' ');
             s.append(fmt::format(":{:08x}", far->forwarding_parameters.second.outer_header_creation.second.teid));
           }
           break;
-        case core::pfcp::OUTER_HEADER_CREATION_UDP_IPV4: {
+        case pfcp::OUTER_HEADER_CREATION_UDP_IPV4: {
             s.append("|UDP_IPV4     :");
-            std::string ip = toString(far->forwarding_parameters.second.outer_header_creation.second.ipv4_address);
+            std::string ip = conv::toString(far->forwarding_parameters.second.outer_header_creation.second.ipv4_address);
             ip.resize (INET_ADDRSTRLEN,' ');
             s.append(ip);
             s.append(9,' ');
           }
           break;
-        case core::pfcp::OUTER_HEADER_CREATION_UDP_IPV6: {
+        case pfcp::OUTER_HEADER_CREATION_UDP_IPV6: {
             s.append("|UDP_IPV6     :");
-            std::string ip = toString(far->forwarding_parameters.second.outer_header_creation.second.ipv6_address);
+            std::string ip = conv::toString(far->forwarding_parameters.second.outer_header_creation.second.ipv6_address);
             ip.resize (INET_ADDRSTRLEN,' ');
             s.append(ip);
             s.append(9,' ');
@@ -473,7 +473,7 @@ std::string pfcp_session::to_string() const
       if (pdr->pdi.second.ue_ip_address.first) {
         std::string ip = {};
         if (pdr->pdi.second.ue_ip_address.second.v4) {
-          ip = toString(pdr->pdi.second.ue_ip_address.second.ipv4_address);
+          ip = conv::toString(pdr->pdi.second.ue_ip_address.second.ipv4_address);
         }
         ip.resize (INET_ADDRSTRLEN,' ');
         s.append(ip);

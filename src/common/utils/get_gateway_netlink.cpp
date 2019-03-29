@@ -36,7 +36,7 @@
 using namespace std;
 
 //------------------------------------------------------------------------------
-bool oai::cn::util::get_iface_l2_addr(const std::string& iface, std::string& mac)
+bool util::get_iface_l2_addr(const std::string& iface, std::string& mac)
 {
   std::string mac_address_path = fmt::format("/sys/class/net/{}/address", iface);
   std::ifstream mac_address_in(mac_address_path.c_str(), ios_base::in | ios_base::binary );
@@ -58,7 +58,7 @@ bool oai::cn::util::get_iface_l2_addr(const std::string& iface, std::string& mac
 
 }
 //------------------------------------------------------------------------------
-bool oai::cn::util::get_gateway_and_iface(std::string& gw, std::string& iface)
+bool util::get_gateway_and_iface(std::string& gw, std::string& iface)
 {
   int     received_bytes = 0, msg_len = 0, route_attribute_len = 0;
   int     sock = -1, msgseq = 0;

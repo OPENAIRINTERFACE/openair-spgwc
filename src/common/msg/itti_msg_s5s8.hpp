@@ -32,9 +32,7 @@
 #include "3gpp_29.274.hpp"
 #include "itti_msg.hpp"
 #include "msg_gtpv2c.hpp"
-#include <boost/asio.hpp>
-
-namespace oai::cn::core::itti {
+#include <boost/asio/ip/udp.hpp>
 
 class itti_s5s8_msg : public itti_msg {
 public:
@@ -46,39 +44,32 @@ public:
     gtpc_tx_id = 0;
   }
 
-  itti_s5s8_msg(const itti_s5s8_msg& i) : itti_msg(i)  {
-    l_endpoint = i.l_endpoint;
-    r_endpoint = i.r_endpoint;
-    teid = i.teid;
-    gtpc_tx_id = i.gtpc_tx_id;
-  }
+  itti_s5s8_msg(const itti_s5s8_msg& i) : itti_msg(i), l_endpoint(i.l_endpoint),
+    r_endpoint(i.r_endpoint), teid(i.teid), gtpc_tx_id(i.gtpc_tx_id) {}
 
-  itti_s5s8_msg(const itti_s5s8_msg& i, const task_id_t orig, const task_id_t dest) : itti_s5s8_msg(i)  {
+  itti_s5s8_msg(const itti_s5s8_msg& i, const task_id_t orig, const task_id_t dest) :
+  itti_s5s8_msg(i)
+  {
     origin = orig;
     destination = dest;
   }
 
   boost::asio::ip::udp::endpoint l_endpoint;
   boost::asio::ip::udp::endpoint r_endpoint;
-  teid_t                         teid;
+  teid_t                   teid;
   uint64_t                       gtpc_tx_id;
 };
 
 class itti_s5s8_create_session_request : public itti_s5s8_msg {
 public:
   itti_s5s8_create_session_request(const task_id_t orig, const task_id_t dest):
-    itti_s5s8_msg(S5S8_CREATE_SESSION_REQUEST, orig, dest) {
-  }
-  itti_s5s8_create_session_request(const itti_s5s8_create_session_request& i) : itti_s5s8_msg(i)  {
-    gtp_ies = i.gtp_ies;
-  }
+    itti_s5s8_msg(S5S8_CREATE_SESSION_REQUEST, orig, dest) {}
+  itti_s5s8_create_session_request(const itti_s5s8_create_session_request& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies)  {}
   itti_s5s8_create_session_request(const itti_s5s8_create_session_request& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_create_session_request).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_CREATE_SESSION_REQUEST";};
 
-  proto::gtpv2c::gtpv2c_create_session_request gtp_ies;
+  gtpv2c::gtpv2c_create_session_request gtp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -95,18 +86,13 @@ public:
 class itti_s5s8_create_session_response  : public itti_s5s8_msg {
 public:
   itti_s5s8_create_session_response(const task_id_t orig, const task_id_t dest):
-    itti_s5s8_msg(S5S8_CREATE_SESSION_RESPONSE, orig, dest) {
-  }
-  itti_s5s8_create_session_response(const itti_s5s8_create_session_response& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+    itti_s5s8_msg(S5S8_CREATE_SESSION_RESPONSE, orig, dest) {}
+  itti_s5s8_create_session_response(const itti_s5s8_create_session_response& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_create_session_response(const itti_s5s8_create_session_response& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_create_session_response).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_CREATE_SESSION_RESPONSE";};
 
-  proto::gtpv2c::gtpv2c_create_session_response gtp_ies;
+  gtpv2c::gtpv2c_create_session_response gtp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -124,19 +110,14 @@ public:
  */
 class itti_s5s8_create_bearer_request   : public itti_s5s8_msg {
 public:
-  itti_s5s8_create_bearer_request(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_CREATE_BEARER_REQUEST, orig, dest) {
-  }
-  itti_s5s8_create_bearer_request(const itti_s5s8_create_bearer_request& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_create_bearer_request(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_CREATE_BEARER_REQUEST, orig, dest) {}
+  itti_s5s8_create_bearer_request(const itti_s5s8_create_bearer_request& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies){}
   itti_s5s8_create_bearer_request(const itti_s5s8_create_bearer_request& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_create_session_request).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_CREATE_BEARER_REQUEST";};
 
-  proto::gtpv2c::gtpv2c_create_bearer_request gtp_ies;
-} ;
+  gtpv2c::gtpv2c_create_bearer_request gtp_ies;
+};
 
 //-----------------------------------------------------------------------------
 /** @class itti_s5s8_create_bearer_response
@@ -167,18 +148,13 @@ public:
  */
 class itti_s5s8_create_bearer_response   : public itti_s5s8_msg {
 public:
-  itti_s5s8_create_bearer_response(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_CREATE_BEARER_RESPONSE, orig, dest) {
-  }
-  itti_s5s8_create_bearer_response(const itti_s5s8_create_bearer_response& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_create_bearer_response(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_CREATE_BEARER_RESPONSE, orig, dest) {}
+  itti_s5s8_create_bearer_response(const itti_s5s8_create_bearer_response& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_create_bearer_response(const itti_s5s8_create_bearer_response& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_create_bearer_response).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_CREATE_BEARER_RESPONSE";};
 
-  proto::gtpv2c::gtpv2c_create_bearer_response gtp_ies;
+  gtpv2c::gtpv2c_create_bearer_response gtp_ies;
 };
 
 
@@ -197,18 +173,13 @@ public:
  */
 class itti_s5s8_modify_bearer_request   : public itti_s5s8_msg {
 public:
-  itti_s5s8_modify_bearer_request(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_MODIFY_BEARER_REQUEST, orig, dest) {
-  }
-  itti_s5s8_modify_bearer_request(const itti_s5s8_modify_bearer_request& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_modify_bearer_request(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_MODIFY_BEARER_REQUEST, orig, dest) {}
+  itti_s5s8_modify_bearer_request(const itti_s5s8_modify_bearer_request& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_modify_bearer_request(const itti_s5s8_modify_bearer_request& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest) {
-    gtp_ies = i.gtp_ies;
-  }
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
   const char* get_msg_name() {return typeid(itti_s5s8_modify_bearer_request).name();};
 
-  proto::gtpv2c::gtpv2c_modify_bearer_request gtp_ies;
+  gtpv2c::gtpv2c_modify_bearer_request gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -226,18 +197,13 @@ public:
  */
 class itti_s5s8_modify_bearer_response   : public itti_s5s8_msg {
 public:
-  itti_s5s8_modify_bearer_response(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_MODIFY_BEARER_RESPONSE, orig, dest) {
-  }
-  itti_s5s8_modify_bearer_response(const itti_s5s8_modify_bearer_response& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_modify_bearer_response(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_MODIFY_BEARER_RESPONSE, orig, dest) {}
+  itti_s5s8_modify_bearer_response(const itti_s5s8_modify_bearer_response& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_modify_bearer_response(const itti_s5s8_modify_bearer_response& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_modify_bearer_response).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_MODIFY_BEARER_RESPONSE";};
 
-  proto::gtpv2c::gtpv2c_modify_bearer_response gtp_ies;
+  gtpv2c::gtpv2c_modify_bearer_response gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -246,18 +212,13 @@ public:
   itti_s5s8_delete_session_request(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_DELETE_SESSION_REQUEST, orig, dest) {
     noDelete = false;
   }
-  itti_s5s8_delete_session_request(const itti_s5s8_delete_session_request& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-    noDelete = i.noDelete;
-  }
+  itti_s5s8_delete_session_request(const itti_s5s8_delete_session_request& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies), noDelete(i.noDelete) {}
   itti_s5s8_delete_session_request(const itti_s5s8_delete_session_request& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-    noDelete = i.noDelete;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_delete_session_request).name();};
+  itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies), noDelete(i.noDelete) {}
 
-  proto::gtpv2c::gtpv2c_delete_session_request gtp_ies;
+  const char* get_msg_name() {return "S5S8_DELETE_SESSION_REQUEST";};
+
+  gtpv2c::gtpv2c_delete_session_request gtp_ies;
   bool        noDelete;
 
 } ;
@@ -281,16 +242,12 @@ class itti_s5s8_delete_session_response   : public itti_s5s8_msg {
 public:
   itti_s5s8_delete_session_response(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_DELETE_SESSION_RESPONSE, orig, dest) {
   }
-  itti_s5s8_delete_session_response(const itti_s5s8_delete_session_response& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_delete_session_response(const itti_s5s8_delete_session_response& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_delete_session_response(const itti_s5s8_delete_session_response& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_delete_session_response).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_DELETE_SESSION_RESPONSE";};
 
-  proto::gtpv2c::gtpv2c_delete_session_response gtp_ies;
+  gtpv2c::gtpv2c_delete_session_response gtp_ies;
 } ;
 
 
@@ -310,16 +267,12 @@ class itti_s5s8_release_access_bearers_request   : public itti_s5s8_msg {
 public:
   itti_s5s8_release_access_bearers_request(const task_id_t orig, const task_id_t dest): itti_s5s8_msg(S5S8_RELEASE_ACCESS_BEARERS_REQUEST, orig, dest) {
   }
-  itti_s5s8_release_access_bearers_request(const itti_s5s8_release_access_bearers_request& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_release_access_bearers_request(const itti_s5s8_release_access_bearers_request& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_release_access_bearers_request(const itti_s5s8_release_access_bearers_request& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_release_access_bearers_request).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_RELEASE_ACCESS_BEARERS_REQUEST";};
 
-  proto::gtpv2c::gtpv2c_release_access_bearers_request gtp_ies;
+  gtpv2c::gtpv2c_release_access_bearers_request gtp_ies;
 } ;
 
 
@@ -343,16 +296,12 @@ public:
   itti_s5s8_release_access_bearers_response(const task_id_t orig, const task_id_t dest):
     itti_s5s8_msg(S5S8_RELEASE_ACCESS_BEARERS_RESPONSE, orig, dest) {
   }
-  itti_s5s8_release_access_bearers_response(const itti_s5s8_release_access_bearers_response& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_release_access_bearers_response(const itti_s5s8_release_access_bearers_response& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_release_access_bearers_response(const itti_s5s8_release_access_bearers_response& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_release_access_bearers_response).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_RELEASE_ACCESS_BEARERS_RESPONSE";};
 
-  proto::gtpv2c::gtpv2c_release_access_bearers_response gtp_ies;
+  gtpv2c::gtpv2c_release_access_bearers_response gtp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -370,17 +319,12 @@ public:
   itti_s5s8_delete_bearer_command(const task_id_t orig, const task_id_t dest):
     itti_s5s8_msg(S5S8_DELETE_BEARER_COMMAND, orig, dest) {
   }
-  itti_s5s8_delete_bearer_command(const itti_s5s8_delete_bearer_command& i) : itti_s5s8_msg(i) {
-    gtp_ies = i.gtp_ies;
-  }
+  itti_s5s8_delete_bearer_command(const itti_s5s8_delete_bearer_command& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
   itti_s5s8_delete_bearer_command(const itti_s5s8_delete_bearer_command& i, const task_id_t orig, const task_id_t dest) :
-    itti_s5s8_msg(i, orig, dest)  {
-    gtp_ies = i.gtp_ies;
-  }
-  const char* get_msg_name() {return typeid(itti_s5s8_delete_bearer_command).name();};
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_DELETE_BEARER_COMMAND";};
 
-  proto::gtpv2c::gtpv2c_delete_bearer_command gtp_ies;
+  gtpv2c::gtpv2c_delete_bearer_command gtp_ies;
 } ;
-} // namespace itti
 
 #endif /* ITTI_MSG_S5S8_HPP_INCLUDED_ */

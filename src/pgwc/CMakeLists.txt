@@ -33,7 +33,6 @@ add_library (PGWC STATIC
   pgw_app.cpp
   pgw_config.cpp
   pgw_context.cpp
-  pgw_paa_static.cpp
   pgw_pfcp_association.cpp
   pgw_pco.cpp
   pgw_s5s8.cpp

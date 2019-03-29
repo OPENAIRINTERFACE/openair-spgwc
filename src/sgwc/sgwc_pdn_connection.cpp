@@ -32,32 +32,11 @@
 
 #include <algorithm>
 
-using namespace oai::cn::core;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::sgwc;
+using namespace sgwc;
 using namespace std;
 
 extern sgwc_app *sgwc_app_inst;
 
-////------------------------------------------------------------------------------
-//fteid_t sgw_pdn_connection::generate_s5s8_up_fteid(const struct in_addr ipv4_address, const bearer_qos_t& bearer_qos) {
-//  fteid_t fteid = {};
-//  fteid.interface_type = S5_S8_SGW_GTP_U;
-//  fteid.v4 = 1;
-//  fteid.ipv4_address = ipv4_address;
-//  fteid.v6 = 0;
-//  fteid.ipv6_address = in6addr_any;
-//  for (auto it : sgw_eps_bearers) {
-//    if (it.second->sgw_fteid_s5_s8_up.v4) {
-//      if (it.second->eps_bearer_qos.is_arp_equals(bearer_qos)) {
-//        fteid.teid_gre_key = it.second->sgw_fteid_s5_s8_up.teid_gre_key;
-//        return fteid;
-//      }
-//    }
-//  }
-//  fteid.teid_gre_key = sgwc_app_inst->generate_s5s8_up_teid();
-//  return fteid;
-//}
 //------------------------------------------------------------------------------
 void sgw_pdn_connection::add_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb)
 {
@@ -71,7 +50,7 @@ void sgw_pdn_connection::add_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb)
   }
 }
 //------------------------------------------------------------------------------
-bool sgw_pdn_connection::get_eps_bearer(const core::ebi_t& ebi, std::shared_ptr<sgw_eps_bearer>& b)
+bool sgw_pdn_connection::get_eps_bearer(const ebi_t& ebi, std::shared_ptr<sgw_eps_bearer>& b)
 {
   if (sgw_eps_bearers.count(ebi.ebi)) {
     b = sgw_eps_bearers.at(ebi.ebi);
@@ -81,9 +60,9 @@ bool sgw_pdn_connection::get_eps_bearer(const core::ebi_t& ebi, std::shared_ptr<
   return false;
 }
 //------------------------------------------------------------------------------
-bool sgw_pdn_connection::update_eps_bearer(const oai::cn::proto::gtpv2c::bearer_context_modified_within_modify_bearer_response& b)
+bool sgw_pdn_connection::update_eps_bearer(const gtpv2c::bearer_context_modified_within_modify_bearer_response& b)
 {
-  core::ebi_t ebi  = {};
+  ebi_t ebi  = {};
   if (b.get(ebi)) {
     std::shared_ptr<sgw_eps_bearer> sb = {};
     if (get_eps_bearer(ebi, sb)) {
@@ -94,7 +73,7 @@ bool sgw_pdn_connection::update_eps_bearer(const oai::cn::proto::gtpv2c::bearer_
 }
 
 //------------------------------------------------------------------------------
-void sgw_pdn_connection::remove_eps_bearer(const core::ebi_t& ebi)
+void sgw_pdn_connection::remove_eps_bearer(const ebi_t& ebi)
 {
   std::shared_ptr<sgw_eps_bearer> sb = {};
   if (get_eps_bearer(ebi, sb)) {
@@ -108,7 +87,7 @@ void sgw_pdn_connection::remove_eps_bearer(const core::ebi_t& ebi)
 void sgw_pdn_connection::remove_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb)
 {
   if (sb.get()) {
-    core::ebi_t ebi = {.ebi = sb->ebi.ebi};
+    ebi_t ebi = {.ebi = sb->ebi.ebi};
     sb->deallocate_ressources();
     sgw_eps_bearers.erase(ebi.ebi);
   }
@@ -134,10 +113,10 @@ std::string sgw_pdn_connection::toString() const
   s.reserve(300);
   s.append("PDN CONNECTION:\n");
   s.append("\tAPN IN USE:\t\t").append(apn_in_use).append("\n");
-  s.append("\tPDN TYPE:\t\t").append(oai::cn::core::toString(pdn_type)).append("\n");
-  s.append("\tPGW FTEID S5S8 CP:\t").append(oai::cn::core::toString(pgw_fteid_s5_s8_cp)).append("\n");
-  //s.append("\tPGW ADDRESS IN USE UP:\t").append(oai::cn::core::toString(pgw_address_in_use_up)).append("\n");
-  s.append("\tSGW FTEID S5S8 CP:\t").append(oai::cn::core::toString(sgw_fteid_s5_s8_cp)).append("\n");
+  s.append("\tPDN TYPE:\t\t").append(pdn_type.toString()).append("\n");
+  s.append("\tPGW FTEID S5S8 CP:\t").append(pgw_fteid_s5_s8_cp.toString()).append("\n");
+  //s.append("\tPGW ADDRESS IN USE UP:\t").append(toString(pgw_address_in_use_up)).append("\n");
+  s.append("\tSGW FTEID S5S8 CP:\t").append(sgw_fteid_s5_s8_cp.toString()).append("\n");
   s.append("\tDEFAULT BEARER:\t\t").append(std::to_string(default_bearer.ebi)).append("\n");
   for (auto it : sgw_eps_bearers) {
     s.append(it.second->toString());

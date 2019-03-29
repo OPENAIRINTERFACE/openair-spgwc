@@ -45,7 +45,7 @@
 #include <thread>
 #include <vector>
 
-namespace oai::cn::nf::spgwu {
+namespace spgwu {
 
   // Have to be tuned for sdt situations
 #define PFCP_SWITCH_MAX_SESSIONS 512
@@ -59,8 +59,8 @@ namespace oai::cn::nf::spgwu {
 //    ul_s1u_teid2pfcp_pdr = {};
 //    ue_ipv4_hbo2pfcp_pdr = {};
 //  }
-//  std::unordered_map<core::pfcp::fseid_t, std::shared_ptr<core::pfcp::pfcp_session>>                cp_fseid2pfcp_sessions;
-//  std::unordered_map<uint64_t, std::shared_ptr<core::pfcp::pfcp_session>>                           up_seid2pfcp_sessions;
+//  std::unordered_map<pfcp::fseid_t, std::shared_ptr<pfcp::pfcp_session>>                cp_fseid2pfcp_sessions;
+//  std::unordered_map<uint64_t, std::shared_ptr<pfcp::pfcp_session>>                           up_seid2pfcp_sessions;
 //};
 //
 //class switching_data_per_cpu_socket {
@@ -102,20 +102,20 @@ private:
 
   //switching_data_per_cpu_socket             switching_data[];
   struct iovec                              msg_iov_;        /* scatter/gather array */
-  std::unordered_map<core::pfcp::fseid_t, std::shared_ptr<core::pfcp::pfcp_session>>                  cp_fseid2pfcp_sessions;
-  folly::AtomicHashMap<uint64_t, std::shared_ptr<core::pfcp::pfcp_session>>                           up_seid2pfcp_sessions;
-  folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>>   ul_s1u_teid2pfcp_pdr;
-  folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>> ue_ipv4_hbo2pfcp_pdr;
+  std::unordered_map<pfcp::fseid_t, std::shared_ptr<pfcp::pfcp_session>>                  cp_fseid2pfcp_sessions;
+  folly::AtomicHashMap<uint64_t, std::shared_ptr<pfcp::pfcp_session>>                           up_seid2pfcp_sessions;
+  folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>   ul_s1u_teid2pfcp_pdr;
+  folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>> ue_ipv4_hbo2pfcp_pdr;
 
-  //moodycamel::ConcurrentQueue<core::pfcp::pfcp_session*>            create_session_q;
+  //moodycamel::ConcurrentQueue<pfcp::pfcp_session*>            create_session_q;
 
   void pdn_read_loop(const util::thread_sched_params& sched_params);
   int create_pdn_socket (const char * const ifname, const bool promisc, int& if_index);
   int create_pdn_socket (const char * const ifname);
   void setup_pdn_interfaces();
 
-  core::itti::timer_id_t timer_max_commit_interval_id;
-  core::itti::timer_id_t timer_min_commit_interval_id;
+  timer_id_t timer_max_commit_interval_id;
+  timer_id_t timer_min_commit_interval_id;
 
   void stop_timer_min_commit_interval();
   void start_timer_min_commit_interval();
@@ -125,16 +125,16 @@ private:
   void commit_changes();
 
 
-  bool get_pfcp_session_by_cp_fseid(const core::pfcp::fseid_t&, std::shared_ptr<core::pfcp::pfcp_session>&) const;
-  bool get_pfcp_session_by_up_seid(const uint64_t, std::shared_ptr<core::pfcp::pfcp_session>&) const;
-  bool get_pfcp_ul_pdrs_by_up_teid(const teid_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>&) const;
-  bool get_pfcp_dl_pdrs_by_ue_ip(const uint32_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>&) const;
+  bool get_pfcp_session_by_cp_fseid(const pfcp::fseid_t&, std::shared_ptr<pfcp::pfcp_session>&) const;
+  bool get_pfcp_session_by_up_seid(const uint64_t, std::shared_ptr<pfcp::pfcp_session>&) const;
+  bool get_pfcp_ul_pdrs_by_up_teid(const teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>&) const;
+  bool get_pfcp_dl_pdrs_by_ue_ip(const uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>&) const;
 
-  void add_pfcp_session_by_cp_fseid(const core::pfcp::fseid_t&, std::shared_ptr<core::pfcp::pfcp_session>&);
-  void add_pfcp_session_by_up_seid(const uint64_t, std::shared_ptr<core::pfcp::pfcp_session>&);
-  void add_pfcp_ul_pdr_by_up_teid(const teid_t teid, std::shared_ptr<core::pfcp::pfcp_pdr>& );
+  void add_pfcp_session_by_cp_fseid(const pfcp::fseid_t&, std::shared_ptr<pfcp::pfcp_session>&);
+  void add_pfcp_session_by_up_seid(const uint64_t, std::shared_ptr<pfcp::pfcp_session>&);
+  void add_pfcp_ul_pdr_by_up_teid(const teid_t teid, std::shared_ptr<pfcp::pfcp_pdr>& );
 
-  void remove_pfcp_session(std::shared_ptr<core::pfcp::pfcp_session>&);
+  void remove_pfcp_session(std::shared_ptr<pfcp::pfcp_session>&);
 
 
 
@@ -147,10 +147,10 @@ public:
   pfcp_switch(pfcp_switch const&)    = delete;
   void operator=(pfcp_switch const&)     = delete;
 
-  void add_pfcp_dl_pdr_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<core::pfcp::pfcp_pdr>& );
+  void add_pfcp_dl_pdr_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<pfcp::pfcp_pdr>& );
 
-  core::pfcp::fteid_t generate_fteid_s1u();
-  bool create_packet_in_access(std::shared_ptr<core::pfcp::pfcp_pdr>& pdr, const core::pfcp::fteid_t& in, uint8_t& cause);
+  pfcp::fteid_t generate_fteid_s1u();
+  bool create_packet_in_access(std::shared_ptr<pfcp::pfcp_pdr>& pdr, const pfcp::fteid_t& in, uint8_t& cause);
 
   void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
   void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
@@ -162,14 +162,14 @@ public:
 
   void send_to_core(char* const ip_packet, const ssize_t len);
 
-  void handle_pfcp_session_establishment_request(std::shared_ptr<core::itti::itti_sxab_session_establishment_request> sreq, core::itti::itti_sxab_session_establishment_response* );
-  void handle_pfcp_session_modification_request(std::shared_ptr<core::itti::itti_sxab_session_modification_request> sreq, core::itti::itti_sxab_session_modification_response* );
-  void handle_pfcp_session_deletion_request(std::shared_ptr<core::itti::itti_sxab_session_deletion_request> sreq, core::itti::itti_sxab_session_deletion_response* );
+  void handle_pfcp_session_establishment_request(std::shared_ptr<itti_sxab_session_establishment_request> sreq, itti_sxab_session_establishment_response* );
+  void handle_pfcp_session_modification_request(std::shared_ptr<itti_sxab_session_modification_request> sreq, itti_sxab_session_modification_response* );
+  void handle_pfcp_session_deletion_request(std::shared_ptr<itti_sxab_session_deletion_request> sreq, itti_sxab_session_deletion_response* );
 
   void time_out_min_commit_interval(const uint32_t timer_id);
   void time_out_max_commit_interval(const uint32_t timer_id);
 
-  void remove_pfcp_session(const core::pfcp::fseid_t& cp_fseid);
+  void remove_pfcp_session(const pfcp::fseid_t& cp_fseid);
   void remove_pfcp_ul_pdrs_by_up_teid(const teid_t) {};
   void remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t) {};
 

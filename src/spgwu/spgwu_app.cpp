@@ -36,9 +36,8 @@
 
 #include <stdexcept>
 
-using namespace oai::cn::proto::pfcp;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::spgwu;
+using namespace pfcp;
+using namespace spgwu;
 using namespace std;
 
 // C includes
@@ -59,7 +58,7 @@ void spgwu_app_task (void *args_p)
 {
   const task_id_t task_id = TASK_SPGWU_APP;
 
-  const oai::cn::util::thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+  const util::thread_sched_params* const sched_params = (const util::thread_sched_params* const)args_p;
 
   sched_params->apply(task_id, Logger::spgwu_app());
 
@@ -149,7 +148,7 @@ spgwu_app::~spgwu_app()
   if (spgwu_sx_inst) delete spgwu_sx_inst;
 }
 //------------------------------------------------------------------------------
-void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_request> m)
+void spgwu_app::handle_itti_msg (std::shared_ptr<itti_s1u_echo_request> m)
 {
   Logger::spgwu_app().debug("Received %s ", m->get_msg_name());
   itti_s1u_echo_response *s1u_resp = new itti_s1u_echo_response(TASK_SPGWU_APP, TASK_SPGWU_S1U);
@@ -167,13 +166,13 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_reque
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_establishment_request> m)
+void spgwu_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_establishment_request> m)
 {
   Logger::spgwu_app().info("Received SXAB_SESSION_ESTABLISHMENT_REQUEST seid " SEID_FMT " ", m->seid);
   itti_sxab_session_establishment_response *sx_resp = new itti_sxab_session_establishment_response(TASK_SPGWU_APP, TASK_SPGWU_SX);
   pfcp_switch_inst->handle_pfcp_session_establishment_request(m, sx_resp);
 
-  core::pfcp::node_id_t node_id = {};
+  pfcp::node_id_t node_id = {};
   spgwu_cfg.get_pfcp_node_id(node_id);
   sx_resp->pfcp_ies.set(node_id);
 
@@ -188,7 +187,7 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_e
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_modification_request> m)
+void spgwu_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_modification_request> m)
 {
   Logger::spgwu_app().info("Received SXAB_SESSION_MODIFICATION_REQUEST seid " SEID_FMT " ", m->seid);
   itti_sxab_session_modification_response *sx_resp = new itti_sxab_session_modification_response(TASK_SPGWU_APP, TASK_SPGWU_SX);
@@ -204,7 +203,7 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_m
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_app::handle_itti_msg (std::shared_ptr<core::itti::itti_sxab_session_deletion_request> m)
+void spgwu_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_deletion_request> m)
 {
   Logger::spgwu_app().info("Received SXAB_SESSION_DELETION_REQUEST seid " SEID_FMT " ", m->seid);
   itti_sxab_session_deletion_response *sx_resp = new itti_sxab_session_deletion_response(TASK_SPGWU_APP, TASK_SPGWU_SX);

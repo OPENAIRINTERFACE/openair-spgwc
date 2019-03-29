@@ -45,9 +45,7 @@
 
 #include <stdexcept>
 
-using namespace oai::cn::core::itti;
-using namespace oai::cn::util;
-;
+using namespace util;
 
 extern  itti_mw *itti_inst;
 void async_cmd_task (void*);
@@ -57,7 +55,7 @@ void async_cmd_task (void* args_p)
 {
   const task_id_t task_id = TASK_ASYNC_SHELL_CMD;
 
-  const thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+  const thread_sched_params* const sched_params = (const util::thread_sched_params* const)args_p;
   sched_params->apply(task_id, Logger::async_cmd());
 
   itti_inst->notify_task_ready(task_id);
@@ -99,7 +97,7 @@ void async_cmd_task (void* args_p)
 }
 
 //------------------------------------------------------------------------------
-async_shell_cmd::async_shell_cmd (oai::cn::util::thread_sched_params& sched_params)
+async_shell_cmd::async_shell_cmd (util::thread_sched_params& sched_params)
 {
   Logger::async_cmd().startup( "Starting..." );
 

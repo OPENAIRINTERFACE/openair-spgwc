@@ -25,7 +25,7 @@
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
-
+#include "3gpp_conversions.hpp"
 #include "common_defs.h"
 #include "conversions.hpp"
 #include "gtpu.h"
@@ -37,10 +37,8 @@
 
 #include <stdexcept>
 
-using namespace oai::cn::core;
-using namespace oai::cn::proto::gtpv1u;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::spgwu;
+using namespace gtpv1u;
+using namespace spgwu;
 using namespace std;
 
 extern itti_mw     *itti_inst;
@@ -56,7 +54,7 @@ void spgwu_s1u_task (void *args_p)
 {
   const task_id_t task_id = TASK_SPGWU_S1U;
 
-  const oai::cn::util::thread_sched_params* const sched_params = (const oai::cn::util::thread_sched_params* const)args_p;
+  const util::thread_sched_params* const sched_params = (const util::thread_sched_params* const)args_p;
   sched_params->apply(task_id, Logger::spgwu_s1u());
 
   itti_inst->notify_task_ready(task_id);
@@ -216,12 +214,12 @@ void spgwu_s1u::handle_receive_echo_request(gtpv1u_msg& msg, const struct sockad
 }
 
 //------------------------------------------------------------------------------
-void spgwu_s1u::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_echo_response> m)
+void spgwu_s1u::handle_itti_msg (std::shared_ptr<itti_s1u_echo_response> m)
 {
   send_response(m->gtp_ies);
 }
 //------------------------------------------------------------------------------
-void spgwu_s1u::handle_itti_msg (std::shared_ptr<core::itti::itti_s1u_error_indication> m)
+void spgwu_s1u::handle_itti_msg (std::shared_ptr<itti_s1u_error_indication> m)
 {
   send_indication(m->gtp_ies);
 }
@@ -233,12 +231,12 @@ void spgwu_s1u::report_error_indication(const struct sockaddr_storage& r_endpoin
   error_ind->gtp_ies.r_endpoint_addr_len = r_endpoint_addr_len;
   error_ind->gtp_ies.set_teid(0);
 
-  core::tunnel_endpoint_identifier_data_i_t tun_data = {};
+  tunnel_endpoint_identifier_data_i_t tun_data = {};
   tun_data.tunnel_endpoint_identifier_data_i = tunnel_id;
   error_ind->gtp_ies.set(tun_data);
 
-  core::gtp_u_peer_address_t peer_address = {};
-  if (oai::cn::util::sockaddr_storage_to_gtp_u_peer_address(r_endpoint, peer_address)) {
+  gtp_u_peer_address_t peer_address = {};
+  if (xgpp_conv::sockaddr_storage_to_gtp_u_peer_address(r_endpoint, peer_address)) {
     error_ind->gtp_ies.set(peer_address);
   } else {
     // mandatory ie

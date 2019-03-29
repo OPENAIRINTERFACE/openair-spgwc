@@ -33,8 +33,6 @@
 #include "msg_pfcp.hpp"
 #include <boost/asio/ip/udp.hpp>
 
-namespace oai::cn::core::itti {
-
 class itti_sxab_msg : public itti_msg {
 public:
   itti_sxab_msg(const itti_msg_type_t  msg_type, const task_id_t origin, const task_id_t destination):
@@ -57,7 +55,7 @@ public:
 
   boost::asio::ip::udp::endpoint l_endpoint;
   boost::asio::ip::udp::endpoint r_endpoint;
-  seid_t                         seid;
+  seid_t                   seid;
   uint64_t                       trxn_id;
 };
 
@@ -76,7 +74,7 @@ public:
 
   const char* get_msg_name() {return typeid(itti_sxab_heartbeat_request).name();};
 
-  proto::pfcp::pfcp_heartbeat_request pfcp_ies;
+  pfcp::pfcp_heartbeat_request pfcp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -94,7 +92,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_heartbeat_response).name();};
 
-  proto::pfcp::pfcp_heartbeat_response pfcp_ies;
+  pfcp::pfcp_heartbeat_response pfcp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -111,7 +109,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_pfcp_pfd_management_request).name();};
 
-  proto::pfcp::pfcp_pfd_management_request pfcp_ies;
+  pfcp::pfcp_pfd_management_request pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -128,7 +126,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_pfcp_pfd_management_response).name();};
 
-  proto::pfcp::pfcp_pfd_management_response pfcp_ies;
+  pfcp::pfcp_pfd_management_response pfcp_ies;
 };
 
 
@@ -146,7 +144,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_association_setup_request).name();};
 
-  proto::pfcp::pfcp_association_setup_request pfcp_ies;
+  pfcp::pfcp_association_setup_request pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -163,7 +161,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_association_setup_response).name();};
 
-  proto::pfcp::pfcp_association_setup_response pfcp_ies;
+  pfcp::pfcp_association_setup_response pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -180,7 +178,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_association_update_request).name();};
 
-  proto::pfcp::pfcp_association_update_request pfcp_ies;
+  pfcp::pfcp_association_update_request pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -197,7 +195,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_association_update_response).name();};
 
-  proto::pfcp::pfcp_association_update_response pfcp_ies;
+  pfcp::pfcp_association_update_response pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -214,7 +212,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_association_release_request).name();};
 
-  proto::pfcp::pfcp_association_release_request pfcp_ies;
+  pfcp::pfcp_association_release_request pfcp_ies;
 } ;
 
 
@@ -233,7 +231,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_association_release_response).name();};
 
-  proto::pfcp::pfcp_association_release_response pfcp_ies;
+  pfcp::pfcp_association_release_response pfcp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -251,7 +249,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_version_not_supported_response).name();};
 
-  proto::pfcp::pfcp_version_not_supported_response pfcp_ies;
+  pfcp::pfcp_version_not_supported_response pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -269,7 +267,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_node_report_request).name();};
 
-  proto::pfcp::pfcp_node_report_request pfcp_ies;
+  pfcp::pfcp_node_report_request pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -287,7 +285,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_node_report_response).name();};
 
-  proto::pfcp::pfcp_node_report_response pfcp_ies;
+  pfcp::pfcp_node_report_response pfcp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -305,7 +303,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_set_deletion_request).name();};
 
-  proto::pfcp::pfcp_session_set_deletion_request pfcp_ies;
+  pfcp::pfcp_session_set_deletion_request pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_set_deletion_response   : public itti_sxab_msg {
@@ -322,7 +320,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_set_deletion_response).name();};
 
-  proto::pfcp::pfcp_session_set_deletion_response pfcp_ies;
+  pfcp::pfcp_session_set_deletion_response pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_establishment_request   : public itti_sxab_msg {
@@ -339,7 +337,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_establishment_request).name();};
 
-  proto::pfcp::pfcp_session_establishment_request pfcp_ies;
+  pfcp::pfcp_session_establishment_request pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_establishment_response   : public itti_sxab_msg {
@@ -356,7 +354,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_establishment_response).name();};
 
-  proto::pfcp::pfcp_session_establishment_response pfcp_ies;
+  pfcp::pfcp_session_establishment_response pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_modification_request   : public itti_sxab_msg {
@@ -373,7 +371,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_modification_request).name();};
 
-  proto::pfcp::pfcp_session_modification_request pfcp_ies;
+  pfcp::pfcp_session_modification_request pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_modification_response   : public itti_sxab_msg {
@@ -390,7 +388,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_modification_response).name();};
 
-  proto::pfcp::pfcp_session_modification_response pfcp_ies;
+  pfcp::pfcp_session_modification_response pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_deletion_request   : public itti_sxab_msg {
@@ -407,7 +405,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_deletion_request).name();};
 
-  proto::pfcp::pfcp_session_deletion_request pfcp_ies;
+  pfcp::pfcp_session_deletion_request pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_deletion_response   : public itti_sxab_msg {
@@ -424,7 +422,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_deletion_response).name();};
 
-  proto::pfcp::pfcp_session_deletion_response pfcp_ies;
+  pfcp::pfcp_session_deletion_response pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_report_request   : public itti_sxab_msg {
@@ -441,7 +439,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_deletion_request).name();};
 
-  proto::pfcp::pfcp_session_report_request pfcp_ies;
+  pfcp::pfcp_session_report_request pfcp_ies;
 } ;
 //-----------------------------------------------------------------------------
 class itti_sxab_session_report_response   : public itti_sxab_msg {
@@ -458,8 +456,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_sxab_session_report_response).name();};
 
-  proto::pfcp::pfcp_session_report_response pfcp_ies;
+  pfcp::pfcp_session_report_response pfcp_ies;
 } ;
-} // namespace itti
 
 #endif /* ITTI_MSG_SXAB_HPP_INCLUDED_ */
