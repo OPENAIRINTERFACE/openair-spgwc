@@ -224,6 +224,9 @@ check_install_spgwc_deps() {
   #install_fmt $1
   #ret=$?;[[ $ret -ne 0 ]] && return $ret
 
+  install_fb_folly_from_source $1 $2
+  ret=$?;[[ $ret -ne 0 ]] && return $ret
+
   install_spdlog_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
