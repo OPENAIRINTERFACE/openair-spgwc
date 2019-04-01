@@ -710,6 +710,9 @@ static const std::vector<std::string> pdn_type_e2str = {"Error", "IPV4", "IPV6",
 
 typedef struct pdn_type_s {
   uint8_t pdn_type;
+  pdn_type_s() : pdn_type(PDN_TYPE_E_IPV4) {}
+  pdn_type_s(const uint8_t& p) : pdn_type(p) {}
+  pdn_type_s(const struct pdn_type_s& p) : pdn_type(p.pdn_type) {}
   bool operator==(const struct pdn_type_s& p) const
   {
     return (p.pdn_type == pdn_type);
