@@ -106,7 +106,7 @@ bool sgw_eps_bearer_context::find_pdn_connection(const std::string& apn, const p
 bool sgw_eps_bearer_context::find_pdn_connection(const ebi_t& ebi, std::shared_ptr<sgw_pdn_connection> &sp)
 {
   for (auto it=pdn_connections.begin(); it!=pdn_connections.end(); ++it) {
-    if (it->second.get()->default_bearer.ebi == ebi.ebi) {
+    if (it->second.get()->default_bearer == ebi) {
       sp = it->second;
       return true;
     }

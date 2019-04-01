@@ -848,34 +848,5 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_response& gtp_ies) : gtpv2c_msg_header(
   if (gtp_ies.recovery_restart_counter.first) {std::shared_ptr<gtpv2c_recovery_ie> sie(new gtpv2c_recovery_ie(gtp_ies.recovery_restart_counter.second)); add_ie(sie);}
   if (gtp_ies.sending_node_features.first) {std::shared_ptr<gtpv2c_node_features_ie> sie(new gtpv2c_node_features_ie(gtp_ies.sending_node_features.second)); add_ie(sie);}
 }
-//------------------------------------------------------------------------------
-bool is_paa_ip_assigned(const paa_t& paa) {
-  switch (paa.pdn_type.pdn_type) {
-  case PDN_TYPE_E_IPV4:
-    if (paa.ipv4_address.s_addr) return true;
-    return false;
-    break;
-  case PDN_TYPE_E_IPV6:
-    if (paa.ipv6_address.__in6_u.__u6_addr32[0] |
-        paa.ipv6_address.__in6_u.__u6_addr32[1] |
-        paa.ipv6_address.__in6_u.__u6_addr32[2] |
-        paa.ipv6_address.__in6_u.__u6_addr32[3])
-      return true;
-    return false;
-    break;
-  case PDN_TYPE_E_IPV4V6:
-    // TODO
-    if (paa.ipv4_address.s_addr) return true;
-    if (paa.ipv6_address.__in6_u.__u6_addr32[0] |
-        paa.ipv6_address.__in6_u.__u6_addr32[1] |
-        paa.ipv6_address.__in6_u.__u6_addr32[2] |
-        paa.ipv6_address.__in6_u.__u6_addr32[3])
-      return true;
-    return false;
-    break;
-  case PDN_TYPE_E_NON_IP:
-  default:
-    return false;
-  }
-}
+
 

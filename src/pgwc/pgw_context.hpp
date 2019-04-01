@@ -149,7 +149,7 @@ public:
   }
   bool get_eps_bearer(const ebi_t& ebi, pgw_eps_bearer& b) {
     for (auto it : eps_bearers) {
-      if (it.second.ebi.ebi == ebi.ebi) {
+      if (it.second.ebi == ebi) {
         b = it.second;
         return true;
       }

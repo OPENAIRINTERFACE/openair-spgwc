@@ -457,7 +457,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
 //  // TODO: remove this code if SPGW split (only for TAU/HO procedures)
 //  for (auto it : csreq->gtp_ies.bearer_contexts_to_be_removed) {
 //    pgw_eps_bearer&  eps_bearer = sp->get_eps_bearer(it.eps_bearer_id);
-//    if (eps_bearer.ebi.ebi == it.eps_bearer_id.ebi) {
+//    if (eps_bearer == it.eps_bearer_id) {
 //      cause_t bcc_cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
 //      bearer_context_marked_for_removal_within_create_session_response bcc = {};
 //      bcc.set(eps_bearer.ebi);
@@ -482,7 +482,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
 //  if (cause.cause_value == REQUEST_ACCEPTED) {
 //    paa.pdn_type = sp->pdn_type;
 //    bool paa_res = csreq->gtp_ies.get(paa);
-//    if ((not paa_res) || (not is_paa_ip_assigned(paa))) {
+  //    if ((not paa_res) || (not paa.is_ip_assigned())) {
   //      int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
 //      if (ret == RETURNok) {
 //        set_paa = true;
@@ -529,7 +529,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
       // implement different logic between the PDN types.
       if (!pco_ids.ci_ipv4_address_allocation_via_dhcpv4) {
         bool paa_res = csreq->gtp_ies.get(paa);
-        if ((not paa_res) || (not is_paa_ip_assigned(paa))) {
+        if ((not paa_res) || (not paa.is_ip_assigned())) {
           int ret = paa_dynamic::get_instance().get_free_paa(sa->apn_in_use, paa);
           if (ret == RETURNok) {
             set_paa = true;
@@ -546,7 +546,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
 
   case PDN_TYPE_E_IPV6: {
       bool paa_res = csreq->gtp_ies.get(paa);
-      if ((not paa_res) || (not is_paa_ip_assigned(paa))) {
+      if ((not paa_res) || (not paa.is_ip_assigned())) {
         int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
         if (ret == RETURNok) {
           set_paa = true;
@@ -560,7 +560,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
 
   case PDN_TYPE_E_IPV4V6: {
       bool paa_res = csreq->gtp_ies.get(paa);
-      if ((not paa_res) || (not is_paa_ip_assigned(paa))) {
+      if ((not paa_res) || (not paa.is_ip_assigned())) {
         int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
         if (ret == RETURNok) {
           set_paa = true;
@@ -603,7 +603,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
     } else {
       // Valid PAA sent in CSR ?
       bool paa_res = csreq->gtp_ies.get(paa);
-      if ((paa_res) && ( is_paa_ip_assigned(paa))) {
+      if ((paa_res) && ( paa.is_ip_assigned())) {
         sp->set(paa);
       }
     }

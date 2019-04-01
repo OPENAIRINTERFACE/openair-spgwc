@@ -559,8 +559,12 @@ typedef struct ambr_s {
 
 typedef struct ebi_s {
   uint8_t ebi;
-  inline bool operator==(const struct ebi_s& rhs){ return ebi == rhs.ebi; }
-  inline bool operator!=(const struct ebi_s& rhs){ return !(ebi == rhs.ebi); }
+  ebi_s() : ebi(EPS_BEARER_IDENTITY_UNASSIGNED) {}
+  ebi_s(const uint8_t& e) : ebi(e) {}
+  ebi_s(const struct ebi_s& e) : ebi(e.ebi) {}
+
+  inline bool operator==(const struct ebi_s& rhs) const { return ebi == rhs.ebi; }
+  inline bool operator!=(const struct ebi_s& rhs) const { return !(ebi == rhs.ebi); }
 } ebi_t;
 //-------------------------------------
 // 8.9 IP Address
@@ -706,20 +710,59 @@ static const std::vector<std::string> pdn_type_e2str = {"Error", "IPV4", "IPV6",
 
 typedef struct pdn_type_s {
   uint8_t pdn_type;
+  bool operator==(const struct pdn_type_s& p) const
+  {
+    return (p.pdn_type == pdn_type);
+  }
+  //------------------------------------------------------------------------------
+  bool operator==(const pdn_type_e& p) const
+  {
+    return (p == pdn_type);
+  }
   //------------------------------------------------------------------------------
   const std::string& toString() const {return pdn_type_e2str.at(pdn_type);}
 } pdn_type_t;
 
 //-------------------------------------
 // 8.14 PDN Address Allocation (PAA)
-typedef struct paa_s {
+struct paa_s {
   pdn_type_t pdn_type;
   uint8_t         ipv6_prefix_length;
   struct in6_addr ipv6_address;
   struct in_addr  ipv4_address;
-} paa_t;
-bool is_paa_ip_assigned(const paa_t& paa);
+  //------------------------------------------------------------------------------
+  bool is_ip_assigned() {
+    switch (pdn_type.pdn_type) {
+      case PDN_TYPE_E_IPV4:
+        if (ipv4_address.s_addr) return true;
+        return false;
+        break;
+      case PDN_TYPE_E_IPV6:
+        if (ipv6_address.s6_addr32[0] |
+          ipv6_address.s6_addr32[1] |
+          ipv6_address.s6_addr32[2] |
+          ipv6_address.s6_addr32[3])
+          return true;
+        return false;
+        break;
+      case PDN_TYPE_E_IPV4V6:
+        // TODO
+        if (ipv4_address.s_addr) return true;
+        if (ipv6_address.s6_addr32[0] |
+          ipv6_address.s6_addr32[1] |
+          ipv6_address.s6_addr32[2] |
+          ipv6_address.s6_addr32[3])
+          return true;
+        return false;
+        break;
+      case PDN_TYPE_E_NON_IP:
+      default:
+        return false;
+    }
+  }
+};
 
+typedef struct paa_s paa_t;
 //-------------------------------------
 // 8.15 Bearer Quality of Service (Bearer QoS)
 #define PRE_EMPTION_CAPABILITY_ENABLED  (0x0)
@@ -739,14 +782,12 @@ typedef struct bearer_qos_s {
   uint64_t guaranted_bit_rate_for_uplink;
   uint64_t guaranted_bit_rate_for_downlink;
 
-  bool is_arp_equals(const struct bearer_qos_s& q) const{
-    if ((q.label_qci == label_qci) &&
-        (q.pl == pl) &&
-        (q.pvi == pvi) &&
-        (q.pci == pci)) {
-      return true;
-    }
-    return false;
+  bool operator==(const struct bearer_qos_s& q) const
+  {
+    return ((q.label_qci == label_qci) &&
+    (q.pl == pl) &&
+    (q.pvi == pvi) &&
+    (q.pci == pci));
   }
   //------------------------------------------------------------------------------
   std::string toString() const

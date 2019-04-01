@@ -922,7 +922,7 @@ public:
     pdn_type.pdn_type = 0;
     rat_type.rat_type = RAT_TYPE_E_UTRAN;
     selection_mode.selec_mode = SELECTION_MODE_E_MS_OR_NETWORK_PROVIDED_APN_SUBSCRIPTION_VERIFIED;
-    linked_eps_bearer_id.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
+    linked_eps_bearer_id = EPS_BEARER_IDENTITY_UNASSIGNED;
   }
   gtpv2c_create_session_request(const gtpv2c_create_session_request& i) :
     ie_presence_mask(i.ie_presence_mask),
@@ -2229,7 +2229,7 @@ public:
     if (b.get(s11_u_mme_fteid, 4)) ie_presence_mask |= GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_S11_U_MME_FTEID;
   }
   static bool predic_same_eps_bearer_id (const bearer_context_to_be_modified_within_modify_bearer_request& b1, const bearer_context_to_be_modified_within_modify_bearer_request& b2) {
-    return (b1.eps_bearer_id.ebi == b2.eps_bearer_id.ebi);
+    return (b1.eps_bearer_id == b2.eps_bearer_id);
   }
 };
 

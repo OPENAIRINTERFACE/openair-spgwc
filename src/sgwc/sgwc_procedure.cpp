@@ -549,7 +549,7 @@ void modify_bearer_request_procedure::handle_itti_msg (itti_s5s8_modify_bearer_r
         for (auto it_modified : s5resp.gtp_ies.bearer_contexts_modified.second) {
           for (std::vector<gtpv2c::bearer_context_to_be_modified_within_modify_bearer_request>::iterator it_to_be_modified =  px->bearer_contexts_to_be_modified.begin()
               ; it_to_be_modified != px->bearer_contexts_to_be_modified.end(); ++it_to_be_modified) {
-            if (it_to_be_modified->eps_bearer_id.ebi == it_modified.eps_bearer_id.second.ebi) {
+            if (it_to_be_modified->eps_bearer_id == it_modified.eps_bearer_id.second) {
 #define SPGW_PLIT 0
 #if !SPGW_SPLIT
               it_modified.s1_u_sgw_fteid.second.interface_type = S1_U_SGW_GTP_U;
@@ -565,7 +565,7 @@ void modify_bearer_request_procedure::handle_itti_msg (itti_s5s8_modify_bearer_r
         for (auto it_marked : s5resp.gtp_ies.bearer_contexts_marked_for_removal.second) {
           for (std::vector<gtpv2c::bearer_context_to_be_removed_within_modify_bearer_request>::iterator it_to_be_removed =  px->bearer_contexts_to_be_removed.begin()
               ; it_to_be_removed != px->bearer_contexts_to_be_removed.end(); ++it_to_be_removed) {
-            if (it_to_be_removed->eps_bearer_id.ebi == it_marked.eps_bearer_id.second.ebi) {
+            if (it_to_be_removed->eps_bearer_id == it_marked.eps_bearer_id.second) {
               bearer_contexts_marked_for_removal.push_back(it_marked);
               px->bearer_contexts_to_be_removed.erase(it_to_be_removed);
               break;
@@ -586,7 +586,7 @@ void modify_bearer_request_procedure::handle_itti_msg (itti_s5s8_modify_bearer_r
         for (auto it_to_be_modified : msg.gtp_ies.bearer_contexts_to_be_modified) {
           bool bearer_found = false;
           for (auto it_modified : bearer_contexts_modified) {
-            if (it_modified.eps_bearer_id.second.ebi == it_to_be_modified.eps_bearer_id.ebi) {
+            if (it_modified.eps_bearer_id.second == it_to_be_modified.eps_bearer_id) {
               pdn->update_eps_bearer(it_modified);
               s11_resp->gtp_ies.add_bearer_context_modified(it_modified);
               bearer_found = true;
@@ -612,7 +612,7 @@ void modify_bearer_request_procedure::handle_itti_msg (itti_s5s8_modify_bearer_r
         for (auto it_to_be_removed : msg.gtp_ies.bearer_contexts_to_be_removed) {
           bool bearer_found = false;
           for (auto it_marked : bearer_contexts_marked_for_removal) {
-            if (it_marked.eps_bearer_id.second.ebi == it_to_be_removed.eps_bearer_id.ebi) {
+            if (it_marked.eps_bearer_id.second == it_to_be_removed.eps_bearer_id) {
               pdn->remove_eps_bearer(it_marked.eps_bearer_id.second);
               s11_resp->gtp_ies.add_bearer_context_marked_for_removal(it_marked);
               bearer_found = true;

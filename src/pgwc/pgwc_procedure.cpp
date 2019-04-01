@@ -731,7 +731,7 @@ void modify_bearer_procedure::handle_itti_msg (itti_sxab_session_modification_re
         if (ppc->get_eps_bearer(far_id, b)) {
           for (std::vector<gtpv2c::bearer_context_to_be_modified_within_modify_bearer_request>::const_iterator it_to_be_mod = s5_trigger->gtp_ies.bearer_contexts_to_be_modified.begin();
               it_to_be_mod != s5_trigger->gtp_ies.bearer_contexts_to_be_modified.end(); ++it_to_be_mod) {
-            if (it_to_be_mod->eps_bearer_id.ebi == b.ebi.ebi) {
+            if (it_to_be_mod->eps_bearer_id == b.ebi) {
               it_to_be_mod->get_s5_s8_u_sgw_fteid(b.sgw_fteid_s5_s8_up);
               it_to_be_mod->get_s1_u_enb_fteid(b.sgw_fteid_s5_s8_up);
               pgw_eps_bearer b2 = b;

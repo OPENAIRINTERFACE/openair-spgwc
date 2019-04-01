@@ -42,8 +42,7 @@ namespace sgwc {
 
 class sgw_eps_bearer {
 public:
-  sgw_eps_bearer() {
-    ebi.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
+  sgw_eps_bearer() : ebi() {
     tft = {};
     pgw_fteid_s5_s8_up = {};
     sgw_fteid_s5_s8_up = {};
@@ -54,8 +53,7 @@ public:
     eps_bearer_qos = {};
   }
 
-  sgw_eps_bearer(const sgw_eps_bearer& b) {
-    ebi.ebi = b.ebi.ebi;
+  sgw_eps_bearer(const sgw_eps_bearer& b) : ebi(b.ebi) {
     tft = b.tft;
     pgw_fteid_s5_s8_up = b.pgw_fteid_s5_s8_up;
     sgw_fteid_s5_s8_up = b.sgw_fteid_s5_s8_up;
@@ -80,7 +78,7 @@ public:
 
   bool update(const gtpv2c::bearer_context_modified_within_modify_bearer_response& b) {
     ebi_t check_ebi  = {};
-    if ((b.get(check_ebi)) && (check_ebi.ebi == ebi.ebi)) {
+    if ((b.get(check_ebi)) && (check_ebi == ebi)) {
       b.get_s1_u_sgw_fteid(sgw_fteid_s1u_s12_s4u_s11u);
       return true;
     }
@@ -133,7 +131,7 @@ public:
 
 class sgw_pdn_connection {
 public:
-  sgw_pdn_connection() : apn_in_use(), pdn_type(), pgw_fteid_s5_s8_cp(), pgw_address_in_use_up(), 
+  sgw_pdn_connection() : apn_in_use(), pdn_type(), pgw_fteid_s5_s8_cp(), pgw_address_in_use_up(),
       sgw_fteid_s5_s8_cp(), is_dl_up_tunnels_released(false), sgw_eps_bearers() {
     default_bearer.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
   }
