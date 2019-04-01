@@ -103,8 +103,8 @@ int sgwc_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
   const Setting& sx_sched_params_cfg = itti_cfg[SGWC_CONFIG_STRING_SX_SCHED_PARAMS];
   load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
 
-  const Setting& spgwc_app_sched_params_cfg = itti_cfg[SGWC_CONFIG_STRING_SPGWC_APP_SCHED_PARAMS];
-  load_thread_sched_params(spgwc_app_sched_params_cfg, cfg.spgwc_app_sched_params);
+  const Setting& sgw_app_sched_params_cfg = itti_cfg[SGWC_CONFIG_STRING_SGW_APP_SCHED_PARAMS];
+  load_thread_sched_params(sgw_app_sched_params_cfg, cfg.sgw_app_sched_params);
 
   const Setting& async_cmd_sched_params_cfg = itti_cfg[SGWC_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
   load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
@@ -201,7 +201,7 @@ void sgwc_config::display ()
 {
 
   Logger::sgwc_app().info("==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
-  Logger::sgwc_app().info( "Configuration:");
+  Logger::sgwc_app().info( "Configuration SGW-C:");
   //Logger::sgwc_app().info( "- Instance ..............: %s", instance);
   //Logger::sgwc_app().info( "- PID dir ...............: %s", pid_dir.c_str());
   Logger::sgwc_app().info( "- S5_S8-C:");

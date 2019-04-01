@@ -55,7 +55,7 @@ namespace sgwc {
 #define SGWC_CONFIG_STRING_S11_SCHED_PARAMS                      "S11_SCHED_PARAMS"
 #define SGWC_CONFIG_STRING_S5S8_SCHED_PARAMS                     "S5S8_SCHED_PARAMS"
 #define SGWC_CONFIG_STRING_SX_SCHED_PARAMS                       "SX_SCHED_PARAMS"
-#define SGWC_CONFIG_STRING_SPGWC_APP_SCHED_PARAMS                "SPGWC_APP_SCHED_PARAMS"
+#define SGWC_CONFIG_STRING_SGW_APP_SCHED_PARAMS                  "SGW_APP_SCHED_PARAMS"
 #define SGWC_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS                "ASYNC_CMD_SCHED_PARAMS"
 
 #define SGWC_CONFIG_STRING_SCHED_PARAMS                          "SCHED_PARAMS"
@@ -81,7 +81,7 @@ typedef struct itti_cfg_s {
   util::thread_sched_params s11_sched_params;
   util::thread_sched_params s5s8_sched_params;
   util::thread_sched_params sx_sched_params;
-  util::thread_sched_params spgwc_app_sched_params;
+  util::thread_sched_params sgw_app_sched_params;
   util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 

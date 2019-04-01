@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
   // Inter task Interface
   itti_inst = new itti_mw();
-  itti_inst->start(sgwc_cfg.itti.itti_timer_sched_params);
+  itti_inst->start(pgw_cfg.itti.itti_timer_sched_params);
 
   // system command
   async_shell_cmd_inst = new async_shell_cmd(sgwc_cfg.itti.async_cmd_sched_params);
