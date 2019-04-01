@@ -130,9 +130,6 @@ int pgw_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
   const Setting& pgw_app_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS];
   load_thread_sched_params(pgw_app_sched_params_cfg, cfg.pgw_app_sched_params);
 
-  const Setting& sgw_app_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_SGW_APP_SCHED_PARAMS];
-  load_thread_sched_params(sgw_app_sched_params_cfg, cfg.sgw_app_sched_params);
-
   const Setting& async_cmd_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
   load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
 
@@ -180,7 +177,6 @@ int pgw_config::load_interface(const Setting& if_cfg, interface_cfg_t & cfg)
 int pgw_config::load(const string& config_file)
 {
   Config                 cfg;
-  unsigned char          buf_in_addr[sizeof (struct in_addr)];
   unsigned char          buf_in6_addr[sizeof (struct in6_addr)];
 
   // Read the file. If there is an error, report it and exit.
@@ -228,6 +224,8 @@ int pgw_config::load(const string& config_file)
     for (int i = 0; i < count; i++) {
       const Setting &ipv4_cfg = ipv4_pool_cfg[i];
       string ipv4_range;
+      unsigned char  buf_in_addr[sizeof (struct in_addr)];
+
       ipv4_cfg.lookupValue(PGW_CONFIG_STRING_RANGE, ipv4_range);
       std::vector<std::string> ips;
       boost::split(ips, ipv4_range, boost::is_any_of(PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER), boost::token_compress_on);
@@ -236,6 +234,7 @@ int pgw_config::load(const string& config_file)
         throw ("Bad value %s : %s in config file %s", PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER, ipv4_range.c_str(), config_file.c_str());
       }
 
+      memset(buf_in_addr, 0, sizeof(buf_in_addr));
       if (inet_pton (AF_INET, util::trim(ips.at(0)).c_str(), buf_in_addr) == 1) {
         memcpy (&ue_pool_range_low[num_ue_pool], buf_in_addr, sizeof (struct in_addr));
       } else {
@@ -243,6 +242,7 @@ int pgw_config::load(const string& config_file)
         throw ("CONFIG POOL ADDR IPV4: BAD ADDRESS in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST);
       }
 
+      memset(buf_in_addr, 0, sizeof(buf_in_addr));
       if (inet_pton (AF_INET, util::trim(ips.at(1)).c_str(), buf_in_addr) == 1) {
         memcpy (&ue_pool_range_high[num_ue_pool], buf_in_addr, sizeof (struct in_addr));
       } else {
@@ -391,7 +391,7 @@ int pgw_config::load(const string& config_file)
 void pgw_config::display ()
 {
   Logger::pgwc_app().info( "==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
-  Logger::pgwc_app().info( "Configuration:");
+  Logger::pgwc_app().info( "Configuration PGW-C:");
   Logger::pgwc_app().info( "- Instance ..............: %d\n", instance);
   Logger::pgwc_app().info( "- PID dir ...............: %s\n", pid_dir.c_str());
 
@@ -412,7 +412,9 @@ void pgw_config::display ()
 
   Logger::pgwc_app().info( "- " PGW_CONFIG_STRING_IP_ADDRESS_POOL ":");
   for (int i = 0; i < num_ue_pool; i++) {
-    Logger::pgwc_app().info( "    IPv4 pool %d ..........: %s - %s", i, inet_ntoa (*((struct in_addr *)&ue_pool_range_low[i])), inet_ntoa (*((struct in_addr *)&ue_pool_range_high[i])));
+    std::string range_low(inet_ntoa (ue_pool_range_low[apn[i].pool_id_iv4]));
+    std::string range_high(inet_ntoa (ue_pool_range_high[apn[i].pool_id_iv4]));
+    Logger::pgwc_app().info( "    IPv4 pool %d ..........: %s - %s", i, range_low.c_str(), range_high.c_str());
   }
   char str_addr6[INET6_ADDRSTRLEN];
   for (int i = 0; i < num_paa6_pool; i++) {
@@ -436,9 +438,10 @@ void pgw_config::display ()
     Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_APN_NI ":  %s", apn[i].apn.c_str());
     Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_PDN_TYPE ":  %s", apn[i].pdn_type.toString().c_str());
     if (apn[i].pool_id_iv4 >= 0) {
-      Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_IPV4_POOL ":  %d ( %s - %s)", apn[i].pool_id_iv4,
-          inet_ntoa (*((struct in_addr *)&ue_pool_range_low[apn[i].pool_id_iv4])),
-          inet_ntoa (*((struct in_addr *)&ue_pool_range_high[apn[i].pool_id_iv4])));
+      std::string range_low(inet_ntoa (ue_pool_range_low[apn[i].pool_id_iv4]));
+      std::string range_high(inet_ntoa (ue_pool_range_high[apn[i].pool_id_iv4]));
+      Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_IPV4_POOL ":  %d ( %s - %s)",
+                               apn[i].pool_id_iv4, range_low.c_str(), range_high.c_str());
     }
     if (apn[i].pool_id_iv6 >= 0) {
       Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_IPV6_POOL ":  %d", apn[i].pool_id_iv6);
