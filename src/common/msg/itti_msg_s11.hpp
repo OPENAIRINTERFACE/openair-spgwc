@@ -32,9 +32,7 @@
 #include "3gpp_29.274.hpp"
 #include "itti_msg.hpp"
 #include "msg_gtpv2c.hpp"
-#include <boost/asio.hpp>
-
-namespace oai::cn::core::itti {
+#include <boost/asio/ip/udp.hpp>
 
 class itti_s11_msg : public itti_msg {
 public:
@@ -76,7 +74,7 @@ public:
 
   const char* get_msg_name() {return typeid(itti_s11_create_session_request).name();};
 
-  proto::gtpv2c::gtpv2c_create_session_request gtp_ies;
+  gtpv2c::gtpv2c_create_session_request gtp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -104,7 +102,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_create_session_response).name();};
 
-  proto::gtpv2c::gtpv2c_create_session_response gtp_ies;
+  gtpv2c::gtpv2c_create_session_response gtp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -133,7 +131,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_create_session_request).name();};
 
-  proto::gtpv2c::gtpv2c_create_bearer_request gtp_ies;
+  gtpv2c::gtpv2c_create_bearer_request gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -176,7 +174,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_create_bearer_response).name();};
 
-  proto::gtpv2c::gtpv2c_create_bearer_response gtp_ies;
+  gtpv2c::gtpv2c_create_bearer_response gtp_ies;
 };
 
 
@@ -206,7 +204,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_modify_bearer_request).name();};
 
-  proto::gtpv2c::gtpv2c_modify_bearer_request gtp_ies;
+  gtpv2c::gtpv2c_modify_bearer_request gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -235,7 +233,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_modify_bearer_response).name();};
 
-  proto::gtpv2c::gtpv2c_modify_bearer_response gtp_ies;
+  gtpv2c::gtpv2c_modify_bearer_response gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -252,7 +250,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_delete_session_request).name();};
 
-  proto::gtpv2c::gtpv2c_delete_session_request gtp_ies;
+  gtpv2c::gtpv2c_delete_session_request gtp_ies;
 } ;
 
 
@@ -283,7 +281,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_delete_session_response).name();};
 
-  proto::gtpv2c::gtpv2c_delete_session_response gtp_ies;
+  gtpv2c::gtpv2c_delete_session_response gtp_ies;
 } ;
 
 
@@ -312,7 +310,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_release_access_bearers_request).name();};
 
-  proto::gtpv2c::gtpv2c_release_access_bearers_request gtp_ies;
+  gtpv2c::gtpv2c_release_access_bearers_request gtp_ies;
 } ;
 
 
@@ -345,7 +343,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_release_access_bearers_response).name();};
 
-  proto::gtpv2c::gtpv2c_release_access_bearers_response gtp_ies;
+  gtpv2c::gtpv2c_release_access_bearers_response gtp_ies;
 };
 
 //-----------------------------------------------------------------------------
@@ -372,7 +370,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_delete_bearer_command).name();};
 
-  proto::gtpv2c::gtpv2c_delete_bearer_command gtp_ies;
+  gtpv2c::gtpv2c_delete_bearer_command gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -395,7 +393,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_downlink_data_notification).name();};
 
-  proto::gtpv2c::gtpv2c_downlink_data_notification gtp_ies;
+  gtpv2c::gtpv2c_downlink_data_notification gtp_ies;
 } ;
 
 //-----------------------------------------------------------------------------
@@ -418,7 +416,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_downlink_data_notification_acknowledge).name();};
 
-  proto::gtpv2c::gtpv2c_downlink_data_notification_acknowledge gtp_ies;
+  gtpv2c::gtpv2c_downlink_data_notification_acknowledge gtp_ies;
 } ;
 
 
@@ -441,8 +439,7 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_downlink_data_notification_failure_indication).name();};
 
-  proto::gtpv2c::gtpv2c_downlink_data_notification_failure_indication gtp_ies;
+  gtpv2c::gtpv2c_downlink_data_notification_failure_indication gtp_ies;
 } ;
-} // namespace itti
 
 #endif /* ITTI_MSG_S11_HPP_INCLUDED_ */

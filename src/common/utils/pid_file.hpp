@@ -29,7 +29,7 @@
 #define FILE_PID_FILE_SEEN
 #include <string>
 
-namespace oai::cn::util {
+namespace util {
 
 /*
  * Generate the exe absolute path using a specified base_path.

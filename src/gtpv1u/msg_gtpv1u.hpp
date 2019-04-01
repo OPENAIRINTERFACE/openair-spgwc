@@ -34,10 +34,11 @@
 #include "3gpp_29.281.h"
 #include "common_defs.h"
 
+#include <utility>
 #include <vector>
 #include <sys/socket.h>
 
-namespace oai::cn::proto::gtpv1u {
+namespace gtpv1u {
 
 class gtpv1u_ies_container {
 public:
@@ -66,17 +67,17 @@ public:
     return *this;
   }
 
-  virtual bool get(core::recovery_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_RECOVERY);}
-  virtual bool get(core::tunnel_endpoint_identifier_data_i_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I);}
-  virtual bool get(core::gtp_u_peer_address_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_GTP_U_PEER_ADDRESS);}
-  virtual bool get(core::extension_header_type_list_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_EXTENSION_HEADER_TYPE_LIST);}
-  virtual bool get(core::private_extension_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_PRIVATE_EXTENSION);}
+  virtual bool get(recovery_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_RECOVERY);}
+  virtual bool get(tunnel_endpoint_identifier_data_i_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I);}
+  virtual bool get(gtp_u_peer_address_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_GTP_U_PEER_ADDRESS);}
+  virtual bool get(extension_header_type_list_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_EXTENSION_HEADER_TYPE_LIST);}
+  virtual bool get(private_extension_t& v) const {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_PRIVATE_EXTENSION);}
 
-  virtual void set(const core::recovery_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_RECOVERY);}
-  virtual void set(const core::tunnel_endpoint_identifier_data_i_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I);}
-  virtual void set(const core::gtp_u_peer_address_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_GTP_U_PEER_ADDRESS);}
-  virtual void set(const core::extension_header_type_list_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_EXTENSION_HEADER_TYPE_LIST);}
-  virtual void set(const core::private_extension_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_PRIVATE_EXTENSION);}
+  virtual void set(const recovery_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_RECOVERY);}
+  virtual void set(const tunnel_endpoint_identifier_data_i_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I);}
+  virtual void set(const gtp_u_peer_address_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_GTP_U_PEER_ADDRESS);}
+  virtual void set(const extension_header_type_list_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_EXTENSION_HEADER_TYPE_LIST);}
+  virtual void set(const private_extension_t& v) {throw gtpu_msg_illegal_ie_exception(0, GTPU_IE_PRIVATE_EXTENSION);}
 
   virtual void set_teid(const uint32_t pteid) {teid.second = pteid; teid.first = true;}
   virtual void set_sequence_number(const uint16_t psequence_number) {sequence_number.second = psequence_number; sequence_number.first = true;}
@@ -92,7 +93,7 @@ class gtpv1u_echo_request : public gtpv1u_ies_container {
 public:
   static const uint8_t msg_id = GTPU_ECHO_REQUEST;
 
-  std::pair<bool, core::private_extension_t>     private_extension;
+  std::pair<bool, private_extension_t>     private_extension;
 
   gtpv1u_echo_request() : gtpv1u_ies_container(), private_extension() {}
   gtpv1u_echo_request(const gtpv1u_echo_request& i) : gtpv1u_ies_container(i), private_extension(i.private_extension) {}
@@ -104,9 +105,9 @@ public:
   }
   static const char* get_msg_name() {return "GTPU_ECHO_REQUEST";};
 
-  bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
+  bool get(private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
 
-  void set(const core::private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
+  void set(const private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
 };
 
 //------------------------------------------------------------------------------
@@ -114,8 +115,8 @@ class gtpv1u_echo_response : public gtpv1u_ies_container {
 public:
   static const uint8_t msg_id = GTPU_ECHO_RESPONSE;
 
-  std::pair<bool, core::recovery_t>              recovery;
-  std::pair<bool, core::private_extension_t>     private_extension;
+  std::pair<bool, recovery_t>              recovery;
+  std::pair<bool, private_extension_t>     private_extension;
 
   gtpv1u_echo_response(): gtpv1u_ies_container(), recovery(), private_extension() {}
 
@@ -130,11 +131,11 @@ public:
     return *this;
   }
 
-  bool get(core::recovery_t& v)  const {if (recovery.first) {v = recovery.second;return true;}return false;}
-  bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
+  bool get(recovery_t& v)  const {if (recovery.first) {v = recovery.second;return true;}return false;}
+  bool get(private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
 
-  void set(const core::recovery_t& v) {recovery.first = true; recovery.second = v;}
-  void set(const core::private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
+  void set(const recovery_t& v) {recovery.first = true; recovery.second = v;}
+  void set(const private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
 };
 
 //------------------------------------------------------------------------------
@@ -143,9 +144,9 @@ public:
   static const uint8_t msg_id = GTPU_ERROR_INDICATION;
 
 
-  std::pair<bool, core::tunnel_endpoint_identifier_data_i_t>   tunnel_endpoint_identifier_data_i;
-  std::pair<bool, core::gtp_u_peer_address_t>                  gtp_u_peer_address;
-  std::pair<bool, core::private_extension_t>                   private_extension;
+  std::pair<bool, tunnel_endpoint_identifier_data_i_t>   tunnel_endpoint_identifier_data_i;
+  std::pair<bool, gtp_u_peer_address_t>                  gtp_u_peer_address;
+  std::pair<bool, private_extension_t>                   private_extension;
 
   gtpv1u_error_indication(): gtpv1u_ies_container(), tunnel_endpoint_identifier_data_i(), gtp_u_peer_address(), private_extension() {}
 
@@ -165,20 +166,20 @@ public:
 
   static const char* get_msg_name() {return "GTPU_ERROR_INDICATION";};
 
-  bool get(core::tunnel_endpoint_identifier_data_i_t& v)  const {if (tunnel_endpoint_identifier_data_i.first) {v = tunnel_endpoint_identifier_data_i.second;return true;}return false;}
-  bool get(core::gtp_u_peer_address_t& v)  const {if (gtp_u_peer_address.first) {v = gtp_u_peer_address.second;return true;}return false;}
-  bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
+  bool get(tunnel_endpoint_identifier_data_i_t& v)  const {if (tunnel_endpoint_identifier_data_i.first) {v = tunnel_endpoint_identifier_data_i.second;return true;}return false;}
+  bool get(gtp_u_peer_address_t& v)  const {if (gtp_u_peer_address.first) {v = gtp_u_peer_address.second;return true;}return false;}
+  bool get(private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
 
-  void set(const core::tunnel_endpoint_identifier_data_i_t& v) {tunnel_endpoint_identifier_data_i.first = true; tunnel_endpoint_identifier_data_i.second = v;}
-  void set(const core::gtp_u_peer_address_t& v) {gtp_u_peer_address.first = true; gtp_u_peer_address.second = v;}
-  void set(const core::private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
+  void set(const tunnel_endpoint_identifier_data_i_t& v) {tunnel_endpoint_identifier_data_i.first = true; tunnel_endpoint_identifier_data_i.second = v;}
+  void set(const gtp_u_peer_address_t& v) {gtp_u_peer_address.first = true; gtp_u_peer_address.second = v;}
+  void set(const private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
 };
 //------------------------------------------------------------------------------
 class gtpv1u_supported_extension_headers_notification : public gtpv1u_ies_container {
 public:
   static const uint8_t msg_id = GTPU_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION;
 
-  std::pair<bool, core::extension_header_type_list_t>     extension_header_type_list;
+  std::pair<bool, extension_header_type_list_t>     extension_header_type_list;
 
   gtpv1u_supported_extension_headers_notification() : gtpv1u_ies_container(),
     extension_header_type_list() {}
@@ -196,9 +197,9 @@ public:
 
   static const char* get_msg_name() {return "GTPU_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION";};
 
-  bool get(core::extension_header_type_list_t& v)  const {if (extension_header_type_list.first) {v = extension_header_type_list.second;return true;}return false;}
+  bool get(extension_header_type_list_t& v)  const {if (extension_header_type_list.first) {v = extension_header_type_list.second;return true;}return false;}
 
-  void set(const core::extension_header_type_list_t& v) {extension_header_type_list.first = true; extension_header_type_list.second = v;}
+  void set(const extension_header_type_list_t& v) {extension_header_type_list.first = true; extension_header_type_list.second = v;}
 };
 
 //------------------------------------------------------------------------------
@@ -206,7 +207,7 @@ class gtpv1u_end_marker : public gtpv1u_ies_container {
 public:
   static const uint8_t msg_id = GTPU_END_MARKER;
 
-  std::pair<bool, core::private_extension_t>     private_extension;
+  std::pair<bool, private_extension_t>     private_extension;
 
   gtpv1u_end_marker() : gtpv1u_ies_container(),
     private_extension() {}
@@ -223,9 +224,9 @@ public:
 
   static const char* get_msg_name() {return "GTPU_END_MARKER";};
 
-  bool get(core::private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
+  bool get(private_extension_t& v)  const {if (private_extension.first) {v = private_extension.second;return true;}return false;}
 
-  void set(const core::private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
+  void set(const private_extension_t& v) {private_extension.first = true; private_extension.second = v;}
 };
 
 } // namespace gtpv1u

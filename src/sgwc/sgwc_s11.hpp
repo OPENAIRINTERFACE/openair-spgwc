@@ -33,20 +33,20 @@
 
 #include <thread>
 
-namespace oai::cn::nf::sgwc {
+namespace sgwc {
 
-class sgw_s11 : public proto::gtpv2c::gtpv2c_stack {
+class sgw_s11 : public gtpv2c::gtpv2c_stack {
 private:
   std::thread::id                      thread_id;
   std::thread                          thread;
 
-  void handle_receive_gtpv2c_msg(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_echo_request(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
-  void handle_receive_echo_response(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
-  void handle_receive_create_session_request(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
-  void handle_receive_delete_session_request(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_modify_bearer_request(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_release_access_bearers_request(proto::gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_gtpv2c_msg(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_echo_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
+  void handle_receive_echo_response(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
+  void handle_receive_create_session_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
+  void handle_receive_delete_session_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_modify_bearer_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_release_access_bearers_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
 
 public:
   sgw_s11();
@@ -55,10 +55,10 @@ public:
 
   void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
 
-  void send_msg(core::itti::itti_s11_create_session_response& m);
-  void send_msg(core::itti::itti_s11_delete_session_response& m);
-  void send_msg(core::itti::itti_s11_modify_bearer_response& m);
-  void send_msg(core::itti::itti_s11_release_access_bearers_response& m);
+  void send_msg(itti_s11_create_session_response& m);
+  void send_msg(itti_s11_delete_session_response& m);
+  void send_msg(itti_s11_modify_bearer_response& m);
+  void send_msg(itti_s11_release_access_bearers_response& m);
 
   void send_echo_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id);
 

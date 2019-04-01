@@ -28,8 +28,6 @@
 #include "itti_msg.hpp"
 #include "itti.hpp"
 
-using namespace oai::cn::core::itti;
-
 extern itti_mw *itti_inst;
 
 itti_msg::itti_msg() :

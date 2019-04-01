@@ -47,11 +47,9 @@
 #include <stdexcept>
 #include <net/ethernet.h>
 
-using namespace oai::cn::core;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::core::pfcp;
-using namespace oai::cn::proto::gtpv1u;
-using namespace oai::cn::nf::spgwu;
+using namespace pfcp;
+using namespace gtpv1u;
+using namespace spgwu;
 using namespace std;
 
 extern itti_mw *itti_inst;
@@ -124,7 +122,7 @@ void pfcp_switch::commit_changes()
 }
 
 //------------------------------------------------------------------------------
-void pfcp_switch::pdn_read_loop(const oai::cn::util::thread_sched_params& sched_params)
+void pfcp_switch::pdn_read_loop(const util::thread_sched_params& sched_params)
 {
   int        bytes_received = 0;
 
@@ -266,14 +264,14 @@ void pfcp_switch::setup_pdn_interfaces()
       struct in_addr address4 = {};
       address4.s_addr = it.network_ipv4.s_addr + be32toh(1);
 
-      std::string cmd = fmt::format("ip -4 addr add {}/{} dev {}", oai::cn::core::toString(address4).c_str(), it.prefix_ipv4, PDN_INTERFACE_NAME);
+      std::string cmd = fmt::format("ip -4 addr add {}/{} dev {}", conv::toString(address4).c_str(), it.prefix_ipv4, PDN_INTERFACE_NAME);
       rc = system ((const char*)cmd.c_str());
 
       if (it.snat) {
         cmd = fmt::format("iptables -t nat -A POSTROUTING -s {}/{} -j SNAT --to-source {}",
-            oai::cn::core::toString(address4).c_str(),
-            it.prefix_ipv4,
-            oai::cn::core::toString(spgwu_cfg.sgi.addr4).c_str());
+                          conv::toString(address4).c_str(),
+                          it.prefix_ipv4,
+                          conv::toString(spgwu_cfg.sgi.addr4).c_str());
         rc = system ((const char*)cmd.c_str());
       }
     }
@@ -283,10 +281,10 @@ void pfcp_switch::setup_pdn_interfaces()
 
       struct in6_addr addr6 = it.network_ipv6;
       addr6.s6_addr[15] = 1;
-      cmd = fmt::format("ip -6 addr add {}/{} dev {}", oai::cn::core::toString(addr6).c_str(), it.prefix_ipv6, PDN_INTERFACE_NAME);
+      cmd = fmt::format("ip -6 addr add {}/{} dev {}", conv::toString(addr6).c_str(), it.prefix_ipv6, PDN_INTERFACE_NAME);
       rc = system ((const char*)cmd.c_str());
 //      if ((it.snat) && (/* SGI has IPv6 address*/)){
-//        cmd = fmt::format("ip6tables -t nat -A POSTROUTING -s {}/{} -o {} -j SNAT --to-source {}", oai::cn::core::toString(addr6).c_str(), it.prefix_ipv6, xxx);
+      //        cmd = fmt::format("ip6tables -t nat -A POSTROUTING -s {}/{} -o {} -j SNAT --to-source {}", conv::toString(addr6).c_str(), it.prefix_ipv6, xxx);
 //        rc = system ((const char*)cmd.c_str());
 //      }
     }
@@ -319,9 +317,9 @@ void pfcp_switch::setup_pdn_interfaces()
 }
 
 //------------------------------------------------------------------------------
-oai::cn::core::pfcp::fteid_t pfcp_switch::generate_fteid_s1u()
+pfcp::fteid_t pfcp_switch::generate_fteid_s1u()
 {
-  oai::cn::core::pfcp::fteid_t fteid = {};
+  pfcp::fteid_t fteid = {};
   fteid.teid = generate_teid_s1u();
   if (spgwu_cfg.s1_up.addr4.s_addr) {
     fteid.v4 = 1;
@@ -351,9 +349,9 @@ pfcp_switch::pfcp_switch() : seid_generator_(), teid_s1u_generator_(),
   thread_sock_.detach();
 }
 //------------------------------------------------------------------------------
-bool pfcp_switch::get_pfcp_session_by_cp_fseid(const core::pfcp::fseid_t& fseid, std::shared_ptr<core::pfcp::pfcp_session>& session) const
+bool pfcp_switch::get_pfcp_session_by_cp_fseid(const pfcp::fseid_t& fseid, std::shared_ptr<pfcp::pfcp_session>& session) const
 {
-  std::unordered_map<fseid_t, std::shared_ptr<core::pfcp::pfcp_session>>::const_iterator sit = cp_fseid2pfcp_sessions.find (fseid);
+  std::unordered_map<fseid_t, std::shared_ptr<pfcp::pfcp_session>>::const_iterator sit = cp_fseid2pfcp_sessions.find (fseid);
   if (sit == cp_fseid2pfcp_sessions.end()) {
     return false;
   } else {
@@ -362,9 +360,9 @@ bool pfcp_switch::get_pfcp_session_by_cp_fseid(const core::pfcp::fseid_t& fseid,
   }
 }
 //------------------------------------------------------------------------------
-bool pfcp_switch::get_pfcp_session_by_up_seid(const uint64_t cp_seid, std::shared_ptr<core::pfcp::pfcp_session>& session) const
+bool pfcp_switch::get_pfcp_session_by_up_seid(const uint64_t cp_seid, std::shared_ptr<pfcp::pfcp_session>& session) const
 {
-  folly::AtomicHashMap<uint64_t, std::shared_ptr<core::pfcp::pfcp_session>>::const_iterator sit = up_seid2pfcp_sessions.find (cp_seid);
+  folly::AtomicHashMap<uint64_t, std::shared_ptr<pfcp::pfcp_session>>::const_iterator sit = up_seid2pfcp_sessions.find (cp_seid);
   if (sit == up_seid2pfcp_sessions.end()) {
     return false;
   } else {
@@ -373,9 +371,9 @@ bool pfcp_switch::get_pfcp_session_by_up_seid(const uint64_t cp_seid, std::share
   }
 }
 //------------------------------------------------------------------------------
-bool pfcp_switch::get_pfcp_ul_pdrs_by_up_teid(const teid_t teid, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>& pdrs) const
+bool pfcp_switch::get_pfcp_ul_pdrs_by_up_teid(const teid_t teid, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>& pdrs) const
 {
-  folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>>::const_iterator pit = ul_s1u_teid2pfcp_pdr.find (teid);
+  folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>::const_iterator pit = ul_s1u_teid2pfcp_pdr.find (teid);
   if ( pit == ul_s1u_teid2pfcp_pdr.end() )
     return false;
   else {
@@ -384,9 +382,9 @@ bool pfcp_switch::get_pfcp_ul_pdrs_by_up_teid(const teid_t teid, std::shared_ptr
   }
 }
 //------------------------------------------------------------------------------
-bool pfcp_switch::get_pfcp_dl_pdrs_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>& pdrs) const
+bool pfcp_switch::get_pfcp_dl_pdrs_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>& pdrs) const
 {
-  folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>>::const_iterator pit = ue_ipv4_hbo2pfcp_pdr.find (ue_ip);
+  folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>::const_iterator pit = ue_ipv4_hbo2pfcp_pdr.find (ue_ip);
   if ( pit == ue_ipv4_hbo2pfcp_pdr.end() )
     return false;
   else {
@@ -395,48 +393,48 @@ bool pfcp_switch::get_pfcp_dl_pdrs_by_ue_ip(const uint32_t ue_ip, std::shared_pt
   }
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::add_pfcp_session_by_cp_fseid(const core::pfcp::fseid_t& fseid, std::shared_ptr<core::pfcp::pfcp_session>& session)
+void pfcp_switch::add_pfcp_session_by_cp_fseid(const pfcp::fseid_t& fseid, std::shared_ptr<pfcp::pfcp_session>& session)
 {
-  std::pair<fseid_t, std::shared_ptr<core::pfcp::pfcp_session>> entry(fseid, session);
+  std::pair<fseid_t, std::shared_ptr<pfcp::pfcp_session>> entry(fseid, session);
   cp_fseid2pfcp_sessions.insert(entry);
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::add_pfcp_session_by_up_seid(const uint64_t seid, std::shared_ptr<core::pfcp::pfcp_session>& session)
+void pfcp_switch::add_pfcp_session_by_up_seid(const uint64_t seid, std::shared_ptr<pfcp::pfcp_session>& session)
 {
-  std::pair<uint64_t, std::shared_ptr<core::pfcp::pfcp_session>> entry(seid, session);
+  std::pair<uint64_t, std::shared_ptr<pfcp::pfcp_session>> entry(seid, session);
   up_seid2pfcp_sessions.insert(entry);
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::remove_pfcp_session(std::shared_ptr<core::pfcp::pfcp_session>& session)
+void pfcp_switch::remove_pfcp_session(std::shared_ptr<pfcp::pfcp_session>& session)
 {
   session->cleanup();
   cp_fseid2pfcp_sessions.erase(session->cp_fseid);
   up_seid2pfcp_sessions.erase(session->seid);
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::remove_pfcp_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
+void pfcp_switch::remove_pfcp_session(const pfcp::fseid_t& cp_fseid)
 {
-  std::shared_ptr<core::pfcp::pfcp_session> session = {};
+  std::shared_ptr<pfcp::pfcp_session> session = {};
   if (get_pfcp_session_by_cp_fseid(cp_fseid, session)) {
     remove_pfcp_session(session);
   }
 }
 
 //------------------------------------------------------------------------------
-void pfcp_switch::add_pfcp_ul_pdr_by_up_teid(const teid_t teid, std::shared_ptr<core::pfcp::pfcp_pdr>& pdr)
+void pfcp_switch::add_pfcp_ul_pdr_by_up_teid(const teid_t teid, std::shared_ptr<pfcp::pfcp_pdr>& pdr)
 {
-  folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>>::const_iterator pit = ul_s1u_teid2pfcp_pdr.find (teid);
+  folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>::const_iterator pit = ul_s1u_teid2pfcp_pdr.find (teid);
   if ( pit == ul_s1u_teid2pfcp_pdr.end() ) {
-    std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>> pdrs = std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>(new std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>());
+    std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>> pdrs = std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>(new std::vector<std::shared_ptr<pfcp::pfcp_pdr>>());
     pdrs->push_back(pdr);
-    std::pair<teid_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>> entry(teid, pdrs);
+    std::pair<teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>> entry(teid, pdrs);
     //Logger::pfcp_switch().info( "add_pfcp_ul_pdr_by_up_teid tunnel " TEID_FMT " ", teid);
     ul_s1u_teid2pfcp_pdr.insert(entry);
   } else {
     // sort by precedence
-    //const std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>& spdrs = pit->second;
-    std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>* pdrs = pit->second.get();
-    for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::iterator it=pdrs->begin(); it < pdrs->end(); ++it) {
+    //const std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>& spdrs = pit->second;
+    std::vector<std::shared_ptr<pfcp::pfcp_pdr>>* pdrs = pit->second.get();
+    for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it=pdrs->begin(); it < pdrs->end(); ++it) {
       if (*(it->get()) < *(pdr.get())) {
         pit->second->insert(it, pdr);
         return;
@@ -445,20 +443,20 @@ void pfcp_switch::add_pfcp_ul_pdr_by_up_teid(const teid_t teid, std::shared_ptr<
   }
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::add_pfcp_dl_pdr_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<core::pfcp::pfcp_pdr>& pdr)
+void pfcp_switch::add_pfcp_dl_pdr_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<pfcp::pfcp_pdr>& pdr)
 {
-  folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>>::const_iterator pit = ue_ipv4_hbo2pfcp_pdr.find (ue_ip);
+  folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>::const_iterator pit = ue_ipv4_hbo2pfcp_pdr.find (ue_ip);
   if ( pit == ue_ipv4_hbo2pfcp_pdr.end() ) {
-    std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>> pdrs = std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>(new std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>());
+    std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>> pdrs = std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>(new std::vector<std::shared_ptr<pfcp::pfcp_pdr>>());
     pdrs->push_back(pdr);
-    std::pair<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>> entry(ue_ip, pdrs);
+    std::pair<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>> entry(ue_ip, pdrs);
     ue_ipv4_hbo2pfcp_pdr.insert(entry);
     //Logger::pfcp_switch().info( "add_pfcp_dl_pdr_by_ue_ip UE IP %8x", ue_ip);
   } else {
     // sort by precedence
-    //const std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>>& spdrs = pit->second;
-    std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>* pdrs = pit->second.get();
-    for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::iterator it=pdrs->begin(); it < pdrs->end(); ++it) {
+    //const std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>& spdrs = pit->second;
+    std::vector<std::shared_ptr<pfcp::pfcp_pdr>>* pdrs = pit->second.get();
+    for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it=pdrs->begin(); it < pdrs->end(); ++it) {
       if (*(it->get()) < *(pdr.get())) {
         pit->second->insert(it, pdr);
         return;
@@ -477,7 +475,7 @@ std::string pfcp_switch::to_string() const
 }
 
 //------------------------------------------------------------------------------
-bool pfcp_switch::create_packet_in_access(std::shared_ptr<core::pfcp::pfcp_pdr>& pdr, const core::pfcp::fteid_t& in, uint8_t& cause)
+bool pfcp_switch::create_packet_in_access(std::shared_ptr<pfcp::pfcp_pdr>& pdr, const pfcp::fteid_t& in, uint8_t& cause)
 {
   cause = CAUSE_VALUE_REQUEST_ACCEPTED;
   add_pfcp_ul_pdr_by_up_teid(in.teid, pdr);
@@ -485,15 +483,15 @@ bool pfcp_switch::create_packet_in_access(std::shared_ptr<core::pfcp::pfcp_pdr>&
 }
 
 //------------------------------------------------------------------------------
-void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core::itti::itti_sxab_session_establishment_request> sreq, core::itti::itti_sxab_session_establishment_response* resp)
+void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<itti_sxab_session_establishment_request> sreq, itti_sxab_session_establishment_response* resp)
 {
   itti_sxab_session_establishment_request * req = sreq.get();
-  core::pfcp::fseid_t fseid = {};
-  core::pfcp::cause_t cause = {.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED};
-  core::pfcp::offending_ie_t offending_ie = {};
+  pfcp::fseid_t fseid = {};
+  pfcp::cause_t cause = {.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED};
+  pfcp::offending_ie_t offending_ie = {};
 
   if (req->pfcp_ies.get(fseid)) {
-    std::shared_ptr<core::pfcp::pfcp_session> s = {};
+    std::shared_ptr<pfcp::pfcp_session> s = {};
     bool exist = get_pfcp_session_by_cp_fseid(fseid, s);
     pfcp_session* session = nullptr;
     if (not exist) {
@@ -514,9 +512,9 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core
         cause.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED;
         for (auto it : req->pfcp_ies.create_pdrs) {
           create_pdr& cr_pdr = it;
-          core::pfcp::fteid_t allocated_fteid = {};
+          pfcp::fteid_t allocated_fteid = {};
 
-          core::pfcp::far_id_t    far_id = {};
+          pfcp::far_id_t    far_id = {};
           if (not cr_pdr.get(far_id)) {
             //should be caught in lower layer
             cause.cause_value = CAUSE_VALUE_MANDATORY_IE_MISSING;
@@ -526,7 +524,7 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core
             break;
           }
           // create pdr after create far
-          core::pfcp::create_far  cr_far = {};
+          pfcp::create_far  cr_far = {};
           if (not req->pfcp_ies.get(far_id, cr_far)) {
             //should be caught in lower layer
             cause.cause_value = CAUSE_VALUE_MANDATORY_IE_MISSING;
@@ -545,7 +543,7 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core
             resp->pfcp_ies.set(cause);
             break;
           }
-          core::pfcp::created_pdr created_pdr = {};
+          pfcp::created_pdr created_pdr = {};
           created_pdr.set(cr_pdr.pdr_id.second);
           created_pdr.set(allocated_fteid);
           resp->pfcp_ies.set(created_pdr);
@@ -559,13 +557,13 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core
         //start_timer_min_commit_interval();
         //start_timer_max_commit_interval();
 
-        core::pfcp::fseid_t up_fseid = {};
+        pfcp::fseid_t up_fseid = {};
         spgwu_cfg.get_pfcp_fseid(up_fseid);
         up_fseid.seid = session->get_up_seid();
         resp->pfcp_ies.set(up_fseid);
 
         // Register session
-        oai::cn::core::pfcp::node_id_t node_id = {};
+        pfcp::node_id_t node_id = {};
         req->pfcp_ies.get(node_id);
         pfcp_associations::get_instance().notify_add_session(node_id, fseid);
       }
@@ -586,22 +584,22 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<core
   Logger::pfcp_switch().info(to_string());
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<core::itti::itti_sxab_session_modification_request> sreq, itti_sxab_session_modification_response* resp)
+void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<itti_sxab_session_modification_request> sreq, itti_sxab_session_modification_response* resp)
 {
   itti_sxab_session_modification_request * req = sreq.get();
 
-  std::shared_ptr<core::pfcp::pfcp_session> s = {};
-  core::pfcp::fseid_t fseid = {};
-  core::pfcp::cause_t cause = {.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED};
-  core::pfcp::offending_ie_t offending_ie = {};
+  std::shared_ptr<pfcp::pfcp_session> s = {};
+  pfcp::fseid_t fseid = {};
+  pfcp::cause_t cause = {.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED};
+  pfcp::offending_ie_t offending_ie = {};
   failed_rule_id_t failed_rule = {};
 
   if (not get_pfcp_session_by_up_seid(req->seid, s)) {
     cause.cause_value = CAUSE_VALUE_SESSION_CONTEXT_NOT_FOUND;
   } else {
-    core::pfcp::pfcp_session* session = s.get();
+    pfcp::pfcp_session* session = s.get();
 
-    core::pfcp::fseid_t fseid = {};
+    pfcp::fseid_t fseid = {};
     if (req->pfcp_ies.get(fseid)) {
       Logger::pfcp_switch().warn( "TODO check carrefully update fseid in PFCP_SESSION_MODIFICATION_REQUEST");
       session->cp_fseid = fseid;
@@ -646,7 +644,7 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<core:
       for (auto it : req->pfcp_ies.create_pdrs) {
         create_pdr& cr_pdr = it;
 
-        core::pfcp::far_id_t    far_id = {};
+        pfcp::far_id_t    far_id = {};
         if (not cr_pdr.get(far_id)) {
           //should be caught in lower layer
           cause.cause_value = CAUSE_VALUE_MANDATORY_IE_MISSING;
@@ -654,7 +652,7 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<core:
           break;
         }
         // create pdr after create far
-        core::pfcp::create_far  cr_far = {};
+        pfcp::create_far  cr_far = {};
         if (not req->pfcp_ies.get(far_id, cr_far)) {
           //should be caught in lower layer
           cause.cause_value = CAUSE_VALUE_MANDATORY_IE_MISSING;
@@ -662,7 +660,7 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<core:
           break;
         }
 
-        core::pfcp::fteid_t allocated_fteid = {};
+        pfcp::fteid_t allocated_fteid = {};
         if (not session->create(cr_pdr, cause, offending_ie.offending_ie, allocated_fteid)) {
           if (cause.cause_value == CAUSE_VALUE_CONDITIONAL_IE_MISSING) {
             resp->pfcp_ies.set(offending_ie);
@@ -670,7 +668,7 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<core:
           resp->pfcp_ies.set(cause);
           break;
         }
-        core::pfcp::created_pdr created_pdr = {};
+        pfcp::created_pdr created_pdr = {};
         created_pdr.set(cr_pdr.pdr_id.second);
         resp->pfcp_ies.set(created_pdr);
       }
@@ -708,14 +706,14 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<core:
   Logger::pfcp_switch().info(to_string());
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::handle_pfcp_session_deletion_request(std::shared_ptr<core::itti::itti_sxab_session_deletion_request> sreq, itti_sxab_session_deletion_response* resp)
+void pfcp_switch::handle_pfcp_session_deletion_request(std::shared_ptr<itti_sxab_session_deletion_request> sreq, itti_sxab_session_deletion_response* resp)
 {
   itti_sxab_session_deletion_request * req = sreq.get();
 
-  std::shared_ptr<core::pfcp::pfcp_session> s = {};
-  core::pfcp::fseid_t fseid = {};
-  core::pfcp::cause_t cause = {.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED};
-  core::pfcp::offending_ie_t offending_ie = {};
+  std::shared_ptr<pfcp::pfcp_session> s = {};
+  pfcp::fseid_t fseid = {};
+  pfcp::cause_t cause = {.cause_value = CAUSE_VALUE_REQUEST_ACCEPTED};
+  pfcp::offending_ie_t offending_ie = {};
   failed_rule_id_t failed_rule = {};
 
   if (not get_pfcp_session_by_up_seid(req->seid, s)) {
@@ -731,19 +729,19 @@ void pfcp_switch::handle_pfcp_session_deletion_request(std::shared_ptr<core::itt
 //------------------------------------------------------------------------------
 void pfcp_switch::pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id)
 {
-  std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>> pdrs = {};
+  std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>> pdrs = {};
   if (get_pfcp_ul_pdrs_by_up_teid(tunnel_id, pdrs)) {
     bool nocp = false;
     bool buff = false;
-    for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::iterator it_pdr = pdrs->begin(); it_pdr < pdrs->end(); ++it_pdr) {
+    for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it_pdr = pdrs->begin(); it_pdr < pdrs->end(); ++it_pdr) {
       if ((*it_pdr)->look_up_pack_in_access(iph, num_bytes, r_endpoint, r_endpoint_addr_len, tunnel_id)) {
-        std::shared_ptr<core::pfcp::pfcp_session> ssession = {};
+        std::shared_ptr<pfcp::pfcp_session> ssession = {};
         uint64_t lseid = 0;
         if ((*it_pdr)->get(lseid)) {
           if ( get_pfcp_session_by_up_seid(lseid, ssession)) {
-            core::pfcp::far_id_t far_id = {};
+            pfcp::far_id_t far_id = {};
             if ((*it_pdr)->get(far_id)) {
-              std::shared_ptr<core::pfcp::pfcp_far> sfar = {};
+              std::shared_ptr<pfcp::pfcp_far> sfar = {};
               if (ssession->get(far_id.far_id, sfar)) {
                 sfar->apply_forwarding_rules(iph, num_bytes, nocp, buff);
               }
@@ -772,21 +770,21 @@ void pfcp_switch::pfcp_session_look_up_pack_in_core(const char *buffer, const st
 {
   //Logger::pfcp_switch().info( "pfcp_session_look_up_pack_in_core %d bytes", num_bytes);
   struct iphdr* iph = (struct iphdr*)buffer;
-  std::shared_ptr<std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>> pdrs;
+  std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>> pdrs;
   if (iph->version == 4) {
     uint32_t ue_ip = be32toh(iph->daddr);
     if (get_pfcp_dl_pdrs_by_ue_ip(ue_ip, pdrs)) {
       bool nocp = false;
       bool buff = false;
-      for (std::vector<std::shared_ptr<core::pfcp::pfcp_pdr>>::iterator it = pdrs->begin(); it < pdrs->end(); ++it) {
+      for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it = pdrs->begin(); it < pdrs->end(); ++it) {
         if ((*it)->look_up_pack_in_core(iph, num_bytes)) {
-          std::shared_ptr<core::pfcp::pfcp_session> ssession = {};
+          std::shared_ptr<pfcp::pfcp_session> ssession = {};
           uint64_t lseid = 0;
           if ((*it)->get(lseid)) {
             if ( get_pfcp_session_by_up_seid(lseid, ssession)) {
-              core::pfcp::far_id_t far_id = {};
+              pfcp::far_id_t far_id = {};
               if ((*it)->get(far_id)) {
-                std::shared_ptr<core::pfcp::pfcp_far> sfar = {};
+                std::shared_ptr<pfcp::pfcp_far> sfar = {};
                 if (ssession->get(far_id.far_id, sfar)) {
                   sfar->apply_forwarding_rules(iph, num_bytes, nocp, buff);
                   if (buff) {

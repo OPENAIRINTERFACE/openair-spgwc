@@ -32,11 +32,10 @@
 #include <stdint.h>
 #include <unistd.h> // get_pid(), pause()
 
-using namespace oai::cn::proto::gtpv2c;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::pgwc;
-using namespace oai::cn::nf::sgwc;
-using namespace oai::cn::util;
+using namespace gtpv2c;
+using namespace pgwc;
+using namespace sgwc;
+using namespace util;
 using namespace std;
 
 itti_mw *itti_inst = nullptr;
@@ -86,13 +85,17 @@ int main(int argc, char **argv)
   sigaction(SIGINT, &sigIntHandler, NULL);
 
   // Config
+  sgwc_cfg.load(Options::getlibconfigConfig());
+  sgwc_cfg.display();
+  pgw_cfg.load(Options::getlibconfigConfig());
+  pgw_cfg.display();
 
   // Inter task Interface
   itti_inst = new itti_mw();
-  itti_inst->start();
+  itti_inst->start(pgw_cfg.itti.itti_timer_sched_params);
 
   // system command
-  async_shell_cmd_inst = new async_shell_cmd();
+  async_shell_cmd_inst = new async_shell_cmd(sgwc_cfg.itti.async_cmd_sched_params);
 
   // PGW application layer
   pgw_app_inst = new pgw_app(Options::getlibconfigConfig());

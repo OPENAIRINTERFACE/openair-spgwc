@@ -42,7 +42,7 @@
 #include <map>
 #include <set>
 
-namespace oai::cn::nf::spgwu {
+namespace spgwu {
 
 class spgwu_app {
 private:
@@ -58,28 +58,28 @@ public:
 
   teid_t generate_s5s8_up_teid();
 
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_s1u_echo_request> m);
+  void handle_itti_msg (std::shared_ptr<itti_s1u_echo_request> m);
 
 
-//  void handle_itti_msg core::(itti::itti_sxab_heartbeat_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_heartbeat_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_pfd_management_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_pfd_management_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_association_setup_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_association_setup_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_association_update_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_association_update_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_association_release_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_association_release_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_version_not_supported_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_node_report_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_pfcp_node_report_response& m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_sxab_session_establishment_request> m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_sxab_session_modification_request> m);
-  void handle_itti_msg (std::shared_ptr<oai::cn::core::itti::itti_sxab_session_deletion_request> m);
-//  void handle_itti_msg (core::itti::itti_sxab_session_deletion_response& m);
-//  void handle_itti_msg (core::itti::itti_sxab_session_report_request& m);
-//  void handle_itti_msg (core::itti::itti_sxab_session_report_response& m);
+//  void handle_itti_msg (itti_sxab_heartbeat_request& m);
+//  void handle_itti_msg (itti_sxab_heartbeat_response& m);
+//  void handle_itti_msg (itti_sxab_pfcp_pfd_management_request& m);
+//  void handle_itti_msg (itti_sxab_pfcp_pfd_management_response& m);
+//  void handle_itti_msg (itti_sxab_pfcp_association_setup_request& m);
+//  void handle_itti_msg (itti_sxab_pfcp_association_setup_response& m);
+//  void handle_itti_msg (itti_sxab_pfcp_association_update_request& m);
+//  void handle_itti_msg (itti_sxab_pfcp_association_update_response& m);
+//  void handle_itti_msg (itti_sxab_pfcp_association_release_request& m);
+//  void handle_itti_msg (itti_sxab_pfcp_association_release_response& m);
+//  void handle_itti_msg (itti_sxab_pfcp_version_not_supported_response& m);
+//  void handle_itti_msg (itti_sxab_pfcp_node_report_request& m);
+//  void handle_itti_msg (itti_sxab_pfcp_node_report_response& m);
+  void handle_itti_msg (std::shared_ptr<itti_sxab_session_establishment_request> m);
+  void handle_itti_msg (std::shared_ptr<itti_sxab_session_modification_request> m);
+  void handle_itti_msg (std::shared_ptr<itti_sxab_session_deletion_request> m);
+//  void handle_itti_msg (itti_sxab_session_deletion_response& m);
+//  void handle_itti_msg (itti_sxab_session_report_request& m);
+//  void handle_itti_msg (itti_sxab_session_report_response& m);
 };
 }
 #endif /* FILE_SPGWU_APP_HPP_SEEN */

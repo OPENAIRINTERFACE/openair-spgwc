@@ -31,8 +31,6 @@
 
 #include "itti_msg.hpp"
 
-namespace oai::cn::core::itti {
-
 class itti_async_shell_cmd : public  itti_msg {
 public:
   itti_async_shell_cmd(const  task_id_t origin, const  task_id_t destination, const std::string& system_cmd, bool is_abort_on_error, const char * src_file, const int src_line):
@@ -46,5 +44,5 @@ public:
   std::string              src_file;
   int                      src_line;
 } ;
-}
+
 #endif /* FILE_ITTI_ASYNC_SHELL_CMD_SEEN */

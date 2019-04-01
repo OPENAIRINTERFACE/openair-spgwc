@@ -35,8 +35,6 @@
 
 #include <sys/socket.h>
 
-namespace oai::cn::core::itti {
-
 class itti_s1u_msg : public itti_msg {
 public:
   itti_s1u_msg(const itti_msg_type_t  msg_type, const task_id_t orig, const task_id_t dest):
@@ -76,7 +74,7 @@ public:
   }
   const char* get_msg_name() {return "S1U_ECHO_REQUEST";};
 
-  proto::gtpv1u::gtpv1u_echo_request gtp_ies;
+  gtpv1u::gtpv1u_echo_request gtp_ies;
 };
 //------------------------------------------------------------------------------
 class itti_s1u_echo_response : public itti_s1u_msg {
@@ -99,7 +97,7 @@ public:
   }
   const char* get_msg_name() {return "S1U_ECHO_RESPONSE";};
 
-  proto::gtpv1u::gtpv1u_echo_response gtp_ies;
+  gtpv1u::gtpv1u_echo_response gtp_ies;
 };
 //------------------------------------------------------------------------------
 class itti_s1u_error_indication : public itti_s1u_msg {
@@ -122,7 +120,7 @@ public:
   }
   const char* get_msg_name() {return "S1U_ERROR_INDICATION";};
 
-  proto::gtpv1u::gtpv1u_error_indication gtp_ies;
+  gtpv1u::gtpv1u_error_indication gtp_ies;
 };
 //------------------------------------------------------------------------------
 class itti_s1u_supported_extension_headers_notification : public itti_s1u_msg {
@@ -145,7 +143,7 @@ public:
   }
   const char* get_msg_name() {return "S1U_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION";};
 
-  proto::gtpv1u::gtpv1u_supported_extension_headers_notification gtp_ies;
+  gtpv1u::gtpv1u_supported_extension_headers_notification gtp_ies;
 };
 //------------------------------------------------------------------------------
 class itti_s1u_end_marker : public itti_s1u_msg {
@@ -170,9 +168,7 @@ public:
   }
   const char* get_msg_name() {return "S1U_END_MARKER";};
 
-  proto::gtpv1u::gtpv1u_end_marker gtp_ies;
+  gtpv1u::gtpv1u_end_marker gtp_ies;
 };
-
-} // namespace itti
 
 #endif /* ITTI_MSG_S1U_HPP_INCLUDED_ */

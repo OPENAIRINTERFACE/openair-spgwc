@@ -46,7 +46,7 @@
 #include "serializable.hpp"
 
 
-namespace oai::cn::proto::gtpv1u {
+namespace gtpv1u {
 
 //------------------------------------------------------------------------------
 class gtpv1u_tlv : public stream_serializable {
@@ -455,7 +455,7 @@ public:
   uint8_t restart_counter;
 
   //--------
-  explicit gtpv1u_recovery_ie(const core::recovery_t& i) : gtpv1u_ie(GTPU_IE_RECOVERY) {
+  explicit gtpv1u_recovery_ie(const recovery_t& i) : gtpv1u_ie(GTPU_IE_RECOVERY) {
     // avoid using b[]
     restart_counter = i.restart_counter;
     tlv.set_length(1);
@@ -470,7 +470,7 @@ public:
     restart_counter = 0;
   };
   //--------
-  void to_core_type(core::recovery_t& i) {
+  void to_core_type(recovery_t& i) {
     i.restart_counter = restart_counter;
   };
 
@@ -486,7 +486,7 @@ public:
   }
 
   void to_core_type(gtpv1u_ies_container& s) {
-      core::recovery_t v = {};
+      recovery_t v = {};
       to_core_type(v);
       s.set(v);
   }
@@ -499,7 +499,7 @@ public:
 
 
   //--------
-  explicit gtpv1u_tunnel_endpoint_identifier_data_i_ie(const core::tunnel_endpoint_identifier_data_i_t& i) : gtpv1u_ie(GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I) {
+  explicit gtpv1u_tunnel_endpoint_identifier_data_i_ie(const tunnel_endpoint_identifier_data_i_t& i) : gtpv1u_ie(GTPU_IE_TUNNEL_ENDPOINT_IDENTIFIER_DATA_I) {
     tunnel_endpoint_identifier_data_i = i.tunnel_endpoint_identifier_data_i;
   }
   //--------
@@ -510,7 +510,7 @@ public:
   explicit gtpv1u_tunnel_endpoint_identifier_data_i_ie(const gtpv1u_tlv& t) : gtpv1u_ie(t) {
     tunnel_endpoint_identifier_data_i = 0;
   };
-  void to_core_type(core::tunnel_endpoint_identifier_data_i_t& c) {
+  void to_core_type(tunnel_endpoint_identifier_data_i_t& c) {
     c.tunnel_endpoint_identifier_data_i = tunnel_endpoint_identifier_data_i;
   }
   //--------
@@ -527,7 +527,7 @@ public:
   }
 
   void to_core_type(gtpv1u_ies_container& s) {
-      core::tunnel_endpoint_identifier_data_i_t v = {};
+      tunnel_endpoint_identifier_data_i_t v = {};
       to_core_type(v);
       s.set(v);
   }
@@ -540,7 +540,7 @@ public:
   struct in6_addr ipv6_address;
   struct in_addr  ipv4_address;
   //--------
-  explicit gtpv1u_gtp_u_peer_address_ie(const core::gtp_u_peer_address_t& p) :
+  explicit gtpv1u_gtp_u_peer_address_ie(const gtp_u_peer_address_t& p) :
 gtpv1u_ie(GTPU_IE_GTP_U_PEER_ADDRESS){
     is_v4 = p.is_v4;
     if (is_v4) {
@@ -565,7 +565,7 @@ gtpv1u_ie(GTPU_IE_GTP_U_PEER_ADDRESS){
     ipv6_address = in6addr_any;
   };
   //--------
-  void to_core_type(core::gtp_u_peer_address_t& p) {
+  void to_core_type(gtp_u_peer_address_t& p) {
     if (is_v4) {
       p.ipv4_address = ipv4_address;
     } else {
@@ -599,7 +599,7 @@ gtpv1u_ie(GTPU_IE_GTP_U_PEER_ADDRESS){
   }
   //--------
   void to_core_type(gtpv1u_ies_container& s) {
-      core::gtp_u_peer_address_t v = {};
+      gtp_u_peer_address_t v = {};
       to_core_type(v);
       s.set(v);
   }
@@ -612,7 +612,7 @@ public:
   std::string  extension_value;
 
   //--------
-  explicit gtpv1u_private_extension_ie(const core::private_extension_t& i) : gtpv1u_ie(GTPU_IE_PRIVATE_EXTENSION),
+  explicit gtpv1u_private_extension_ie(const private_extension_t& i) : gtpv1u_ie(GTPU_IE_PRIVATE_EXTENSION),
     extension_identifier(i.enterprise_id),
     extension_value(i.proprietary_value)
   {
@@ -630,7 +630,7 @@ public:
     extension_identifier(0),
     extension_value() {}
 
-  void to_core_type(core::private_extension_t& c) {
+  void to_core_type(private_extension_t& c) {
     c.enterprise_id = extension_identifier;
     c.proprietary_value = extension_value;
   }
@@ -659,7 +659,7 @@ public:
   }
 
   void to_core_type(gtpv1u_ies_container& s) {
-      core::private_extension_t v = {};
+      private_extension_t v = {};
       to_core_type(v);
       s.set(v);
   }

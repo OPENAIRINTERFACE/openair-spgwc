@@ -30,7 +30,7 @@
 
 #include <string>
 
-namespace oai::cn::util {
+namespace util {
   bool get_iface_l2_addr(const std::string& iface, std::string& mac);
   bool get_gateway_and_iface(std::string& gw, std::string& iface);
 }

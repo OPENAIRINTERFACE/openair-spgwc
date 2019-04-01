@@ -30,8 +30,7 @@
 
 #include <cstdlib>
 
-using namespace oai::cn::proto::gtpv2c;
-using namespace oai::cn::core::itti;
+using namespace gtpv2c;
 using namespace std;
 
 extern boost::asio::io_service io_service;
@@ -54,7 +53,7 @@ static std::string string_to_hex(const std::string& input)
 }
 //
 ////------------------------------------------------------------------------------
-//void udp_server::fteid_addr2_boost_ip_address(const core::fteid_t & fteid, boost::asio::ip::address & address)
+//void udp_server::fteid_addr2_boost_ip_address(const fteid_t & fteid, boost::asio::ip::address & address)
 //{
 //  if ((local_address_.is_v4()) && (fteid.v4)) {
 //    boost::asio::ip::address_v4 addressv4(ntohl(fteid.ipv4_address.s_addr));
@@ -230,7 +229,7 @@ void gtpv2c_stack::start_msg_retry_timer(gtpv2c_procedure& p, uint32_t time_out_
 {
   if (!p.retry_timer_id) {
     p.retry_timer_id = itti_inst->timer_setup (time_out_milli_seconds/1000, time_out_milli_seconds%1000, task_id);
-    msg_out_retry_timers.insert(std::pair<core::itti::timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
+    msg_out_retry_timers.insert(std::pair<timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
   //Logger::gtpv2_c().trace( "Started Msg retry timer %d, proc %" PRId64", seq %d",p.retry_timer_id, p.gtpc_tx_id, seq_num);
   } else {
     Logger::gtpv2_c().error( "Try to overwrite Msg retry timer %d, proc %" PRId64", seq %d!",p.retry_timer_id, p.gtpc_tx_id, seq_num);
@@ -247,7 +246,7 @@ void gtpv2c_stack::stop_msg_retry_timer(gtpv2c_procedure& p)
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::stop_msg_retry_timer(oai::cn::core::itti::timer_id_t& t)
+void gtpv2c_stack::stop_msg_retry_timer(timer_id_t& t)
 {
   itti_inst->timer_remove(t);
   msg_out_retry_timers.erase(t);
@@ -258,7 +257,7 @@ void gtpv2c_stack::start_proc_cleanup_timer(gtpv2c_procedure& p, uint32_t time_o
 {
   if (!p.proc_cleanup_timer_id) {
     p.proc_cleanup_timer_id = itti_inst->timer_setup (time_out_milli_seconds/1000, time_out_milli_seconds%1000, task_id);
-    proc_cleanup_timers.insert(std::pair<core::itti::timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
+    proc_cleanup_timers.insert(std::pair<timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
     //Logger::gtpv2_c().trace( "Started proc cleanup timer %d, proc %" PRId64" t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
   } else {
     Logger::gtpv2_c().error( "Try to overwrite proc cleanup timer %d, proc %" PRId64" t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
@@ -588,7 +587,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::notify_ul_error(const gtpv2c_procedure& p, const core::cause_value_e cause)
+void gtpv2c_stack::notify_ul_error(const gtpv2c_procedure& p, const cause_value_e cause)
 {
   Logger::gtpv2_c().trace( "notify_ul_error proc %" PRId64" cause %d", p.gtpc_tx_id, cause);
 }
@@ -596,7 +595,7 @@ void gtpv2c_stack::notify_ul_error(const gtpv2c_procedure& p, const core::cause_
 void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &handled)
 {
   handled = false;
-  std::map<core::itti::timer_id_t, uint32_t>::iterator it = msg_out_retry_timers.find(timer_id);
+  std::map<timer_id_t, uint32_t>::iterator it = msg_out_retry_timers.find(timer_id);
   if (it != msg_out_retry_timers.end()) {
     std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);
     msg_out_retry_timers.erase(it);
@@ -614,7 +613,7 @@ void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task
         udp_s.async_send_to(sm, it_proc->second.remote_endpoint);
       } else {
         // abort procedure
-        notify_ul_error(it_proc->second, core::cause_value_e::REMOTE_PEER_NOT_RESPONDING);
+        notify_ul_error(it_proc->second, cause_value_e::REMOTE_PEER_NOT_RESPONDING);
       }
     }
   } else {

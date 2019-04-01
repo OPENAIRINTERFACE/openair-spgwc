@@ -39,16 +39,13 @@
 
 #include <stdexcept>
 
-using namespace oai::cn::proto::gtpv2c;
-using namespace oai::cn::proto::pfcp;
-using namespace oai::cn::core;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::sgwc;
+using namespace gtpv2c;
+using namespace sgwc;
 using namespace std;
 // C includes
 
 #if SGW_AUTOTEST
-using namespace oai::cn::nf::spgwu;
+using namespace spgwu;
 mme_s11   *mme_s11_inst = nullptr;
 enb_s1u   *enb_s1u_inst = nullptr;
 #endif
@@ -164,7 +161,7 @@ void sgwc_app::set_imsi64_2_sgw_eps_bearer_context(const imsi64_t& imsi64, share
 void sgwc_app::delete_sgw_eps_bearer_context(std::shared_ptr<sgw_eps_bearer_context> sebc)
 {
   if (sebc.get()) {
-    imsi64_t imsi64 = imsi_to_imsi64(&sebc->imsi);
+    imsi64_t imsi64 = sebc->imsi.to_imsi64();
     Logger::sgwc_app().debug("Delete SGW EPS BEARER CONTEXT IMSI " IMSI_64_FMT " ", imsi64);
     imsi2sgw_eps_bearer_context.erase(imsi64);
     s11lteid2sgw_eps_bearer_context.erase(sebc->sgw_fteid_s11_s4_cp.teid_gre_key);
@@ -256,9 +253,7 @@ void sgwc_app_task (void *args_p)
 sgwc_app::sgwc_app (const std::string& config_file) : s11lteid2sgw_eps_bearer_context()
 {
   Logger::sgwc_app().startup("Starting...");
-  sgwc_cfg.load(config_file);
   sgwc_cfg.execute();
-  sgwc_cfg.display();
 
   teid_s11_cp = 0;
   teid_s5s8_cp = 0;
@@ -337,15 +332,15 @@ void sgwc_app::handle_itti_msg (itti_s11_create_session_request& csreq)
 
 
   shared_ptr<sgw_eps_bearer_context> ebc;
-  core::imsi_t imsi = {};
+  imsi_t imsi = {};
   if (csreq.gtp_ies.get(imsi)) {
     // imsi not authenticated
-    core::indication_t indication = {};
+    indication_t indication = {};
     if ((csreq.gtp_ies.get(indication)) && (indication.uimsi)){
       Logger::sgwc_app().debug("TODO S11 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq.teid, csreq.gtpc_tx_id);
       return;
     } else {
-      imsi64_t imsi64 = imsi_to_imsi64(&imsi);
+      imsi64_t imsi64 = imsi.to_imsi64();
       if (is_imsi64_2_sgw_eps_bearer_context(imsi64)) {
         ebc = imsi64_2_sgw_eps_bearer_context(imsi64);
       } else {

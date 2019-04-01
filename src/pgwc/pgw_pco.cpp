@@ -36,13 +36,12 @@
 #include "pgw_config.hpp"
 #include "pgw_pco.hpp"
 
-using namespace oai::cn::nf::pgwc;
-using namespace oai::cn::core;
+using  namespace pgwc;
 
 extern pgw_config pgw_cfg;
 
 //------------------------------------------------------------------------------
-int pgw_app::pco_push_protocol_or_container_id(core::protocol_configuration_options_t& pco, core::pco_protocol_or_container_id_t * const poc_id)
+int pgw_app::pco_push_protocol_or_container_id(protocol_configuration_options_t& pco, pco_protocol_or_container_id_t * const poc_id)
 {
   if (PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID <= pco.num_protocol_or_container_id) {
     return RETURNerror;
@@ -57,13 +56,13 @@ int pgw_app::pco_push_protocol_or_container_id(core::protocol_configuration_opti
 }
 
 //------------------------------------------------------------------------------
-int pgw_app::process_pco_request_ipcp(core::protocol_configuration_options_t& pco_resp, const core::pco_protocol_or_container_id_t * const poc_id)
+int pgw_app::process_pco_request_ipcp(protocol_configuration_options_t& pco_resp, const pco_protocol_or_container_id_t * const poc_id)
 {
   in_addr_t                               ipcp_dns_prim_ipv4_addr = INADDR_NONE;
   in_addr_t                               ipcp_dns_sec_ipv4_addr = INADDR_NONE;
   in_addr_t                               ipcp_out_dns_prim_ipv4_addr = INADDR_NONE;
   in_addr_t                               ipcp_out_dns_sec_ipv4_addr = INADDR_NONE;
-  core::pco_protocol_or_container_id_t    poc_id_resp = {0};
+  pco_protocol_or_container_id_t    poc_id_resp = {0};
   size_t                                  ipcp_req_remaining_length = poc_id->length_of_protocol_id_contents;
   size_t                                  pco_in_index = 0;
 
@@ -213,10 +212,10 @@ int pgw_app::process_pco_request_ipcp(core::protocol_configuration_options_t& pc
 }
 
 //------------------------------------------------------------------------------
-int pgw_app::process_pco_dns_server_request(core::protocol_configuration_options_t& pco_resp, const core::pco_protocol_or_container_id_t * const poc_id)
+int pgw_app::process_pco_dns_server_request(protocol_configuration_options_t& pco_resp, const pco_protocol_or_container_id_t * const poc_id)
 {
   in_addr_t                               ipcp_out_dns_prim_ipv4_addr = pgw_cfg.default_dnsv4.s_addr;
-  core::pco_protocol_or_container_id_t    poc_id_resp = {0};
+  pco_protocol_or_container_id_t    poc_id_resp = {0};
   uint8_t                                 dns_array[4];
 
   Logger::pgwc_app().debug("PCO: Protocol identifier IPCP option DNS Server Request");
@@ -232,9 +231,9 @@ int pgw_app::process_pco_dns_server_request(core::protocol_configuration_options
   return pco_push_protocol_or_container_id(pco_resp, &poc_id_resp);
 }
 //------------------------------------------------------------------------------
-int pgw_app::process_pco_link_mtu_request(core::protocol_configuration_options_t& pco_resp, const core::pco_protocol_or_container_id_t * const poc_id)
+int pgw_app::process_pco_link_mtu_request(protocol_configuration_options_t& pco_resp, const pco_protocol_or_container_id_t * const poc_id)
 {
-  core::pco_protocol_or_container_id_t          poc_id_resp = {0};
+  pco_protocol_or_container_id_t          poc_id_resp = {0};
   uint8_t                                 mtu_array[2];
 
   Logger::pgwc_app().debug("PCO: Protocol identifier IPCP option Link MTU Request");
@@ -250,9 +249,9 @@ int pgw_app::process_pco_link_mtu_request(core::protocol_configuration_options_t
 
 //------------------------------------------------------------------------------
 int pgw_app::process_pco_request(
-  const core::protocol_configuration_options_t& pco_req,
-  core::protocol_configuration_options_t& pco_resp,
-  core::protocol_configuration_options_ids_t & pco_ids) {
+  const protocol_configuration_options_t& pco_req,
+  protocol_configuration_options_t& pco_resp,
+  protocol_configuration_options_ids_t & pco_ids) {
 
   switch (pco_req.configuration_protocol) {
     case PCO_CONFIGURATION_PROTOCOL_PPP_FOR_USE_WITH_IP_PDP_TYPE_OR_IP_PDN_TYPE:

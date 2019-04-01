@@ -33,9 +33,8 @@
 #include <unistd.h> // get_pid(), pause()
 #include <vector>
 
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::spgwu;
-using namespace oai::cn::util;
+using namespace spgwu;
+using namespace util;
 using namespace std;
 
 itti_mw *itti_inst = nullptr;

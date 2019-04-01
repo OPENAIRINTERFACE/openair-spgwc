@@ -26,7 +26,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
 add_library(3GPP_COMMON_TYPES STATIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/common_root_types.c
   ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
 )
 

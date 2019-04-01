@@ -25,36 +25,4 @@
   \email: lionel.gauthier@eurecom.fr
 */
 
-#include "common_root_types.h"
-#include "3gpp_23.003.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-//------------------------------------------------------------------------------
-imsi64_t imsi_to_imsi64(imsi_t * const imsi)
-{
-  imsi64_t imsi64 = INVALID_IMSI64;
-  if (imsi) {
-    imsi64 = 0;
-    for (int i=0; i < IMSI_BCD8_SIZE; i++) {
-      uint8_t d2 = imsi->u.value[i];
-      uint8_t d1 = (d2 & 0xf0) >> 4;
-      d2 = d2 & 0x0f;
-      if (10 > d1) {
-        imsi64 = imsi64*10 + d1;
-        if (10 > d2) {
-          imsi64 = imsi64*10 + d2;
-        } else {
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-  }
-  return imsi64;
-}
-#ifdef __cplusplus
-}
-#endif

@@ -30,7 +30,6 @@
 
 #include <stdint.h>
 
-namespace oai::cn::core {
 /**
  * protocol_configuration_options_ids_t
  *
@@ -50,5 +49,4 @@ typedef struct protocol_configuration_options_ids_s {
   uint8_t ci_ipv4_link_mtu_request: 1;
 } protocol_configuration_options_ids_t;
 
-}
 #endif

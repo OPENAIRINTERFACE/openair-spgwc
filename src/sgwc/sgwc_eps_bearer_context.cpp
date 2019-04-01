@@ -33,9 +33,7 @@
 
 #include <algorithm>
 
-using namespace oai::cn::core;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::sgwc;
+using namespace sgwc;
 using namespace std;
 
 extern sgwc_app *sgwc_app_inst;
@@ -48,13 +46,13 @@ std::string sgw_eps_bearer::toString() const
   s.append("EPS BEARER:\n");
   s.append("\tEBI:\t\t\t\t").append(std::to_string(ebi.ebi)).append("\n");
   s.append("\tTFT:\t\t\t\tTODO tft").append("\n");
-  s.append("\tPGW FTEID S5S8 UP:\t\t").append(oai::cn::core::toString(pgw_fteid_s5_s8_up)).append("\n");
-  s.append("\tSGW FTEID S5S8 UP:\t\t").append(oai::cn::core::toString(sgw_fteid_s5_s8_up)).append("\n");
-  s.append("\tSGW FTEID S1S12S4 UP:\t\t").append(oai::cn::core::toString(sgw_fteid_s1u_s12_s4u_s11u)).append("\n");
-  s.append("\tSGW FTEID S11 UP:\t\t").append(oai::cn::core::toString(sgw_fteid_s11u)).append("\n");
-  s.append("\tMME FTEID S11 UP:\t\t").append(oai::cn::core::toString(mme_fteid_s11u)).append("\n");
-  s.append("\teNB FTEID S1 UP:\t\t").append(oai::cn::core::toString(enb_fteid_s1u)).append("\n");
-  s.append("\tBearer QOS:\t\t\t").append(oai::cn::core::toString(eps_bearer_qos)).append("\n");
+  s.append("\tPGW FTEID S5S8 UP:\t\t").append(pgw_fteid_s5_s8_up.toString()).append("\n");
+  s.append("\tSGW FTEID S5S8 UP:\t\t").append(sgw_fteid_s5_s8_up.toString()).append("\n");
+  s.append("\tSGW FTEID S1S12S4 UP:\t\t").append(sgw_fteid_s1u_s12_s4u_s11u.toString()).append("\n");
+  s.append("\tSGW FTEID S11 UP:\t\t").append(sgw_fteid_s11u.toString()).append("\n");
+  s.append("\tMME FTEID S11 UP:\t\t").append(mme_fteid_s11u.toString()).append("\n");
+  s.append("\teNB FTEID S1 UP:\t\t").append(enb_fteid_s1u.toString()).append("\n");
+  s.append("\tBearer QOS:\t\t\t").append(eps_bearer_qos.toString()).append("\n");
   return s;
 }
 //------------------------------------------------------------------------------
@@ -105,10 +103,10 @@ bool sgw_eps_bearer_context::find_pdn_connection(const std::string& apn, const p
   return false;
 }
 //------------------------------------------------------------------------------
-bool sgw_eps_bearer_context::find_pdn_connection(const core::ebi_t& ebi, std::shared_ptr<sgw_pdn_connection> &sp)
+bool sgw_eps_bearer_context::find_pdn_connection(const ebi_t& ebi, std::shared_ptr<sgw_pdn_connection> &sp)
 {
   for (auto it=pdn_connections.begin(); it!=pdn_connections.end(); ++it) {
-    if (it->second.get()->default_bearer.ebi == ebi.ebi) {
+    if (it->second.get()->default_bearer == ebi) {
       sp = it->second;
       return true;
     }
@@ -180,7 +178,7 @@ void sgw_eps_bearer_context::create_procedure(itti_s11_release_access_bearers_re
 void sgw_eps_bearer_context::create_procedure(itti_s11_delete_session_request& dsreq)
 {
   std::vector<shared_ptr<sgw_pdn_connection>> to_delete = {}; // list of PDN connections to delete
-  core::ebi_t default_bearer = {};
+  ebi_t default_bearer = {};
   if (dsreq.gtp_ies.get(default_bearer)) {
     shared_ptr<sgw_pdn_connection> pdn;
     if (find_pdn_connection(default_bearer, pdn)) {
@@ -255,7 +253,7 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_create_session_request& c
     mme_fteid_s11 = csreq.gtp_ies.sender_fteid_for_cp;
     imsi = csreq.gtp_ies.imsi;
   } else {
-    if (not is_fteid_equal(mme_fteid_s11, csreq.gtp_ies.sender_fteid_for_cp)) {
+    if (not (mme_fteid_s11 == csreq.gtp_ies.sender_fteid_for_cp)) {
       Logger::sgwc_app().debug("S11 CREATE_SESSION_REQUEST MME S11 FTEID changed");
       mme_fteid_s11 = csreq.gtp_ies.sender_fteid_for_cp;
     }
@@ -292,7 +290,7 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_delete_session_request& d
     Logger::sgwc_app().error("S11 DELETE_SESSION_REQUEST ignored, existing procedure found gtpc_tx_id %d!", dsreq.gtpc_tx_id);
     return;
   } else {
-    core::indication_t indication = {};
+    indication_t indication = {};
     if (dsreq.gtp_ies.get(indication)) {
       if (indication.oi) {
         create_procedure(dsreq);
@@ -363,12 +361,12 @@ std::string sgw_eps_bearer_context::toString() const
 {
   std::string s = {};
   s.append("SGW EPS BEARER CONTEXT:\n");
-  s.append("\tIMSI:\t\t\t").append(oai::cn::core::toString(imsi)).append("\n");
+  s.append("\tIMSI:\t\t\t").append(imsi.toString()).append("\n");
   s.append("\tIMSI UNAUTHENTICATED:\t").append(std::to_string(imsi_unauthenticated_indicator)).append("\n");
-  s.append("\tMME FTEID S11 CP:\t").append(oai::cn::core::toString(mme_fteid_s11)).append("\n");
-  s.append("\tSGW FTEID S11 CP:\t").append(oai::cn::core::toString(sgw_fteid_s11_s4_cp)).append("\n");
-  //s.append("\tSGSN FTEID S4 CP:\t").append(oai::cn::core::toString(sgsn_fteid_s4_cp)).append("\n");
-  s.append("\tLAST KNOWN CELL ID:\t").append(oai::cn::core::toString(last_known_cell_Id)).append("\n");
+  s.append("\tMME FTEID S11 CP:\t").append(mme_fteid_s11.toString()).append("\n");
+  s.append("\tSGW FTEID S11 CP:\t").append(sgw_fteid_s11_s4_cp.toString()).append("\n");
+  //s.append("\tSGSN FTEID S4 CP:\t").append(toString(sgsn_fteid_s4_cp)).append("\n");
+  s.append("\tLAST KNOWN CELL ID:\t").append(last_known_cell_Id.toString()).append("\n");
   for (auto it : pdn_connections) {
     s.append(it.second.get()->toString());
   }

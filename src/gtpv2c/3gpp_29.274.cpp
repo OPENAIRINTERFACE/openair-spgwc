@@ -32,10 +32,9 @@
 #include <string>
 #include <string.h>
 
-using namespace oai::cn::proto::gtpv2c;
-using namespace oai::cn::core;
+using namespace gtpv2c;
 
-static const char* interface_type2char[40] = {
+const char* interface_type2char[40] = {
     "S1_U_ENODEB_GTP_U",
     "S1_U_SGW_GTP_U",
     "S12_RNC_GTP_U",
@@ -77,170 +76,6 @@ static const char* interface_type2char[40] = {
     "S11_MME_GTP_U",
     "S11_SGW_GTP_U"};
 
-// From https://stackoverflow.com/a/2603254
-static unsigned char lookup[16] = {
-0x0, 0x8, 0x4, 0xc, 0x2, 0xa, 0x6, 0xe,
-0x1, 0x9, 0x5, 0xd, 0x3, 0xb, 0x7, 0xf, };
-
-uint8_t reverse_bits(uint8_t n) {
-   // Reverse the top and bottom nibble then swap them.
-   return (lookup[n&0b1111] << 4) | lookup[n>>4];
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::mccToString(const uint8_t digit1, const uint8_t digit2, const uint8_t digit3)
-{
-  std::string s = {};
-  uint16_t mcc16 = digit1*100+digit2*10+digit3;
-  //s.append(std::to_string(digit1)).append(std::to_string(digit2)).append(std::to_string(digit3));
-  s.append(std::to_string(mcc16));
-  return s;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::mncToString(const uint8_t digit1, const uint8_t digit2, const uint8_t digit3)
-{
-  std::string s = {};
-  uint16_t mcc16 = 0;
-
-  if (digit3 == 0x0F) {
-    mcc16 = digit1*10+digit2;
-  } else {
-    mcc16 = digit1*100+digit2*10+digit3;
-  }
-  s.append(std::to_string(mcc16));
-  return s;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const oai::cn::core::imsi_t& imsi)
-{
-  std::string s = {};
-  int l_i = 0;
-  int l_j = 0;
-  while(l_i < IMSI_BCD8_SIZE) {
-    if((imsi.u1.b[l_i] & 0xf) > 9)
-      break;
-    s.append(std::to_string(imsi.u1.b[l_i] & 0xf));
-    l_j++;
-    if(((imsi.u1.b[l_i] & 0xf0) >> 4) > 9)
-      break;
-    s.append(std::to_string((imsi.u1.b[l_i] & 0xf0) >> 4));
-    l_j++;
-    l_i++;
-  }
-  return s;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const oai::cn::core::pdn_type_t& pdn_type)
-{
-  switch (pdn_type.pdn_type) {
-  case PDN_TYPE_E_IPV4: return std::string("IPV4"); break;
-  case PDN_TYPE_E_IPV6: return std::string("IPV6"); break;
-  case PDN_TYPE_E_IPV4V6: return std::string("IPV4V6"); break;
-  case PDN_TYPE_E_NON_IP: return std::string("NON_IP"); break;
-  default:
-    return std::to_string(pdn_type.pdn_type);
-  }
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const oai::cn::core::interface_type_e& interface_type)
-{
-  if ((interface_type >= INTERFACE_TYPE_MIN) && (interface_type <= INTERFACE_TYPE_MAX)) {
-    return std::string(interface_type2char[interface_type]);
-  } else {
-    return std::to_string(interface_type);
-  }
-}
-
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const oai::cn::core::fteid_t& fteid)
-{
-  std::string s = {};
-  core::interface_type_e interface_type = static_cast<core::interface_type_e>(fteid.interface_type);
-  if ((fteid.v4) || (fteid.v6)) {
-    s.append("Interface type=").append(toString(interface_type));
-    s.append(", TEID=").append(std::to_string(fteid.teid_gre_key));
-    if (fteid.v4) {
-      s.append(", IPv4=").append(toString(fteid.ipv4_address));
-    }
-    if (fteid.v6) {
-      s.append(", IPv6=").append(toString(fteid.ipv6_address));
-    }
-  } else {
-    s.append("null_fteid");
-  }
-  return s;
-}
-//------------------------------------------------------------------------------
-struct in_addr oai::cn::core::fromString(const std::string addr4)
-{
-  unsigned char buf[sizeof(struct in6_addr)] = {};
-  int s = inet_pton(AF_INET, addr4.c_str(), buf);
-  struct in_addr * ia = (struct in_addr *)buf;
-  return *ia;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const struct in_addr& inaddr)
-{
-  std::string s = {};
-  char str[INET6_ADDRSTRLEN] = {};
-  if (inet_ntop(AF_INET, (const void *)&inaddr, str, INET6_ADDRSTRLEN) == NULL) {
-    s.append("Error in_addr");
-  } else {
-    s.append(str);
-  }
-  return s;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const struct in6_addr& in6addr)
-{
-  std::string s = {};
-  char str[INET6_ADDRSTRLEN] = {};
-  if (inet_ntop(AF_INET6, (const void *)&in6addr, str, INET6_ADDRSTRLEN) == nullptr) {
-    s.append("Error in6_addr");
-  } else {
-    s.append(str);
- }
- return s;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const oai::cn::core::bearer_qos_t& bearer_qos)
-{
-  std::string s = {};
-  s.append("MBR UL=").append(std::to_string(bearer_qos.maximum_bit_rate_for_uplink));
-  s.append(", MBR DL=").append(std::to_string(bearer_qos.maximum_bit_rate_for_downlink));
-  s.append(", GBR UL=").append(std::to_string(bearer_qos.guaranted_bit_rate_for_uplink));
-  s.append(", GBR DL=").append(std::to_string(bearer_qos.guaranted_bit_rate_for_downlink));
-  s.append(", PCI=").append(std::to_string(bearer_qos.pci));
-  s.append(", PL=").append(std::to_string(bearer_qos.pl));
-  s.append(", PVI=").append(std::to_string(bearer_qos.pvi));
-  s.append(", QCI=").append(std::to_string(bearer_qos.label_qci));
-  return s;
-}
-//------------------------------------------------------------------------------
-std::string oai::cn::core::toString(const oai::cn::core::ecgi_field_t& ef)
-{
-  std::string s = {};
-  std::string mccs = mccToString(ef.mcc_digit_1, ef.mcc_digit_2,ef.mcc_digit_3);
-  std::string mncs = mncToString(ef.mnc_digit_1, ef.mnc_digit_2,ef.mnc_digit_3);
-  s.append("mcc=").append(mccs).append(", MNC=").append(mncs);
-  s.append(", ECI=").append(std::to_string(ef.eci));
-  uint32_t e_utran_cell_identifier = ef.e_utran_cell_identifier[0] << 16;
-  e_utran_cell_identifier |= (ef.e_utran_cell_identifier[1] << 8);
-  e_utran_cell_identifier |= ef.e_utran_cell_identifier[2];
-  s.append(", EUCI=").append(std::to_string(e_utran_cell_identifier));
-  return s;
-}
-//------------------------------------------------------------------------------
-bool oai::cn::core::is_fteid_zero(const fteid_t& f) {return (not(f.v4==1) and not(f.v6==1));};
-bool oai::cn::core::is_fteid_equal(const fteid_t& f1, const fteid_t& f2) {return ((f1.teid_gre_key == f2.teid_gre_key) and
-    ((f1.v4 == 1) and(f2.v4 == 1) and (f1.ipv4_address.s_addr == f2.ipv4_address.s_addr)) and
-    ((f1.v6 == 1) and(f2.v6 == 1) and (f1.ipv6_address.s6_addr32[0] == f2.ipv6_address.s6_addr32[0]) and
-        (f1.ipv6_address.s6_addr32[1] == f2.ipv6_address.s6_addr32[1]) and
-        (f1.ipv6_address.s6_addr32[2] == f2.ipv6_address.s6_addr32[2]) and
-        (f1.ipv6_address.s6_addr32[3] == f2.ipv6_address.s6_addr32[3])) and
-    (f1.interface_type == f2.interface_type) and
-    (f1.v4 == f2.v4) and
-    (f1.v6 == f2.v6));
-};
 
 //------------------------------------------------------------------------------
 gtpv2c_ie * gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream& is) {
@@ -433,7 +268,7 @@ gtpv2c_ie * gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream& is) {
       ie->load_from(is);
       return ie;
     }
-      
+
     case GTP_IE_SELECTION_MODE: {
       gtpv2c_selection_mode_ie *ie = new gtpv2c_selection_mode_ie(tlv);
       ie->load_from(is);
@@ -565,7 +400,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request& gtp_ies) : gtpv2c_ms
   if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SELECTION_MODE) {std::shared_ptr<gtpv2c_selection_mode_ie> sie(new gtpv2c_selection_mode_ie(gtp_ies.selection_mode)); add_ie(sie);}
   if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PDN_TYPE) {std::shared_ptr<gtpv2c_pdn_type_ie> sie(new gtpv2c_pdn_type_ie(gtp_ies.pdn_type)); add_ie(sie);}
   if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PAA) {std::shared_ptr<gtpv2c_paa_ie> sie(new gtpv2c_paa_ie(gtp_ies.paa)); add_ie(sie);}
-  if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_RESTRICTION) {std::shared_ptr<gtpv2c_apn_restriction_ie> sie(new 
+  if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_RESTRICTION) {std::shared_ptr<gtpv2c_apn_restriction_ie> sie(new
 gtpv2c_apn_restriction_ie(gtp_ies.apn_restriction)); add_ie(sie);}
   if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_AMBR) {std::shared_ptr<gtpv2c_aggregate_maximum_bit_rate_ie> sie(new gtpv2c_aggregate_maximum_bit_rate_ie(gtp_ies.ambr)); add_ie(sie);}
   if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID) {std::shared_ptr<gtpv2c_eps_bearer_id_ie> sie(new gtpv2c_eps_bearer_id_ie(gtp_ies.linked_eps_bearer_id)); add_ie(sie);}
@@ -1013,39 +848,5 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_response& gtp_ies) : gtpv2c_msg_header(
   if (gtp_ies.recovery_restart_counter.first) {std::shared_ptr<gtpv2c_recovery_ie> sie(new gtpv2c_recovery_ie(gtp_ies.recovery_restart_counter.second)); add_ie(sie);}
   if (gtp_ies.sending_node_features.first) {std::shared_ptr<gtpv2c_node_features_ie> sie(new gtpv2c_node_features_ie(gtp_ies.sending_node_features.second)); add_ie(sie);}
 }
-//------------------------------------------------------------------------------
-static const std::vector<std::string> pdn_type_e2str = {"Error", "IPV4", "IPV6", "IPV4V6", "NON_IP"};
-const std::string& oai::cn::core::pdn_type_e2string(uint8_t pdn_type) {
-  return pdn_type_e2str.at(pdn_type);
-}
-//------------------------------------------------------------------------------
-bool oai::cn::core::is_paa_ip_assigned(const paa_t& paa) {
-  switch (paa.pdn_type.pdn_type) {
-  case core::PDN_TYPE_E_IPV4:
-    if (paa.ipv4_address.s_addr) return true;
-    return false;
-    break;
-  case core::PDN_TYPE_E_IPV6:
-    if (paa.ipv6_address.__in6_u.__u6_addr32[0] |
-        paa.ipv6_address.__in6_u.__u6_addr32[1] |
-        paa.ipv6_address.__in6_u.__u6_addr32[2] |
-        paa.ipv6_address.__in6_u.__u6_addr32[3])
-      return true;
-    return false;
-    break;
-  case core::PDN_TYPE_E_IPV4V6:
-    // TODO
-    if (paa.ipv4_address.s_addr) return true;
-    if (paa.ipv6_address.__in6_u.__u6_addr32[0] |
-        paa.ipv6_address.__in6_u.__u6_addr32[1] |
-        paa.ipv6_address.__in6_u.__u6_addr32[2] |
-        paa.ipv6_address.__in6_u.__u6_addr32[3])
-      return true;
-    return false;
-    break;
-  case core::PDN_TYPE_E_NON_IP:
-  default:
-    return false;
-  }
-}
+
 

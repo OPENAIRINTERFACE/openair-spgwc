@@ -32,9 +32,6 @@
 #include <inttypes.h>
 #include <arpa/inet.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 //------------------------------------------------------------------------------
 #define PRIORITY_LEVEL_MAX (15)
 #define PRIORITY_LEVEL_MIN (1)
@@ -45,14 +42,14 @@ extern "C" {
 
 // TEIDs
 typedef uint32_t                 teid_t;
-#define TEID_FMT                "0x%" PRIx32
+#define TEID_FMT                 "0x%" PRIx32
 #define TEID_SCAN_FMT            SCNx32
 #define INVALID_TEID             ((teid_t)0x00000000)
 #define UNASSIGNED_TEID          ((teid_t)0x00000000)
 
 // SEIDs
 typedef uint64_t                 seid_t;
-#define SEID_FMT                "0x%" PRIx64
+#define SEID_FMT                 "0x%" PRIx64
 #define SEID_SCAN_FMT            SCNx64
 #define INVALID_SEID             ((seid_t)0x00000000)
 #define UNASSIGNED_SEID          ((seid_t)0x00000000)
@@ -65,15 +62,11 @@ typedef uint64_t                 imsi64_t;
 
 //------------------------------------------------------------------------------
 typedef uint64_t bitrate_t;
-#define PRIORITY_LEVEL_FMT                "0x%" PRIu8
-#define QCI_FMT                "0x%" PRIu8
-#define QCI_SCAN_FMT            SCNu8
+#define PRIORITY_LEVEL_FMT        "0x%" PRIu8
+#define QCI_FMT                   "0x%" PRIu8
+#define QCI_SCAN_FMT              SCNu8
 
-#define PRE_EMPTION_CAPABILITY_FMT                "0x%" PRIu8
-#define PRE_EMPTION_VULNERABILITY_FMT                "0x%" PRIu8
+#define PRE_EMPTION_CAPABILITY_FMT     "0x%" PRIu8
+#define PRE_EMPTION_VULNERABILITY_FMT  "0x%" PRIu8
 
-
-#ifdef __cplusplus
-}
-#endif
 #endif /* FILE_COMMON_ROOT_TYPES_SEEN */

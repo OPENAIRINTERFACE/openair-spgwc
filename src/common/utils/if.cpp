@@ -138,9 +138,9 @@ int get_gateway_and_iface(std::string *gw, std::string *iface)
         }
 
         if ((*gateway_address) && (*interface)) {
-            *gw = string(gateway_address);
+            *gw = std::string(gateway_address);
             if (iface) {
-              *iface = string(interface);
+              *iface = std::string(interface);
             }
             break;
         } else {
@@ -153,7 +153,7 @@ int get_gateway_and_iface(std::string *gw, std::string *iface)
 
 
 //------------------------------------------------------------------------------
-int get_inet_addr_from_iface(const string& if_name, struct in_addr& inet_addr) {
+int get_inet_addr_from_iface(const std::string& if_name, struct in_addr& inet_addr) {
   struct ifreq ifr;
   char str[INET_ADDRSTRLEN];
 
@@ -177,7 +177,7 @@ int get_inet_addr_from_iface(const string& if_name, struct in_addr& inet_addr) {
 }
 
 //------------------------------------------------------------------------------
-int get_mtu_from_iface(const string& if_name, uint32_t& mtu) {
+int get_mtu_from_iface(const std::string& if_name, uint32_t& mtu) {
   struct ifreq ifr;
   memset(&ifr, 0, sizeof(ifr));
   int fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -194,7 +194,7 @@ int get_mtu_from_iface(const string& if_name, uint32_t& mtu) {
 }
 
 //------------------------------------------------------------------------------
-int get_inet_addr_infos_from_iface(const string& if_name, struct in_addr& inet_addr, struct in_addr& inet_network, unsigned int& mtu) {
+int get_inet_addr_infos_from_iface(const std::string& if_name, struct in_addr& inet_addr, struct in_addr& inet_network, unsigned int& mtu) {
   struct ifreq ifr;
   char str[INET_ADDRSTRLEN];
 

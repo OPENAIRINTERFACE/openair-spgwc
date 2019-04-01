@@ -32,15 +32,11 @@
 #include <string>
 #include <iostream>
 
-namespace oai::cn {
-
 class stream_serializable {
 public:
   virtual void dump_to(std::ostream& os)  = 0;
   virtual void load_from(std::istream& is) = 0;
   //virtual ~serializable() = 0;
 };
-
-}
 
 #endif /* FILE_SERIALIZABLE_HPP_SEEN */

@@ -34,10 +34,8 @@
 
 #include <stdexcept>
 
-using namespace oai::cn::core;
-using namespace oai::cn::proto::gtpv2c;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::sgwc;
+using namespace gtpv2c;
+using namespace sgwc;
 using namespace std;
 
 extern itti_mw *itti_inst;

@@ -31,13 +31,16 @@
 #include "common_root_types.h"
 #include "3gpp_24.008.h"
 #include "3gpp_commons.h"
+#include "conversions.hpp"
 #include "logger.hpp" // for fmt::format in spdlog
 
 #include <arpa/inet.h>
 #include <stdint.h>
 #include <string>
 
-namespace oai::cn::proto::gtpv2c {
+extern const char* interface_type2char[];
+
+namespace gtpv2c {
 
 struct gtpc_exception : public std::exception {
   gtpc_exception() throw() {
@@ -361,17 +364,9 @@ public:
 
 }
 
-namespace oai::cn::core {
-  //TODO create util namespace
-  struct in_addr fromString(const std::string addr4);
-  std::string toString(const struct in_addr& inaddr);
-  std::string toString(const struct in6_addr& in6addr);
-  std::string mccToString(const uint8_t digit1, const uint8_t digit2, const uint8_t digit3);
-  std::string mncToString(const uint8_t digit1, const uint8_t digit2, const uint8_t digit3);
-
 //------------------------------------------------------------------------------
 // 8.3 International Mobile Subscriber Identity (IMSI)
-typedef struct imsi_s {
+struct imsi_s {
   union {
     struct {
       uint8_t digit1:4;
@@ -395,9 +390,49 @@ typedef struct imsi_s {
     uint8_t b[IMSI_BCD8_SIZE];
   } u1;
   uint num_digits;
-} imsi_t;
 
-std::string toString(const oai::cn::core::imsi_t& imsi);
+  std::string toString() const
+  {
+    std::string s = {};
+    int l_i = 0;
+    int l_j = 0;
+    while(l_i < IMSI_BCD8_SIZE) {
+      if((u1.b[l_i] & 0xf) > 9)
+        break;
+      s.append(std::to_string(u1.b[l_i] & 0xf));
+      l_j++;
+      if(((u1.b[l_i] & 0xf0) >> 4) > 9)
+        break;
+      s.append(std::to_string((u1.b[l_i] & 0xf0) >> 4));
+      l_j++;
+      l_i++;
+    }
+    return s;
+  }
+
+  //------------------------------------------------------------------------------
+  imsi64_t to_imsi64() const
+  {
+    imsi64_t imsi64 = 0;
+    for (int i=0; i < IMSI_BCD8_SIZE; i++) {
+      uint8_t d2 = u1.b[i];
+      uint8_t d1 = (d2 & 0xf0) >> 4;
+      d2 = d2 & 0x0f;
+      if (10 > d1) {
+        imsi64 = imsi64*10 + d1;
+        if (10 > d2) {
+          imsi64 = imsi64*10 + d2;
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+    return imsi64;
+  }
+} ;
+typedef struct imsi_s imsi_t;
 
 //-------------------------------------
 // 8.4 Cause
@@ -524,8 +559,12 @@ typedef struct ambr_s {
 
 typedef struct ebi_s {
   uint8_t ebi;
-  inline bool operator==(const struct ebi_s& rhs){ return ebi == rhs.ebi; }
-  inline bool operator!=(const struct ebi_s& rhs){ return !(ebi == rhs.ebi); }
+  ebi_s() : ebi(EPS_BEARER_IDENTITY_UNASSIGNED) {}
+  ebi_s(const uint8_t& e) : ebi(e) {}
+  ebi_s(const struct ebi_s& e) : ebi(e.ebi) {}
+
+  inline bool operator==(const struct ebi_s& rhs) const { return ebi == rhs.ebi; }
+  inline bool operator!=(const struct ebi_s& rhs) const { return !(ebi == rhs.ebi); }
 } ebi_t;
 //-------------------------------------
 // 8.9 IP Address
@@ -667,23 +706,66 @@ enum pdn_type_e {
   PDN_TYPE_E_IPV4V6 = 3,
   PDN_TYPE_E_NON_IP = 4,
 };
+static const std::vector<std::string> pdn_type_e2str = {"Error", "IPV4", "IPV6", "IPV4V6", "NON_IP"};
+
 typedef struct pdn_type_s {
   uint8_t pdn_type;
+  pdn_type_s() : pdn_type(PDN_TYPE_E_IPV4) {}
+  pdn_type_s(const uint8_t& p) : pdn_type(p) {}
+  pdn_type_s(const struct pdn_type_s& p) : pdn_type(p.pdn_type) {}
+  bool operator==(const struct pdn_type_s& p) const
+  {
+    return (p.pdn_type == pdn_type);
+  }
+  //------------------------------------------------------------------------------
+  bool operator==(const pdn_type_e& p) const
+  {
+    return (p == pdn_type);
+  }
+  //------------------------------------------------------------------------------
+  const std::string& toString() const {return pdn_type_e2str.at(pdn_type);}
 } pdn_type_t;
-
-const std::string& pdn_type_e2string(uint8_t pdn_type);
-std::string toString(const oai::cn::core::pdn_type_t& pdn_type);
 
 //-------------------------------------
 // 8.14 PDN Address Allocation (PAA)
-typedef struct paa_s {
+struct paa_s {
   pdn_type_t pdn_type;
   uint8_t         ipv6_prefix_length;
   struct in6_addr ipv6_address;
   struct in_addr  ipv4_address;
-} paa_t;
-bool is_paa_ip_assigned(const paa_t& paa);
+  //------------------------------------------------------------------------------
+  bool is_ip_assigned() {
+    switch (pdn_type.pdn_type) {
+      case PDN_TYPE_E_IPV4:
+        if (ipv4_address.s_addr) return true;
+        return false;
+        break;
+      case PDN_TYPE_E_IPV6:
+        if (ipv6_address.s6_addr32[0] |
+          ipv6_address.s6_addr32[1] |
+          ipv6_address.s6_addr32[2] |
+          ipv6_address.s6_addr32[3])
+          return true;
+        return false;
+        break;
+      case PDN_TYPE_E_IPV4V6:
+        // TODO
+        if (ipv4_address.s_addr) return true;
+        if (ipv6_address.s6_addr32[0] |
+          ipv6_address.s6_addr32[1] |
+          ipv6_address.s6_addr32[2] |
+          ipv6_address.s6_addr32[3])
+          return true;
+        return false;
+        break;
+      case PDN_TYPE_E_NON_IP:
+      default:
+        return false;
+    }
+  }
+};
 
+typedef struct paa_s paa_t;
 //-------------------------------------
 // 8.15 Bearer Quality of Service (Bearer QoS)
 #define PRE_EMPTION_CAPABILITY_ENABLED  (0x0)
@@ -703,18 +785,30 @@ typedef struct bearer_qos_s {
   uint64_t guaranted_bit_rate_for_uplink;
   uint64_t guaranted_bit_rate_for_downlink;
 
-  bool is_arp_equals(const struct bearer_qos_s& q) {
-    if ((q.label_qci == label_qci) &&
-        (q.pl == pl) &&
-        (q.pvi == pvi) &&
-        (q.pci == pci)) {
-      return true;
-    }
-    return false;
+  bool operator==(const struct bearer_qos_s& q) const
+  {
+    return ((q.label_qci == label_qci) &&
+    (q.pl == pl) &&
+    (q.pvi == pvi) &&
+    (q.pci == pci));
+  }
+  //------------------------------------------------------------------------------
+  std::string toString() const
+  {
+    std::string s = {};
+    s.append("MBR UL=").append(std::to_string(maximum_bit_rate_for_uplink));
+    s.append(", MBR DL=").append(std::to_string(maximum_bit_rate_for_downlink));
+    s.append(", GBR UL=").append(std::to_string(guaranted_bit_rate_for_uplink));
+    s.append(", GBR DL=").append(std::to_string(guaranted_bit_rate_for_downlink));
+    s.append(", PCI=").append(std::to_string(pci));
+    s.append(", PL=").append(std::to_string(pl));
+    s.append(", PVI=").append(std::to_string(pvi));
+    s.append(", QCI=").append(std::to_string(label_qci));
+    return s;
   }
 } bearer_qos_t;
 
-std::string toString(const oai::cn::core::bearer_qos_t& bearer_qos);
+
 //-------------------------------------
 // 8.16 Flow Quality of Service (Flow QoS)
 typedef struct flow_qos_s {
@@ -816,9 +910,23 @@ typedef struct gtpc2c_ecgi_field_s {
   uint8_t spare :4;
   uint8_t eci :4;
   uint8_t e_utran_cell_identifier[3];
+
+  //------------------------------------------------------------------------------
+  std::string toString() const
+  {
+    std::string s = {};
+    std::string mccs = conv::mccToString(mcc_digit_1, mcc_digit_2,mcc_digit_3);
+    std::string mncs = conv::mncToString(mnc_digit_1, mnc_digit_2,mnc_digit_3);
+    s.append("mcc=").append(mccs).append(", MNC=").append(mncs);
+    s.append(", ECI=").append(std::to_string(eci));
+    uint32_t we_utran_cell_identifier = static_cast<uint32_t>(e_utran_cell_identifier[0]) << 16;
+    we_utran_cell_identifier |= (static_cast<uint32_t>(e_utran_cell_identifier[1]) << 8);
+    we_utran_cell_identifier |= static_cast<uint32_t>(e_utran_cell_identifier[2]);
+    s.append(", EUCI=").append(std::to_string(we_utran_cell_identifier));
+    return s;
+  }
 } ecgi_field_t;
 
-std::string toString(const oai::cn::core::ecgi_field_t& ecgi_field);
 
 //-------------------------------------
 // 8.21.6 LAI field
@@ -932,22 +1040,71 @@ enum interface_type_e {
   INTERFACE_TYPE_MAX = S11_SGW_GTP_U
 };
 
-std::string toString(const oai::cn::core::interface_type_e& interface_type);
+struct interface_type_s {
+  interface_type_e interface_type;
 
-typedef struct fully_qualified_tunnel_endpoint_identifier_s {
+  interface_type_s() : interface_type(INTERFACE_TYPE_MIN) {}
+  interface_type_s(interface_type_e t) : interface_type(t) {}
+
+  //------------------------------------------------------------------------------
+  std::string toString() const
+  {
+    if ((interface_type >= INTERFACE_TYPE_MIN) && (interface_type <= INTERFACE_TYPE_MAX)) {
+      return std::string(interface_type2char[interface_type]);
+    } else {
+      return std::to_string(interface_type);
+    }
+  }
+};
+
+typedef struct interface_type_s interface_type_t;
+
+
+struct fully_qualified_tunnel_endpoint_identifier_s {
   uint8_t v4 :1;
   uint8_t v6 :1;
   uint8_t interface_type :6;
   uint32_t teid_gre_key;
   struct in_addr  ipv4_address;
   struct in6_addr ipv6_address;
-} fully_qualified_tunnel_endpoint_identifier_t;
 
-typedef fully_qualified_tunnel_endpoint_identifier_t fteid_t;
+  bool operator==(const struct fully_qualified_tunnel_endpoint_identifier_s& f) const
+  {
+    return (teid_gre_key == f.teid_gre_key) and
+    (ipv4_address.s_addr == f.ipv4_address.s_addr) and
+    (interface_type == f.interface_type) and
+    (ipv6_address.s6_addr32[0] == f.ipv6_address.s6_addr32[0]) and
+    (ipv6_address.s6_addr32[1] == f.ipv6_address.s6_addr32[1]) and
+    (ipv6_address.s6_addr32[2] == f.ipv6_address.s6_addr32[2]) and
+    (ipv6_address.s6_addr32[3] == f.ipv6_address.s6_addr32[3]) and
+    (v4 == f.v4) and
+    (v6 == f.v6);
+  }
+  //------------------------------------------------------------------------------
+  std::string toString() const
+  {
+    std::string s = {};
+    interface_type_t iface_type((interface_type_e)interface_type);
+    if ((v4) || (v6)) {
+      s.append("Interface type=").append(iface_type.toString());
+      s.append(", TEID=").append(std::to_string(teid_gre_key));
+      if (v4) {
+        s.append(", IPv4=").append(conv::toString(ipv4_address));
+      }
+      if (v6) {
+        s.append(", IPv6=").append(conv::toString(ipv6_address));
+      }
+    } else {
+      s.append("null_fteid");
+    }
+    return s;
+  }
+  bool is_zero() const {return ((!v4) and(!v6));}
+} ;
 
-bool is_fteid_zero(const fteid_t& f);
-bool is_fteid_equal(const fteid_t& f1, const fteid_t& f2);
-std::string toString(const oai::cn::core::fteid_t& fteid);
+typedef struct fully_qualified_tunnel_endpoint_identifier_s fully_qualified_tunnel_endpoint_identifier_t;
+typedef struct fully_qualified_tunnel_endpoint_identifier_s fteid_t;
+
 
 //-------------------------------------
 // 8.24 Global CN-Id
@@ -1779,5 +1936,4 @@ typedef struct maximum_packet_loss_rate_s {
 // 8.135 APN Rate Control Status
 // 8.136 Extended Trace Information
 
-}
 #endif /* FILE_3GPP_29_274_SEEN */

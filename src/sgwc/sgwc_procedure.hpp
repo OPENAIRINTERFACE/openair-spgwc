@@ -35,7 +35,7 @@
 #include <memory>
 #include <list>
 
-namespace oai::cn::nf::sgwc {
+namespace sgwc {
 
 class sgw_eps_bearer_context;
 class sgw_pdn_connection;
@@ -44,7 +44,7 @@ class sebc_procedure {
 private:
 
   static uint64_t generate_trxn_id() {
-    return oai::cn::util::uint_uid_generator<uint64_t>::get_instance().get_uid();
+    return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
   }
   uint64_t              gtpc_tx_id;
 
@@ -54,14 +54,14 @@ public:
   sebc_procedure(){gtpc_tx_id = generate_trxn_id();marked_for_removal = false;}
   explicit sebc_procedure(uint64_t tx_id){gtpc_tx_id = tx_id;marked_for_removal = false;}
   virtual ~sebc_procedure(){}
-  virtual core::itti::itti_msg_type_t get_procedure_type(){return core::itti::ITTI_MSG_TYPE_NONE;}
+  virtual itti_msg_type_t get_procedure_type(){return ITTI_MSG_TYPE_NONE;}
   virtual bool has_trxn_id(const uint64_t trxn_id) {return (trxn_id == gtpc_tx_id);}
   virtual uint64_t get_trxn_id() {return gtpc_tx_id;}
   virtual int run(std::shared_ptr<sgw_eps_bearer_context> ebc) {return RETURNerror;}
-  virtual void handle_itti_msg (core::itti::itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
-  virtual void handle_itti_msg (core::itti::itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
-  virtual void handle_itti_msg (core::itti::itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
-  virtual void handle_itti_msg (core::itti::itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  virtual void handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  virtual void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  virtual void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  virtual void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
 };
 //------------------------------------------------------------------------------
@@ -70,11 +70,11 @@ class sgw_pdn_connection;
 
 class create_session_request_procedure : public sebc_procedure {
 public:
-  explicit create_session_request_procedure(core::itti::itti_s11_create_session_request& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg), ebc(nullptr) {}
+  explicit create_session_request_procedure(itti_s11_create_session_request& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg), ebc(nullptr) {}
   int run(std::shared_ptr<sgw_eps_bearer_context> ebc);
-  void handle_itti_msg (core::itti::itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
 
-  core::itti::itti_s11_create_session_request msg;
+  itti_s11_create_session_request msg;
   std::shared_ptr<sgw_eps_bearer_context> ebc;
 };
 //------------------------------------------------------------------------------
@@ -84,28 +84,28 @@ public:
   pdn_bearers_to_be_xied(const pdn_bearers_to_be_xied& p) : pdn(p.pdn), bearer_contexts_to_be_modified(p.bearer_contexts_to_be_modified),
       bearer_contexts_to_be_removed(p.bearer_contexts_to_be_removed), msg(p.msg), gtpc_tx_id(p.gtpc_tx_id) {}
   std::shared_ptr<sgw_pdn_connection> pdn;
-  std::vector<oai::cn::proto::gtpv2c::bearer_context_to_be_modified_within_modify_bearer_request>        bearer_contexts_to_be_modified;
+  std::vector<gtpv2c::bearer_context_to_be_modified_within_modify_bearer_request>        bearer_contexts_to_be_modified;
   // Still there because of not complete S/P GW split
-  std::vector<oai::cn::proto::gtpv2c::bearer_context_to_be_removed_within_modify_bearer_request>         bearer_contexts_to_be_removed;
-  std::shared_ptr<core::itti::itti_s5s8_modify_bearer_request>                   msg;
+  std::vector<gtpv2c::bearer_context_to_be_removed_within_modify_bearer_request>         bearer_contexts_to_be_removed;
+  std::shared_ptr<itti_s5s8_modify_bearer_request>                   msg;
   uint64_t                                                                       gtpc_tx_id;
 };
 
 class modify_bearer_request_procedure : public sebc_procedure {
 public:
-  explicit modify_bearer_request_procedure(core::itti::itti_s11_modify_bearer_request& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg),
+  explicit modify_bearer_request_procedure(itti_s11_modify_bearer_request& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg),
       pdn_bearers(), null_pdn_bearers(), ebc(), bearer_contexts_modified(), bearer_contexts_marked_for_removal() {}
 
   bool has_trxn_id(const uint64_t trxn_id);
   int run(std::shared_ptr<sgw_eps_bearer_context> ebc);
-  void handle_itti_msg (core::itti::itti_s5s8_modify_bearer_response& s5resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> pdn);
+  void handle_itti_msg (itti_s5s8_modify_bearer_response& s5resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> pdn);
 
 
-  core::itti::itti_s11_modify_bearer_request msg;
+  itti_s11_modify_bearer_request msg;
   std::vector<std::shared_ptr<pdn_bearers_to_be_xied>>        pdn_bearers;
   pdn_bearers_to_be_xied                     null_pdn_bearers;
-  std::vector<oai::cn::proto::gtpv2c::bearer_context_modified_within_modify_bearer_response>             bearer_contexts_modified;
-  std::vector<oai::cn::proto::gtpv2c::bearer_context_marked_for_removal_within_modify_bearer_response>  bearer_contexts_marked_for_removal;
+  std::vector<gtpv2c::bearer_context_modified_within_modify_bearer_response>             bearer_contexts_modified;
+  std::vector<gtpv2c::bearer_context_marked_for_removal_within_modify_bearer_response>  bearer_contexts_marked_for_removal;
   std::shared_ptr<sgw_eps_bearer_context>         ebc;
 };
 //------------------------------------------------------------------------------
@@ -115,31 +115,31 @@ public:
   bearers_to_be_released(const bearers_to_be_released& p): pdn(p.pdn), gtpc_tx_id(p.gtpc_tx_id) {}
   std::shared_ptr<sgw_pdn_connection> pdn;
   // Still there because of not complete S/P GW split
-  //std::shared_ptr<core::itti::itti_s5s8_release_access_bearers_request>          msg;
+  //std::shared_ptr<itti_s5s8_release_access_bearers_request>          msg;
   uint64_t                            gtpc_tx_id;
 };
 
 class release_access_bearers_request_procedure : public sebc_procedure {
 public:
-  explicit release_access_bearers_request_procedure(core::itti::itti_s11_release_access_bearers_request& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg),
+  explicit release_access_bearers_request_procedure(itti_s11_release_access_bearers_request& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg),
       bearers(), ebc(), cause() {}
   bool has_trxn_id(const uint64_t trxn_id);
   int run(std::shared_ptr<sgw_eps_bearer_context> ebc);
-  void handle_itti_msg (core::itti::itti_s5s8_release_access_bearers_response& s5resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> pdn);
+  void handle_itti_msg (itti_s5s8_release_access_bearers_response& s5resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> pdn);
 
-  core::itti::itti_s11_release_access_bearers_request     msg;
+  itti_s11_release_access_bearers_request     msg;
   std::vector<std::shared_ptr<bearers_to_be_released>>    bearers;
   std::shared_ptr<sgw_eps_bearer_context>                 ebc;
-  core::cause_t                                           cause;
+  cause_t                                           cause;
 };
 //------------------------------------------------------------------------------
 class delete_session_request_procedure : public sebc_procedure {
 public:
-  delete_session_request_procedure(core::itti::itti_s11_delete_session_request& msg, std::shared_ptr<sgw_pdn_connection>& pdn) : sebc_procedure(msg.gtpc_tx_id), msg(msg), pdn_connection(pdn), ebc(nullptr) {}
+  delete_session_request_procedure(itti_s11_delete_session_request& msg, std::shared_ptr<sgw_pdn_connection>& pdn) : sebc_procedure(msg.gtpc_tx_id), msg(msg), pdn_connection(pdn), ebc(nullptr) {}
   int run(std::shared_ptr<sgw_eps_bearer_context> ebc);
-  void handle_itti_msg (core::itti::itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection>& spc);
+  void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection>& spc);
 
-  core::itti::itti_s11_delete_session_request msg;
+  itti_s11_delete_session_request msg;
   std::shared_ptr<sgw_eps_bearer_context>     ebc;
   std::shared_ptr<sgw_pdn_connection>         pdn_connection;
 };

@@ -28,23 +28,22 @@
 #include "common_defs.h"
 #include "logger.hpp"
 #include "pgw_pfcp_association.hpp"
+#include "pgwc_procedure.hpp"
 #include "pgwc_sxab.hpp"
 
-using namespace oai::cn::core;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::pgwc;
+using namespace pgwc;
 using namespace std;
 
 extern itti_mw    *itti_inst;
 extern pgwc_sxab  *pgwc_sxab_inst;
 //------------------------------------------------------------------------------
-void pfcp_association::notify_add_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
+void pfcp_association::notify_add_session(const pfcp::fseid_t& cp_fseid)
 {
   std::unique_lock<std::mutex> l(m_sessions);
   sessions.insert(cp_fseid);
 }
 //------------------------------------------------------------------------------
-bool pfcp_association::has_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
+bool pfcp_association::has_session(const pfcp::fseid_t& cp_fseid)
 {
   std::unique_lock<std::mutex> l(m_sessions);
   auto it = sessions.find(cp_fseid);
@@ -55,7 +54,7 @@ bool pfcp_association::has_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
   }
 }
 //------------------------------------------------------------------------------
-void pfcp_association::notify_del_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
+void pfcp_association::notify_del_session(const pfcp::fseid_t& cp_fseid)
 {
   std::unique_lock<std::mutex> l(m_sessions);
   sessions.erase(cp_fseid);
@@ -64,7 +63,7 @@ void pfcp_association::notify_del_session(const oai::cn::core::pfcp::fseid_t& cp
 // void pfcp_association::del_sessions()
 // {
 //   std::unique_lock<std::mutex> l(m_sessions);
-//   for (std::set<core::pfcp::fseid_t>::iterator it=sessions.begin(); it!=sessions.end();) {
+//   for (std::set<pfcp::fseid_t>::iterator it=sessions.begin(); it!=sessions.end();) {
 //     ???->remove_pfcp_session(*it);
 //     sessions.erase(it++);
 //   }
@@ -73,12 +72,14 @@ void pfcp_association::notify_del_session(const oai::cn::core::pfcp::fseid_t& cp
 void pfcp_association::restore_sx_sessions()
 {
   std::unique_lock<std::mutex> l(m_sessions);
-  for (std::set<core::pfcp::fseid_t>::iterator it=sessions.begin(); it!=sessions.end();) {
-    ;
+  if (sessions.size()) {
+    is_restore_sessions_pending = true;
+    sx_session_restore_procedure * restore_proc = new sx_session_restore_procedure(sessions);
+    restore_proc->run();
   }
 }
 //------------------------------------------------------------------------------
-bool pfcp_associations::add_association(oai::cn::core::pfcp::node_id_t& node_id, oai::cn::core::pfcp::recovery_time_stamp_t& recovery_time_stamp, bool& restore_sx_sessions)
+bool pfcp_associations::add_association(pfcp::node_id_t& node_id, pfcp::recovery_time_stamp_t& recovery_time_stamp, bool& restore_sx_sessions)
 {
   std::shared_ptr<pfcp_association> sa = std::shared_ptr<pfcp_association>(nullptr);
   if (get_association(node_id, sa)) {
@@ -95,14 +96,14 @@ bool pfcp_associations::add_association(oai::cn::core::pfcp::node_id_t& node_id,
     pfcp_association* association = new pfcp_association(node_id, recovery_time_stamp);
     sa = std::shared_ptr<pfcp_association>(association);
     sa->recovery_time_stamp = recovery_time_stamp;
-    std::size_t hash_node_id = std::hash<oai::cn::core::pfcp::node_id_t>{}(node_id);
+    std::size_t hash_node_id = std::hash<pfcp::node_id_t>{}(node_id);
     associations.insert((int32_t)hash_node_id, sa);
     trigger_heartbeat_request_procedure(sa);
   }
   return true;
 }
 //------------------------------------------------------------------------------
-bool pfcp_associations::add_association(oai::cn::core::pfcp::node_id_t& node_id, oai::cn::core::pfcp::recovery_time_stamp_t& recovery_time_stamp, oai::cn::core::pfcp::up_function_features_s& function_features, bool& restore_sx_sessions)
+bool pfcp_associations::add_association(pfcp::node_id_t& node_id, pfcp::recovery_time_stamp_t& recovery_time_stamp, pfcp::up_function_features_s& function_features, bool& restore_sx_sessions)
 {
   std::shared_ptr<pfcp_association> sa = std::shared_ptr<pfcp_association>(nullptr);
   if (get_association(node_id, sa)) {
@@ -122,16 +123,16 @@ bool pfcp_associations::add_association(oai::cn::core::pfcp::node_id_t& node_id,
     sa->recovery_time_stamp = recovery_time_stamp;
     sa->function_features.first = true;
     sa->function_features.second = function_features;
-    std::size_t hash_node_id = std::hash<oai::cn::core::pfcp::node_id_t>{}(node_id);
+    std::size_t hash_node_id = std::hash<pfcp::node_id_t>{}(node_id);
     associations.insert((int32_t)hash_node_id, sa);
     trigger_heartbeat_request_procedure(sa);
   }
   return true;
 }
 //------------------------------------------------------------------------------
-bool pfcp_associations::get_association(const oai::cn::core::pfcp::node_id_t& node_id, std::shared_ptr<pfcp_association>&  sa) const
+bool pfcp_associations::get_association(const pfcp::node_id_t& node_id, std::shared_ptr<pfcp_association>&  sa) const
 {
-  std::size_t hash_node_id = std::hash<oai::cn::core::pfcp::node_id_t>{}(node_id);
+  std::size_t hash_node_id = std::hash<pfcp::node_id_t>{}(node_id);
   auto pit = associations.find((int32_t)hash_node_id);
   if ( pit == associations.end() )
     return false;
@@ -141,7 +142,7 @@ bool pfcp_associations::get_association(const oai::cn::core::pfcp::node_id_t& no
   }
 }
 //------------------------------------------------------------------------------
-bool pfcp_associations::get_association(const oai::cn::core::pfcp::fseid_t& cp_fseid, std::shared_ptr<pfcp_association>&  sa) const
+bool pfcp_associations::get_association(const pfcp::fseid_t& cp_fseid, std::shared_ptr<pfcp_association>&  sa) const
 {
   folly::AtomicHashMap<int32_t, std::shared_ptr<pfcp_association>>::iterator it;
 
@@ -156,7 +157,7 @@ bool pfcp_associations::get_association(const oai::cn::core::pfcp::fseid_t& cp_f
 }
 
 //------------------------------------------------------------------------------
-void pfcp_associations::restore_sx_sessions(const oai::cn::core::pfcp::node_id_t& node_id)
+void pfcp_associations::restore_sx_sessions(const pfcp::node_id_t& node_id)
 {
   std::shared_ptr<pfcp_association> sa = {};
   if (get_association(node_id, sa)) {
@@ -169,7 +170,7 @@ void pfcp_associations::trigger_heartbeat_request_procedure(std::shared_ptr<pfcp
   s->timer_heartbeat = itti_inst->timer_setup(PFCP_ASSOCIATION_HEARTBEAT_INTERVAL_SEC,0, TASK_PGWC_SX, TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST, s->hash_node_id);
 }
 //------------------------------------------------------------------------------
-void pfcp_associations::initiate_heartbeat_request(core::itti::timer_id_t timer_id, uint64_t arg2_user)
+void pfcp_associations::initiate_heartbeat_request(timer_id_t timer_id, uint64_t arg2_user)
 {
   size_t hash_node_id = (size_t)arg2_user;
   auto pit = associations.find((int32_t)hash_node_id);
@@ -182,7 +183,7 @@ void pfcp_associations::initiate_heartbeat_request(core::itti::timer_id_t timer_
   }
 }
 //------------------------------------------------------------------------------
-void pfcp_associations::timeout_heartbeat_request(core::itti::timer_id_t timer_id, uint64_t arg2_user)
+void pfcp_associations::timeout_heartbeat_request(timer_id_t timer_id, uint64_t arg2_user)
 {
   size_t hash_node_id = (size_t)arg2_user;
   auto pit = associations.find((int32_t)hash_node_id);
@@ -214,7 +215,7 @@ void pfcp_associations::handle_receive_heartbeat_response(const uint64_t trxn_id
 }
 
 //------------------------------------------------------------------------------
-bool pfcp_associations::select_up_node(oai::cn::core::pfcp::node_id_t& node_id, const int node_selection_criteria)
+bool pfcp_associations::select_up_node(pfcp::node_id_t& node_id, const int node_selection_criteria)
 {
   node_id = {};
   if (associations.empty()) {
@@ -239,7 +240,7 @@ bool pfcp_associations::select_up_node(oai::cn::core::pfcp::node_id_t& node_id, 
   return false;
 }
 //------------------------------------------------------------------------------
-void pfcp_associations::notify_add_session(const oai::cn::core::pfcp::node_id_t& node_id, const oai::cn::core::pfcp::fseid_t& cp_fseid)
+void pfcp_associations::notify_add_session(const pfcp::node_id_t& node_id, const pfcp::fseid_t& cp_fseid)
 {
   std::shared_ptr<pfcp_association> sa = {};
   if (get_association(node_id, sa)) {
@@ -247,7 +248,7 @@ void pfcp_associations::notify_add_session(const oai::cn::core::pfcp::node_id_t&
   }
 }
 //------------------------------------------------------------------------------
-void pfcp_associations::notify_del_session(const oai::cn::core::pfcp::fseid_t& cp_fseid)
+void pfcp_associations::notify_del_session(const pfcp::fseid_t& cp_fseid)
 {
   std::shared_ptr<pfcp_association> sa = {};
   if (get_association(cp_fseid, sa)) {

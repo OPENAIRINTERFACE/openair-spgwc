@@ -38,7 +38,7 @@
 #include <string>
 #include <vector>
 
-namespace oai::cn::proto::gtpv1u {
+namespace gtpv1u {
 
 struct gtpu_exception : public std::exception {
   gtpu_exception() throw() {
@@ -149,8 +149,6 @@ public:
 
 } // namespace
 
-namespace oai::cn::core {
-
   // 8.2 Recovery
 
 // 8.3 Tunnel Endpoint Identifier Data I
@@ -178,5 +176,4 @@ typedef struct extension_header_type_list_s {
 //  std::string  extension_value;
 //} private_extension_t;
 
-}
 #endif /* FILE_3GPP_29_281_SEEN */

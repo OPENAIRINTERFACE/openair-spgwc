@@ -31,6 +31,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include <inttypes.h>
+#include <arpa/inet.h>
 
 static const char                       hex_to_ascii_table[16] = {
   '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -55,8 +56,7 @@ static const signed char                ascii_to_hex_table[0x100] = {
   -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
 };
 
-void
-hexa_to_ascii (
+void conv::hexa_to_ascii (
   uint8_t * from,
   char *to,
   size_t length)
@@ -72,8 +72,7 @@ hexa_to_ascii (
   }
 }
 
-int
-ascii_to_hex (
+int conv::ascii_to_hex (
   uint8_t * dst,
   const char *h)
 {
@@ -109,99 +108,62 @@ ascii_to_hex (
     dst[i++] = (high << 4) | low;
   }
 }
-//------------------------------------------------------------------------------
-imsi64_t imsi_to_imsi64(imsi_t * const imsi)
-{
-  imsi64_t imsi64 = INVALID_IMSI64;
-  if (imsi) {
-    imsi64 = 0;
-    for (int i=0; i < IMSI_BCD8_SIZE; i++) {
-      uint8_t d2 = imsi->u.value[i];
-      uint8_t d1 = (d2 & 0xf0) >> 4;
-      d2 = d2 & 0x0f;
-      if (10 > d1) {
-        imsi64 = imsi64*10 + d1;
-        if (10 > d2) {
-          imsi64 = imsi64*10 + d2;
-        } else {
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-  }
-  return imsi64;
-}
+
 
 //------------------------------------------------------------------------------
-void paa_to_pfcp_ue_ip_address(const oai::cn::core::paa_t& paa, oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address)
+std::string conv::mccToString(const uint8_t digit1, const uint8_t digit2, const uint8_t digit3)
 {
-  switch (paa.pdn_type.pdn_type) {
-  case oai::cn::core::PDN_TYPE_E_IPV4:
-    ue_ip_address.v4 = 1;
-    ue_ip_address.ipv4_address = paa.ipv4_address;
-    break;
-  case oai::cn::core::PDN_TYPE_E_IPV6:
-    ue_ip_address.v6 = 1;
-    ue_ip_address.ipv6_address = paa.ipv6_address;
-    break;
-  case oai::cn::core::PDN_TYPE_E_IPV4V6:
-    ue_ip_address.v4 = 1;
-    ue_ip_address.v6 = 1;
-    ue_ip_address.ipv4_address = paa.ipv4_address;
-    ue_ip_address.ipv6_address = paa.ipv6_address;
-    break;
-  case oai::cn::core::PDN_TYPE_E_NON_IP:
-  default:
-    ;
-  }
+  std::string s = {};
+  uint16_t mcc16 = digit1*100+digit2*10+digit3;
+  //s.append(std::to_string(digit1)).append(std::to_string(digit2)).append(std::to_string(digit3));
+  s.append(std::to_string(mcc16));
+  return s;
 }
 //------------------------------------------------------------------------------
-void pdn_ip_to_pfcp_ue_ip_address(const oai::cn::core::pdn_type_t& pdn_type,
-                                  const struct in_addr&  ipv4_address,
-                                  const struct in6_addr ipv6_address,
-                                  oai::cn::core::pfcp::ue_ip_address_t& ue_ip_address)
+std::string conv::mncToString(const uint8_t digit1, const uint8_t digit2, const uint8_t digit3)
 {
-  switch (pdn_type.pdn_type) {
-  case oai::cn::core::PDN_TYPE_E_IPV4:
-    ue_ip_address.v4 = 1;
-    ue_ip_address.ipv4_address = ipv4_address;
-    break;
-  case oai::cn::core::PDN_TYPE_E_IPV6:
-    ue_ip_address.v6 = 1;
-    ue_ip_address.ipv6_address = ipv6_address;
-    break;
-  case oai::cn::core::PDN_TYPE_E_IPV4V6:
-    ue_ip_address.v4 = 1;
-    ue_ip_address.v6 = 1;
-    ue_ip_address.ipv4_address = ipv4_address;
-    ue_ip_address.ipv6_address = ipv6_address;
-    break;
-  case oai::cn::core::PDN_TYPE_E_NON_IP:
-  default:
-    ;
+  std::string s = {};
+  uint16_t mcc16 = 0;
+
+  if (digit3 == 0x0F) {
+    mcc16 = digit1*10+digit2;
+  } else {
+    mcc16 = digit1*100+digit2*10+digit3;
   }
+  s.append(std::to_string(mcc16));
+  return s;
 }
 
-bool sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, oai::cn::core::gtp_u_peer_address_t& peer_address)
+
+//------------------------------------------------------------------------------
+struct in_addr conv::fromString(const std::string addr4)
 {
-  switch (peer_sockaddr.ss_family) {
-    case AF_INET: {
-      const struct sockaddr_in * const sin = reinterpret_cast<const sockaddr_in* const>(&peer_sockaddr);
-      peer_address.ipv4_address.s_addr = sin->sin_addr.s_addr;
-      peer_address.is_v4 = true;
-      return true;
-    }
-    break;
-    case AF_INET6: {
-      const struct sockaddr_in6 * const sin6 = reinterpret_cast<const sockaddr_in6* const>(&peer_sockaddr);
-      peer_address.ipv6_address = sin6->sin6_addr;
-      peer_address.is_v4 = false;
-      return true;
-    }
-    break;
-    default:
-      return false;
+  unsigned char buf[sizeof(struct in6_addr)] = {};
+  int s = inet_pton(AF_INET, addr4.c_str(), buf);
+  struct in_addr * ia = (struct in_addr *)buf;
+  return *ia;
+}
+//------------------------------------------------------------------------------
+std::string conv::toString(const struct in_addr& inaddr)
+{
+  std::string s = {};
+  char str[INET6_ADDRSTRLEN] = {};
+  if (inet_ntop(AF_INET, (const void *)&inaddr, str, INET6_ADDRSTRLEN) == NULL) {
+    s.append("Error in_addr");
+  } else {
+    s.append(str);
   }
+  return s;
+}
+//------------------------------------------------------------------------------
+std::string conv::toString(const struct in6_addr& in6addr)
+{
+  std::string s = {};
+  char str[INET6_ADDRSTRLEN] = {};
+  if (inet_ntop(AF_INET6, (const void *)&in6addr, str, INET6_ADDRSTRLEN) == nullptr) {
+    s.append("Error in6_addr");
+  } else {
+    s.append(str);
+  }
+  return s;
 }

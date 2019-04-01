@@ -35,8 +35,6 @@
 #include "pgw_config.hpp"
 #include "string.hpp"
 
-#include <arpa/inet.h>
-
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -45,21 +43,15 @@
 #include <iomanip>
 #include <iostream>
 
-using namespace libconfig;
-using namespace oai::cn::core;
-using namespace oai::cn::core::itti;
-using namespace oai::cn::nf::pgwc;
-using namespace oai::cn::util;
 using namespace std;
+using namespace libconfig;
+using namespace pgwc;
 
 // C includes
-#include <errno.h>
-#include <netdb.h>
+#include <arpa/inet.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
-#include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -89,6 +81,59 @@ int pgw_config::finalize ()
   //pgw_pcef_emulation_init(config_pP);
   Logger::pgwc_app().info("Finalized config");
   return 0;
+}
+
+//------------------------------------------------------------------------------
+int pgw_config::load_thread_sched_params(const Setting& thread_sched_params_cfg, util::thread_sched_params& cfg)
+{
+
+  thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
+  std::string thread_rd_sched_policy;
+  thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
+  util::trim(thread_rd_sched_policy);
+  if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
+    cfg.sched_policy = SCHED_OTHER;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
+    cfg.sched_policy = SCHED_IDLE;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
+    cfg.sched_policy = SCHED_BATCH;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
+    cfg.sched_policy = SCHED_FIFO;
+  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
+    cfg.sched_policy = SCHED_RR;
+  } else {
+    Logger::pgwc_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
+    return RETURNerror;
+  }
+  thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
+  if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
+    Logger::pgwc_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
+    return RETURNerror;
+  }
+  return RETURNok;
+}
+//------------------------------------------------------------------------------
+int pgw_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
+{
+  const Setting& itti_timer_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
+  load_thread_sched_params(itti_timer_sched_params_cfg, cfg.itti_timer_sched_params);
+
+  const Setting& s11_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_S11_SCHED_PARAMS];
+  load_thread_sched_params(s11_sched_params_cfg, cfg.s11_sched_params);
+
+  const Setting& s5s8_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_S5S8_SCHED_PARAMS];
+  load_thread_sched_params(s5s8_sched_params_cfg, cfg.s5s8_sched_params);
+
+  const Setting& sx_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_SX_SCHED_PARAMS];
+  load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+
+  const Setting& pgw_app_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS];
+  load_thread_sched_params(pgw_app_sched_params_cfg, cfg.pgw_app_sched_params);
+
+  const Setting& async_cmd_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
+  load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
+
+  return RETURNok;
 }
 
 //------------------------------------------------------------------------------
@@ -122,6 +167,8 @@ int pgw_config::load_interface(const Setting& if_cfg, interface_cfg_t & cfg)
       cfg.network4.s_addr = htons(ntohs(cfg.addr4.s_addr) & 0xFFFFFFFF << (32 - std::stoi (util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(PGW_CONFIG_STRING_PORT, cfg.port);
+    const Setting& sched_params_cfg = if_cfg[PGW_CONFIG_STRING_SCHED_PARAMS];
+    load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
   }
   return RETURNok;
 }
@@ -130,7 +177,6 @@ int pgw_config::load_interface(const Setting& if_cfg, interface_cfg_t & cfg)
 int pgw_config::load(const string& config_file)
 {
   Config                 cfg;
-  unsigned char          buf_in_addr[sizeof (struct in_addr)];
   unsigned char          buf_in6_addr[sizeof (struct in6_addr)];
 
   // Read the file. If there is an error, report it and exit.
@@ -159,6 +205,9 @@ int pgw_config::load(const string& config_file)
     pgw_cfg.lookupValue(PGW_CONFIG_STRING_INSTANCE, instance);
     pgw_cfg.lookupValue(PGW_CONFIG_STRING_PID_DIRECTORY, pid_dir);
 
+    const Setting& itti_cfg = pgw_cfg[PGW_CONFIG_STRING_ITTI_TASKS];
+    load_itti(itti_cfg, itti);
+
     const Setting &nw_if_cfg = pgw_cfg[PGW_CONFIG_STRING_INTERFACES];
 
     const Setting& s5s8_cp_cfg = nw_if_cfg[PGW_CONFIG_STRING_INTERFACE_S5_S8_CP];
@@ -169,20 +218,14 @@ int pgw_config::load(const string& config_file)
 
 
     const Setting &pool_cfg = pgw_cfg[PGW_CONFIG_STRING_IP_ADDRESS_POOL];
-    arp_ue_oai = false;
-    arp_ue_linux = false;
-    pool_cfg.lookupValue(PGW_CONFIG_STRING_ARP_UE, astring);
-    if (boost::iequals(astring, PGW_CONFIG_STRING_ARP_UE_CHOICE_LINUX)) {
-      arp_ue_linux = true;
-    } else if (boost::iequals(astring, PGW_CONFIG_STRING_ARP_UE_CHOICE_OAI)) {
-      arp_ue_oai = true;
-    }
 
     const Setting &ipv4_pool_cfg = pool_cfg[PGW_CONFIG_STRING_IPV4_ADDRESS_LIST];
     int count = ipv4_pool_cfg.getLength();
     for (int i = 0; i < count; i++) {
       const Setting &ipv4_cfg = ipv4_pool_cfg[i];
       string ipv4_range;
+      unsigned char  buf_in_addr[sizeof (struct in_addr)];
+
       ipv4_cfg.lookupValue(PGW_CONFIG_STRING_RANGE, ipv4_range);
       std::vector<std::string> ips;
       boost::split(ips, ipv4_range, boost::is_any_of(PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER), boost::token_compress_on);
@@ -191,6 +234,7 @@ int pgw_config::load(const string& config_file)
         throw ("Bad value %s : %s in config file %s", PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER, ipv4_range.c_str(), config_file.c_str());
       }
 
+      memset(buf_in_addr, 0, sizeof(buf_in_addr));
       if (inet_pton (AF_INET, util::trim(ips.at(0)).c_str(), buf_in_addr) == 1) {
         memcpy (&ue_pool_range_low[num_ue_pool], buf_in_addr, sizeof (struct in_addr));
       } else {
@@ -198,6 +242,7 @@ int pgw_config::load(const string& config_file)
         throw ("CONFIG POOL ADDR IPV4: BAD ADDRESS in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST);
       }
 
+      memset(buf_in_addr, 0, sizeof(buf_in_addr));
       if (inet_pton (AF_INET, util::trim(ips.at(1)).c_str(), buf_in_addr) == 1) {
         memcpy (&ue_pool_range_high[num_ue_pool], buf_in_addr, sizeof (struct in_addr));
       } else {
@@ -321,18 +366,6 @@ int pgw_config::load(const string& config_file)
     }
     pgw_cfg.lookupValue(PGW_CONFIG_STRING_UE_MTU, ue_mtu);
 
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_GTPV1U_REALIZATION, astring);
-    if (boost::iequals (astring, PGW_CONFIG_STRING_NO_GTP_KERNEL_AVAILABLE)) {
-      use_gtp_kernel_module = false;
-      enable_loading_gtp_kernel_module = false;
-    } else if (boost::iequals (astring, PGW_CONFIG_STRING_GTP_KERNEL_MODULE)) {
-      use_gtp_kernel_module = true;
-      enable_loading_gtp_kernel_module = true;
-    } else if (boost::iequals (astring, PGW_CONFIG_STRING_GTP_KERNEL)) {
-      use_gtp_kernel_module = true;
-      enable_loading_gtp_kernel_module = false;
-    }
-
     const Setting &pcef_cfg = pgw_cfg[PGW_CONFIG_STRING_PCEF];
     unsigned int apn_ambr = 0;
     if (!(pcef_cfg.lookupValue(PGW_CONFIG_STRING_APN_AMBR_UL, apn_ambr))) {
@@ -358,23 +391,9 @@ int pgw_config::load(const string& config_file)
 void pgw_config::display ()
 {
   Logger::pgwc_app().info( "==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
-  Logger::pgwc_app().info( "Configuration:");
+  Logger::pgwc_app().info( "Configuration PGW-C:");
   Logger::pgwc_app().info( "- Instance ..............: %d\n", instance);
   Logger::pgwc_app().info( "- PID dir ...............: %s\n", pid_dir.c_str());
-
-
-#if ENABLE_OPENFLOW
-  Logger::pgwc_app().info( "- OpenVSwitch:");
-  Logger::pgwc_app().info( "    bridge_name .........: %s", ovs_config.bridge_name.c_str());
-  Logger::pgwc_app().info( "    egress_port_num .....: %d", ovs_config.egress_port_num);
-  Logger::pgwc_app().info( "    gtp_port_num ........: %d", ovs_config.gtp_port_num);
-  Logger::pgwc_app().info( "    uplink_mac ..........: %s", ovs_config.uplink_mac.c_str());
-  Logger::pgwc_app().info( "    l2_egress_port ......: %s", ovs_config.l2_egress_port.c_str());
-  Logger::pgwc_app().info( "    ARP Cache:");
-  for (int i = 0; i < ovs_config.sgi_arp_boot_cache.num_entries; i++) {
-    Logger::pgwc_app().info( "      IP %s - MAC %s",  inet_ntoa (*((struct in_addr *)&ovs_config.sgi_arp_boot_cache.ip[i])), ovs_config.sgi_arp_boot_cache.mac[i].c_str());
-  }
-#endif
 
   Logger::pgwc_app().info( "- S5S8-C:");
   Logger::pgwc_app().info( "    iface ............: %s", s5s8_cp.if_name.c_str());
@@ -393,7 +412,9 @@ void pgw_config::display ()
 
   Logger::pgwc_app().info( "- " PGW_CONFIG_STRING_IP_ADDRESS_POOL ":");
   for (int i = 0; i < num_ue_pool; i++) {
-    Logger::pgwc_app().info( "    IPv4 pool %d ..........: %s - %s", i, inet_ntoa (*((struct in_addr *)&ue_pool_range_low[i])), inet_ntoa (*((struct in_addr *)&ue_pool_range_high[i])));
+    std::string range_low(inet_ntoa (ue_pool_range_low[apn[i].pool_id_iv4]));
+    std::string range_high(inet_ntoa (ue_pool_range_high[apn[i].pool_id_iv4]));
+    Logger::pgwc_app().info( "    IPv4 pool %d ..........: %s - %s", i, range_low.c_str(), range_high.c_str());
   }
   char str_addr6[INET6_ADDRSTRLEN];
   for (int i = 0; i < num_paa6_pool; i++) {
@@ -415,11 +436,12 @@ void pgw_config::display ()
   for (int i = 0; i < num_apn; i++) {
     Logger::pgwc_app().info( "    APN %d:", i);
     Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_APN_NI ":  %s", apn[i].apn.c_str());
-    Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_PDN_TYPE ":  %s", pdn_type_e2string(apn[i].pdn_type.pdn_type).c_str());
+    Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_PDN_TYPE ":  %s", apn[i].pdn_type.toString().c_str());
     if (apn[i].pool_id_iv4 >= 0) {
-      Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_IPV4_POOL ":  %d ( %s - %s)", apn[i].pool_id_iv4,
-          inet_ntoa (*((struct in_addr *)&ue_pool_range_low[apn[i].pool_id_iv4])),
-          inet_ntoa (*((struct in_addr *)&ue_pool_range_high[apn[i].pool_id_iv4])));
+      std::string range_low(inet_ntoa (ue_pool_range_low[apn[i].pool_id_iv4]));
+      std::string range_high(inet_ntoa (ue_pool_range_high[apn[i].pool_id_iv4]));
+      Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_IPV4_POOL ":  %d ( %s - %s)",
+                               apn[i].pool_id_iv4, range_low.c_str(), range_high.c_str());
     }
     if (apn[i].pool_id_iv6 >= 0) {
       Logger::pgwc_app().info( "        " PGW_CONFIG_STRING_IPV6_POOL ":  %d", apn[i].pool_id_iv6);
@@ -433,7 +455,7 @@ void pgw_config::display ()
 }
 
 //------------------------------------------------------------------------------
-bool pgw_config::is_dotted_apn_handled(const string& apn, const core::pdn_type_t& pdn_type)
+bool pgw_config::is_dotted_apn_handled(const string& apn, const pdn_type_t& pdn_type)
 {
   for (int i = 0; i < pgw_cfg.num_apn; i++) {
     if (0 == apn.compare(pgw_cfg.apn[i].apn_label)) {
@@ -459,23 +481,23 @@ int pgw_config::get_pa_pool_id(const std::string& apn, int& pool_id_ipv4, int& p
 }
 
 //------------------------------------------------------------------------------
-int pgw_config::get_pfcp_node_id(oai::cn::core::pfcp::node_id_t& node_id)
+int pgw_config::get_pfcp_node_id(pfcp::node_id_t& node_id)
 {
   node_id = {};
   if (sx.addr4.s_addr) {
-    node_id.node_id_type = oai::cn::core::pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
+    node_id.node_id_type = pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
     node_id.u1.ipv4_address = sx.addr4;
     return RETURNok;
   }
   if (sx.addr6.s6_addr32[0] | sx.addr6.s6_addr32[1] | sx.addr6.s6_addr32[2] | sx.addr6.s6_addr32[3]) {
-    node_id.node_id_type = oai::cn::core::pfcp::NODE_ID_TYPE_IPV6_ADDRESS;
+    node_id.node_id_type = pfcp::NODE_ID_TYPE_IPV6_ADDRESS;
     node_id.u1.ipv6_address = sx.addr6;
     return RETURNok;
   }
   return RETURNerror;
 }
 //------------------------------------------------------------------------------
-int pgw_config::get_pfcp_fseid(oai::cn::core::pfcp::fseid_t& fseid)
+int pgw_config::get_pfcp_fseid(pfcp::fseid_t& fseid)
 {
   int rc = RETURNerror;
   fseid = {};
@@ -495,8 +517,5 @@ int pgw_config::get_pfcp_fseid(oai::cn::core::pfcp::fseid_t& fseid)
 //------------------------------------------------------------------------------
 pgw_config::~pgw_config()
 {
-  for (int i = 0; i < PGW_NUM_UE_POOL_MAX; i++) {
-    ue_pool_excluded[i].erase(ue_pool_excluded[i].begin(),ue_pool_excluded[i].end());
-  }
 }
 

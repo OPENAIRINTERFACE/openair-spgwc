@@ -24,14 +24,11 @@
    \date 2018
    \email: lionel.gauthier@eurecom.fr
 */
-#ifndef SRC_ITTI_ITTI_MSG_H_INCLUDED_
-#define SRC_ITTI_ITTI_MSG_H_INCLUDED_
+#ifndef SRC_ITTI_ITTI_MSG_HPP_INCLUDED_
+#define SRC_ITTI_ITTI_MSG_HPP_INCLUDED_
 
 #include <stdint.h>
-#include <typeinfo>
-#include <iostream>
-
-namespace oai::cn::core::itti {
+#include <utility>
 
 typedef enum {
   TASK_FIRST = 0,
@@ -75,15 +72,7 @@ typedef enum {
   ITTI_MSG_TYPE_NONE = -1,
   ITTI_MSG_TYPE_FIRST = 0,
   ASYNC_SHELL_CMD = ITTI_MSG_TYPE_FIRST,
-  GTPV1U_CREATE_TUNNEL_REQ,
-  GTPV1U_CREATE_TUNNEL_RESP,
-  GTPV1U_UPDATE_TUNNEL_REQ,
-  GTPV1U_UPDATE_TUNNEL_RESP,
-  GTPV1U_DELETE_TUNNEL_REQ,
-  GTPV1U_DELETE_TUNNEL_RESP,
-  GTPV1U_TUNNEL_DATA_IND,
-  GTPV1U_TUNNEL_DATA_REQ,
-  GTPV1U_DOWNLINK_DATA_NOTIFICATION,
+  RESTORE_SX_SESSIONS,
   S11_CREATE_SESSION_REQUEST,
   S11_CREATE_SESSION_RESPONSE,
   S11_CREATE_BEARER_REQUEST,
@@ -193,6 +182,7 @@ public:
   static const char* get_msg_name() {return "HEALTH_PING";};
   uint32_t seq;
 };
+
 class itti_msg_terminate : public itti_msg {
 public:
   itti_msg_terminate(const task_id_t origin, const task_id_t destination):
@@ -200,5 +190,5 @@ public:
   itti_msg_terminate(const itti_msg_terminate& i) : itti_msg(i) {}
   static const char* get_msg_name() {return "TERMINATE";};
 };
-}
-#endif /* SRC_ITTI_ITTI_MSG_H_INCLUDED_ */
+
+#endif /* SRC_ITTI_ITTI_MSG_HPP_INCLUDED_ */

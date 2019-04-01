@@ -28,22 +28,12 @@
 
 #ifndef FILE_3GPP_COMMONS_SEEN
 #define FILE_3GPP_COMMONS_SEEN
-#include "common_root_types.h"
-#include "logger.hpp" // for fmt::format in spdlog
 
-#include <arpa/inet.h>
 #include <stdint.h>
-#include <string>
-#include <vector>
-
-
-
-namespace oai::cn::core {
 
   // 8.2 Recovery
 typedef struct recovery_s {
   uint8_t restart_counter;
 } recovery_t;
 
-}
-#endif /* FILE_3GPP_29_281_SEEN */
+#endif /* FILE_3GPP_COMMONS_SEEN */

@@ -27,23 +27,19 @@
 #ifndef SRC_OAI_ITTI_ITTI_HPP_INCLUDED_
 #define SRC_OAI_ITTI_ITTI_HPP_INCLUDED_
 
-#include <boost/lockfree/queue.hpp>
-#include <boost/atomic.hpp>
 
-#include <iostream>
-#include <stdint.h>
-#include <thread>
-#include <mutex>
+#include <chrono>
 #include <condition_variable>
+//#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <mutex>
 #include <queue>
 #include <set>
-#include <memory>
-#include <chrono>
-#include <iomanip>
+#include <stdint.h>
+#include <thread>
 #include "itti_msg.hpp"
 #include "thread_sched.hpp"
-
-namespace oai::cn::core::itti {
 
 typedef volatile enum task_state_s {
   TASK_STATE_NOT_CONFIGURED, TASK_STATE_STARTING, TASK_STATE_READY, TASK_STATE_ENDED, TASK_STATE_MAX,
@@ -52,7 +48,7 @@ typedef volatile enum task_state_s {
 
 
 typedef uint32_t timer_id_t;
-#define ITTI_INVALID_TIMER_ID (uintptr_t)0
+#define ITTI_INVALID_TIMER_ID (timer_id_t)0
 
 class itti_timer {
 public:
@@ -123,7 +119,7 @@ private:
   std::atomic<int>                          ready_tasks;
 
   std::set<itti_timer, timer_comparator>    timers;
-  oai::cn::core::itti::itti_timer                 current_timer;
+  itti_timer                                current_timer;
   std::mutex                                m_timers;
   std::condition_variable                   c_timers;
 
@@ -132,7 +128,7 @@ private:
 
   bool                                      terminate;
 
-  static void timer_manager_task(const oai::cn::util::thread_sched_params& sched_params);
+  static void timer_manager_task(const util::thread_sched_params& sched_params);
 
 public:
   itti_mw();
@@ -140,7 +136,7 @@ public:
   void operator=(itti_mw const&)     = delete;
   ~itti_mw();
 
-  void start(const oai::cn::util::thread_sched_params& sched_params);
+  void start(const util::thread_sched_params& sched_params);
 
   timer_id_t increment_timer_id ();
   unsigned int increment_message_number ();
@@ -231,6 +227,6 @@ public:
   static void signal_handler( int signum );
 
 };
-}
+
 #endif /* SRC_OAI_ITTI_ITTI_HPP_INCLUDED_ */
 
