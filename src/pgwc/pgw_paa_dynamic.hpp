@@ -92,7 +92,9 @@ protected:
       std::bitset<32> bs(alloc[bit_pos32]);
       bs.reset(word_bit_pos);
       alloc[bit_pos32] = bs.to_ulong();
+      return true;
     }
+    return false;
   }
 
 public:
@@ -121,7 +123,8 @@ public:
   {
     int bit_pos = 0;
     if (alloc_free_bit(bit_pos)) {
-      allocated.s_addr =  start.s_addr + htobe32(bit_pos);
+      allocated.s_addr =  be32toh(start.s_addr) + bit_pos; // overflow
+      allocated.s_addr =  htobe32(allocated.s_addr);
       return true;
     }
     allocated.s_addr = 0;
@@ -132,8 +135,7 @@ public:
   {
     if (in_pool(allocated)) {
       int bit_pos = be32toh(allocated.s_addr) - be32toh(start.s_addr);
-      free_bit(bit_pos);
-      return true;
+      return free_bit(bit_pos);
     }
     return false;
   }
