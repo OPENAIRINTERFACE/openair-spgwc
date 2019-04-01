@@ -45,30 +45,6 @@ extern pgwc::pgw_app *pgw_app_inst;
 extern pgwc::pgw_config pgw_cfg;
 
 //------------------------------------------------------------------------------
-#define EBI2PDR_ID_DL_BEARER true
-#define EBI2PDR_ID_UL_BEARER false
-// TODO better than this (uid generator)?
-void pgwc::ebi2pdr_id(const ebi_t& ebi, pfcp::pdr_id_t& pdr_id, const bool is_dl_bearer)
-{
-  if (is_dl_bearer) {
-    pdr_id.rule_id = (2 * ebi.ebi) | 0x2000;
-  } else {
-    pdr_id.rule_id = (2 * ebi.ebi) | 0x1000;
-  }
-}
-//------------------------------------------------------------------------------
-#define EBI2FAR_ID_DL_BEARER true
-#define EBI2FAR_ID_UL_BEARER false
-// TODO better than this (uid generator)?
-void pgwc::ebi2far_id(const ebi_t& ebi, pfcp::far_id_t& far_id, const bool is_dl_bearer)
-{
-  if (is_dl_bearer) {
-    far_id.far_id = (2 * ebi.ebi) | 0x00022000;
-  } else {
-    far_id.far_id = (2 * ebi.ebi) + 1 | 0x00011000;
-  }
-}
-//------------------------------------------------------------------------------
 int sx_session_restore_procedure::run()
 {
   if (pending_sessions.size()) {
@@ -165,8 +141,7 @@ int session_establishment_procedure::run(std::shared_ptr<itti_s5s8_create_sessio
     //pfcp::traffic_endpoint_id_t       linked_traffic_endpoint_id_t = {};
     //pfcp::proxying_t                  proxying = {};
 
-    // DOIT simple ?
-    ebi2far_id(it.eps_bearer_id, far_id, EBI2FAR_ID_UL_BEARER);
+    ppc->generate_far_id(far_id);
     apply_action.forw = 1;
 
     destination_interface.interface_value = pfcp::INTERFACE_VALUE_CORE; // ACCESS is for downlink, CORE for uplink
@@ -207,7 +182,7 @@ int session_establishment_procedure::run(std::shared_ptr<itti_s5s8_create_sessio
 
     // DOIT simple
     // shall uniquely identify the PDR among all the PDRs configured for that PFCP session.
-    ebi2pdr_id(it.eps_bearer_id, pdr_id, EBI2PDR_ID_UL_BEARER);
+    ppc->generate_pdr_id(pdr_id);
     precedence.precedence = it.bearer_level_qos.pl;
 
     pdi.set(source_interface);
@@ -263,48 +238,22 @@ void session_establishment_procedure::handle_itti_msg (itti_sxab_session_establi
 
   for (auto it : resp.pfcp_ies.created_pdrs) {
     pfcp::pdr_id_t pdr_id = {};
+    pfcp::far_id_t far_id = {};
     if (it.get(pdr_id)) {
       pgw_eps_bearer b = {};
-      if (not ppc->get_eps_bearer(pdr_id, b)) {
-        bearer_context_found = false;
-        for (auto it : s5_trigger->gtp_ies.bearer_contexts_to_be_created) {
-
-          pfcp::pdr_id_t conv_pdr_id;
-          ebi2pdr_id(it.eps_bearer_id, conv_pdr_id, EBI2PDR_ID_UL_BEARER);
-
-          if (conv_pdr_id.rule_id == pdr_id.rule_id) {
-            pfcp::far_id_t far_id = {};
-            ebi2far_id(it.eps_bearer_id, far_id, EBI2FAR_ID_UL_BEARER);
-
-            pfcp::create_far create_far = {};
-            if (sx_triggered->pfcp_ies.get(far_id, create_far)) {
-              b.far_id_ul.first = true;
-              b.far_id_ul.second = far_id;
-            }
-
-            b.ebi = it.eps_bearer_id;
-            b.tft = it.tft;
-            b.eps_bearer_qos = it.bearer_level_qos;
-            b.pdr_id_ul = pdr_id;
-            bearer_context_found = true;
-            break;
+      if (ppc->get_eps_bearer(pdr_id, b)) {
+        pfcp::fteid_t local_up_fteid = {};
+        if (bearer_context_found) {
+          if (it.get(local_up_fteid)) {
+            xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
+            b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
+            // comment if SPGW-C allocate up fteid
+            pgw_eps_bearer b2 = b;
+            ppc->add_eps_bearer(b2);
           }
+          // uncomment if SPGW-C allocate up fteid
+          // ppc->add_eps_bearer(b);
         }
-      } else {
-        bearer_context_found = true;
-      }
-      pfcp::fteid_t local_up_fteid = {};
-      if (bearer_context_found) {
-        if (it.get(local_up_fteid)) {
-          xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
-          b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
-          // comment if SPGW-C allocate up fteid
-          pgw_eps_bearer b2 = b;
-          ppc->add_eps_bearer(b2);
-        }
-        // uncomment if SPGW-C allocate up fteid
-        // ppc->add_eps_bearer(b);
-
       }
     } else {
       Logger::pgwc_app().error( "Could not get pdr_id for created_pdr in %s", resp.pfcp_ies.get_msg_name());
@@ -379,7 +328,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
 
     ::fteid_t v = {};
     pgw_eps_bearer& peb = ppc->get_eps_bearer(it.eps_bearer_id);
-    if (peb.ebi.ebi != it.eps_bearer_id.ebi) { // target is to test EPS_BEARER_IDENTITY_UNASSIGNED
+    if (peb.ebi != it.eps_bearer_id) { // target is to test EPS_BEARER_IDENTITY_UNASSIGNED
       // TODO something (bearer not there)
       Logger::pgwc_app().error( "modify_bearer_procedure: missing pgw_eps_bearer ebi %d", it.eps_bearer_id.ebi);
       ::cause_t cause = {};
@@ -456,8 +405,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
         //pfcp::traffic_endpoint_id_t       linked_traffic_endpoint_id_t = {};
         //pfcp::proxying_t                  proxying = {};
 
-        // DOIT simple ?
-        ebi2far_id(it.eps_bearer_id, far_id, EBI2FAR_ID_DL_BEARER);
+        ppc->generate_far_id(far_id);
         apply_action.forw = 1;
 
         destination_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS; // ACCESS is for downlink, CORE for uplink
@@ -520,7 +468,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
 
         // DOIT simple
         // shall uniquely identify the PDR among all the PDRs configured for that PFCP session.
-        ebi2pdr_id(it.eps_bearer_id, pdr_id, EBI2PDR_ID_DL_BEARER);
+        ppc->generate_pdr_id(pdr_id);
         precedence.precedence = peb.eps_bearer_qos.pl;
 
         pdi.set(source_interface);
@@ -567,8 +515,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
         //pfcp::traffic_endpoint_id_t       linked_traffic_endpoint_id_t = {};
         //pfcp::proxying_t                  proxying = {};
 
-        // DOIT simple ?
-        ebi2far_id(it.eps_bearer_id, far_id, EBI2FAR_ID_UL_BEARER);
+        ppc->generate_far_id(far_id);
         apply_action.forw = 1;
 
         destination_interface.interface_value = pfcp::INTERFACE_VALUE_CORE; // ACCESS is for downlink, CORE for uplink
@@ -619,7 +566,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
 
         // DOIT simple
         // shall uniquely identify the PDR among all the PDRs configured for that PFCP session.
-        ebi2pdr_id(it.eps_bearer_id, pdr_id, EBI2PDR_ID_UL_BEARER);
+        ppc->generate_pdr_id(pdr_id);
         precedence.precedence = peb.eps_bearer_qos.pl;
 
         pdi.set(source_interface);

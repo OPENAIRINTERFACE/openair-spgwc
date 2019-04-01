@@ -47,9 +47,6 @@ class apn_context;
 class pgw_context;
 class pgw_pdn_connection;
 
-void ebi2pdr_id(const ebi_t& ebi, pfcp::pdr_id_t& pdr_id, const bool is_dl_bearer);
-void ebi2far_id(const ebi_t& ebi, pfcp::far_id_t& far_id, const bool is_dl_bearer);
-
 //------------------------------------------------------------------------------
 class pgw_procedure {
 private:

@@ -734,6 +734,9 @@ namespace pfcp {
   // 8.2.36 Packet Detection Rule ID (PDR ID)
   typedef struct pdr_id_s {
     uint16_t  rule_id;
+    pdr_id_s() : rule_id(0) {}
+    pdr_id_s(const uint8_t& p) : rule_id(p) {}
+    pdr_id_s(const struct pdr_id_s& p) : rule_id(p.rule_id) {}
     bool operator==(const struct pdr_id_s& i) const {
       return (i.rule_id==rule_id);
     };
@@ -1145,10 +1148,16 @@ namespace pfcp {
 
   //-------------------------------------
   // 8.2.74 FAR ID
-  typedef struct far_id_s {
+  struct far_id_s {
     uint32_t         far_id;
-  } far_id_t;
-
+    far_id_s() : far_id(0) {}
+    far_id_s(const uint8_t& f) : far_id(f) {}
+    far_id_s(const struct far_id_s& f) : far_id(f.far_id) {}
+    bool operator==(const struct far_id_s& i) const {
+      return (i.far_id==far_id);
+    };
+  } ;
+  typedef struct far_id_s far_id_t;
   //-------------------------------------
   // 8.2.75 QER ID
   typedef struct qer_id_s {

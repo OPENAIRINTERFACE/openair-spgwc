@@ -160,20 +160,27 @@ void pgw_pdn_connection::generate_seid()
 }
 //------------------------------------------------------------------------------
 // TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
+void pgw_pdn_connection::generate_far_id(pfcp::far_id_t& far_id)
+{
+  far_id.far_id = far_id_generator.get_uid();
+}
+//------------------------------------------------------------------------------
+// TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
+void pgw_pdn_connection::release_far_id(const pfcp::far_id_t& far_id)
+{
+  far_id_generator.free_uid(far_id.far_id);
+}
+//------------------------------------------------------------------------------
+// TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
 void pgw_pdn_connection::generate_pdr_id(pfcp::pdr_id_t& pdr_id)
 {
-  // make things simple, will write a more robust generator once scope of rule_id will be known
-  uint16_t r =  ++prd_id_generator;
-  if (r == 0) {
-    r = ++prd_id_generator;
-  }
-  pdr_id.rule_id = r;
+  pdr_id.rule_id = pdr_id_generator.get_uid();
 }
 //------------------------------------------------------------------------------
 // TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
 void pgw_pdn_connection::release_pdr_id(const pfcp::pdr_id_t& pdr_id)
 {
-  // TODO
+  pdr_id_generator.free_uid(pdr_id.rule_id);
 }
 
 //------------------------------------------------------------------------------
