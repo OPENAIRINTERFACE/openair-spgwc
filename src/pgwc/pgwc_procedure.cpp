@@ -228,8 +228,6 @@ int session_establishment_procedure::run(std::shared_ptr<itti_s5s8_create_sessio
 //------------------------------------------------------------------------------
 void session_establishment_procedure::handle_itti_msg (itti_sxab_session_establishment_response& resp)
 {
-  bool bearer_context_found = false;
-
   pfcp::cause_t cause = {};
   resp.pfcp_ies.get(cause);
   if (cause.cause_value == pfcp::CAUSE_VALUE_REQUEST_ACCEPTED) {
@@ -243,17 +241,17 @@ void session_establishment_procedure::handle_itti_msg (itti_sxab_session_establi
       pgw_eps_bearer b = {};
       if (ppc->get_eps_bearer(pdr_id, b)) {
         pfcp::fteid_t local_up_fteid = {};
-        if (bearer_context_found) {
-          if (it.get(local_up_fteid)) {
-            xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
-            b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
-            // comment if SPGW-C allocate up fteid
-            pgw_eps_bearer b2 = b;
-            ppc->add_eps_bearer(b2);
-          }
+        if (it.get(local_up_fteid)) {
+          xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
+          b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
+          // comment if SPGW-C allocate up fteid
+          pgw_eps_bearer b2 = b;
+          ppc->add_eps_bearer(b2);
+        }
           // uncomment if SPGW-C allocate up fteid
           // ppc->add_eps_bearer(b);
-        }
+      } else {
+        Logger::pgwc_app().error( "Could not get EPS bearer for created_pdr %d", pdr_id.rule_id);
       }
     } else {
       Logger::pgwc_app().error( "Could not get pdr_id for created_pdr in %s", resp.pfcp_ies.get_msg_name());
@@ -487,6 +485,21 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
         send_sx = true;
 
         peb.pdr_id_dl = pdr_id;
+      } else {
+        // Update FAR
+        far_id.far_id = peb.far_id_ul.second.far_id;
+        pfcp::update_far                    update_far = {};
+        pfcp::apply_action_t                apply_action = {};
+
+        update_far.set(peb.far_id_ul.second);
+        apply_action.forw = 1;
+        update_far.set(apply_action);
+
+        sx_smr->pfcp_ies.set(update_far);
+
+        send_sx = true;
+
+        peb.far_id_dl.first = true;
       }
     }
 
@@ -634,7 +647,8 @@ void modify_bearer_procedure::handle_itti_msg (itti_sxab_session_modification_re
     if (it_created_pdr.get(pdr_id)) {
       pgw_eps_bearer b = {};
       if (ppc->get_eps_bearer(pdr_id, b)) {
-        for (auto it_to_be_modified : s5_trigger->gtp_ies.bearer_contexts_to_be_modified) {
+        for (std::vector<gtpv2c::bearer_context_to_be_modified_within_modify_bearer_request>::const_iterator it_to_be_modified = s5_trigger->gtp_ies.bearer_contexts_to_be_modified.begin();
+             it_to_be_modified != s5_trigger->gtp_ies.bearer_contexts_to_be_modified.end(); ++it_to_be_modified) {
           //pfcp::pdr_id_t conv_pdr_id = {};
           //ebi2pdr_id(it_to_be_modified.eps_bearer_id, conv_pdr_id, EBI2PDR_ID_DL_BEARER);
 
@@ -642,14 +656,17 @@ void modify_bearer_procedure::handle_itti_msg (itti_sxab_session_modification_re
           //if (conv_pdr_id.rule_id == pdr_id.rule_id) {
             bearer_context_found = true;
             // can try the two till SGW not split (depends on developer convention to fake PGW)
-            it_to_be_modified.get_s5_s8_u_sgw_fteid(b.sgw_fteid_s5_s8_up);
-            it_to_be_modified.get_s1_u_enb_fteid(b.sgw_fteid_s5_s8_up);
+            it_to_be_modified->get_s5_s8_u_sgw_fteid(b.sgw_fteid_s5_s8_up);
+            it_to_be_modified->get_s1_u_enb_fteid(b.sgw_fteid_s5_s8_up);
 
             pfcp::fteid_t local_up_fteid = {};
             if (it_created_pdr.get(local_up_fteid)) {
-              xgpp_conv::pfcp_from_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
+              xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
               b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
               // comment if SPGW-C allocate up fteid
+              Logger::pgwc_app().error( "got local_up_fteid from created_pdr %s", b.pgw_fteid_s5_s8_up.toString().c_str());
+            } else {
+              Logger::pgwc_app().error( "Could not get local_up_fteid from created_pdr");
             }
             b.released = false;
             pgw_eps_bearer b2 = b;
@@ -661,6 +678,9 @@ void modify_bearer_procedure::handle_itti_msg (itti_sxab_session_modification_re
             bcc.set(b.ebi);
             bcc.set(bcc_cause);
             s5_triggered_pending->gtp_ies.add_bearer_context_modified(bcc);
+
+            // Avoid duplicate with update fars
+            s5_trigger->gtp_ies.bearer_contexts_to_be_modified.erase(it_to_be_modified);
             break;
           //}
         }
@@ -702,6 +722,7 @@ void modify_bearer_procedure::handle_itti_msg (itti_sxab_session_modification_re
     }
   }
 
+  // TODO NOT GOOD since we removed the bearer from s5_trigger->gtp_ies.bearer_contexts_to_be_modified
   // check we got all responses
   for (auto it : s5_trigger->gtp_ies.bearer_contexts_to_be_modified) {
     ebi_t ebi_tobe;
@@ -768,7 +789,6 @@ int release_access_bearers_procedure::run(std::shared_ptr<itti_s5s8_release_acce
     //-------------------
     pfcp::update_far                  far = {};
     pfcp::far_id_t                    far_id = {};
-    pfcp::apply_action_t              apply_action = {};
 //    pfcp::update_forwarding_parameters forwarding_parameters = {};
 //    pfcp::update_duplicating_parameters      duplicating_parameters = {};
 //    pfcp::bar_id_t                    bar_id = {};
@@ -788,6 +808,7 @@ int release_access_bearers_procedure::run(std::shared_ptr<itti_s5s8_release_acce
     if (peb.far_id_dl.first) {
       far_id.far_id = peb.far_id_dl.second.far_id;
       //apply_action.buff = 1;
+      pfcp::apply_action_t    apply_action = {};
       apply_action.nocp = 1;
 
       far.set(far_id);
@@ -800,17 +821,16 @@ int release_access_bearers_procedure::run(std::shared_ptr<itti_s5s8_release_acce
       Logger::pgwc_app().info( "release_access_bearers_procedure , could not get FAR ID of EPS bearer %d", peb.ebi.ebi);
     }
     if (peb.far_id_ul.first) {
-      pfcp::remove_far                  far = {};
+      pfcp::update_far                  far = {};
       pfcp::far_id_t                    far_id = {};
       far_id.far_id = peb.far_id_ul.second.far_id;
+      pfcp::apply_action_t    apply_action = {};
+      apply_action.drop = 1;
+
       far.set(far_id);
+      far.set(apply_action);
       sx_smr->pfcp_ies.set(far);
     }
-    pfcp::remove_pdr                  pdr = {};
-    pfcp::pdr_id_t                    pdr_id = {};
-    pdr_id.rule_id = peb.pdr_id_ul.rule_id;
-    pdr.set(pdr_id);
-    sx_smr->pfcp_ies.set(pdr);
 
     peb.release_access_bearer();
     pgw_eps_bearer b2 = peb;

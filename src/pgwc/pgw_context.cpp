@@ -46,8 +46,6 @@ extern pgwc::pgw_config pgw_cfg;
 void pgw_eps_bearer::release_access_bearer()
 {
   released = true;
-  pdr_id_ul = {};
-  far_id_ul = {};
 }
 //------------------------------------------------------------------------------
 std::string pgw_eps_bearer::toString() const
@@ -490,8 +488,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
 //    paa.pdn_type = sp->pdn_type;
 //    bool paa_res = csreq->gtp_ies.get(paa);
   //    if ((not paa_res) || (not paa.is_ip_assigned())) {
-  //      int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
-//      if (ret == RETURNok) {
+  //      bool success = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
+//      if (success) {
 //        set_paa = true;
 //      } else {
 //        cause.cause_value = PREFERRED_PDN_TYPE_NOT_SUPPORTED;
@@ -537,8 +535,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
       if (!pco_ids.ci_ipv4_address_allocation_via_dhcpv4) {
         bool paa_res = csreq->gtp_ies.get(paa);
         if ((not paa_res) || (not paa.is_ip_assigned())) {
-          int ret = paa_dynamic::get_instance().get_free_paa(sa->apn_in_use, paa);
-          if (ret == RETURNok) {
+          bool success = paa_dynamic::get_instance().get_free_paa(sa->apn_in_use, paa);
+          if (success) {
             set_paa = true;
           } else {
             cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
@@ -554,8 +552,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   case PDN_TYPE_E_IPV6: {
       bool paa_res = csreq->gtp_ies.get(paa);
       if ((not paa_res) || (not paa.is_ip_assigned())) {
-        int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
-        if (ret == RETURNok) {
+        bool success = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
+        if (success) {
           set_paa = true;
         } else {
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
@@ -568,8 +566,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   case PDN_TYPE_E_IPV4V6: {
       bool paa_res = csreq->gtp_ies.get(paa);
       if ((not paa_res) || (not paa.is_ip_assigned())) {
-        int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
-        if (ret == RETURNok) {
+        bool success = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
+        if (success) {
           set_paa = true;
         } else {
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
