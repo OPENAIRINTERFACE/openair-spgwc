@@ -361,7 +361,7 @@ public:
 
   void add_ie(std::shared_ptr<gtpv2c_ie> ie) {
     ies.push_back(ie);
-    std::cout << std::dec<< " add_ie   = " << get_message_length() << " -> "<< get_message_length() + gtpv2c_tlv::tlv_ie_length + ie.get()->tlv.get_length() << std::endl;
+    //std::cout << std::dec<< " add_ie   = " << get_message_length() << " -> "<< get_message_length() + gtpv2c_tlv::tlv_ie_length + ie.get()->tlv.get_length() << std::endl;
     set_message_length(get_message_length() + gtpv2c_tlv::tlv_ie_length + ie.get()->tlv.get_length());
   }
 

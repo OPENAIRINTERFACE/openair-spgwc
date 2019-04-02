@@ -59,11 +59,11 @@ int pgw_app::apply_config (const pgw_config& cfg)
     if (cfg.apn[ia].pool_id_iv4 >= 0) {
       int pool_id = cfg.apn[ia].pool_id_iv4;
       int range = be32toh(cfg.ue_pool_range_high[pool_id].s_addr) - be32toh(cfg.ue_pool_range_low[pool_id].s_addr) ;
-      paa_dynamic::get_instance().add_pool(cfg.apn[ia].apn, pool_id, cfg.ue_pool_range_low[pool_id], range);
+      paa_dynamic::get_instance().add_pool(cfg.apn[ia].apn_label, pool_id, cfg.ue_pool_range_low[pool_id], range);
     }
     if (cfg.apn[ia].pool_id_iv6 >= 0) {
       int pool_id = cfg.apn[ia].pool_id_iv6;
-      paa_dynamic::get_instance().add_pool(cfg.apn[ia].apn, pool_id, cfg.paa_pool6_prefix[pool_id], cfg.paa_pool6_prefix_len[pool_id]);
+      paa_dynamic::get_instance().add_pool(cfg.apn[ia].apn_label, pool_id, cfg.paa_pool6_prefix[pool_id], cfg.paa_pool6_prefix_len[pool_id]);
     }
   }
 

@@ -467,18 +467,6 @@ bool pgw_config::is_dotted_apn_handled(const string& apn, const pdn_type_t& pdn_
   }
   return false;
 }
-//------------------------------------------------------------------------------
-int pgw_config::get_pa_pool_id(const std::string& apn, int& pool_id_ipv4, int& pool_id_ipv6)
-{
-  for (int i = 0; i < pgw_cfg.num_apn; i++) {
-    if (0 == apn.compare(pgw_cfg.apn[i].apn_label)) {
-      pool_id_ipv4 = pgw_cfg.apn[i].pool_id_iv4;
-      pool_id_ipv6 = pgw_cfg.apn[i].pool_id_iv6;
-      return RETURNok;
-    }
-  }
-  return RETURNerror;
-}
 
 //------------------------------------------------------------------------------
 int pgw_config::get_pfcp_node_id(pfcp::node_id_t& node_id)

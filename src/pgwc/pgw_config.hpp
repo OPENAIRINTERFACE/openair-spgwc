@@ -231,7 +231,6 @@ public:
   int finalize();
   void display();
   bool is_dotted_apn_handled(const std::string& apn, const pdn_type_t& pdn_type);
-  int get_pa_pool_id(const std::string& apn, int& pool_id_ipv4, int& pool_id_ipv6);
   int get_pfcp_node_id(pfcp::node_id_t& node_id);
   int get_pfcp_fseid(pfcp::fseid_t& fseid);
 };

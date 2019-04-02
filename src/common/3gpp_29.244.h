@@ -372,7 +372,7 @@ namespace pfcp {
 
   //-------------------------------------
   // 8.2.3 F-TEID
-  typedef struct fteid_s {
+  struct fteid_s {
     uint8_t chid :1;
     uint8_t ch :1;
     uint8_t v4 :1;
@@ -381,8 +381,25 @@ namespace pfcp {
     struct in_addr  ipv4_address;
     struct in6_addr ipv6_address;
     uint8_t choose_id;
-  } fteid_t;
 
+    bool operator==(const struct fteid_s& f) const
+    {
+      return (teid == f.teid) and
+      (ipv4_address.s_addr == f.ipv4_address.s_addr) and
+      (chid == f.chid) and
+      (ch == f.ch) and
+      (choose_id == f.choose_id) and
+      (ipv6_address.s6_addr32[0] == f.ipv6_address.s6_addr32[0]) and
+      (ipv6_address.s6_addr32[1] == f.ipv6_address.s6_addr32[1]) and
+      (ipv6_address.s6_addr32[2] == f.ipv6_address.s6_addr32[2]) and
+      (ipv6_address.s6_addr32[3] == f.ipv6_address.s6_addr32[3]) and
+      (v4 == f.v4) and
+      (v6 == f.v6);
+    }
+    bool is_zero() const {return ((!v4) and(!v6));}
+  } ;
+
+  typedef struct fteid_s fteid_t;
   //-------------------------------------
   // 8.2.4 Network Instance
   typedef struct network_instance_s {
@@ -734,6 +751,9 @@ namespace pfcp {
   // 8.2.36 Packet Detection Rule ID (PDR ID)
   typedef struct pdr_id_s {
     uint16_t  rule_id;
+    pdr_id_s() : rule_id(0) {}
+    pdr_id_s(const uint8_t& p) : rule_id(p) {}
+    pdr_id_s(const struct pdr_id_s& p) : rule_id(p.rule_id) {}
     bool operator==(const struct pdr_id_s& i) const {
       return (i.rule_id==rule_id);
     };
@@ -1145,10 +1165,16 @@ namespace pfcp {
 
   //-------------------------------------
   // 8.2.74 FAR ID
-  typedef struct far_id_s {
+  struct far_id_s {
     uint32_t         far_id;
-  } far_id_t;
-
+    far_id_s() : far_id(0) {}
+    far_id_s(const uint8_t& f) : far_id(f) {}
+    far_id_s(const struct far_id_s& f) : far_id(f.far_id) {}
+    bool operator==(const struct far_id_s& i) const {
+      return (i.far_id==far_id);
+    };
+  } ;
+  typedef struct far_id_s far_id_t;
   //-------------------------------------
   // 8.2.75 QER ID
   typedef struct qer_id_s {

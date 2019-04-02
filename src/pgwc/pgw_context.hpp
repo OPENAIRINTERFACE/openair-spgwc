@@ -28,6 +28,7 @@
 #ifndef FILE_PGW_EPS_BEARER_CONTEXT_HPP_SEEN
 #define FILE_PGW_EPS_BEARER_CONTEXT_HPP_SEEN
 
+#include <map>
 #include <mutex>
 #include <memory>
 #include <shared_mutex>
@@ -39,6 +40,7 @@
 #include "common_root_types.h"
 #include "itti_msg_s5s8.hpp"
 #include "pgwc_procedure.hpp"
+#include "uint_generator.hpp"
 
 
 namespace pgwc {
@@ -176,6 +178,8 @@ public:
   void generate_seid();
   void generate_pdr_id(pfcp::pdr_id_t& pdr_id);
   void release_pdr_id(const pfcp::pdr_id_t& pdr_id);
+  void generate_far_id(pfcp::far_id_t& far_id);
+  void release_far_id(const pfcp::far_id_t& far_id);
   void create_procedure(itti_s5s8_create_session_response& m);
   void insert_procedure(pgw_procedure* proc);
 
@@ -227,8 +231,8 @@ public:
   uint64_t seid;
   pfcp::fseid_t  up_fseid;
   //
-  uint16_t prd_id_generator;
-
+  util::uint_generator<uint16_t>   pdr_id_generator;
+  util::uint_generator<uint32_t>   far_id_generator;
 };
 
 

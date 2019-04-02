@@ -46,8 +46,6 @@ extern pgwc::pgw_config pgw_cfg;
 void pgw_eps_bearer::release_access_bearer()
 {
   released = true;
-  pdr_id_ul = {};
-  far_id_ul = {};
 }
 //------------------------------------------------------------------------------
 std::string pgw_eps_bearer::toString() const
@@ -160,20 +158,27 @@ void pgw_pdn_connection::generate_seid()
 }
 //------------------------------------------------------------------------------
 // TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
+void pgw_pdn_connection::generate_far_id(pfcp::far_id_t& far_id)
+{
+  far_id.far_id = far_id_generator.get_uid();
+}
+//------------------------------------------------------------------------------
+// TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
+void pgw_pdn_connection::release_far_id(const pfcp::far_id_t& far_id)
+{
+  far_id_generator.free_uid(far_id.far_id);
+}
+//------------------------------------------------------------------------------
+// TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
 void pgw_pdn_connection::generate_pdr_id(pfcp::pdr_id_t& pdr_id)
 {
-  // make things simple, will write a more robust generator once scope of rule_id will be known
-  uint16_t r =  ++prd_id_generator;
-  if (r == 0) {
-    r = ++prd_id_generator;
-  }
-  pdr_id.rule_id = r;
+  pdr_id.rule_id = pdr_id_generator.get_uid();
 }
 //------------------------------------------------------------------------------
 // TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a pdn connection
 void pgw_pdn_connection::release_pdr_id(const pfcp::pdr_id_t& pdr_id)
 {
-  // TODO
+  pdr_id_generator.free_uid(pdr_id.rule_id);
 }
 
 //------------------------------------------------------------------------------
@@ -483,8 +488,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
 //    paa.pdn_type = sp->pdn_type;
 //    bool paa_res = csreq->gtp_ies.get(paa);
   //    if ((not paa_res) || (not paa.is_ip_assigned())) {
-  //      int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
-//      if (ret == RETURNok) {
+  //      bool success = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
+//      if (success) {
 //        set_paa = true;
 //      } else {
 //        cause.cause_value = PREFERRED_PDN_TYPE_NOT_SUPPORTED;
@@ -530,8 +535,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
       if (!pco_ids.ci_ipv4_address_allocation_via_dhcpv4) {
         bool paa_res = csreq->gtp_ies.get(paa);
         if ((not paa_res) || (not paa.is_ip_assigned())) {
-          int ret = paa_dynamic::get_instance().get_free_paa(sa->apn_in_use, paa);
-          if (ret == RETURNok) {
+          bool success = paa_dynamic::get_instance().get_free_paa(sa->apn_in_use, paa);
+          if (success) {
             set_paa = true;
           } else {
             cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
@@ -547,8 +552,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   case PDN_TYPE_E_IPV6: {
       bool paa_res = csreq->gtp_ies.get(paa);
       if ((not paa_res) || (not paa.is_ip_assigned())) {
-        int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
-        if (ret == RETURNok) {
+        bool success = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
+        if (success) {
           set_paa = true;
         } else {
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
@@ -561,8 +566,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   case PDN_TYPE_E_IPV4V6: {
       bool paa_res = csreq->gtp_ies.get(paa);
       if ((not paa_res) || (not paa.is_ip_assigned())) {
-        int ret = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
-        if (ret == RETURNok) {
+        bool success = paa_dynamic::get_instance().get_free_paa (sa->apn_in_use, paa);
+        if (success) {
           set_paa = true;
         } else {
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;

@@ -670,6 +670,9 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<itti_
         }
         pfcp::created_pdr created_pdr = {};
         created_pdr.set(cr_pdr.pdr_id.second);
+        if (not allocated_fteid.is_zero()) {
+          created_pdr.set(allocated_fteid);
+        }
         resp->pfcp_ies.set(created_pdr);
       }
     }
