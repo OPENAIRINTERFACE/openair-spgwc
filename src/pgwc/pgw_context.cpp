@@ -542,9 +542,13 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
             cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
             cause.pce = 1;
           }
+        // Static IP address allocation
+        } else if ((paa_res) && (paa.is_ip_assigned())) {
+          set_paa = true;          
         }
       } else {
         // TODO allocation via DHCP
+        Logger::pgwc_app().info( "TODO PAA via DHCP");
       }
     }
     break;
@@ -559,6 +563,9 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
           cause.pce = 1;
         }
+      // Static IP address allocation
+      } else if ((paa_res) && (paa.is_ip_assigned())) {
+        set_paa = true;          
       }
     }
     break;
@@ -573,6 +580,8 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
           cause.pce = 1;
         }
+      } else if ((paa_res) && (paa.is_ip_assigned())) {
+        set_paa = true;          
       }
     }
     break;
