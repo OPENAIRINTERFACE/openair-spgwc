@@ -39,6 +39,23 @@ extern itti_mw *itti_inst;
 extern sgwc_app *sgwc_app_inst;
 extern sgwc_config sgwc_cfg;
 
+void sebc_procedure::handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_create_session_response");
+}
+void sebc_procedure::handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_delete_session_response");
+}
+void sebc_procedure::handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_modify_bearer_response");
+}
+void sebc_procedure::handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_release_access_bearers_response");
+}
+
 //------------------------------------------------------------------------------
 int create_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
 {
@@ -51,6 +68,7 @@ int create_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
   //}
   std::shared_ptr<sgw_pdn_connection> pdn = {};
   if (c->find_pdn_connection(msg.gtp_ies.apn.access_point_name, msg.gtp_ies.pdn_type, pdn)) {
+    Logger::sgwc_app().info( "PDN connection already exist for APN %s", msg.gtp_ies.apn.access_point_name.c_str());
     return RETURNerror;
   }
   ebc = c;

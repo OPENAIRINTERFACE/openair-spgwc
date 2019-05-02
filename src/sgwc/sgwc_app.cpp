@@ -297,7 +297,7 @@ void sgwc_app::handle_itti_msg (itti_s11_create_session_request& csreq)
 //  s_plus_p_gw_eps_bearer_context_information_t *s_plus_p_gw_eps_bearer_ctxt_info_p = NULL;
 //  sgw_eps_bearer_ctxt_t                 *eps_bearer_ctxt_p = NULL;
 
-  Logger::sgwc_app().debug("Received S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq.teid, csreq.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", csreq.teid, csreq.gtpc_tx_id);
   /*
    * Upon reception of create session request from MME,
    * S-GW should create UE, eNB and MME contexts and forward message to P-GW.
@@ -337,7 +337,7 @@ void sgwc_app::handle_itti_msg (itti_s11_create_session_request& csreq)
     // imsi not authenticated
     indication_t indication = {};
     if ((csreq.gtp_ies.get(indication)) && (indication.uimsi)){
-      Logger::sgwc_app().debug("TODO S11 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq.teid, csreq.gtpc_tx_id);
+      Logger::sgwc_app().debug("TODO S11 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", csreq.teid, csreq.gtpc_tx_id);
       return;
     } else {
       imsi64_t imsi64 = imsi.to_imsi64();
@@ -353,12 +353,12 @@ void sgwc_app::handle_itti_msg (itti_s11_create_session_request& csreq)
       if (is_s11sgw_teid_2_sgw_eps_bearer_context(csreq.teid)) {
         ebc = s11sgw_teid_2_sgw_eps_bearer_context(csreq.teid);
       } else {
-        Logger::sgwc_app().debug("Discarding S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", csreq.teid, csreq.gtpc_tx_id);
+        Logger::sgwc_app().debug("Discarding S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", csreq.teid, csreq.gtpc_tx_id);
         return;
       }
     } else {
       // TODO
-      Logger::sgwc_app().debug("TODO S11 CREATE_SESSION_REQUEST (no IMSI) sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq.teid, csreq.gtpc_tx_id);
+      Logger::sgwc_app().debug("TODO S11 CREATE_SESSION_REQUEST (no IMSI) sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT "", csreq.teid, csreq.gtpc_tx_id);
       return;
     }
   }
@@ -368,64 +368,64 @@ void sgwc_app::handle_itti_msg (itti_s11_create_session_request& csreq)
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s11_delete_session_request& m)
 {
-  Logger::sgwc_app().debug("Received S11 DELETE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S11 DELETE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT "", m.teid, m.gtpc_tx_id);
   if (m.teid) {
     if (is_s11sgw_teid_2_sgw_eps_bearer_context(m.teid)) {
       shared_ptr<sgw_eps_bearer_context> ebc = s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
       ebc->handle_itti_msg(m);
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Discarding S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", m.teid, m.gtpc_tx_id);
+      Logger::sgwc_app().debug("Discarding S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
       return;
     }
   } else {
     // TODO
-    Logger::sgwc_app().debug("Discarding S11 DELETE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+    Logger::sgwc_app().debug("Discarding S11 DELETE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT "", m.teid, m.gtpc_tx_id);
     return;
   }
 }
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s11_modify_bearer_request& m)
 {
-  Logger::sgwc_app().debug("Received S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT "", m.teid, m.gtpc_tx_id);
   if (m.teid) {
     if (is_s11sgw_teid_2_sgw_eps_bearer_context(m.teid)) {
       shared_ptr<sgw_eps_bearer_context> ebc = s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
       ebc->handle_itti_msg(m);
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Discarding S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", m.teid, m.gtpc_tx_id);
+      Logger::sgwc_app().debug("Discarding S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
       return;
     }
   } else {
     // TODO
-    Logger::sgwc_app().debug("Discarding S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", m.teid, m.gtpc_tx_id);
+    Logger::sgwc_app().debug("Discarding S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
     return;
   }
 }
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s11_release_access_bearers_request& m)
 {
-  Logger::sgwc_app().debug("Received S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT "", m.teid, m.gtpc_tx_id);
   if (m.teid) {
     if (is_s11sgw_teid_2_sgw_eps_bearer_context(m.teid)) {
       shared_ptr<sgw_eps_bearer_context> ebc = s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
       ebc->handle_itti_msg(m);
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Discarding S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", m.teid, m.gtpc_tx_id);
+      Logger::sgwc_app().debug("Discarding S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
       return;
     }
   } else {
     // TODO
-    Logger::sgwc_app().debug("Discarding S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", m.teid, m.gtpc_tx_id);
+    Logger::sgwc_app().debug("Discarding S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
     return;
   }
 }
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s5s8_create_session_response& m)
 {
-  Logger::sgwc_app().debug("Received S5S8 CREATE_SESSION_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S5S8 CREATE_SESSION_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
   if (m.gtp_ies.s5_s8_pgw_fteid.second.interface_type != S5_S8_PGW_GTP_C) {
     Logger::sgwc_app().warn("Received S5S8 CREATE_SESSION_RESPONSE with s5_s8_pgw_fteid.interface_type != S5_S8_PGW_GTP_C %d, ignore CSResp", m.gtp_ies.sender_fteid_for_cp.second.interface_type);
     return;
@@ -471,7 +471,7 @@ void sgwc_app::handle_itti_msg (itti_s5s8_delete_session_response& m)
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s5s8_modify_bearer_response& m)
 {
-  Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
     std::pair<std::shared_ptr<sgw_eps_bearer_context>, std::shared_ptr<sgw_pdn_connection>> p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
@@ -487,7 +487,7 @@ void sgwc_app::handle_itti_msg (itti_s5s8_modify_bearer_response& m)
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s5s8_release_access_bearers_response& m)
 {
-  Logger::sgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", m.teid, m.gtpc_tx_id);
+  Logger::sgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
     std::pair<std::shared_ptr<sgw_eps_bearer_context>, std::shared_ptr<sgw_pdn_connection>> p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {

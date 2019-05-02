@@ -40,6 +40,8 @@
 #define IMEISV_DIGITS_MAX  (16)
 #define MAX_APN_PER_UE     (5)
 
+#define PROC_ID_FMT             "0x%" PRIx64
+
 // TEIDs
 typedef uint32_t                 teid_t;
 #define TEID_FMT                 "0x%" PRIx32
