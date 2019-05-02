@@ -276,7 +276,7 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_release_access_bearers_re
 {
   shared_ptr<sebc_procedure> sp = find_procedure(rabreq.gtpc_tx_id);
   if (sp.get()) {
-    Logger::sgwc_app().error("S11 RELEASE_ACCESS_BEARERS_REQUEST ignored, existing procedure found gtpc_tx_id %d!", rabreq.gtpc_tx_id);
+    Logger::sgwc_app().error("S11 RELEASE_ACCESS_BEARERS_REQUEST ignored, existing procedure found gtpc_tx_id " PROC_ID_FMT "", rabreq.gtpc_tx_id);
     return;
   } else {
     create_procedure(rabreq);
@@ -287,7 +287,7 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_delete_session_request& d
 {
   shared_ptr<sebc_procedure> sp = find_procedure(dsreq.gtpc_tx_id);
   if (sp.get()) {
-    Logger::sgwc_app().error("S11 DELETE_SESSION_REQUEST ignored, existing procedure found gtpc_tx_id %d!", dsreq.gtpc_tx_id);
+    Logger::sgwc_app().error("S11 DELETE_SESSION_REQUEST ignored, existing procedure found gtpc_tx_id " PROC_ID_FMT "!", dsreq.gtpc_tx_id);
     return;
   } else {
     indication_t indication = {};
@@ -309,12 +309,12 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_create_session_response&
 {
   shared_ptr<sebc_procedure> sp = find_procedure(csresp.gtpc_tx_id);
   if (sp.get()) {
-    sp.get()->handle_itti_msg(csresp, shared_from_this(), spc);
+    dynamic_pointer_cast<create_session_request_procedure>(sp)->handle_itti_msg(csresp, shared_from_this(), spc);
     if (sp.get()->marked_for_removal) {
       remove_procedure(sp.get());
     }
   } else {
-    Logger::sgwc_app().debug("S5S8 CREATE_SESSION_RESPONSE ignored, no procedure found gtpc_tx_id %d!", csresp.gtpc_tx_id);
+    Logger::sgwc_app().debug("S5S8 CREATE_SESSION_RESPONSE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", csresp.gtpc_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -322,12 +322,12 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_modify_bearer_response& 
 {
   shared_ptr<sebc_procedure> sp = find_procedure(resp.gtpc_tx_id);
   if (sp.get()) {
-    sp.get()->handle_itti_msg(resp, shared_from_this(), spc);
+    dynamic_pointer_cast<modify_bearer_request_procedure>(sp)->handle_itti_msg(resp, shared_from_this(), spc);
     if (sp.get()->marked_for_removal) {
       remove_procedure(sp.get());
     }
   } else {
-    Logger::sgwc_app().debug("S5S8 MODIFY_BEARER_RESPONSE ignored, no procedure found gtpc_tx_id %d!", resp.gtpc_tx_id);
+    Logger::sgwc_app().debug("S5S8 MODIFY_BEARER_RESPONSE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", resp.gtpc_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -335,12 +335,12 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_release_access_bearers_r
 {
   shared_ptr<sebc_procedure> sp = find_procedure(resp.gtpc_tx_id);
   if (sp.get()) {
-    sp.get()->handle_itti_msg(resp, shared_from_this(), spc);
+    dynamic_pointer_cast<release_access_bearers_request_procedure>(sp)->handle_itti_msg(resp, shared_from_this(), spc);
     if (sp.get()->marked_for_removal) {
       remove_procedure(sp.get());
     }
   } else {
-    Logger::sgwc_app().debug("S5S8 RELEASE_ACCESS_BEARERS_RESPONSE ignored, no procedure found gtpc_tx_id %d!", resp.gtpc_tx_id);
+    Logger::sgwc_app().debug("S5S8 RELEASE_ACCESS_BEARERS_RESPONSE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", resp.gtpc_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -348,12 +348,13 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_delete_session_response&
 {
   shared_ptr<sebc_procedure> sp = find_procedure(dsresp.gtpc_tx_id);
   if (sp.get()) {
-    sp.get()->handle_itti_msg(dsresp, shared_from_this(), spc);
+    Logger::sgwc_app().debug("S5S8 DELETE_SESSION_RESPONSE , procedure gtpc_tx_id %d found ", dsresp.gtpc_tx_id);
+    dynamic_pointer_cast<delete_session_request_procedure>(sp)->handle_itti_msg(dsresp, shared_from_this(), spc);
     if (sp.get()->marked_for_removal) {
       remove_procedure(sp.get());
     }
   } else {
-    Logger::sgwc_app().debug("S5S8 CREATE_SESSION_RESPONSE ignored, no procedure found gtpc_tx_id %d!", dsresp.gtpc_tx_id);
+    Logger::sgwc_app().debug("S5S8 DELETE_SESSION_RESPONSE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", dsresp.gtpc_tx_id);
   }
 }
 //------------------------------------------------------------------------------

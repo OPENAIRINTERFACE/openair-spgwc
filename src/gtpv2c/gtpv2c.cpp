@@ -26,6 +26,7 @@
   \email: lionel.gauthier@eurecom.fr
 */
 
+#include "common_root_types.h"
 #include "gtpv2c.hpp"
 
 #include <cstdlib>
@@ -230,9 +231,9 @@ void gtpv2c_stack::start_msg_retry_timer(gtpv2c_procedure& p, uint32_t time_out_
   if (!p.retry_timer_id) {
     p.retry_timer_id = itti_inst->timer_setup (time_out_milli_seconds/1000, time_out_milli_seconds%1000, task_id);
     msg_out_retry_timers.insert(std::pair<timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
-  //Logger::gtpv2_c().trace( "Started Msg retry timer %d, proc %" PRId64", seq %d",p.retry_timer_id, p.gtpc_tx_id, seq_num);
+  //Logger::gtpv2_c().trace( "Started Msg retry timer %d, proc " PROC_ID_FMT ", seq %d",p.retry_timer_id, p.gtpc_tx_id, seq_num);
   } else {
-    Logger::gtpv2_c().error( "Try to overwrite Msg retry timer %d, proc %" PRId64", seq %d!",p.retry_timer_id, p.gtpc_tx_id, seq_num);
+    Logger::gtpv2_c().error( "Try to overwrite Msg retry timer %d, proc " PROC_ID_FMT ", seq %d!",p.retry_timer_id, p.gtpc_tx_id, seq_num);
   }
 }
 //------------------------------------------------------------------------------
@@ -241,7 +242,7 @@ void gtpv2c_stack::stop_msg_retry_timer(gtpv2c_procedure& p)
   if (p.retry_timer_id) {
     itti_inst->timer_remove(p.retry_timer_id);
     msg_out_retry_timers.erase(p.retry_timer_id);
-    //Logger::gtpv2_c().trace( "Stopped Msg retry timer %d, proc %" PRId64", seq %d",p.retry_timer_id, p.gtpc_tx_id, p.retry_msg->get_sequence_number());
+    //Logger::gtpv2_c().trace( "Stopped Msg retry timer %d, proc " PROC_ID_FMT ", seq %d",p.retry_timer_id, p.gtpc_tx_id, p.retry_msg->get_sequence_number());
     p.retry_timer_id = 0;
   }
 }
@@ -258,16 +259,16 @@ void gtpv2c_stack::start_proc_cleanup_timer(gtpv2c_procedure& p, uint32_t time_o
   if (!p.proc_cleanup_timer_id) {
     p.proc_cleanup_timer_id = itti_inst->timer_setup (time_out_milli_seconds/1000, time_out_milli_seconds%1000, task_id);
     proc_cleanup_timers.insert(std::pair<timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
-    //Logger::gtpv2_c().trace( "Started proc cleanup timer %d, proc %" PRId64" t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
+    //Logger::gtpv2_c().trace( "Started proc cleanup timer %d, proc " PROC_ID_FMT " t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
   } else {
-    Logger::gtpv2_c().error( "Try to overwrite proc cleanup timer %d, proc %" PRId64" t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
+    Logger::gtpv2_c().error( "Try to overwrite proc cleanup timer %d, proc " PROC_ID_FMT " t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
   }
 }
 //------------------------------------------------------------------------------
 void gtpv2c_stack::stop_proc_cleanup_timer(gtpv2c_procedure& p)
 {
   itti_inst->timer_remove(p.proc_cleanup_timer_id);
-  //Logger::gtpv2_c().trace( "Stopped proc cleanup timer %d, proc %" PRId64"",p.proc_cleanup_timer_id, p.gtpc_tx_id);
+  //Logger::gtpv2_c().trace( "Stopped proc cleanup timer %d, proc " PROC_ID_FMT "",p.proc_cleanup_timer_id, p.gtpc_tx_id);
   msg_out_retry_timers.erase(p.proc_cleanup_timer_id);
   p.proc_cleanup_timer_id = 0;
 }
@@ -292,7 +293,7 @@ void gtpv2c_stack::handle_receive_message_cb(const gtpv2c_msg& msg, const boost:
       gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
       error = false;
       gtpc_tx_id = proc.gtpc_tx_id;
-      Logger::gtpv2_c().info( "Received Initial GTPV2-C msg type %d, seq %d, proc %" PRId64"", msg.get_message_type(), msg.get_sequence_number(), proc.gtpc_tx_id);
+      Logger::gtpv2_c().info( "Received Initial GTPV2-C msg type %d, seq %d, proc " PROC_ID_FMT "", msg.get_message_type(), msg.get_sequence_number(), proc.gtpc_tx_id);
     } else {
       Logger::gtpv2_c().info( "Failed to check Initial message type, Silently discarding GTPV2-C msg type %d, seq %d", msg.get_message_type(), msg.get_sequence_number());
       error = true;
@@ -319,7 +320,7 @@ void gtpv2c_stack::handle_receive_message_cb(const gtpv2c_msg& msg, const boost:
       if (it->second.retry_timer_id) {
         stop_msg_retry_timer(it->second);
       }
-      Logger::gtpv2_c().info( "Received Triggered GTPV2-C msg type %d, seq %d, proc %" PRId64"", msg.get_message_type(), msg.get_sequence_number(), gtpc_tx_id);
+      Logger::gtpv2_c().info( "Received Triggered GTPV2-C msg type %d, seq %d, proc " PROC_ID_FMT"", msg.get_message_type(), msg.get_sequence_number(), gtpc_tx_id);
     } else {
       Logger::gtpv2_c().info( "Failed to check Triggered message type, Silently discarding GTPV2-C msg type %d, seq %d", msg.get_message_type(), msg.get_sequence_number());
       error = true;
@@ -338,7 +339,7 @@ uint32_t gtpv2c_stack::send_initial_message(const boost::asio::ip::udp::endpoint
   //std::cout << std::hex << "msg length 0x" << msg.get_message_length() << "msg seqnum 0x" << msg.get_sequence_number() << std::endl;
   boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
 
-  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT " ", gtp_ies.get_msg_name(), msg.get_sequence_number());
+  Logger::gtpv2_c().trace( "Sending %s, seq %d, proc " PROC_ID_FMT " ", gtp_ies.get_msg_name(), msg.get_sequence_number(), gtp_tx_id);
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
@@ -364,7 +365,7 @@ uint32_t gtpv2c_stack::send_initial_message(const boost::asio::ip::udp::endpoint
   //std::cout << std::hex << "msg length 0x" << msg.get_message_length() << "msg seqnum 0x" << msg.get_sequence_number() << std::endl;
   boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
 
-  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT " ", gtp_ies.get_msg_name(), msg.get_sequence_number());
+  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
@@ -388,7 +389,7 @@ uint32_t gtpv2c_stack::send_initial_message(const boost::asio::ip::udp::endpoint
   msg.dump_to(oss);
   boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
 
-  Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
@@ -412,7 +413,7 @@ uint32_t gtpv2c_stack::send_initial_message(const boost::asio::ip::udp::endpoint
   msg.dump_to(oss);
   boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
 
-  Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
@@ -436,7 +437,7 @@ uint32_t gtpv2c_stack::send_initial_message(const boost::asio::ip::udp::endpoint
   msg.dump_to(oss);
   boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
 
-  Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
@@ -463,7 +464,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
-    Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+    Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
     udp_s.async_send_to(sm, dest);
 
     if (a == DELETE_TX) {
@@ -475,7 +476,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
       gtpc_tx_id2seq_num.erase(it);
     }
   } else {
-    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id %ld proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
+    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id " PROC_ID_FMT " proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -490,7 +491,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
-    Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+    Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
     udp_s.async_send_to(sm, dest);
 
     if (a == DELETE_TX) {
@@ -502,7 +503,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
       gtpc_tx_id2seq_num.erase(it);
     }
   } else {
-    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id %ld proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
+    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id " PROC_ID_FMT " proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -517,7 +518,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
-    Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+    Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
     udp_s.async_send_to(sm, dest);
 
     if (a == DELETE_TX) {
@@ -529,7 +530,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
       gtpc_tx_id2seq_num.erase(it);
     }
   } else {
-    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id %ld proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
+    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id " PROC_ID_FMT " proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -544,7 +545,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
-    Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+    Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
     udp_s.async_send_to(sm, dest);
 
     if (a == DELETE_TX) {
@@ -556,7 +557,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
       gtpc_tx_id2seq_num.erase(it);
     }
   } else {
-    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id %ld proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
+    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id " PROC_ID_FMT " proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -571,7 +572,7 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     boost::shared_ptr<std::string> sm = boost::shared_ptr<std::string>(new std::string(oss.str()));
-    Logger::gtpv2_c().trace( "Sending %s, seq %d", gtp_ies.get_msg_name(), msg.get_sequence_number());
+    Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
     udp_s.async_send_to(sm, dest);
 
     if (a == DELETE_TX) {
@@ -583,13 +584,13 @@ void gtpv2c_stack::send_triggered_message(const boost::asio::ip::udp::endpoint& 
       gtpc_tx_id2seq_num.erase(it);
     }
   } else {
-    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id %ld proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
+    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id " PROC_ID_FMT " proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
   }
 }
 //------------------------------------------------------------------------------
 void gtpv2c_stack::notify_ul_error(const gtpv2c_procedure& p, const cause_value_e cause)
 {
-  Logger::gtpv2_c().trace( "notify_ul_error proc %" PRId64" cause %d", p.gtpc_tx_id, cause);
+  Logger::gtpv2_c().trace( "notify_ul_error proc " PROC_ID_FMT " cause %d", p.gtpc_tx_id, cause);
 }
 //------------------------------------------------------------------------------
 void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &handled)
@@ -624,7 +625,7 @@ void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task
       handled = true;
       if (it_proc != pending_procedures.end()) {
         it_proc->second.proc_cleanup_timer_id = 0;
-        Logger::gtpv2_c().trace( "Delete proc %" PRId64" Retry %d seq %d timer id %u",
+        Logger::gtpv2_c().trace( "Delete proc " PROC_ID_FMT " Retry %d seq %d timer id %u",
             it_proc->second.gtpc_tx_id, it_proc->second.retry_count, it_proc->first, timer_id);
         pending_procedures.erase(it_proc);
       }
