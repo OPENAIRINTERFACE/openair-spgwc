@@ -1,0 +1,108 @@
+################################################################################
+# Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The OpenAirInterface Software Alliance licenses this file to You under
+# the OAI Public License, Version 1.1  (the "License"); you may not use this file
+# except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.openairinterface.org/?page_id=698
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#-------------------------------------------------------------------------------
+# For more information about the OpenAirInterface (OAI) Software Alliance:
+#      contact@openairinterface.org
+################################################################################
+
+# file build_helper.fb_folly
+# brief
+# author Lionel GAUTHIER
+#
+#######################################
+SCRIPT=$(readlink -f ${BASH_SOURCE})
+THIS_SCRIPT_PATH=`dirname $SCRIPT`
+source $THIS_SCRIPT_PATH/build_helper
+
+#arg1 is force (0 or 1) (no interactive script)
+#arg2 is debug (0 or 1) (install debug libraries)
+install_fb_folly_from_source(){
+  if [ $1 -eq 0 ]; then
+    OPTION=""
+    read -p "Do you want to install FaceBook folly (github)? <y/N> " prompt
+  else
+    prompt='y'
+    OPTION="-y"
+  fi
+  if [ $2 -eq 0 ]; then
+    debug=0
+  else
+    debug=1
+  fi
+
+
+  if [[ $prompt =~ [yY](es)* ]]
+  then
+ 
+    $SUDO apt-get install $OPTION \
+      g++ \
+      cmake \
+      libboost-all-dev \
+      libevent-dev \
+      libdouble-conversion-dev \
+      libgoogle-glog-dev \
+      libgflags-dev \
+      libiberty-dev \
+      liblz4-dev \
+      liblzma-dev \
+      libsnappy-dev \
+      make \
+      zlib1g-dev \
+      binutils-dev \
+      libjemalloc-dev \
+      libssl-dev \
+      pkg-config
+    ret=$?;[[ $ret -ne 0 ]] && return $ret
+
+    pushd /tmp
+
+    if [ $debug -eq 1 ]; then
+      # For advanced debugging options
+      $SUDO apt-get install $OPTION \
+        libunwind8-dev \
+        libelf-dev \
+        libdwarf-dev
+      ret=$?;[[ $ret -ne 0 ]] && return $ret
+      
+      wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz && \
+      tar zxf release-1.8.0.tar.gz && \
+      rm -f release-1.8.0.tar.gz && \
+      cd googletest-release-1.8.0 && \
+      cmake . && \
+      make && \
+      $SUDO make install
+      ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+      cd ..
+    fi
+
+    
+    $SUDO rm -rf /tmp/folly
+    git clone https://github.com/facebook/folly.git
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    cd folly
+    mkdir _build && cd _build
+    cmake  ..
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    make -j $(nproc)
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    $SUDO make install
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    popd
+  fi
+  return 0
+}
+
