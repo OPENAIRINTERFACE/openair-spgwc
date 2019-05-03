@@ -19,6 +19,7 @@
  *      contact@openairinterface.org
  */
 
+#include "async_shell_cmd.hpp"
 #include "common_defs.h"
 #include "itti.hpp"
 #include "itti_msg_s11.hpp"
@@ -34,6 +35,7 @@ using namespace gtpv2c;
 using namespace sgwc;
 using namespace std;
 
+extern util::async_shell_cmd *async_shell_cmd_inst;
 extern pgwc::pgw_config  pgw_cfg;
 extern itti_mw *itti_inst;
 extern sgwc_app *sgwc_app_inst;
@@ -225,6 +227,32 @@ void create_session_request_procedure::handle_itti_msg (itti_s5s8_create_session
 #else
           // TODO
 #endif
+          if (sgwc_cfg.mosaic_5g.enabled) {
+            struct in_addr remote_controller = {.s_addr = 0};
+            remote_controller.s_addr = sgwc_cfg.mosaic_5g.remote_controller.s_addr;
+            char command[500];
+            snprintf(command, 500, "curl -d '{\"eps_bearer_id\":%u, \"imsi\":\"%" PRIu64 "\", \"s1_ul_teid\":\"0x%x\", \"s1_dl_teid\":\"0x%x\", \"ue_ip\":\"%s\", \"enb_ip\":\"%s\"}' -X POST http://%s:%d/ue",
+                   ebi.ebi, 
+              ebc->imsi.to_imsi64(), 
+              seb->sgw_fteid_s1u_s12_s4u_s11u.teid_gre_key,
+              seb->enb_fteid_s1u.teid_gre_key, 
+              paa.get_ip_as_string().c_str(), 
+              inet_ntoa(seb->enb_fteid_s1u.ipv4_address), 
+              inet_ntoa(remote_controller), 
+              sgwc_cfg.mosaic_5g.remote_controller_port); 
+              
+            /*std::string command_str = fmt::format("curl -d '{\"eps_bearer_id\":{}, \"imsi\":\"{}\", \"s1_ul_teid\":\"0x{:04x}\", \"s1_dl_teid\":\"0x{:04x}\", \"ue_ip\":\"{}\", \"enb_ip\":\"{}\"}' -X POST http://{}:{}/ue", 
+              ebi.ebi, 
+              ebc->imsi.to_imsi64(), 
+              seb->sgw_fteid_s1u_s12_s4u_s11u.teid_gre_key,
+              seb->enb_fteid_s1u.teid_gre_key, 
+              paa.get_ip_as_string(), 
+              inet_ntoa(seb->enb_fteid_s1u.ipv4_address), 
+              inet_ntoa(remote_controller), 
+              sgwc_cfg.mosaic_5g.remote_controller_port); */
+            std::string command_str(command);
+            async_shell_cmd_inst->run_command (TASK_SGWC_APP, false, __FILE__, __LINE__, command_str);
+          }
           if (not seb->sgw_fteid_s1u_s12_s4u_s11u.is_zero()) b.set_s1_u_sgw_fteid(seb->sgw_fteid_s1u_s12_s4u_s11u);
           bearer_qos_t bearer_qos = {};
           if (i.get(bearer_qos)) {

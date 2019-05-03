@@ -149,6 +149,32 @@ int sgwc_config::load_interface(const Setting& if_cfg, interface_cfg_t& cfg)
 }
 
 //------------------------------------------------------------------------------
+int sgwc_config::load_mosaic_5g(const Setting& lib_cfg, mosaic_5g_cfg_t& cfg)
+{
+  cfg.enabled = false;
+  std::string astring = {};
+  if (lib_cfg.lookupValue(SGWC_CONFIG_STRING_REMOTE_CONTROLLER_ENABLED, astring)) {
+    if (boost::iequals(astring, "yes")) {
+      cfg.enabled = true;
+    }
+  }  
+
+  std::string address = {};
+  lib_cfg.lookupValue(SGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS, address);
+  util::trim(address);
+  unsigned char buf_in_addr[sizeof(struct in6_addr)]; 
+  if (inet_pton (AF_INET, address.c_str(), buf_in_addr) == 1) {
+    memcpy (&cfg.remote_controller, buf_in_addr, sizeof (struct in_addr));
+  } else {
+    Logger::sgwc_app().error("In conversion: Bad value " SGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS " = %s in config file", address.c_str());
+    return RETURNerror;
+  }
+
+  lib_cfg.lookupValue(SGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT, cfg.remote_controller_port);
+  return RETURNok;
+}
+
+//------------------------------------------------------------------------------
 int sgwc_config::load(const string& config_file)
 {
   Config                 cfg;
@@ -186,13 +212,25 @@ int sgwc_config::load(const string& config_file)
 
     const Setting& s5s8_cp_cfg = nw_if_cfg[SGWC_CONFIG_STRING_INTERFACE_S5_S8_CP];
     load_interface(s5s8_cp_cfg, s5s8_cp);
-
+    
   }
   catch(const SettingNotFoundException &nfex)
   {
     Logger::sgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
     return RETURNerror;
   }
+  
+  try
+  {
+    const Setting& sgw_cfg = root[SGWC_CONFIG_STRING_SGW_CONFIG];
+    const Setting& mosaic_cfg = sgw_cfg[SGWC_CONFIG_STRING_MOSAIC_5G];
+    load_mosaic_5g(mosaic_cfg, mosaic_5g);
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    Logger::sgwc_app().trace("%s : %s", nfex.what(), nfex.getPath());
+  }    
+  
   return RETURNok;
 }
 
@@ -214,6 +252,10 @@ void sgwc_config::display ()
   Logger::sgwc_app().info( "    ipv4.addr ........: %s", inet_ntoa (s11_cp.addr4));
   Logger::sgwc_app().info( "    ipv4.mask ........: %s", inet_ntoa (s11_cp.network4));
   Logger::sgwc_app().info( "    port .............: %u", s11_cp.port);
-
+  if (mosaic_5g.enabled) {
+    Logger::sgwc_app().info( "- MOSAIC-5G:");
+    Logger::sgwc_app().info( "    Remote controller address : %s", inet_ntoa (mosaic_5g.remote_controller));
+    Logger::sgwc_app().info( "    Remote controller port ...: %d", mosaic_5g.remote_controller_port);
+  }
 }
 
