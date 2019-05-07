@@ -32,6 +32,7 @@
 
 #include "3gpp_29.274.h"
 #include "3gpp_29.281.h"
+#include "endpoint.hpp"
 #include "common_defs.h"
 
 #include <utility>
@@ -43,16 +44,14 @@ namespace gtpv1u {
 class gtpv1u_ies_container {
 public:
   static const uint8_t      msg_id = 0;
-  struct sockaddr_storage   r_endpoint;
-  socklen_t                 r_endpoint_addr_len;
+  endpoint                  r_endpoint;
   std::pair<bool, uint32_t> teid;
   std::pair<bool, uint16_t> sequence_number;
   std::pair<bool, uint8_t>  npdu_number;
 
-  gtpv1u_ies_container() : r_endpoint(), r_endpoint_addr_len(0), teid(), sequence_number(), npdu_number() {}
+  gtpv1u_ies_container() : r_endpoint(), teid(), sequence_number(), npdu_number() {}
   gtpv1u_ies_container(const gtpv1u_ies_container& i) :
     r_endpoint(i.r_endpoint),
-    r_endpoint_addr_len(i.r_endpoint_addr_len),
     teid(i.teid),
     sequence_number(i.sequence_number),
     npdu_number(i.npdu_number) {}
@@ -60,7 +59,6 @@ public:
   gtpv1u_ies_container& operator=(gtpv1u_ies_container other)
   {
     std::swap(r_endpoint, other.r_endpoint);
-    std::swap(r_endpoint_addr_len, other.r_endpoint_addr_len);
     std::swap(teid, other.teid);
     std::swap(sequence_number, other.sequence_number);
     std::swap(npdu_number, other.npdu_number);

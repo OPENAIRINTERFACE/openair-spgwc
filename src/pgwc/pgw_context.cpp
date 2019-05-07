@@ -814,13 +814,15 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bear
         }
       } else {
         Logger::pgwc_app().warn( "S5S8 RELEASE_ACCESS_BEARERS_REQUEST procedure TODO");
-        pgw_app_inst->send_release_access_bearers_response_cause_request_accepted (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key, s5_trigger->r_endpoint);
+        pgw_app_inst->send_release_access_bearers_response_cause_request_accepted (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key, 
+                        s5_trigger->r_endpoint);
       }
       lock_pdn.unlock();
     }
   } else {
     Logger::pgwc_app().info( "S5S8 RELEASE_ACCESS_BEARERS_REQUEST procedure failed, context not found");
-    pgw_app_inst->send_release_access_bearers_response_cause_context_not_found (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key, s5_trigger->r_endpoint);
+    pgw_app_inst->send_release_access_bearers_response_cause_context_not_found (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key, 
+                    s5_trigger->r_endpoint);
   }
 }
 

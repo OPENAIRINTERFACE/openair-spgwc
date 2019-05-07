@@ -100,7 +100,7 @@ spgwu_s1u::spgwu_s1u () : gtpu_l4_stack(spgwu_cfg.s1_up.addr4, spgwu_cfg.s1_up.p
   Logger::spgwu_s1u().startup( "Started" );
 }
 //------------------------------------------------------------------------------
-void spgwu_s1u::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len)
+void spgwu_s1u::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint)
 {
 #define GTPU_MESSAGE_FLAGS_POS_IN_UDP_PAYLOAD 0
   struct gtpuhdr* gtpuh = (struct gtpuhdr*)&recv_buffer[0];
@@ -119,9 +119,9 @@ void spgwu_s1u::handle_receive(char* recv_buffer, const std::size_t bytes_transf
 
       struct iphdr* iph = (struct iphdr*)&recv_buffer[gtp_payload_offset];
       if (iph->version == 4) {
-        pfcp_switch_inst->pfcp_session_look_up_pack_in_access(iph, gtp_payload_length, r_endpoint, r_endpoint_addr_len, tunnel_id);
+        pfcp_switch_inst->pfcp_session_look_up_pack_in_access(iph, gtp_payload_length, r_endpoint, tunnel_id);
       } else if (iph->version == 6) {
-        pfcp_switch_inst->pfcp_session_look_up_pack_in_access((struct ipv6hdr*)iph, gtp_payload_length, r_endpoint, r_endpoint_addr_len, tunnel_id);
+        pfcp_switch_inst->pfcp_session_look_up_pack_in_access((struct ipv6hdr*)iph, gtp_payload_length, r_endpoint, tunnel_id);
       } else {
         Logger::spgwu_s1u().trace( "Unknown GTPU_G_PDU packet");
       }
@@ -133,7 +133,7 @@ void spgwu_s1u::handle_receive(char* recv_buffer, const std::size_t bytes_transf
       gtpv1u_msg msg = {};
       try {
         msg.load_from(iss);
-        handle_receive_gtpv1u_msg(msg, r_endpoint, r_endpoint_addr_len);
+        handle_receive_gtpv1u_msg(msg, r_endpoint);
       } catch (gtpu_exception& e) {
         Logger::spgwu_s1u().info( "handle_receive exception %s", e.what());
       }
@@ -141,21 +141,21 @@ void spgwu_s1u::handle_receive(char* recv_buffer, const std::size_t bytes_transf
   } else {
     struct iphdr* iph = (struct iphdr*)&recv_buffer[0];
     if (iph->version == 4) {
-      pfcp_switch_inst->pfcp_session_look_up_pack_in_access(iph, bytes_transferred, r_endpoint, r_endpoint_addr_len);
+      pfcp_switch_inst->pfcp_session_look_up_pack_in_access(iph, bytes_transferred, r_endpoint);
     } else if (iph->version == 6) {
-      pfcp_switch_inst->pfcp_session_look_up_pack_in_access((struct ipv6hdr*)iph, bytes_transferred, r_endpoint, r_endpoint_addr_len);
+      pfcp_switch_inst->pfcp_session_look_up_pack_in_access((struct ipv6hdr*)iph, bytes_transferred, r_endpoint);
     } else {
       Logger::spgwu_s1u().trace( "Unknown IPX packet");
     }
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_s1u::handle_receive_gtpv1u_msg(gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len)
+void spgwu_s1u::handle_receive_gtpv1u_msg(gtpv1u_msg& msg, const endpoint& r_endpoint)
 {
   //Logger::spgwu_s1u().trace( "handle_receive_gtpv1u_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
     case GTPU_ECHO_REQUEST:
-      handle_receive_echo_request(msg, r_endpoint, r_endpoint_addr_len);
+      handle_receive_echo_request(msg, r_endpoint);
       break;
     case GTPU_ECHO_RESPONSE:
     case GTPU_ERROR_INDICATION:
@@ -189,7 +189,7 @@ void spgwu_s1u::send_g_pdu(const struct in6_addr& peer_addr, const uint16_t peer
   gtpu_l4_stack::send_g_pdu(peer_sock_addr, tunnel_id, send_buffer, num_bytes);
 }
 //------------------------------------------------------------------------------
-void spgwu_s1u::handle_receive_echo_request(gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len)
+void spgwu_s1u::handle_receive_echo_request(gtpv1u_msg& msg, const endpoint& r_endpoint)
 {
   itti_s1u_echo_request *echo = new itti_s1u_echo_request(TASK_SPGWU_S1U, TASK_SPGWU_APP);
 
@@ -198,7 +198,6 @@ void spgwu_s1u::handle_receive_echo_request(gtpv1u_msg& msg, const struct sockad
 
 
   echo->gtp_ies.r_endpoint = r_endpoint;
-  echo->gtp_ies.r_endpoint_addr_len = r_endpoint_addr_len;
   echo->gtp_ies.set_teid(msg.get_teid());
 
   uint16_t sn = 0;
@@ -224,11 +223,10 @@ void spgwu_s1u::handle_itti_msg (std::shared_ptr<itti_s1u_error_indication> m)
   send_indication(m->gtp_ies);
 }
 //------------------------------------------------------------------------------
-void spgwu_s1u::report_error_indication(const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id)
+void spgwu_s1u::report_error_indication(const endpoint& r_endpoint, const uint32_t tunnel_id)
 {
   itti_s1u_error_indication *error_ind = new itti_s1u_error_indication(TASK_SPGWU_S1U, TASK_SPGWU_S1U);
   error_ind->gtp_ies.r_endpoint = r_endpoint;
-  error_ind->gtp_ies.r_endpoint_addr_len = r_endpoint_addr_len;
   error_ind->gtp_ies.set_teid(0);
 
   tunnel_endpoint_identifier_data_i_t tun_data = {};
@@ -236,7 +234,7 @@ void spgwu_s1u::report_error_indication(const struct sockaddr_storage& r_endpoin
   error_ind->gtp_ies.set(tun_data);
 
   gtp_u_peer_address_t peer_address = {};
-  if (xgpp_conv::sockaddr_storage_to_gtp_u_peer_address(r_endpoint, peer_address)) {
+  if (xgpp_conv::endpoint_to_gtp_u_peer_address(r_endpoint, peer_address)) {
     error_ind->gtp_ies.set(peer_address);
   } else {
     // mandatory ie

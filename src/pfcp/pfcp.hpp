@@ -31,13 +31,9 @@
 #include "3gpp_29.274.h"
 #include "3gpp_29.244.hpp"
 #include "itti.hpp"
+#include "udp.hpp"
 #include "uint_generator.hpp"
 
-#include <boost/array.hpp>
-#include <boost/bind.hpp>
-#include <boost/asio/ip/udp.hpp>
-#include <boost/asio/ip/address.hpp>
-#include <boost/asio.hpp>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -48,10 +44,12 @@
 
 namespace pfcp {
 
+static const uint16_t default_port = 8805;
+
 class pfcp_procedure {
 public:
   std::shared_ptr<pfcp_msg> retry_msg;
-  boost::asio::ip::udp::endpoint remote_endpoint;
+  endpoint remote_endpoint;
   timer_id_t   retry_timer_id;
   timer_id_t   proc_cleanup_timer_id;
   uint64_t                    trxn_id;
@@ -78,63 +76,13 @@ public:
       retry_count(p.retry_count) {}
 };
 
-class pfcp_l4_stack;
-
-class udp_server
-{
-public:
-  udp_server(boost::asio::io_service& io_service, boost::asio::ip::address address, const unsigned short port_num)
-    : app(nullptr), local_address_(address), socket_(io_service, boost::asio::ip::udp::endpoint(address, port_num))
-  {
-    boost::asio::socket_base::reuse_address option(true);
-    socket_.set_option(option);
-
-    Logger::udp().debug( "udp_server::udp_server(%s:%d) for PFCP", address.to_string().c_str(), port_num);
-  }
-
-  void async_send_to(boost::shared_ptr<std::string> message, boost::asio::ip::udp::endpoint remote_endpoint)
-  {
-    //Logger::udp().trace( "udp_server::async_send_to(%s:%d) %d bytes", remote_endpoint.address().to_string().c_str(), remote_endpoint.port(), message.get()->size());
-    socket_.async_send_to(boost::asio::buffer(*message), remote_endpoint,
-              boost::bind(&udp_server::handle_send, this, message,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::bytes_transferred));
-  }
-
-  void start_receive(pfcp_l4_stack * gtp_stack)
-  {
-    app = gtp_stack;
-    socket_.async_receive_from(
-        boost::asio::buffer(recv_buffer_), remote_endpoint_,
-        boost::bind(&udp_server::handle_receive, this,
-          boost::asio::placeholders::error,
-          boost::asio::placeholders::bytes_transferred));
-  }
-
-protected:
-
-  void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
-
-  void handle_send(boost::shared_ptr<std::string> /*message*/,
-      const boost::system::error_code& /*error*/,
-      std::size_t /*bytes_transferred*/)
-  {
-  }
-
-
-  pfcp_l4_stack*     app;
-  boost::asio::ip::udp::socket socket_;
-  boost::asio::ip::udp::endpoint remote_endpoint_;
-  boost::asio::ip::address local_address_;
-  boost::array<char, 4096> recv_buffer_;
-};
 
 enum pfcp_transaction_action {
   DELETE_TX = 0,
   CONTINUE_TX
 };
 
-class pfcp_l4_stack {
+class pfcp_l4_stack : public udp_application {
 #define PFCP_T1_RESPONSE_MS            1000
 #define PFCP_N1_REQUESTS               3
 #define PFCP_PROC_TIME_OUT_MS          ((PFCP_T1_RESPONSE_MS) * (PFCP_N1_REQUESTS + 1 + 1))
@@ -153,7 +101,6 @@ protected:
   std::map<timer_id_t, uint32_t>       msg_out_retry_timers;
   std::map<uint32_t , pfcp_procedure>        pending_procedures;
 
-  boost::array<char, 4096> send_buffer;
   static const char* msg_type2cstr[256];
 
   uint32_t get_next_seq_num();
@@ -173,33 +120,33 @@ protected:
 
 public:
   static const uint8_t version = 2;
-  pfcp_l4_stack(const std::string& ip_address, const unsigned short port_num);
-  virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_message_cb(const pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint, const task_id_t& task_id, bool& error, uint64_t& trxn_id);
+  pfcp_l4_stack(const std::string& ip_address, const unsigned short port_num, const util::thread_sched_params& sched_params);
+  virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, endpoint& remote_endpoint);
+  void handle_receive_message_cb(const pfcp_msg& msg, const endpoint& remote_endpoint, const task_id_t& task_id, bool& error, uint64_t& trxn_id);
 
   // Node related messages
-//  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_pfd_management_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const pfcp_heartbeat_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const pfcp_association_setup_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-//  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_association_update_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const pfcp_association_release_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-//  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+//  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_pfd_management_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const pfcp_heartbeat_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const pfcp_association_setup_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+//  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_association_update_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const pfcp_association_release_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+//  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
 
   // session related messages
-  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_establishment_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_modification_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_deletion_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-//  virtual uint32_t send_request(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_establishment_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_modification_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_deletion_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+//  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
 
   // Node related messages
-  virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const pfcp_heartbeat_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const pfcp_association_setup_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const pfcp_association_release_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const pfcp_heartbeat_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const pfcp_association_setup_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const pfcp_association_release_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
 
   // session related messages
-  virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_establishment_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_modification_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const boost::asio::ip::udp::endpoint& dest, const uint64_t seid, const pfcp_session_deletion_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_establishment_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_modification_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_deletion_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
 
   void time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &error);
 };

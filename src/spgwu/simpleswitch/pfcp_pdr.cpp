@@ -34,7 +34,7 @@ using namespace pfcp;
 extern spgwu::spgwu_sx  *spgwu_sx_inst;
 
 //------------------------------------------------------------------------------
-bool pfcp_pdr::look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id)
+bool pfcp_pdr::look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id)
 {
   // implicit packet arrives from ACCESS interface
   if (outer_header_removal.first) {

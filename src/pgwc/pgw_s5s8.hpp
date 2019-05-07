@@ -40,18 +40,18 @@ private:
   std::thread::id                      thread_id;
   std::thread                          thread;
 
-  void handle_receive_gtpv2c_msg(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_create_session_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint );
-  void handle_receive_delete_session_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_modify_bearer_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_release_access_bearers_request(gtpv2c::gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_gtpv2c_msg(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_create_session_request(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_delete_session_request(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_modify_bearer_request(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_release_access_bearers_request(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
 
 public:
   pgw_s5s8();
   pgw_s5s8(pgw_s5s8 const&)    = delete;
   void operator=(pgw_s5s8 const&)     = delete;
 
-  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint);
 
   void send_msg(itti_s5s8_create_session_response& m);
   void send_msg(itti_s5s8_delete_session_response& m);

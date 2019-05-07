@@ -277,9 +277,7 @@ class pgw_context : public std::enable_shared_from_this<pgw_context> {
 
 public:
   pgw_context() : m_pending_procedures(), m_apns(),
-      imsi(), imsi_unauthenticated_indicator(false), apns(), pending_procedures() {
-    msisdn = {0};
-  }
+      imsi(), imsi_unauthenticated_indicator(false), apns(), pending_procedures(), msisdn() {}
 
   pgw_context(pgw_context& b) = delete;
 

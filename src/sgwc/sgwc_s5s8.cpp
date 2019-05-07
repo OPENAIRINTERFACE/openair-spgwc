@@ -100,7 +100,7 @@ void sgw_s5s8_task (void *args_p)
 }
 
 //------------------------------------------------------------------------------
-sgw_s5s8::sgw_s5s8 () : gtpv2c_stack(string(inet_ntoa(sgwc_cfg.s5s8_cp.addr4)), sgwc_cfg.s5s8_cp.port)
+sgw_s5s8::sgw_s5s8 () : gtpv2c_stack(string(inet_ntoa(sgwc_cfg.s5s8_cp.addr4)), sgwc_cfg.s5s8_cp.port, sgwc_cfg.s5s8_cp.thread_rd_sched_params)
 {
   Logger::sgwc_s5s8().startup("Starting...");
   if (itti_inst->create_task(TASK_SGWC_S5S8, sgw_s5s8_task, nullptr) ) {
@@ -130,7 +130,7 @@ void sgw_s5s8::send_msg(itti_s5s8_release_access_bearers_request& i)
   send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
-void sgw_s5s8::handle_receive_create_session_response(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s5s8::handle_receive_create_session_response(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -153,7 +153,7 @@ void sgw_s5s8::handle_receive_create_session_response(gtpv2c_msg& msg, const boo
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s5s8::handle_receive_modify_bearer_response(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s5s8::handle_receive_modify_bearer_response(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -176,7 +176,7 @@ void sgw_s5s8::handle_receive_modify_bearer_response(gtpv2c_msg& msg, const boos
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s5s8::handle_receive_release_access_bearers_response(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s5s8::handle_receive_release_access_bearers_response(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -199,7 +199,7 @@ void sgw_s5s8::handle_receive_release_access_bearers_response(gtpv2c_msg& msg, c
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s5s8::handle_receive_delete_session_response(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s5s8::handle_receive_delete_session_response(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -223,7 +223,7 @@ void sgw_s5s8::handle_receive_delete_session_response(gtpv2c_msg& msg, const boo
 }
 
 //------------------------------------------------------------------------------
-void sgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   //Logger::sgwc_s5s8().trace( "handle_receive_gtpv2c_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
@@ -334,7 +334,7 @@ void sgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip:
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& remote_endpoint)
 {
   //Logger::sgwc_s5s8().info( "handle_receive(%d bytes)", bytes_transferred);
   //std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;

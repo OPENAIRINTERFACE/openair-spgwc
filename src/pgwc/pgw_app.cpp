@@ -285,7 +285,8 @@ pgw_app::pgw_app (const std::string& config_file) : m_s5s8_cp_teid_generator(), 
 }
 
 //------------------------------------------------------------------------------
-void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, 
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_delete_session_response *s5s8 = new itti_s5s8_delete_session_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -304,7 +305,8 @@ void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_
 
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, 
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_modify_bearer_response *s5s8 = new itti_s5s8_modify_bearer_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -322,7 +324,8 @@ void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, 
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_delete_session_response *s5s8 = new itti_s5s8_delete_session_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -340,7 +343,8 @@ void pgw_app::send_delete_session_response_cause_context_not_found (const uint64
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, 
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_release_access_bearers_response *s5s8 = new itti_s5s8_release_access_bearers_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -358,7 +362,8 @@ void pgw_app::send_release_access_bearers_response_cause_context_not_found(const
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, 
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_release_access_bearers_response *s5s8 = new itti_s5s8_release_access_bearers_response(TASK_PGWC_APP, TASK_PGWC_S5S8);

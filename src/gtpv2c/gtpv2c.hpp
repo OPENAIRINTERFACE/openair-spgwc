@@ -29,14 +29,11 @@
 #define FILE_GTPV2C_HPP_SEEN
 
 #include "3gpp_29.274.hpp"
+#include "endpoint.hpp"
 #include "itti.hpp"
+#include "udp.hpp"
 #include "uint_generator.hpp"
 
-#include <boost/array.hpp>
-#include <boost/bind.hpp>
-#include <boost/asio/ip/udp.hpp>
-#include <boost/asio/ip/address.hpp>
-#include <boost/asio.hpp>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -46,11 +43,13 @@
 #include "msg_gtpv2c.hpp"
 
 namespace gtpv2c {
+  
+  static const uint16_t default_port = 2123;
 
 class gtpv2c_procedure {
 public:
   std::shared_ptr<gtpv2c_msg> retry_msg;
-  boost::asio::ip::udp::endpoint remote_endpoint;
+  endpoint remote_endpoint;
   timer_id_t   retry_timer_id;
   timer_id_t   proc_cleanup_timer_id;
   uint64_t                    gtpc_tx_id;
@@ -83,81 +82,31 @@ public:
     retry_count(p.retry_count) {}
 };
 
-class gtpv2c_stack;
-
-class udp_server
-{
-public:
-  udp_server(boost::asio::io_service& io_service, boost::asio::ip::address address, const unsigned short port_num)
-    : app(nullptr), local_address_(address), socket_(io_service, boost::asio::ip::udp::endpoint(address, port_num))
-  {
-    boost::asio::socket_base::reuse_address option(true);
-    socket_.set_option(option);
-    Logger::udp().debug( "udp_server::udp_server(%s:%d) for GTPv2-C", address.to_string().c_str(), port_num);
-  }
-
-  void async_send_to(boost::shared_ptr<std::string> message, boost::asio::ip::udp::endpoint remote_endpoint)
-  {
-    Logger::udp().trace( "udp_server::async_send_to(%s:%d) %d bytes", remote_endpoint.address().to_string().c_str(), remote_endpoint.port(), message.get()->size());
-    socket_.async_send_to(boost::asio::buffer(*message), remote_endpoint,
-              boost::bind(&udp_server::handle_send, this, message,
-                boost::asio::placeholders::error,
-                boost::asio::placeholders::bytes_transferred));
-  }
-
-  void start_receive(gtpv2c_stack * gtp_stack)
-  {
-    app = gtp_stack;
-    socket_.async_receive_from(
-        boost::asio::buffer(recv_buffer_), remote_endpoint_,
-        boost::bind(&udp_server::handle_receive, this,
-          boost::asio::placeholders::error,
-          boost::asio::placeholders::bytes_transferred));
-  }
-
-protected:
-
-  void handle_receive(const boost::system::error_code& error, std::size_t bytes_transferred);
-
-  void handle_send(boost::shared_ptr<std::string> /*message*/,
-      const boost::system::error_code& /*error*/,
-      std::size_t /*bytes_transferred*/)
-  {
-  }
-
-
-  gtpv2c_stack*     app;
-  boost::asio::ip::udp::socket socket_;
-  boost::asio::ip::udp::endpoint remote_endpoint_;
-  boost::asio::ip::address local_address_;
-  boost::array<char, 4096> recv_buffer_;
-};
 
 enum gtpv2c_transaction_action {
   DELETE_TX = 0,
   CONTINUE_TX
 };
 
-class gtpv2c_stack {
+class gtpv2c_stack : public udp_application {
 #define GTPV2C_T3_RESPONSE_MS            1000
 #define GTPV2C_N3_REQUESTS               3
 #define GTPV2C_PROC_TIME_OUT_MS          ((GTPV2C_T3_RESPONSE_MS) * (GTPV2C_N3_REQUESTS + 1) + 1000)
 
 protected:
-  uint32_t                          id;
-  udp_server                        udp_s;
-  udp_server                        udp_s_allocated;
+  uint32_t                               id;
+  udp_server                             udp_s;
+  udp_server                             udp_s_allocated;
 
   // seems no need for std::atomic_uint32_t
-  uint32_t                        seq_num;
-  uint32_t                        restart_counter;
+  uint32_t                               seq_num;
+  uint32_t                               restart_counter;
 
-  std::map<uint64_t, uint32_t>                gtpc_tx_id2seq_num;
-  std::map<timer_id_t, uint32_t>  proc_cleanup_timers;
-  std::map<timer_id_t, uint32_t>  msg_out_retry_timers;
-  std::map<uint32_t , gtpv2c_procedure>       pending_procedures;
+  std::map<uint64_t, uint32_t>           gtpc_tx_id2seq_num;
+  std::map<timer_id_t, uint32_t>         proc_cleanup_timers;
+  std::map<timer_id_t, uint32_t>         msg_out_retry_timers;
+  std::map<uint32_t , gtpv2c_procedure>  pending_procedures;
 
-  boost::array<char, 4096> send_buffer;
   static const char* msg_type2cstr[256];
 
   uint32_t get_next_seq_num();
@@ -177,24 +126,24 @@ protected:
 
 public:
   static const uint8_t version = 2;
-  gtpv2c_stack(const std::string& ip_address, const unsigned short port_num);
-  virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_message_cb(const gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint, const task_id_t& task_id, bool& error, uint64_t& gtpc_tx_id);
+  gtpv2c_stack(const std::string& ip_address, const unsigned short port_num, const util::thread_sched_params& sched_param);
+  virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint);
+  void handle_receive_message_cb(const gtpv2c_msg& msg, const endpoint& r_endpoint, const task_id_t& task_id, bool& error, uint64_t& gtpc_tx_id);
 
   // Path mangement messages
-  virtual uint32_t send_initial_message(const boost::asio::ip::udp::endpoint& dest, const gtpv2c_echo_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual void send_triggered_message(const boost::asio::ip::udp::endpoint& dest, const gtpv2c_echo_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const gtpv2c_echo_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const gtpv2c_echo_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
 
   // Tunnel management messages
-  virtual uint32_t send_initial_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
 
-  virtual void send_triggered_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
-  virtual void send_triggered_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
-  virtual void send_triggered_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
-  virtual void send_triggered_message(const boost::asio::ip::udp::endpoint& dest, const teid_t teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
 
   void time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &error);
 };

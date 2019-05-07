@@ -30,6 +30,7 @@
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
+#include "endpoint.hpp"
 #include "msg_pfcp.hpp"
 #include <mutex>
 
@@ -90,7 +91,7 @@ namespace pfcp {
 
       bool update(const pfcp::update_pdr& update, uint8_t& cause_value);
 
-      bool look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
+      bool look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id);
       bool look_up_pack_in_core(struct iphdr* const iph, const std::size_t num_bytes);
 
       void buffering_requested(const char *buffer, const std::size_t num_bytes);

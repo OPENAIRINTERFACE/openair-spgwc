@@ -92,11 +92,11 @@ public:
   pgw_app(pgw_app const&)    = delete;
   void operator=(pgw_app const&)     = delete;
 
-  void send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
+  void send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
 
   fteid_t build_s5s8_cp_fteid(const struct in_addr ipv4_address, const teid_t teid);
   fteid_t generate_s5s8_cp_fteid(const struct in_addr ipv4_address);

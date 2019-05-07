@@ -117,7 +117,7 @@ void sgw_s11_task (void *args_p)
 }
 
 //------------------------------------------------------------------------------
-sgw_s11::sgw_s11 () : gtpv2c_stack(string(inet_ntoa(sgwc_cfg.s11_cp.addr4)), sgwc_cfg.s11_cp.port)
+sgw_s11::sgw_s11 () : gtpv2c_stack(string(inet_ntoa(sgwc_cfg.s11_cp.addr4)), sgwc_cfg.s11_cp.port, sgwc_cfg.s11_cp.thread_rd_sched_params)
 {
   Logger::sgwc_s11().startup("Starting...");
   if (itti_inst->create_task(TASK_SGWC_S11, sgw_s11_task, nullptr) ) {
@@ -148,7 +148,7 @@ void sgw_s11::send_msg(itti_s11_release_access_bearers_response& i)
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_create_session_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_create_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -171,7 +171,7 @@ void sgw_s11::handle_receive_create_session_request(gtpv2c_msg& msg, const boost
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_delete_session_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_delete_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -194,7 +194,7 @@ void sgw_s11::handle_receive_delete_session_request(gtpv2c_msg& msg, const boost
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -217,7 +217,7 @@ void sgw_s11::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const boost:
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -240,7 +240,7 @@ void sgw_s11::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, con
   // else ignore
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_echo_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_echo_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -259,7 +259,7 @@ void sgw_s11::handle_receive_echo_request(gtpv2c_msg& msg, const boost::asio::ip
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_echo_response(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_echo_response(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -278,7 +278,7 @@ void sgw_s11::handle_receive_echo_response(gtpv2c_msg& msg, const boost::asio::i
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::send_echo_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id)
+void sgw_s11::send_echo_response(const endpoint& r_endpoint, const uint64_t trxn_id)
 {
   gtpv2c_echo_response h = {};
   recovery_t r = {.restart_counter = 0};
@@ -287,7 +287,7 @@ void sgw_s11::send_echo_response(const boost::asio::ip::udp::endpoint& r_endpoin
 }
 
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   //Logger::sgwc_s11().trace( "handle_receive_gtpv2c_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
@@ -398,7 +398,7 @@ void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip::
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint)
+void sgw_s11::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& remote_endpoint)
 {
   //Logger::sgwc_s11().info( "handle_receive(%d bytes)", bytes_transferred);
   //std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;

@@ -33,8 +33,6 @@
 #include "spgwu_pfcp_association.hpp"
 #include "spgwu_sx.hpp"
 
-#include <boost/asio.hpp>
-#include <boost/asio/ip/address.hpp>
 #include <chrono>
 #include <ctime>
 #include <stdexcept>
@@ -186,7 +184,7 @@ void spgwu_sx_task (void *args_p)
 }
 
 //------------------------------------------------------------------------------
-spgwu_sx::spgwu_sx () : pfcp_l4_stack(std::string(inet_ntoa(spgwu_cfg.sx.addr4)), spgwu_cfg.sx.port)
+spgwu_sx::spgwu_sx () : pfcp_l4_stack(std::string(inet_ntoa(spgwu_cfg.sx.addr4)), spgwu_cfg.sx.port, spgwu_cfg.sx.thread_rd_sched_params)
 {
   Logger::spgwu_sx().startup("Starting...");
 
@@ -230,7 +228,7 @@ spgwu_sx::spgwu_sx () : pfcp_l4_stack(std::string(inet_ntoa(spgwu_cfg.sx.addr4))
 }
 
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -249,7 +247,7 @@ void spgwu_sx::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -268,7 +266,7 @@ void spgwu_sx::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boos
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_association_setup_response(pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_association_setup_response(pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -298,7 +296,7 @@ void spgwu_sx::handle_receive_association_setup_response(pfcp_msg& msg, const bo
 }
 
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_session_establishment_request(pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_session_establishment_request(pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -321,7 +319,7 @@ void spgwu_sx::handle_receive_session_establishment_request(pfcp_msg& msg, const
   // else ignore
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_session_modification_request(pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_session_modification_request(pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -344,7 +342,7 @@ void spgwu_sx::handle_receive_session_modification_request(pfcp_msg& msg, const 
   // else ignore
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_session_deletion_request(pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_session_deletion_request(pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -368,7 +366,7 @@ void spgwu_sx::handle_receive_session_deletion_request(pfcp_msg& msg, const boos
 }
 
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive_pfcp_msg(pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   //Logger::spgwu_sx().trace( "handle_receive_pfcp_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
@@ -466,8 +464,8 @@ void spgwu_sx::start_association(const pfcp::node_id_t& node_id)
     a.pfcp_ies.set(r);
     a.pfcp_ies.set(up_function_features);
     if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
-      //a.l_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(spgwu_cfg.sx.addr4), 0);
-      a.r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(node_id.u1.ipv4_address.s_addr)), 8805);
+      //a.l_endpoint = endpoint(boost::asio::ip::address_v4(spgwu_cfg.sx.addr4), 0);
+      a.r_endpoint = endpoint(node_id.u1.ipv4_address, pfcp::default_port);
       send_sx_msg(a);
     } else {
       Logger::spgwu_sx().warn( "TODO start_association() node_id IPV6, FQDN!");
@@ -489,8 +487,8 @@ void spgwu_sx::send_sx_msg(const pfcp::fseid_t& cp_fseid, const pfcp::pfcp_sessi
   pfcp::node_id_t this_node_id = {};
   if (spgwu_cfg.get_pfcp_node_id(this_node_id) == RETURNok) {
     if (this_node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
-      //a.l_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(spgwu_cfg.sx.addr4), 0);
-      isrr.r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(this_node_id.u1.ipv4_address.s_addr)), 8805);
+      //a.l_endpoint = endpoint(boost::asio::ip::address_v4(spgwu_cfg.sx.addr4), 0);
+      isrr.r_endpoint = endpoint(this_node_id.u1.ipv4_address, pfcp::default_port);
       send_sx_msg(isrr);
     } else {
       Logger::spgwu_sx().warn( "TODO start_association() node_id IPV6, FQDN!");
@@ -508,7 +506,7 @@ void spgwu_sx::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
   if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
     a->timer_heartbeat = itti_inst->timer_setup(5,0, TASK_SPGWU_SX, TASK_SPGWU_SX_TIMEOUT_HEARTBEAT_REQUEST, a->hash_node_id);
 
-    boost::asio::ip::udp::endpoint r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(node_id.u1.ipv4_address.s_addr)), 8805);
+    endpoint r_endpoint = endpoint(node_id.u1.ipv4_address, pfcp::default_port);
     a->trxn_id_heartbeat = generate_trxn_id();
     send_request(r_endpoint, h, TASK_SPGWU_SX, a->trxn_id_heartbeat);
 
@@ -517,7 +515,7 @@ void spgwu_sx::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id)
+void spgwu_sx::send_heartbeat_response(const endpoint& r_endpoint, const uint64_t trxn_id)
 {
   pfcp::pfcp_heartbeat_response h = {};
   pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
@@ -525,7 +523,7 @@ void spgwu_sx::send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_e
   send_response(r_endpoint, h, trxn_id);
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint)
+void spgwu_sx::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& remote_endpoint)
 {
   Logger::spgwu_sx().info( "handle_receive(%d bytes)", bytes_transferred);
   //std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;

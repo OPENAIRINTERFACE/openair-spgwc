@@ -176,7 +176,7 @@ void pgwc_sxab_task (void *args_p)
 }
 
 //------------------------------------------------------------------------------
-pgwc_sxab::pgwc_sxab() : pfcp_l4_stack(string(inet_ntoa(pgw_cfg.sx.addr4)), pgw_cfg.sx.port)
+pgwc_sxab::pgwc_sxab() : pfcp_l4_stack(string(inet_ntoa(pgw_cfg.sx.addr4)), pgw_cfg.sx.port, pgw_cfg.sx.thread_rd_sched_params)
 {
   Logger::pgwc_sx().startup("Starting...");
   // TODO  refine this, look at RFC5905
@@ -204,7 +204,7 @@ pgwc_sxab::pgwc_sxab() : pfcp_l4_stack(string(inet_ntoa(pgw_cfg.sx.addr4)), pgw_
 }
 
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   Logger::pgwc_sx().trace( "handle_receive_pfcp_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
@@ -251,7 +251,7 @@ void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg, const boost::asio::ip::ud
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -269,7 +269,7 @@ void pgwc_sxab::handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boos
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -287,7 +287,7 @@ void pgwc_sxab::handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boo
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_association_setup_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_association_setup_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -346,7 +346,7 @@ void pgwc_sxab::handle_receive_association_setup_request(pfcp::pfcp_msg& msg, co
 }
 
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_session_establishment_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_session_establishment_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -369,7 +369,7 @@ void pgwc_sxab::handle_receive_session_establishment_response(pfcp::pfcp_msg& ms
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_session_modification_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_session_modification_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -392,7 +392,7 @@ void pgwc_sxab::handle_receive_session_modification_response(pfcp::pfcp_msg& msg
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t trxn_id = 0;
@@ -430,7 +430,7 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
   if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
     a->timer_heartbeat = itti_inst->timer_setup(5,0, TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST, a->hash_node_id);
 
-    boost::asio::ip::udp::endpoint r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(node_id.u1.ipv4_address.s_addr)), 8805);
+    endpoint r_endpoint = endpoint(node_id.u1.ipv4_address, pfcp::default_port);
     a->trxn_id_heartbeat = generate_trxn_id();
     send_request(r_endpoint, h, TASK_PGWC_SX, a->trxn_id_heartbeat);
 
@@ -439,7 +439,7 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id)
+void pgwc_sxab::send_heartbeat_response(const endpoint& r_endpoint, const uint64_t trxn_id)
 {
   pfcp::pfcp_heartbeat_response h = {};
   pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t)recovery_time_stamp};
@@ -462,7 +462,7 @@ void pgwc_sxab::send_sx_msg(itti_sxab_session_deletion_request& i)
   send_request(i.r_endpoint, i.seid, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgwc_sxab::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& remote_endpoint)
 {
   Logger::pgwc_sx().info( "handle_receive(%d bytes)", bytes_transferred);
   //std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;

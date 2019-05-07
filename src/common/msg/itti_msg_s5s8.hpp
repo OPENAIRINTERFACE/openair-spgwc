@@ -30,9 +30,9 @@
 #define ITTI_MSG_S5S8_HPP_INCLUDED_
 
 #include "3gpp_29.274.hpp"
+#include "endpoint.hpp"
 #include "itti_msg.hpp"
 #include "msg_gtpv2c.hpp"
-#include <boost/asio/ip/udp.hpp>
 
 class itti_s5s8_msg : public itti_msg {
 public:
@@ -44,7 +44,7 @@ public:
     gtpc_tx_id = 0;
   }
 
-  itti_s5s8_msg(const itti_s5s8_msg& i) : itti_msg(i), l_endpoint(i.l_endpoint),
+  itti_s5s8_msg(const itti_s5s8_msg& i) : itti_msg(i), l_endpoint(i.l_endpoint), 
     r_endpoint(i.r_endpoint), teid(i.teid), gtpc_tx_id(i.gtpc_tx_id) {}
 
   itti_s5s8_msg(const itti_s5s8_msg& i, const task_id_t orig, const task_id_t dest) :
@@ -54,10 +54,10 @@ public:
     destination = dest;
   }
 
-  boost::asio::ip::udp::endpoint l_endpoint;
-  boost::asio::ip::udp::endpoint r_endpoint;
-  teid_t                   teid;
-  uint64_t                       gtpc_tx_id;
+  endpoint l_endpoint;
+  endpoint r_endpoint;
+  teid_t   teid;
+  uint64_t gtpc_tx_id;
 };
 
 class itti_s5s8_create_session_request : public itti_s5s8_msg {

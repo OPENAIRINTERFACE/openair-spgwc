@@ -87,51 +87,81 @@ int pgw_config::finalize ()
 int pgw_config::load_thread_sched_params(const Setting& thread_sched_params_cfg, util::thread_sched_params& cfg)
 {
 
-  thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
-  std::string thread_rd_sched_policy;
-  thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
-  util::trim(thread_rd_sched_policy);
-  if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
-    cfg.sched_policy = SCHED_OTHER;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
-    cfg.sched_policy = SCHED_IDLE;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
-    cfg.sched_policy = SCHED_BATCH;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
-    cfg.sched_policy = SCHED_FIFO;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
-    cfg.sched_policy = SCHED_RR;
-  } else {
-    Logger::pgwc_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
-    return RETURNerror;
+  try {
+    thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
-  thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
-  if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
-    Logger::pgwc_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
-    return RETURNerror;
+  try {
+    std::string thread_rd_sched_policy;
+    thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
+    util::trim(thread_rd_sched_policy);
+    if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
+      cfg.sched_policy = SCHED_OTHER;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
+      cfg.sched_policy = SCHED_IDLE;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
+      cfg.sched_policy = SCHED_BATCH;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
+      cfg.sched_policy = SCHED_FIFO;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
+      cfg.sched_policy = SCHED_RR;
+    } else {
+      Logger::pgwc_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
+      return RETURNerror;
+    }
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
+  
+  try {    
+    thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
+    if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
+      Logger::pgwc_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
+      return RETURNerror;
+    }
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
   return RETURNok;
 }
 //------------------------------------------------------------------------------
 int pgw_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
 {
-  const Setting& itti_timer_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
-  load_thread_sched_params(itti_timer_sched_params_cfg, cfg.itti_timer_sched_params);
+  try {
+    const Setting& itti_timer_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
+    load_thread_sched_params(itti_timer_sched_params_cfg, cfg.itti_timer_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& s11_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_S11_SCHED_PARAMS];
-  load_thread_sched_params(s11_sched_params_cfg, cfg.s11_sched_params);
+  try {
+    const Setting& s5s8_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_S5S8_SCHED_PARAMS];
+    load_thread_sched_params(s5s8_sched_params_cfg, cfg.s5s8_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& s5s8_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_S5S8_SCHED_PARAMS];
-  load_thread_sched_params(s5s8_sched_params_cfg, cfg.s5s8_sched_params);
+  try {
+    const Setting& sx_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_SX_SCHED_PARAMS];
+    load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& sx_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_SX_SCHED_PARAMS];
-  load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+  try {
+    const Setting& pgw_app_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS];
+    load_thread_sched_params(pgw_app_sched_params_cfg, cfg.pgw_app_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& pgw_app_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS];
-  load_thread_sched_params(pgw_app_sched_params_cfg, cfg.pgw_app_sched_params);
-
-  const Setting& async_cmd_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
-  load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
+  try {
+    const Setting& async_cmd_sched_params_cfg = itti_cfg[PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
+    load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
   return RETURNok;
 }
@@ -167,8 +197,13 @@ int pgw_config::load_interface(const Setting& if_cfg, interface_cfg_t & cfg)
       cfg.network4.s_addr = htons(ntohs(cfg.addr4.s_addr) & 0xFFFFFFFF << (32 - std::stoi (util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(PGW_CONFIG_STRING_PORT, cfg.port);
-    const Setting& sched_params_cfg = if_cfg[PGW_CONFIG_STRING_SCHED_PARAMS];
-    load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
+
+    try {
+      const Setting& sched_params_cfg = if_cfg[PGW_CONFIG_STRING_SCHED_PARAMS];
+      load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
+    } catch(const SettingNotFoundException &nfex) {
+      Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    }      
   }
   return RETURNok;
 }
@@ -395,21 +430,48 @@ void pgw_config::display ()
   Logger::pgwc_app().info( "- Instance ..............: %d\n", instance);
   Logger::pgwc_app().info( "- PID dir ...............: %s\n", pid_dir.c_str());
 
-  Logger::pgwc_app().info( "- S5S8-C:");
+  Logger::pgwc_app().info( "- S5S8-C Networking:");
   Logger::pgwc_app().info( "    iface ............: %s", s5s8_cp.if_name.c_str());
-  Logger::sgwc_app().info( "    ipv4.addr ........: %s", inet_ntoa (s5s8_cp.addr4));
+  Logger::pgwc_app().info( "    ipv4.addr ........: %s", inet_ntoa (s5s8_cp.addr4));
   if (s5s8_cp.network4.s_addr) {
-    Logger::sgwc_app().info( "    ipv4.mask ........: %s", inet_ntoa (s5s8_cp.network4));
+    Logger::pgwc_app().info( "    ipv4.mask ........: %s", inet_ntoa (s5s8_cp.network4));
   }
   Logger::pgwc_app().info( "    port .............: %d", s5s8_cp.port);
   if (s5s8_cp.mtu) {
     Logger::pgwc_app().info( "    MTU ..............: %u", s5s8_cp.mtu);
   }
-  Logger::pgwc_app().info( "- SX:");
+  Logger::pgwc_app().info( "- SX Networking:");
   Logger::pgwc_app().info( "    iface ................: %s", sx.if_name.c_str());
   Logger::pgwc_app().info( "    ip ...................: %s", inet_ntoa (sx.addr4));
   Logger::pgwc_app().info( "    port .................: %d", sx.port);
-
+  Logger::pgwc_app().info( "- S5S8 Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", s5s8_cp.thread_rd_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", s5s8_cp.thread_rd_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", s5s8_cp.thread_rd_sched_params.sched_priority);
+  Logger::pgwc_app().info( "- SX Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", sx.thread_rd_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", sx.thread_rd_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", sx.thread_rd_sched_params.sched_priority);
+  Logger::pgwc_app().info( "- ITTI Timer Task Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", itti.itti_timer_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", itti.itti_timer_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", itti.itti_timer_sched_params.sched_priority);
+  Logger::pgwc_app().info( "- ITTI S5S8 Task Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", itti.s5s8_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", itti.s5s8_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", itti.s5s8_sched_params.sched_priority);
+  Logger::pgwc_app().info( "- ITTI Sx Task Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", itti.sx_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", itti.sx_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", itti.sx_sched_params.sched_priority);
+  Logger::pgwc_app().info( "- ITTI PGW_APP task Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", itti.pgw_app_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", itti.pgw_app_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", itti.pgw_app_sched_params.sched_priority);
+  Logger::pgwc_app().info( "- ITTI ASYNC_CMD task Threading:");
+  Logger::pgwc_app().info( "    CPU id............: %d", itti.async_cmd_sched_params.cpu_id);
+  Logger::pgwc_app().info( "    Scheduling policy : %d", itti.async_cmd_sched_params.sched_policy);
+  Logger::pgwc_app().info( "    Scheduling prio  .: %d", itti.async_cmd_sched_params.sched_priority);
   Logger::pgwc_app().info( "- " PGW_CONFIG_STRING_IP_ADDRESS_POOL ":");
   for (int i = 0; i < num_ue_pool; i++) {
     std::string range_low(inet_ntoa (ue_pool_range_low[apn[i].pool_id_iv4]));

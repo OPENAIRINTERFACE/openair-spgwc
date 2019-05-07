@@ -155,7 +155,6 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<itti_s1u_echo_request> m)
 
   // May insert a call to a function here(throttle for example)
   s1u_resp->gtp_ies.r_endpoint = m->gtp_ies.r_endpoint;
-  s1u_resp->gtp_ies.r_endpoint_addr_len = m->gtp_ies.r_endpoint_addr_len;
   s1u_resp->gtp_ies.teid = m->gtp_ies.teid;
   s1u_resp->gtp_ies.sequence_number = m->gtp_ies.sequence_number;
 

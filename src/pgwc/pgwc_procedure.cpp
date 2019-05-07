@@ -98,7 +98,7 @@ int session_establishment_procedure::run(std::shared_ptr<itti_s5s8_create_sessio
   sx_ser->seid = 0;
   sx_ser->trxn_id = this->trxn_id;
   //sx_ser->l_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(0xC0A8A064), 8805);
-  sx_ser->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(up_node_id.u1.ipv4_address.s_addr)), 8805);
+  sx_ser->r_endpoint = endpoint(up_node_id.u1.ipv4_address, pfcp::default_port);
   sx_triggered = std::shared_ptr<itti_sxab_session_establishment_request>(sx_ser);
 
   //-------------------
@@ -309,7 +309,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
   itti_sxab_session_modification_request *sx_smr = new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx_smr->seid = ppc->up_fseid.seid;
   sx_smr->trxn_id = this->trxn_id;
-  sx_smr->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(ppc->up_fseid.ipv4_address.s_addr)), pgw_cfg.sx.port);
+  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
   sx_triggered = std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
 
 
@@ -764,7 +764,7 @@ int release_access_bearers_procedure::run(std::shared_ptr<itti_s5s8_release_acce
   itti_sxab_session_modification_request *sx_smr = new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx_smr->seid = ppc->up_fseid.seid;
   sx_smr->trxn_id = this->trxn_id;
-  sx_smr->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(ppc->up_fseid.ipv4_address.s_addr)), pgw_cfg.sx.port);
+  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
   sx_triggered = std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
 
 
@@ -885,7 +885,7 @@ int delete_session_procedure::run(std::shared_ptr<itti_s5s8_delete_session_reque
   itti_sxab_session_deletion_request *sx = new itti_sxab_session_deletion_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx->seid = ppc->up_fseid.seid;
   sx->trxn_id = this->trxn_id;
-  sx->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(htobe32(ppc->up_fseid.ipv4_address.s_addr)), pgw_cfg.sx.port);
+  sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
   sx_triggered = std::shared_ptr<itti_sxab_session_deletion_request>(sx);
 
 
