@@ -81,7 +81,7 @@ typedef struct itti_cfg_s {
   util::thread_sched_params itti_timer_sched_params;
   util::thread_sched_params s11_sched_params;
   util::thread_sched_params s5s8_sched_params;
-  util::thread_sched_params sx_sched_params;
+  //util::thread_sched_params sx_sched_params;
   util::thread_sched_params sgw_app_sched_params;
   util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
@@ -104,22 +104,21 @@ public:
   interface_cfg_t s11_up;
   interface_cfg_t s5s8_cp;
   //interface_cfg_t sxa;
-  bool            local_to_eNB;
   itti_cfg_t      itti;
 
-  sgwc_config() : m_rw_lock(), pid_dir(), instance(0), s11_cp(), s11_up(), s5s8_cp(), local_to_eNB(false)
+  sgwc_config() : m_rw_lock(), pid_dir(), instance(0), s11_cp(), s11_up(), s5s8_cp()
   {
     itti.itti_timer_sched_params.sched_priority = 85;
     itti.s11_sched_params.sched_priority = 84;
     itti.s5s8_sched_params.sched_priority = 84;
     itti.sgw_app_sched_params.sched_priority = 84;
     itti.async_cmd_sched_params.sched_priority = 84;
-    
+
     s11_cp.thread_rd_sched_params.sched_priority = 95;
     s11_cp.port = gtpv2c::default_port;
-    
+
     s11_up.thread_rd_sched_params.sched_priority = 95;
-    
+
     s5s8_cp.thread_rd_sched_params.sched_priority = 95;
     s5s8_cp.port = gtpv2c::default_port;
   };

@@ -113,8 +113,8 @@ int pgw_config::load_thread_sched_params(const Setting& thread_sched_params_cfg,
   } catch(const SettingNotFoundException &nfex) {
     Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
-  
-  try {    
+
+  try {
     thread_sched_params_cfg.lookupValue(PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
     if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
       Logger::pgwc_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
@@ -203,7 +203,7 @@ int pgw_config::load_interface(const Setting& if_cfg, interface_cfg_t & cfg)
       load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
     } catch(const SettingNotFoundException &nfex) {
       Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
-    }      
+    }
   }
   return RETURNok;
 }
@@ -234,15 +234,34 @@ int pgw_config::load(const string& config_file)
 
   try
   {
-    string astring;
-    const Setting &pgw_cfg = root[PGW_CONFIG_STRING_PGW_CONFIG];
+    const Setting& pgw_cfg = root[PGW_CONFIG_STRING_PGW_CONFIG];
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
+    return RETURNerror;
+  }
 
+  const Setting &pgw_cfg = root[PGW_CONFIG_STRING_PGW_CONFIG];
+
+  try {
     pgw_cfg.lookupValue(PGW_CONFIG_STRING_INSTANCE, instance);
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_PID_DIRECTORY, pid_dir);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
+  try {
+    pgw_cfg.lookupValue(PGW_CONFIG_STRING_PID_DIRECTORY, pid_dir);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
+
+  try {
     const Setting& itti_cfg = pgw_cfg[PGW_CONFIG_STRING_ITTI_TASKS];
     load_itti(itti_cfg, itti);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
+  try {
     const Setting &nw_if_cfg = pgw_cfg[PGW_CONFIG_STRING_INTERFACES];
 
     const Setting& s5s8_cp_cfg = nw_if_cfg[PGW_CONFIG_STRING_INTERFACE_S5_S8_CP];
@@ -250,7 +269,13 @@ int pgw_config::load(const string& config_file)
 
     const Setting& sx_cfg = nw_if_cfg[PGW_CONFIG_STRING_INTERFACE_SX];
     load_interface(sx_cfg, sx);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
+    return RETURNerror;
+  }
 
+  try {
+    string astring;
 
     const Setting &pool_cfg = pgw_cfg[PGW_CONFIG_STRING_IP_ADDRESS_POOL];
 
