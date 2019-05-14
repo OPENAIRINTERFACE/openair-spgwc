@@ -395,12 +395,12 @@ struct imsi_s {
   {
     memset(u1.b, 0, sizeof(u1.b));
   }
-  
+
   imsi_s(const imsi_s& i) : num_digits(i.num_digits)
   {
     memcpy(u1.b, i.u1.b, sizeof(u1.b));
   }
-  
+
   std::string toString() const
   {
     std::string s = {};
@@ -425,9 +425,9 @@ struct imsi_s {
   {
     imsi64_t imsi64 = 0;
     for (int i=0; i < IMSI_BCD8_SIZE; i++) {
-      uint8_t d2 = u1.b[i];
-      uint8_t d1 = (d2 & 0xf0) >> 4;
-      d2 = d2 & 0x0f;
+      uint8_t d1 = u1.b[i];
+      uint8_t d2 = (d1 & 0xf0) >> 4;
+      d1 = d1 & 0x0f;
       if (10 > d1) {
         imsi64 = imsi64*10 + d1;
         if (10 > d2) {
@@ -441,7 +441,7 @@ struct imsi_s {
     }
     return imsi64;
   }
-  
+
   imsi_s& operator++ ()     // prefix ++
   {
     int l_i = IMSI_BCD8_SIZE - 1;
@@ -473,7 +473,7 @@ struct imsi_s {
       l_i++;
     }
     return (*this);
-  }  
+  }
 } ;
 typedef struct imsi_s imsi_t;
 
@@ -646,17 +646,17 @@ struct mei_s {
     uint8_t b[MEI_MAX_LENGTH/2];
   } u1;
   uint num_digits;
-  
+
   mei_s() : num_digits(0)
   {
     memset(u1.b, 0, sizeof(u1.b));
   }
-  
+
   mei_s(const mei_s& i) : num_digits(i.num_digits)
   {
     memcpy(u1.b, i.u1.b, sizeof(u1.b));
   }
-  
+
   std::string toString() const
   {
     std::string s = {};
@@ -675,7 +675,7 @@ struct mei_s {
     }
     return s;
   }
-  
+
   mei_s& operator++ ()     // prefix ++
   {
     int l_i = MEI_MAX_LENGTH/2 - 1 - 1; // depends if imei or imei_sv -1 again
@@ -707,7 +707,7 @@ struct mei_s {
       l_i++;
     }
     return (*this);
-  }  
+  }
 } ;
 
 typedef struct mei_s mei_t;
@@ -736,17 +736,17 @@ struct msisdn_s {
     uint8_t b[MSISDN_MAX_LENGTH/2+1];
   } u1;
   uint num_digits;
-  
+
   msisdn_s() : num_digits(0)
   {
     memset(u1.b, 0, sizeof(u1.b));
   }
-  
+
   msisdn_s(const msisdn_s& i) : num_digits(i.num_digits)
   {
     memcpy(u1.b, i.u1.b, sizeof(u1.b));
   }
-  
+
   std::string toString() const
   {
     std::string s = {};
@@ -765,7 +765,7 @@ struct msisdn_s {
     }
     return s;
   }
-  
+
   // Should be refined see spec
   msisdn_s& operator++ ()     // prefix ++
   {
@@ -798,7 +798,7 @@ struct msisdn_s {
       l_i++;
     }
     return (*this);
-  }    
+  }
 };
 
 typedef struct msisdn_s msisdn_t;
@@ -1013,7 +1013,7 @@ struct rat_type_s {
   rat_type_s(const rat_type_s& i) : rat_type(i.rat_type) {}
   //------------------------------------------------------------------------------
   std::string toString() const
-  { 
+  {
     switch(rat_type) {
       case RAT_TYPE_E_EUTRAN_WB_EUTRAN: return std::string("EUTRAN_WB_EUTRAN");
       case RAT_TYPE_E_EUTRAN_NB_IOT: return std::string("EUTRAN_NB_IOT");
@@ -1028,7 +1028,7 @@ struct rat_type_s {
       case RAT_TYPE_E_HSPA_EVOLUTION: return std::string("HSPA_EVOLUTION");
       default: return std::to_string(rat_type);
     }
-  } 
+  }
 };
 typedef struct rat_type_s rat_type_t;
 //-------------------------------------
@@ -1262,6 +1262,19 @@ struct fully_qualified_tunnel_endpoint_identifier_s {
   uint32_t teid_gre_key;
   struct in_addr  ipv4_address;
   struct in6_addr ipv6_address;
+
+  bool operator<(const struct fully_qualified_tunnel_endpoint_identifier_s& f) const
+  {
+    return (teid_gre_key < f.teid_gre_key) or
+    (ipv4_address.s_addr < f.ipv4_address.s_addr) or
+    (interface_type < f.interface_type) or
+    (v4 == f.v4) or
+    (v6 == f.v6) or
+    (ipv6_address.s6_addr32[0] == f.ipv6_address.s6_addr32[0]) or
+    (ipv6_address.s6_addr32[1] == f.ipv6_address.s6_addr32[1]) or
+    (ipv6_address.s6_addr32[2] == f.ipv6_address.s6_addr32[2]) or
+    (ipv6_address.s6_addr32[3] == f.ipv6_address.s6_addr32[3]);
+  }
 
   bool operator==(const struct fully_qualified_tunnel_endpoint_identifier_s& f) const
   {
@@ -2141,8 +2154,8 @@ public:
       using std::size_t;
       using std::hash;
       std::size_t h1 = std::hash<uint32_t>()(k.interface_type);
-      std::size_t h2 = std::hash<uint32_t>()(k.teid_gre_key) ^ h1; 
-      
+      std::size_t h2 = std::hash<uint32_t>()(k.teid_gre_key) ^ h1;
+
       if (k.v4) {
         h2 ^= std::hash<uint32_t>()(k.ipv4_address.s_addr);
       }
