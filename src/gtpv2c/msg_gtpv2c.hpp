@@ -2563,6 +2563,7 @@ public:
   void set(const rat_type_t& v, const uint8_t instance = 0) {rat_type = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_RAT_TYPE;}
   void set(const indication_t& v, const uint8_t instance = 0) {indication_flags = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_INDICATION_FLAGS;}
   void set_sender_fteid_for_cp(const fteid_t& v) {sender_fteid_for_cp = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE;}
+  void set(const fteid_t& v) {sender_fteid_for_cp = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE;}
   void set(const ambr_t& v, const uint8_t instance = 0) {apn_ambr = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_APN_AMBR;}
   void set(const delay_value_t& v, const uint8_t instance = 0) {delay_dl_packet_notif_req = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_DELAY_DOWNLINK_PACKET_NOTIFICATION_REQUEST;}
   void add_bearer_context_to_be_modified(const bearer_context_to_be_modified_within_modify_bearer_request& v) {bearer_contexts_to_be_modified.push_back(v);ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_MODIFIED;}
