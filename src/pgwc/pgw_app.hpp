@@ -127,6 +127,7 @@ public:
   void handle_itti_msg (itti_sxab_session_establishment_response& m);
   void handle_itti_msg (itti_sxab_session_modification_response& m);
   void handle_itti_msg (itti_sxab_session_deletion_response& m);
+  void handle_itti_msg (itti_sxab_session_report_request& snr);
   void handle_itti_msg (itti_sxab_association_setup_request& m);
 
   void restore_sx_sessions(const seid_t& seid) const;

@@ -227,6 +227,9 @@ void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_en
   case PFCP_SESSION_DELETION_RESPONSE:
     handle_receive_session_deletion_response(msg, remote_endpoint);
     break;
+  case PFCP_SESSION_REPORT_REQUEST:
+    handle_receive_session_report_request(msg, remote_endpoint);
+    break;
   case PFCP_PFCP_PFD_MANAGEMENT_REQUEST:
   case PFCP_PFCP_PFD_MANAGEMENT_RESPONSE:
   case PFCP_ASSOCIATION_SETUP_RESPONSE:
@@ -242,7 +245,6 @@ void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_en
   case PFCP_SESSION_ESTABLISHMENT_REQUEST:
   case PFCP_SESSION_MODIFICATION_REQUEST:
   case PFCP_SESSION_DELETION_REQUEST:
-  case PFCP_SESSION_REPORT_REQUEST:
   case PFCP_SESSION_REPORT_RESPONSE:
     Logger::pgwc_sx().info( "handle_receive_pfcp_msg msg %d length %d, not handled, discarded!", msg.get_message_type(), msg.get_message_length());
     break;
@@ -414,6 +416,30 @@ void pgwc_sxab::handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, co
   }
   // else ignore
 }
+//------------------------------------------------------------------------------
+void pgwc_sxab::handle_receive_session_report_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t trxn_id = 0;
+  pfcp_session_report_request msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_PGWC_SX, error, trxn_id);
+  if (!error) {
+    itti_sxab_session_report_request *itti_msg = new itti_sxab_session_report_request(TASK_PGWC_SX, TASK_PGWC_APP);
+    itti_msg->pfcp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->trxn_id = trxn_id;
+    itti_msg->seid = msg.get_seid();
+    std::shared_ptr<itti_sxab_session_report_request> i = std::shared_ptr<itti_sxab_session_report_request>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::pgwc_sx().error( "Could not send ITTI message %s to task TASK_PGWC_APP", i->get_msg_name());
+    }
+  }
+  // else ignore
+}
+
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i)
 {

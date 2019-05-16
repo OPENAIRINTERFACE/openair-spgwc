@@ -143,8 +143,9 @@ void pfcp_pdr::buffering_requested(const char *buffer, const std::size_t num_byt
 //------------------------------------------------------------------------------
 void pfcp_pdr::notify_cp_requested(std::shared_ptr<pfcp::pfcp_session> session)
 {
-  if (not  notified_cp) {
-     notified_cp = true;
+  if (not notified_cp) {
+    Logger::spgwu_sx().trace( "notify_cp_requested()");
+    notified_cp = true;
 
     pfcp::pfcp_session_report_request h;
 

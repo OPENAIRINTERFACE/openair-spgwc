@@ -37,11 +37,11 @@
 namespace pfcp {
 
   class pfcp_session;
-  
+
   class pfcp_pdr {
     public:
-      mutable std::mutex                                       lock;
-      uint64_t                                                 local_seid;
+      mutable std::mutex                                 lock;
+      uint64_t                                           local_seid;
       pfcp::pdr_id_t                                     pdr_id;
       std::pair<bool, pfcp::precedence_t>                precedence;
       std::pair<bool, pfcp::pdi>                         pdi;
@@ -50,12 +50,12 @@ namespace pfcp {
       std::pair<bool, pfcp::urr_id_t>                    urr_id;
       std::pair<bool, pfcp::qer_id_t>                    qer_id;
       std::pair<bool, pfcp::activate_predefined_rules_t> activate_predefined_rules;
-      
-      bool                                                     notified_cp;
+
+      bool                                               notified_cp;
 
       explicit pfcp_pdr(uint64_t lseid) : lock(), local_seid(lseid), pdr_id(), precedence(), pdi(), outer_header_removal(), far_id(), urr_id(), qer_id(), activate_predefined_rules(), notified_cp(false) {}
 
-      explicit pfcp_pdr(const pfcp::create_pdr& c) : 
+      explicit pfcp_pdr(const pfcp::create_pdr& c) :
           lock(), local_seid(0), pdr_id(c.pdr_id.second), precedence(c.precedence), pdi(c.pdi), outer_header_removal(c.outer_header_removal),
           far_id(c.far_id), urr_id(c.urr_id), qer_id(c.qer_id), activate_predefined_rules(c.activate_predefined_rules), notified_cp(false)
       {}
@@ -96,7 +96,7 @@ namespace pfcp {
 
       void buffering_requested(const char *buffer, const std::size_t num_bytes);
       void notify_cp_requested(std::shared_ptr<pfcp::pfcp_session> session);
-      
+
       // For sorting in collections
       bool operator<(const pfcp_pdr &rhs) const { return (precedence.second.precedence < rhs.precedence.second.precedence); }
   };

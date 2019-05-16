@@ -100,6 +100,7 @@ public:
   void handle_receive_session_establishment_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
   void handle_receive_session_modification_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
   void handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_session_report_request(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
 
   void time_out_itti_event(const uint32_t timer_id);
 };

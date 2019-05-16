@@ -333,7 +333,7 @@ public:
   explicit pfcp_msg(const pfcp_association_release_request& pfcp_ies);
   explicit pfcp_msg(const pfcp_association_release_response& pfcp_ies);
 //  pfcp_msg(const pfcp_version_not_supported_response& pfcp_ies);
-//  pfcp_msg(const pfcp_node_report_request& pfcp_ies);
+  pfcp_msg(const pfcp_node_report_request& pfcp_ies);
 //  pfcp_msg(const pfcp_node_report_response& pfcp_ies);
   explicit pfcp_msg(const pfcp_session_establishment_request& pfcp_ies);
   explicit pfcp_msg(const pfcp_session_establishment_response& pfcp_ies);
@@ -341,8 +341,8 @@ public:
   explicit pfcp_msg(const pfcp_session_modification_response& pfcp_ies);
   explicit pfcp_msg(const pfcp_session_deletion_request& pfcp_ies);
   explicit pfcp_msg(const pfcp_session_deletion_response& pfcp_ies);
-//  pfcp_msg(const pfcp_session_report_request& pfcp_ies);
-//  pfcp_msg(const pfcp_session_report_response& pfcp_ies);
+  explicit pfcp_msg(const pfcp_session_report_request& pfcp_ies);
+  explicit pfcp_msg(const pfcp_session_report_response& pfcp_ies);
 
   ~pfcp_msg() {
     ies.clear();
@@ -1898,50 +1898,66 @@ public:
 //      s.set(redirect_information);
 //  }
 //};
-////-------------------------------------
-//// IE REPORT_TYPE
-//class pfcp_report_type_ie : public pfcp_ie {
-//public:
-//  uint8_t todo;
-//
-//  //--------
-//  pfcp_report_type_ie(const pfcp::report_type_t& b) : pfcp_ie(PFCP_IE_REPORT_TYPE){
-//    todo = 0;
-//    tlv.set_length(1);
-//  }
-//  //--------
-//  pfcp_report_type_ie() : pfcp_ie(PFCP_IE_REPORT_TYPE){
-//    todo = 0;
-//    tlv.set_length(1);
-//  }
-//  //--------
-//  pfcp_report_type_ie(const pfcp_tlv& t) : pfcp_ie(t) {
-//    todo = 0;
-//  };
-//  //--------
-//  void to_core_type(pfcp::report_type_t& b) {
-//    b.todo = todo;
-//  }
-//  //--------
-//  void dump_to(std::ostream& os) {
-//    tlv.dump_to(os);
-//    os.write(reinterpret_cast<const char*>(&todo), sizeof(todo));
-//  }
-//  //--------
-//  void load_from(std::istream& is) {
-//    //tlv.load_from(is);
-//    if (tlv.get_length() != 1) {
-//      throw pfcp_tlv_bad_length_exception(tlv.type, tlv.get_length(), __FILE__, __LINE__);
-//    }
-//    is.read(reinterpret_cast<char*>(&todo), sizeof(todo));
-//  }
-//  //--------
-//  void to_core_type(pfcp_ies_container& s) {
-//      pfcp::report_type_t report_type = {};
-//      to_core_type(report_type);
-//      s.set(report_type);
-//  }
-//};
+//-------------------------------------
+// IE REPORT_TYPE
+class pfcp_report_type_ie : public pfcp_ie {
+public:
+  union {
+    struct {
+      uint8_t dldr :1;
+      uint8_t usar :1;
+      uint8_t erir :1;
+      uint8_t upir :1;
+      uint8_t spare :4;
+   } bf;
+   uint8_t b;
+  } u1;
+
+  //--------
+  pfcp_report_type_ie(const pfcp::report_type_t& b) : pfcp_ie(PFCP_IE_REPORT_TYPE){
+    u1.b = 0;
+    u1.bf.dldr = b.dldr;
+    u1.bf.usar = b.usar;
+    u1.bf.erir = b.erir;
+    u1.bf.upir = b.upir;
+    tlv.set_length(1);
+  }
+  //--------
+  pfcp_report_type_ie() : pfcp_ie(PFCP_IE_REPORT_TYPE){
+    u1.b = 0;
+    tlv.set_length(1);
+  }
+  //--------
+  pfcp_report_type_ie(const pfcp_tlv& t) : pfcp_ie(t) {
+    u1.b = 0;
+  };
+  //--------
+  void to_core_type(pfcp::report_type_t& b) {
+    b.dldr = u1.bf.dldr;
+    b.usar = u1.bf.usar;
+    b.erir = u1.bf.erir;
+    b.upir = u1.bf.upir;
+  }
+  //--------
+  void dump_to(std::ostream& os) {
+    tlv.dump_to(os);
+    os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
+  }
+  //--------
+  void load_from(std::istream& is) {
+    //tlv.load_from(is);
+    if (tlv.get_length() != 1) {
+      throw pfcp_tlv_bad_length_exception(tlv.type, tlv.get_length(), __FILE__, __LINE__);
+    }
+    is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
+  }
+  //--------
+  void to_core_type(pfcp_ies_container& s) {
+      pfcp::report_type_t report_type = {};
+      to_core_type(report_type);
+      s.set(report_type);
+  }
+};
 //-------------------------------------
 // IE OFFENDING_IE
 class pfcp_offending_ie_ie : public pfcp_ie {
@@ -4065,49 +4081,34 @@ public:
 //  }
 //};
 ////-------------------------------------
-//// IE DOWNLINK_DATA_REPORT
-//class pfcp_downlink_data_report_ie : public pfcp_ie {
-//public:
-//  uint8_t todo;
-//
-//  //--------
-//  pfcp_downlink_data_report_ie(const pfcp::downlink_data_report& b) : pfcp_ie(PFCP_IE_DOWNLINK_DATA_REPORT){
-//    todo = 0;
-//    tlv.set_length(1);
-//  }
-//  //--------
-//  pfcp_downlink_data_report_ie() : pfcp_ie(PFCP_IE_DOWNLINK_DATA_REPORT){
-//    todo = 0;
-//    tlv.set_length(1);
-//  }
-//  //--------
-//  pfcp_downlink_data_report_ie(const pfcp_tlv& t) : pfcp_ie(t) {
-//    todo = 0;
-//  };
-//  //--------
-//  void to_core_type(pfcp::downlink_data_report& b) {
-//    b.todo = todo;
-//  }
-//  //--------
-//  void dump_to(std::ostream& os) {
-//    tlv.dump_to(os);
-//    os.write(reinterpret_cast<const char*>(&todo), sizeof(todo));
-//  }
-//  //--------
-//  void load_from(std::istream& is) {
-//    //tlv.load_from(is);
-//    if (tlv.get_length() != 1) {
-//      throw pfcp_tlv_bad_length_exception(tlv.type, tlv.get_length(), __FILE__, __LINE__);
-//    }
-//    is.read(reinterpret_cast<char*>(&todo), sizeof(todo));
-//  }
-//  //--------
-//  void to_core_type(pfcp_ies_container& s) {
-//      pfcp::downlink_data_report downlink_data_report = {};
-//      to_core_type(downlink_data_report);
-//      s.set(downlink_data_report);
-//  }
-//};
+// IE DOWNLINK_DATA_REPORT
+class pfcp_downlink_data_report_ie : public pfcp_grouped_ie {
+public:
+  //--------
+  pfcp_downlink_data_report_ie(const pfcp::downlink_data_report& b) : pfcp_grouped_ie(PFCP_IE_DOWNLINK_DATA_REPORT){
+    tlv.set_length(0);
+    if (b.pdr_id.first) {std::shared_ptr<pfcp_pdr_id_ie> sie(new pfcp_pdr_id_ie(b.pdr_id.second)); add_ie(sie);}
+    // TODO Later(SXa, N4) if (b.downlink_data_service_information.first) {std::shared_ptr<pfcp_downlink_data_service_information_ie> sie(new pfcp_downlink_data_service_information_ie(b.downlink_data_service_information.second)); add_ie(sie);}
+  }
+  //--------
+  pfcp_downlink_data_report_ie() : pfcp_grouped_ie(PFCP_IE_DOWNLINK_DATA_REPORT){
+  }
+  //--------
+  explicit pfcp_downlink_data_report_ie(const pfcp_tlv& t) : pfcp_grouped_ie(t) {
+  };
+  //--------
+  void to_core_type(pfcp::downlink_data_report& c) {
+    for (auto sie : ies) {
+      sie.get()->to_core_type(c);
+    }
+  }
+  //--------
+  void to_core_type(pfcp_ies_container& s) {
+    pfcp::downlink_data_report i = {};
+    to_core_type(i);
+    s.set(i);
+  }
+};
 //-------------------------------------
 // IE OUTER_HEADER_CREATION
 class pfcp_outer_header_creation_ie : public pfcp_ie {
@@ -4998,51 +4999,58 @@ public:
 //  }
 //};
 ////-------------------------------------
-//// IE NODE_REPORT_TYPE
-//class pfcp_node_report_type_ie : public pfcp_ie {
-//public:
-//  uint8_t todo;
-//
-//  //--------
-//  pfcp_node_report_type_ie(const pfcp::node_report_type_t& b) : pfcp_ie(PFCP_IE_NODE_REPORT_TYPE){
-//    todo = 0;
-//    tlv.set_length(1);
-//  }
-//  //--------
-//  pfcp_node_report_type_ie() : pfcp_ie(PFCP_IE_NODE_REPORT_TYPE){
-//    todo = 0;
-//    tlv.set_length(1);
-//  }
-//  //--------
-//  pfcp_node_report_type_ie(const pfcp_tlv& t) : pfcp_ie(t) {
-//    todo = 0;
-//  };
-//  //--------
-//  void to_core_type(pfcp::node_report_type_t& b) {
-//    b.todo = todo;
-//  }
-//  //--------
-//  void dump_to(std::ostream& os) {
-//    tlv.dump_to(os);
-//    os.write(reinterpret_cast<const char*>(&todo), sizeof(todo));
-//  }
-//  //--------
-//  void load_from(std::istream& is) {
-//    //tlv.load_from(is);
-//    if (tlv.get_length() != 1) {
-//      throw pfcp_tlv_bad_length_exception(tlv.type, tlv.get_length(), __FILE__, __LINE__);
-//    }
-//    is.read(reinterpret_cast<char*>(&todo), sizeof(todo));
-//  }
-//  //--------
-//  void to_core_type(pfcp_ies_container& s) {
-//      pfcp::node_report_type_t node_report_type = {};
-//      to_core_type(node_report_type);
-//      s.set(node_report_type);
-//  }
-//};
-////-------------------------------------
-//// IE USER_PLANE_PATH_FAILURE_REPORT
+// IE NODE_REPORT_TYPE
+class pfcp_node_report_type_ie : public pfcp_ie {
+public:
+  union {
+    struct {
+      uint8_t upfr :1;
+      uint8_t spare1 :7;
+   } bf;
+   uint8_t b;
+  } u1;
+
+  //--------
+  pfcp_node_report_type_ie(const pfcp::node_report_type_t& b) : pfcp_ie(PFCP_IE_NODE_REPORT_TYPE){
+    u1.b = 0;
+    tlv.set_length(1);
+  }
+  //--------
+  pfcp_node_report_type_ie() : pfcp_ie(PFCP_IE_NODE_REPORT_TYPE){
+    u1.b = 0;
+    tlv.set_length(1);
+  }
+  //--------
+  pfcp_node_report_type_ie(const pfcp_tlv& t) : pfcp_ie(t) {
+    u1.b = 0;
+  };
+  //--------
+  void to_core_type(pfcp::node_report_type_t& b) {
+    u1.b = 0;
+    u1.bf.upfr = b.upfr;
+  }
+  //--------
+  void dump_to(std::ostream& os) {
+    tlv.dump_to(os);
+    os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
+  }
+  //--------
+  void load_from(std::istream& is) {
+    //tlv.load_from(is);
+    if (tlv.get_length() != 1) {
+      throw pfcp_tlv_bad_length_exception(tlv.type, tlv.get_length(), __FILE__, __LINE__);
+    }
+    is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
+  }
+  //--------
+  void to_core_type(pfcp_ies_container& s) {
+      pfcp::node_report_type_t node_report_type = {};
+      to_core_type(node_report_type);
+      s.set(node_report_type);
+  }
+};
+//-------------------------------------
+// IE USER_PLANE_PATH_FAILURE_REPORT
 //class pfcp_user_plane_path_failure_report_ie : public pfcp_ie {
 //public:
 //  uint8_t todo;

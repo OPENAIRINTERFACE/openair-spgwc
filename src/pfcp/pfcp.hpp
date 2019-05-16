@@ -130,13 +130,13 @@ public:
   virtual uint32_t send_request(const endpoint& dest, const pfcp_association_setup_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
 //  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_association_update_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
   virtual uint32_t send_request(const endpoint& dest, const pfcp_association_release_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-//  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
 
   // session related messages
   virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_establishment_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
   virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_modification_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
   virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_deletion_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
-//  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id);
 
   // Node related messages
   virtual void send_response(const endpoint& dest, const pfcp_heartbeat_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);

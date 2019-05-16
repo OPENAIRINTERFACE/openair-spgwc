@@ -223,6 +223,12 @@ void pgw_app_task (void*)
       }
       break;
 
+    case SXAB_SESSION_REPORT_REQUEST:
+      if (itti_sxab_session_report_request* m = dynamic_cast<itti_sxab_session_report_request*>(msg)) {
+        pgw_app_inst->handle_itti_msg(std::ref(*m));
+      }
+      break;
+
     case S5S8_CREATE_SESSION_REQUEST:
       pgw_app_inst->handle_itti_msg(std::static_pointer_cast<itti_s5s8_create_session_request>(shared_msg));
       break;
@@ -285,7 +291,7 @@ pgw_app::pgw_app (const std::string& config_file) : m_s5s8_cp_teid_generator(), 
 }
 
 //------------------------------------------------------------------------------
-void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, 
+void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid,
   const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
@@ -305,7 +311,7 @@ void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_
 
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, 
+void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid,
   const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
@@ -324,7 +330,7 @@ void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, 
+void pgw_app::send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid,
   const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
@@ -343,7 +349,7 @@ void pgw_app::send_delete_session_response_cause_context_not_found (const uint64
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, 
+void pgw_app::send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid,
   const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
@@ -362,7 +368,7 @@ void pgw_app::send_release_access_bearers_response_cause_context_not_found(const
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, 
+void pgw_app::send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid,
   const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
@@ -572,6 +578,12 @@ void pgw_app::handle_itti_msg (itti_sxab_session_deletion_response& smresp)
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", smresp.seid, smresp.trxn_id);
   }
+}
+
+//------------------------------------------------------------------------------
+void pgw_app::handle_itti_msg (itti_sxab_session_report_request& snr)
+{
+  Logger::pgwc_app().debug("Received SXAB SESSION REPORT REQUEST seid" TEID_FMT "  pfcp_tx_id %" PRIX64" ", snr.seid, snr.trxn_id);
 }
 
 

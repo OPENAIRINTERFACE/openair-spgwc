@@ -105,7 +105,7 @@ bool pfcp_l4_stack::check_response_type(const uint8_t initial, const uint8_t tri
       if (triggered == (initial+1)) return true;
       break;
     default:
-      if (triggered == GTP_VERSION_NOT_SUPPORTED_INDICATION) return true;
+      if (triggered == PFCP_VERSION_NOT_SUPPORTED_RESPONSE) return true;
   }
   return false;
 
@@ -227,7 +227,7 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const pfcp_heartbeat_
   pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
@@ -252,7 +252,7 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const pfcp_associatio
   pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
@@ -277,7 +277,7 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const pfcp_associatio
   pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 ////------------------------------------------------------------------------------
@@ -332,32 +332,31 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const pfcp_associatio
 //  udp_s.async_send_to(sm, dest);
 //  return msg.get_sequence_number();
 //}
-////------------------------------------------------------------------------------
-//uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id)
-//{
-//  std::ostringstream oss(std::ostringstream::binary);
-//  pfcp_msg msg(pfcp_ies);
-//  msg.set_seid(seid);
-//  msg.set_sequence_number(get_next_seq_num());
-//  msg.dump_to(oss);
-//  //std::cout << string_to_hex(oss.str()) << std::endl;
-//  //std::cout << std::hex << "msg length 0x" << msg.get_message_length() << "msg seqnum 0x" << msg.get_sequence_number() << std::endl;
-//  std::string bstream = oss.str();
-//
-//  Logger::pfcp().trace( "Sending %s, seq %d", pfcp_ies.get_msg_name(), msg.get_sequence_number());
-//  pfcp_procedure proc = {};
-//  proc.initial_msg_type = msg.get_message_type();
-//  proc.trxn_id = trxn_id;
-//  proc.retry_msg = std::make_shared<pfcp_msg>(msg);
-//  proc.remote_endpoint = dest;
-//  start_msg_retry_timer(proc, PFCP_T1_RESPONSE_MS, task_id, msg.get_sequence_number());
-//  start_proc_cleanup_timer(proc, PFCP_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
-//  pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
-//  trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
-//
-//  udp_s.async_send_to(sm, dest);
-//  return msg.get_sequence_number();
-//}
+//------------------------------------------------------------------------------
+uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id)
+{
+  std::ostringstream oss(std::ostringstream::binary);
+  pfcp_msg msg(pfcp_ies);
+  msg.set_sequence_number(get_next_seq_num());
+  msg.dump_to(oss);
+  //std::cout << string_to_hex(oss.str()) << std::endl;
+  //std::cout << std::hex << "msg length 0x" << msg.get_message_length() << "msg seqnum 0x" << msg.get_sequence_number() << std::endl;
+  std::string bstream = oss.str();
+
+  Logger::pfcp().trace( "Sending %s, seq %d", pfcp_ies.get_msg_name(), msg.get_sequence_number());
+  pfcp_procedure proc = {};
+  proc.initial_msg_type = msg.get_message_type();
+  proc.trxn_id = trxn_id;
+  proc.retry_msg = std::make_shared<pfcp_msg>(msg);
+  proc.remote_endpoint = dest;
+  start_msg_retry_timer(proc, PFCP_T1_RESPONSE_MS, task_id, msg.get_sequence_number());
+  start_proc_cleanup_timer(proc, PFCP_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
+  pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
+  trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
+
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
+  return msg.get_sequence_number();
+}
 //------------------------------------------------------------------------------
 uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_establishment_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id)
 {
@@ -381,7 +380,7 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, 
   pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
@@ -407,7 +406,7 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, 
   pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 ////------------------------------------------------------------------------------
@@ -459,37 +458,35 @@ uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, 
   pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
-////------------------------------------------------------------------------------
-//uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id)
-//{
-//  std::ostringstream oss(std::ostringstream::binary);
-//  pfcp_msg msg(pfcp_ies);
-//  msg.set_seid(seid);
-//  msg.set_sequence_number(get_next_seq_num());
-//  msg.dump_to(oss);
-//  //std::cout << string_to_hex(oss.str()) << std::endl;
-//  //std::cout << std::hex << "msg length 0x" << msg.get_message_length() << "msg seqnum 0x" << msg.get_sequence_number() << std::endl;
-//  std::string bstream = oss.str();
-//
-//  Logger::pfcp().trace( "Sending %s, seq %d", pfcp_ies.get_msg_name(), msg.get_sequence_number());
-//  pfcp_procedure proc = {};
-//  proc.initial_msg_type = msg.get_message_type();
-//  proc.trxn_id = trxn_id;
-//  proc.retry_msg = std::make_shared<pfcp_msg>(msg);
-//  proc.remote_endpoint = dest;
-//  start_msg_retry_timer(proc, PFCP_T1_RESPONSE_MS, task_id, msg.get_sequence_number());
-//  start_proc_cleanup_timer(proc, PFCP_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
-//  pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
-//  trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
-//
-//  udp_s.async_send_to(sm, dest);
-//  return msg.get_sequence_number();
-//}
-//
+//------------------------------------------------------------------------------
+uint32_t pfcp_l4_stack::send_request(const endpoint& dest, const uint64_t seid, const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id, const uint64_t trxn_id)
+{
+  std::ostringstream oss(std::ostringstream::binary);
+  pfcp_msg msg(pfcp_ies);
+  msg.set_seid(seid);
+  msg.set_sequence_number(get_next_seq_num());
+  msg.dump_to(oss);
+  //std::cout << string_to_hex(oss.str()) << std::endl;
+  //std::cout << std::hex << "msg length 0x" << msg.get_message_length() << "msg seqnum 0x" << msg.get_sequence_number() << std::endl;
+  std::string bstream = oss.str();
 
+  Logger::pfcp().trace( "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(), msg.get_sequence_number(), seid);
+  pfcp_procedure proc = {};
+  proc.initial_msg_type = msg.get_message_type();
+  proc.trxn_id = trxn_id;
+  proc.retry_msg = std::make_shared<pfcp_msg>(msg);
+  proc.remote_endpoint = dest;
+  start_msg_retry_timer(proc, PFCP_T1_RESPONSE_MS, task_id, msg.get_sequence_number());
+  start_proc_cleanup_timer(proc, PFCP_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
+  pending_procedures.insert(std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
+  trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.trxn_id, msg.get_sequence_number()));
+
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
+  return msg.get_sequence_number();
+}
 //------------------------------------------------------------------------------
 void pfcp_l4_stack::send_response(const endpoint& dest, const pfcp_heartbeat_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a)
 {
@@ -502,7 +499,7 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const pfcp_heartbeat_res
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::pfcp().trace( "Sending %s, seq %d", pfcp_ies.get_msg_name(), msg.get_sequence_number());
-    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -528,7 +525,7 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const pfcp_association_s
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::pfcp().trace( "Sending %s, seq %d", pfcp_ies.get_msg_name(), msg.get_sequence_number());
-    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -555,7 +552,7 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const pfcp_association_r
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::pfcp().trace( "Sending %s, seq %d", pfcp_ies.get_msg_name(), msg.get_sequence_number());
-    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -583,7 +580,7 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const uint64_t seid, con
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::pfcp().trace( "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(), msg.get_sequence_number(), seid);
-    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -610,7 +607,7 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const uint64_t seid, con
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::pfcp().trace( "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(), msg.get_sequence_number(), seid);
-    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -637,7 +634,7 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const uint64_t seid, con
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::pfcp().trace( "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(), msg.get_sequence_number(), seid);
-    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -676,7 +673,7 @@ void pfcp_l4_stack::time_out_event(const uint32_t timer_id, const task_id_t& tas
         std::ostringstream oss(std::ostringstream::binary);
         it_proc->second.retry_msg->dump_to(oss);
         std::string bstream = oss.str();
-        udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), it_proc->second.remote_endpoint); 
+        udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), it_proc->second.remote_endpoint);
       } else {
         // abort procedure
         notify_ul_error(it_proc->second, ::cause_value_e::REMOTE_PEER_NOT_RESPONDING);

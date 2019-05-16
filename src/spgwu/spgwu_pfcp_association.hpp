@@ -41,19 +41,19 @@ namespace spgwu {
 #define PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES 5
   class pfcp_association {
   public:
-    pfcp::node_id_t                              node_id;
-    std::size_t                                                 hash_node_id;
+    pfcp::node_id_t                              node_id; // peer
+    std::size_t                                  hash_node_id;
     pfcp::recovery_time_stamp_t                  recovery_time_stamp;
     std::pair<bool,pfcp::cp_function_features_s> function_features;
     //
-    mutable std::mutex                                          m_sessions;
+    mutable std::mutex                           m_sessions;
     std::set<pfcp::fseid_t>                      sessions;
     //
-    timer_id_t                             timer_heartbeat;
-    int                                                         num_retries_timer_heartbeat;
-    uint64_t                                                    trxn_id_heartbeat;
+    timer_id_t                                   timer_heartbeat;
+    int                                          num_retries_timer_heartbeat;
+    uint64_t                                     trxn_id_heartbeat;
 
-    timer_id_t                             timer_association;
+    timer_id_t                                   timer_association;
 
     explicit pfcp_association(const pfcp::node_id_t& node_id) :
       node_id(node_id), recovery_time_stamp(), function_features(), m_sessions(), sessions() {
@@ -92,10 +92,11 @@ namespace spgwu {
 //       trxn_id_heartbeat = p.trxn_id_heartbeat;
 //     }
     void notify_add_session(const pfcp::fseid_t& cp_fseid);
-    bool has_session(const pfcp::fseid_t& cp_fseid);
+    bool has_session(const pfcp::fseid_t& cp_fseid) const ;
     void notify_del_session(const pfcp::fseid_t& cp_fseid);
     void del_sessions();
     void set(const pfcp::cp_function_features_s& ff) {function_features.first = true; function_features.second = ff;};
+    const pfcp::node_id_t& peer_node_id() const {return this->node_id;};
   };
 
 #define PFCP_MAX_ASSOCIATIONS 16

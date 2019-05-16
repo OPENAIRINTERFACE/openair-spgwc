@@ -88,7 +88,7 @@ public:
   void send_sx_msg (itti_sxab_session_establishment_response& s);
   void send_sx_msg (itti_sxab_session_modification_response& s);
   void send_sx_msg (itti_sxab_session_deletion_response& s);
-  void send_sx_msg (itti_sxab_session_report_request& s) {};
+  void send_sx_msg (itti_sxab_session_report_request& s) ;
 
   void send_sx_msg(const pfcp::fseid_t& cp_fseid, const pfcp::pfcp_session_report_request& s);
 

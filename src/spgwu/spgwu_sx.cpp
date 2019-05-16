@@ -435,6 +435,11 @@ void spgwu_sx::handle_itti_msg (itti_sxab_session_deletion_response& msg)
   send_sx_msg(msg);
 }
 //------------------------------------------------------------------------------
+void spgwu_sx::send_sx_msg(itti_sxab_association_setup_request& i)
+{
+  send_request(i.r_endpoint, i.pfcp_ies, TASK_SPGWU_SX, i.trxn_id);
+}
+//------------------------------------------------------------------------------
 void spgwu_sx::send_sx_msg(itti_sxab_session_establishment_response& i)
 {
   send_response(i.r_endpoint, i.seid, i.pfcp_ies, i.trxn_id);
@@ -448,6 +453,11 @@ void spgwu_sx::send_sx_msg(itti_sxab_session_modification_response& i)
 void spgwu_sx::send_sx_msg(itti_sxab_session_deletion_response& i)
 {
   send_response(i.r_endpoint, i.seid, i.pfcp_ies, i.trxn_id);
+}
+//------------------------------------------------------------------------------
+void spgwu_sx::send_sx_msg(itti_sxab_session_report_request& i)
+{
+  send_request(i.r_endpoint, i.seid, i.pfcp_ies, TASK_SPGWU_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
 void spgwu_sx::start_association(const pfcp::node_id_t& node_id)
@@ -473,26 +483,24 @@ void spgwu_sx::start_association(const pfcp::node_id_t& node_id)
   }
 }
 //------------------------------------------------------------------------------
-void spgwu_sx::send_sx_msg(itti_sxab_association_setup_request& i)
-{
-  send_request(i.r_endpoint, i.pfcp_ies, TASK_SPGWU_SX, i.trxn_id);
-}
-//------------------------------------------------------------------------------
 void spgwu_sx::send_sx_msg(const pfcp::fseid_t& cp_fseid, const pfcp::pfcp_session_report_request& s)
 {
   itti_sxab_session_report_request isrr(TASK_SPGWU_SX, TASK_SPGWU_SX);
   isrr.trxn_id = generate_trxn_id();
   isrr.pfcp_ies = s;
 
-  pfcp::node_id_t this_node_id = {};
-  if (spgwu_cfg.get_pfcp_node_id(this_node_id) == RETURNok) {
-    if (this_node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
+  std::shared_ptr<pfcp_association>  sa = {};
+  if (pfcp_associations::get_instance().get_association(cp_fseid, sa)) {
+    const pfcp::node_id_t& peer_node_id = sa->peer_node_id();
+    if (peer_node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
       //a.l_endpoint = endpoint(boost::asio::ip::address_v4(spgwu_cfg.sx.addr4), 0);
-      isrr.r_endpoint = endpoint(this_node_id.u1.ipv4_address, pfcp::default_port);
+      isrr.r_endpoint = endpoint(peer_node_id.u1.ipv4_address, pfcp::default_port);
       send_sx_msg(isrr);
     } else {
       Logger::spgwu_sx().warn( "TODO start_association() node_id IPV6, FQDN!");
     }
+  } else {
+    Logger::spgwu_sx().warn( "Could not send PFCP_SESSION_REPORT_REQUEST, cause association not found for cp_fseid");
   }
 }
 //------------------------------------------------------------------------------
