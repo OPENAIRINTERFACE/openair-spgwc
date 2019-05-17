@@ -354,6 +354,7 @@ public:
   explicit gtpv2c_msg(const gtpv2c_modify_bearer_response& gtp_ies);
   explicit gtpv2c_msg(const gtpv2c_release_access_bearers_request& gtp_ies);
   explicit gtpv2c_msg(const gtpv2c_release_access_bearers_response& gtp_ies);
+  explicit gtpv2c_msg(const gtpv2c_downlink_data_notification& gtp_ies);
 
   ~gtpv2c_msg() {
     ies.clear();

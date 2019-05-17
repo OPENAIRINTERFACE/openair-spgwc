@@ -141,10 +141,10 @@ public:
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   //void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
-  itti_s11_release_access_bearers_request     msg;
+  itti_s11_release_access_bearers_request                 msg;
   std::vector<std::shared_ptr<bearers_to_be_released>>    bearers;
   std::shared_ptr<sgw_eps_bearer_context>                 ebc;
-  cause_t                                           cause;
+  cause_t                                                 cause;
 };
 //------------------------------------------------------------------------------
 class delete_session_request_procedure : public sebc_procedure {
@@ -158,7 +158,7 @@ public:
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
-  itti_s11_delete_session_request msg;
+  itti_s11_delete_session_request             msg;
   std::shared_ptr<sgw_eps_bearer_context>     ebc;
   std::shared_ptr<sgw_pdn_connection>         pdn_connection;
 };

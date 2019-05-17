@@ -314,8 +314,8 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const gtpv2c_e
   pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
-  return msg.get_sequence_number();  
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
+  return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
 uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
@@ -340,7 +340,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
@@ -364,7 +364,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
@@ -388,7 +388,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
@@ -413,10 +413,34 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
   start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
 
-  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
 }
+//------------------------------------------------------------------------------
+uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
+{
+  std::ostringstream oss(std::ostringstream::binary);
+  gtpv2c_msg msg(gtp_ies);
+  msg.set_teid(teid);
+  msg.set_sequence_number(get_next_seq_num());
+  msg.dump_to(oss);
+  std::string bstream = oss.str();
 
+  Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
+  gtpv2c_procedure proc = {};
+  proc.initial_msg_type = msg.get_message_type();
+  proc.gtpc_tx_id = gtp_tx_id;
+  proc.retry_msg = std::make_shared<gtpv2c_msg>(msg);
+  proc.remote_endpoint = dest;
+  start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
+  start_proc_cleanup_timer(proc, GTPV2C_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
+  pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
+  gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
+  start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
+
+  udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
+  return msg.get_sequence_number();
+}
 //------------------------------------------------------------------------------
 void gtpv2c_stack::send_triggered_message(const endpoint& dest, const gtpv2c_echo_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
 {
@@ -429,7 +453,7 @@ void gtpv2c_stack::send_triggered_message(const endpoint& dest, const gtpv2c_ech
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
-    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest); 
+    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -456,7 +480,7 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
-    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint); 
+    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -483,7 +507,7 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
-    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint); 
+    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -510,7 +534,7 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
-    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint); 
+    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);
@@ -537,7 +561,7 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
     msg.dump_to(oss);
     std::string bstream = oss.str();
     Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
-    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint); 
+    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint);
 
     if (a == DELETE_TX) {
       std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);

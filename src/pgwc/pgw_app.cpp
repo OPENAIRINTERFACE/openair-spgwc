@@ -224,9 +224,7 @@ void pgw_app_task (void*)
       break;
 
     case SXAB_SESSION_REPORT_REQUEST:
-      if (itti_sxab_session_report_request* m = dynamic_cast<itti_sxab_session_report_request*>(msg)) {
-        pgw_app_inst->handle_itti_msg(std::ref(*m));
-      }
+      pgw_app_inst->handle_itti_msg(std::static_pointer_cast<itti_sxab_session_report_request>(shared_msg));
       break;
 
     case S5S8_CREATE_SESSION_REQUEST:
@@ -581,9 +579,16 @@ void pgw_app::handle_itti_msg (itti_sxab_session_deletion_response& smresp)
 }
 
 //------------------------------------------------------------------------------
-void pgw_app::handle_itti_msg (itti_sxab_session_report_request& snr)
+void pgw_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_request> snr)
 {
-  Logger::pgwc_app().debug("Received SXAB SESSION REPORT REQUEST seid" TEID_FMT "  pfcp_tx_id %" PRIX64" ", snr.seid, snr.trxn_id);
+  std::shared_ptr<pgw_context> pc = {};
+  std::shared_lock<std::shared_mutex> lpc;
+  if (seid_2_pgw_context(snr->seid, pc, lpc)) {
+    pc.get()->handle_itti_msg(snr);
+    lpc.unlock();
+  } else {
+    Logger::pgwc_app().debug("Received SXAB SESSION REPORT REQUEST seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", snr->seid, snr->trxn_id);
+  }
 }
 
 

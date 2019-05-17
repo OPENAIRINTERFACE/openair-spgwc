@@ -123,6 +123,28 @@ pgw_eps_bearer& pgw_pdn_connection::get_eps_bearer(const ebi_t& ebi)
 }
 
 //------------------------------------------------------------------------------
+bool pgw_pdn_connection::find_eps_bearer(const pfcp::pdr_id_t& pdr_id, pgw_eps_bearer& bearer)
+{
+  for (std::map<uint8_t,pgw_eps_bearer>::iterator it=eps_bearers.begin(); it!=eps_bearers.end(); ++it) {
+    if ((it->second.pdr_id_ul == pdr_id) || (it->second.pdr_id_dl == pdr_id)) {
+      bearer = it->second;
+      return true;
+    }
+  }
+  return false;
+}
+//------------------------------------------------------------------------------
+bool pgw_pdn_connection::has_eps_bearer(const pfcp::pdr_id_t& pdr_id, ebi_t& ebi)
+{
+  for (std::map<uint8_t,pgw_eps_bearer>::iterator it=eps_bearers.begin(); it!=eps_bearers.end(); ++it) {
+    if ((it->second.pdr_id_ul == pdr_id) || (it->second.pdr_id_dl == pdr_id)) {
+      ebi = it->second.ebi;
+      return true;
+    }
+  }
+  return false;
+}
+//------------------------------------------------------------------------------
 void pgw_pdn_connection::remove_eps_bearer(const ebi_t& ebi)
 {
   pgw_eps_bearer& bearer = eps_bearers[ebi.ebi];
@@ -233,6 +255,23 @@ bool apn_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is
     return false;
   }
 }
+
+//------------------------------------------------------------------------------
+bool apn_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi, std::shared_lock<std::shared_mutex>& lock_found)
+{
+  std::shared_lock lock(m_pdn_connections);
+  for (auto pit : pdn_connections) {
+    std::shared_lock<std::shared_mutex> lock_pdn = {};
+
+    if (pit->has_eps_bearer(pdr_id, ebi)) {
+      pdn = pit; // May make pair
+      lock_found.swap(lock_pdn);
+      return true;
+    }
+  }
+  return false;
+}
+
 //------------------------------------------------------------------------------
 void apn_context::delete_pdn_connection(std::shared_ptr<pgw_pdn_connection>& pdn_connection)
 {
@@ -290,6 +329,23 @@ bool pgw_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is
   }
   return false;
 }
+
+//------------------------------------------------------------------------------
+bool pgw_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi, std::shared_lock<std::shared_mutex>& lock_found)
+{
+  std::shared_lock lock(m_apns);
+  for (auto ait : apns) {
+    std::shared_ptr<pgw_pdn_connection> sp;
+    std::shared_lock<std::shared_mutex> lock_pdn = {};
+    if (ait->find_pdn_connection(pdr_id, sp, ebi, lock_pdn)) {
+      pdn = sp; // May make pair
+      lock_found.swap(lock_pdn);
+      return true;
+    }
+  }
+  return false;
+}
+
 //------------------------------------------------------------------------------
 bool pgw_context::find_pdn_connection(const std::string& apn, const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection, std::shared_lock<std::shared_mutex>& lock_found)
 {
@@ -544,7 +600,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
           }
         // Static IP address allocation
         } else if ((paa_res) && (paa.is_ip_assigned())) {
-          set_paa = true;          
+          set_paa = true;
         }
       } else {
         // TODO allocation via DHCP
@@ -565,7 +621,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
         }
       // Static IP address allocation
       } else if ((paa_res) && (paa.is_ip_assigned())) {
-        set_paa = true;          
+        set_paa = true;
       }
     }
     break;
@@ -581,7 +637,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
           cause.pce = 1;
         }
       } else if ((paa_res) && (paa.is_ip_assigned())) {
-        set_paa = true;          
+        set_paa = true;
       }
     }
     break;
@@ -814,14 +870,14 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bear
         }
       } else {
         Logger::pgwc_app().warn( "S5S8 RELEASE_ACCESS_BEARERS_REQUEST procedure TODO");
-        pgw_app_inst->send_release_access_bearers_response_cause_request_accepted (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key, 
+        pgw_app_inst->send_release_access_bearers_response_cause_request_accepted (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key,
                         s5_trigger->r_endpoint);
       }
       lock_pdn.unlock();
     }
   } else {
     Logger::pgwc_app().info( "S5S8 RELEASE_ACCESS_BEARERS_REQUEST procedure failed, context not found");
-    pgw_app_inst->send_release_access_bearers_response_cause_context_not_found (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key, 
+    pgw_app_inst->send_release_access_bearers_response_cause_context_not_found (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key,
                     s5_trigger->r_endpoint);
   }
 }
@@ -869,6 +925,49 @@ void pgw_context::handle_itti_msg (itti_sxab_session_deletion_response& sdresp)
     Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", sdresp.seid, sdresp.trxn_id);
   }
   std::cout << toString() << std::endl;
+}
+//------------------------------------------------------------------------------
+void pgw_context::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_request>& req)
+{
+  pfcp::report_type_t report_type;
+  if (req->pfcp_ies.get(report_type)) {
+    pfcp::pdr_id_t pdr_id;
+    // Downlink Data Report
+    if (report_type.dldr) {
+      pfcp::downlink_data_report data_report;
+      if (req->pfcp_ies.get(data_report)) {
+        pfcp::pdr_id_t pdr_id;
+        if (data_report.get(pdr_id)) {
+          std::shared_lock<std::shared_mutex> lp;
+          std::shared_ptr<pgw_pdn_connection> ppc = {};
+          ebi_t ebi;
+          if (find_pdn_connection(pdr_id, ppc, ebi, lp)) {
+            downlink_data_report_procedure* p = new downlink_data_report_procedure(req);
+            std::shared_ptr<pgw_procedure> sproc = std::shared_ptr<pgw_procedure>(p);
+            insert_procedure(sproc);
+            if (p->run(shared_from_this(), ppc, ebi)) {
+              // TODO handle error code
+              Logger::pgwc_app().info( "S11 CREATE_SESSION_REQUEST procedure failed");
+              remove_procedure(p);
+            } else {
+            }
+          }
+        }
+      }
+    }
+    // Usage Report
+    if (report_type.usar) {
+      Logger::pgwc_app().debug("TODO PFCP_SESSION_REPORT_REQUEST/Usage Report");
+    }
+    // Error Indication Report
+    if (report_type.erir) {
+      Logger::pgwc_app().debug("TODO PFCP_SESSION_REPORT_REQUEST/Error Indication Report");
+    }
+    // User Plane Inactivity Report
+    if (report_type.upir) {
+      Logger::pgwc_app().debug("TODO PFCP_SESSION_REPORT_REQUEST/User Plane Inactivity Report");
+    }
+  }
 }
 
 //------------------------------------------------------------------------------

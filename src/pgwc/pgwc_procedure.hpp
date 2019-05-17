@@ -105,8 +105,8 @@ public:
   std::shared_ptr<itti_s5s8_create_session_request>        s5_trigger;
   std::shared_ptr<itti_s5s8_create_session_response>       s5_triggered_pending;
   std::shared_ptr<itti_sxab_session_establishment_request> sx_triggered;
-  std::shared_ptr<pgw_pdn_connection>                                  ppc;
-  std::shared_ptr<pgwc::pgw_context>                      pc;
+  std::shared_ptr<pgw_pdn_connection>                      ppc;
+  std::shared_ptr<pgwc::pgw_context>                       pc;
 };
 
 //------------------------------------------------------------------------------
@@ -124,8 +124,8 @@ public:
   std::shared_ptr<itti_s5s8_modify_bearer_request>        s5_trigger;
   std::shared_ptr<itti_s5s8_modify_bearer_response>       s5_triggered_pending;
   std::shared_ptr<itti_sxab_session_modification_request> sx_triggered;
-  std::shared_ptr<pgw_pdn_connection>                                 ppc;
-  std::shared_ptr<pgwc::pgw_context>                     pc;
+  std::shared_ptr<pgw_pdn_connection>                     ppc;
+  std::shared_ptr<pgwc::pgw_context>                      pc;
 };
 //------------------------------------------------------------------------------
 class release_access_bearers_procedure : public pgw_procedure {
@@ -142,8 +142,8 @@ public:
   std::shared_ptr<itti_s5s8_release_access_bearers_request>  s5_trigger;
   std::shared_ptr<itti_s5s8_release_access_bearers_response> s5_triggered_pending;
   std::shared_ptr<itti_sxab_session_modification_request>    sx_triggered;
-  std::shared_ptr<pgw_pdn_connection>                                    ppc;
-  std::shared_ptr<pgwc::pgw_context>                        pc;
+  std::shared_ptr<pgw_pdn_connection>                        ppc;
+  std::shared_ptr<pgwc::pgw_context>                         pc;
 };
 //------------------------------------------------------------------------------
 class delete_session_procedure : public pgw_procedure {
@@ -161,8 +161,26 @@ public:
   std::shared_ptr<itti_s5s8_delete_session_request>       s5_trigger;
   std::shared_ptr<itti_s5s8_delete_session_response>      s5_triggered_pending;
   std::shared_ptr<itti_sxab_session_deletion_request>     sx_triggered;
-  std::shared_ptr<pgw_pdn_connection>                                 ppc;
-  std::shared_ptr<pgwc::pgw_context>                     pc;
+  std::shared_ptr<pgw_pdn_connection>                     ppc;
+  std::shared_ptr<pgwc::pgw_context>                      pc;
+};
+//------------------------------------------------------------------------------
+class downlink_data_report_procedure : public pgw_procedure {
+public:
+  explicit downlink_data_report_procedure(std::shared_ptr<itti_sxab_session_report_request>& req) : pgw_procedure(req->trxn_id), ppc(),
+      pc(), sx_trigger(req), s5_triggered(), ebi() {}
+  int run(std::shared_ptr<pgwc::pgw_context> context,
+          std::shared_ptr<pgwc::pgw_pdn_connection>  pdn, const ebi_t& e);
+  //void handle_itti_msg (itti_sxab_session_report_response& resp);
+  void notify_failure_to_peer(const pfcp::cause_t& cause);
+
+  //~downlink_data_report_procedure() {}
+
+  std::shared_ptr<itti_s5s8_downlink_data_notification>   s5_triggered;
+  std::shared_ptr<itti_sxab_session_report_request>       sx_trigger;
+  std::shared_ptr<pgw_pdn_connection>                     ppc;
+  std::shared_ptr<pgwc::pgw_context>                      pc;
+  ebi_t                                                   ebi;
 };
 
 }

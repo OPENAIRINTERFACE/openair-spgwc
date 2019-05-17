@@ -80,6 +80,12 @@ void pgw_s5s8_task (void *args_p)
       }
       break;
 
+    case S5S8_DOWNLINK_DATA_NOTIFICATION:
+      if (itti_s5s8_downlink_data_notification* m = dynamic_cast<itti_s5s8_downlink_data_notification*>(msg)) {
+        pgw_s5s8_inst->send_msg(ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::pgwc_s5s8().debug( "TIME-OUT event timer id %d", to->timer_id);
@@ -131,6 +137,11 @@ void pgw_s5s8::send_msg(itti_s5s8_modify_bearer_response& i)
 void pgw_s5s8::send_msg(itti_s5s8_release_access_bearers_response& i)
 {
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+}
+//------------------------------------------------------------------------------
+void pgw_s5s8::send_msg(itti_s5s8_downlink_data_notification& i)
+{
+  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_PGWC_S5S8, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void pgw_s5s8::handle_receive_create_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
@@ -334,7 +345,7 @@ void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote
   }
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, 
+void pgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transferred,
                               const endpoint& remote_endpoint)
 {
   //Logger::pgwc_s5s8().info( "handle_receive(%d bytes)", bytes_transferred);

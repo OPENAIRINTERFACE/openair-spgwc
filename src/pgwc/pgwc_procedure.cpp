@@ -933,4 +933,29 @@ void delete_session_procedure::handle_itti_msg (itti_sxab_session_deletion_respo
     Logger::pgwc_app().error( "Could not send ITTI message %s to task TASK_PGWC_S5S8", s5_triggered_pending->gtp_ies.get_msg_name());
   }
 }
+//------------------------------------------------------------------------------
+int downlink_data_report_procedure::run(std::shared_ptr<pgwc::pgw_context> context,
+          std::shared_ptr<pgwc::pgw_pdn_connection>  pdn, const ebi_t& e)
+{
+  ppc = pdn;
+  pc = context;
+  ebi = e;
+
+
+  itti_s5s8_downlink_data_notification *s5 = new itti_s5s8_downlink_data_notification(TASK_PGWC_APP, TASK_PGWC_S5S8);
+  s5->teid = ppc->sgw_fteid_s5_s8_cp.teid_gre_key;
+  s5->gtpc_tx_id = this->trxn_id;
+  s5->r_endpoint = endpoint(ppc->sgw_fteid_s5_s8_cp.ipv4_address, pgw_cfg.s5s8_cp.port);
+  s5->gtp_ies.set(e);
+  s5_triggered = std::shared_ptr<itti_s5s8_downlink_data_notification>(s5);
+
+
+  Logger::pgwc_app().info( "Sending ITTI message %s to task TASK_PGWC_S5S8", s5->gtp_ies.get_msg_name());
+  int ret = itti_inst->send_msg(s5_triggered);
+  if (RETURNok != ret) {
+    Logger::pgwc_app().error( "Could not send ITTI message %s to task TASK_PGWC_S5S8", s5->gtp_ies.get_msg_name());
+    return RETURNerror;
+  }
+  return RETURNok;
+}
 

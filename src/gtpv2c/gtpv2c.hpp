@@ -43,7 +43,7 @@
 #include "msg_gtpv2c.hpp"
 
 namespace gtpv2c {
-  
+
   static const uint16_t default_port = 2123;
 
 class gtpv2c_procedure {
@@ -139,6 +139,7 @@ public:
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
 
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
