@@ -221,6 +221,29 @@ void sgw_s5s8::handle_receive_delete_session_response(gtpv2c_msg& msg, const end
   }
   // else ignore
 }
+//------------------------------------------------------------------------------
+void sgw_s5s8::handle_receive_downlink_data_notification(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t gtpc_tx_id = 0;
+  gtpv2c_downlink_data_notification msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S5S8, error, gtpc_tx_id);
+  if (!error) {
+    itti_s5s8_downlink_data_notification *itti_msg = new itti_s5s8_downlink_data_notification(TASK_SGWC_S5S8, TASK_SGWC_APP);
+    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->gtpc_tx_id = gtpc_tx_id;
+    itti_msg->teid = msg.get_teid();
+    std::shared_ptr<itti_s5s8_downlink_data_notification> i = std::shared_ptr<itti_s5s8_downlink_data_notification>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::sgwc_s5s8().error( "Could not send ITTI message %s to task TASK_SGWC_APP", i->get_msg_name());
+    }
+  }
+  // else ignore
+}
 
 //------------------------------------------------------------------------------
 void sgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_endpoint)
@@ -252,6 +275,10 @@ void sgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote
   break;
   case GTP_RELEASE_ACCESS_BEARERS_RESPONSE: {
     handle_receive_release_access_bearers_response(msg, remote_endpoint);
+  }
+  break;
+  case GTP_DOWNLINK_DATA_NOTIFICATION: {
+    handle_receive_downlink_data_notification(msg, remote_endpoint);
   }
   break;
 
@@ -315,7 +342,6 @@ void sgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote
   case GTP_DELETE_INDIRECT_DATA_FORWARDING_TUNNEL_REQUEST:
   case GTP_DELETE_INDIRECT_DATA_FORWARDING_TUNNEL_RESPONSE:
   case GTP_RELEASE_ACCESS_BEARERS_REQUEST:
-  case GTP_DOWNLINK_DATA_NOTIFICATION:
   case GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE:
   case GTP_PGW_RESTART_NOTIFICATION:
   case GTP_PGW_RESTART_NOTIFICATION_ACKNOWLEDGE:

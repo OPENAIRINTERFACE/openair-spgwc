@@ -3518,6 +3518,13 @@ public:
   void set(const imsi_t& v, const uint8_t instance = 0) {imsi = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_PR_IE_IMSI;}
   void set(const fteid_t& v, const uint8_t instance = 0) {sender_fteid_for_cp = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_PR_IE_SENDER_FTEID_FOR_CP;}
   void set(const indication_t& v, const uint8_t instance = 0) {indication_flags = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS;}
+
+  bool get(cause_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_CAUSE) {v = cause;return true;}return false;}
+  bool get(ebi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_EPS_BEARER_ID) {v = eps_bearer_id;return true;}return false;}
+  bool get(arp_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_ARP) {v = arp;return true;}return false;}
+  bool get(imsi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_IMSI) {v = imsi;return true;}return false;}
+  bool get(fteid_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_SENDER_FTEID_FOR_CP) {v = sender_fteid_for_cp;return true;}return false;}
+  bool get(indication_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS) {v = indication_flags;return true;}return false;}
 };
 
 //-----------------------------------------------------------------------------

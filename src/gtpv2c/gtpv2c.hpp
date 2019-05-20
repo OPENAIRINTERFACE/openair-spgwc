@@ -49,9 +49,9 @@ namespace gtpv2c {
 class gtpv2c_procedure {
 public:
   std::shared_ptr<gtpv2c_msg> retry_msg;
-  endpoint remote_endpoint;
-  timer_id_t   retry_timer_id;
-  timer_id_t   proc_cleanup_timer_id;
+  endpoint                    remote_endpoint;
+  timer_id_t                  retry_timer_id;
+  timer_id_t                  proc_cleanup_timer_id;
   uint64_t                    gtpc_tx_id;
   uint8_t                     initial_msg_type; // sent or received
   uint8_t                     triggered_msg_type; // sent or received
@@ -98,8 +98,9 @@ protected:
   udp_server                             udp_s;
   udp_server                             udp_s_allocated;
 
-  // seems no need for std::atomic_uint32_t
+  // seems no need for atomic
   uint32_t                               seq_num;
+  std::mutex                             m_seq_num;
   uint32_t                               restart_counter;
 
   std::map<uint64_t, uint32_t>           gtpc_tx_id2seq_num;
@@ -147,6 +148,9 @@ public:
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
 
   void time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &error);
+
+
+
 };
 } // namespace gtpv2c
 

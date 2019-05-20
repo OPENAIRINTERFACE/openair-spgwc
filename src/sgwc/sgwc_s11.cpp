@@ -96,6 +96,12 @@ void sgw_s11_task (void *args_p)
       }
       break;
 
+    case S11_DOWNLINK_DATA_NOTIFICATION:
+      if (itti_s11_downlink_data_notification* m = dynamic_cast<itti_s11_downlink_data_notification*>(msg)) {
+        sgw_s11_inst->send_msg(ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::sgwc_s11().debug( "TIME-OUT event timer id %d", to->timer_id);
@@ -146,6 +152,11 @@ void sgw_s11::send_msg(itti_s11_modify_bearer_response& i)
 void sgw_s11::send_msg(itti_s11_release_access_bearers_response& i)
 {
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+}
+//------------------------------------------------------------------------------
+void sgw_s11::send_msg(itti_s11_downlink_data_notification& i)
+{
+  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S11, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_create_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)

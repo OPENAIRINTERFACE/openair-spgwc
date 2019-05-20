@@ -56,23 +56,27 @@ static std::string string_to_hex(const std::string& input)
 //------------------------------------------------------------------------------
 gtpv2c_stack::gtpv2c_stack(const string& ip_address, const unsigned short port_num, const util::thread_sched_params& sched_params) :
     udp_s(udp_server(ip_address.c_str(), port_num)),
-    udp_s_allocated(ip_address.c_str(), 0){
+    udp_s_allocated(ip_address.c_str(), 0), m_seq_num() {
 
-  Logger::gtpv2_c().info( "gtpv2c_stack created listening to %s:%d", ip_address.c_str(), port_num);
+  timespec ts;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  seq_num = (uint32_t)ts.tv_nsec & 0x7FFFFFFF;
+
+  Logger::gtpv2_c().info( "gtpv2c_stack created listening to %s:%d initial seq num %d", ip_address.c_str(), port_num, seq_num);
+
   gtpc_tx_id2seq_num = {};
   proc_cleanup_timers = {};
   msg_out_retry_timers = {};
   pending_procedures = {};
 
   id = 0;
-  srand (time(NULL));
-  seq_num = rand() & 0x7FFFFFFF;
   restart_counter = 0;
   udp_s.start_receive(this, sched_params);
   udp_s_allocated.start_receive(this, sched_params);
 }
 //------------------------------------------------------------------------------
 uint32_t gtpv2c_stack::get_next_seq_num() {
+  std::unique_lock lock(m_seq_num);
   seq_num++;
   if (seq_num & 0x80000000) {
     seq_num = 0;
@@ -195,7 +199,9 @@ void gtpv2c_stack::start_msg_retry_timer(gtpv2c_procedure& p, uint32_t time_out_
   if (!p.retry_timer_id) {
     p.retry_timer_id = itti_inst->timer_setup (time_out_milli_seconds/1000, time_out_milli_seconds%1000, task_id);
     msg_out_retry_timers.insert(std::pair<timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
-  //Logger::gtpv2_c().trace( "Started Msg retry timer %d, proc " PROC_ID_FMT ", seq %d",p.retry_timer_id, p.gtpc_tx_id, seq_num);
+#if TRACE_IS_ON
+    Logger::gtpv2_c().trace( "Started Msg retry timer %d, proc " PROC_ID_FMT ", seq %d",p.retry_timer_id, p.gtpc_tx_id, seq_num);
+#endif
   } else {
     Logger::gtpv2_c().error( "Try to overwrite Msg retry timer %d, proc " PROC_ID_FMT ", seq %d!",p.retry_timer_id, p.gtpc_tx_id, seq_num);
   }
@@ -206,7 +212,9 @@ void gtpv2c_stack::stop_msg_retry_timer(gtpv2c_procedure& p)
   if (p.retry_timer_id) {
     itti_inst->timer_remove(p.retry_timer_id);
     msg_out_retry_timers.erase(p.retry_timer_id);
-    //Logger::gtpv2_c().trace( "Stopped Msg retry timer %d, proc " PROC_ID_FMT ", seq %d",p.retry_timer_id, p.gtpc_tx_id, p.retry_msg->get_sequence_number());
+#if TRACE_IS_ON
+    Logger::gtpv2_c().trace( "Stopped Msg retry timer %d, proc " PROC_ID_FMT ", seq %d",p.retry_timer_id, p.gtpc_tx_id, p.retry_msg->get_sequence_number());
+#endif
     p.retry_timer_id = 0;
   }
 }
@@ -215,7 +223,9 @@ void gtpv2c_stack::stop_msg_retry_timer(timer_id_t& t)
 {
   itti_inst->timer_remove(t);
   msg_out_retry_timers.erase(t);
-  //Logger::gtpv2_c().trace( "Stopped Msg retry timer %d",t);
+#if TRACE_IS_ON
+  Logger::gtpv2_c().trace( "Stopped Msg retry timer %d",t);
+#endif
 }
 //------------------------------------------------------------------------------
 void gtpv2c_stack::start_proc_cleanup_timer(gtpv2c_procedure& p, uint32_t time_out_milli_seconds, const task_id_t& task_id, const uint32_t& seq_num)
@@ -223,7 +233,9 @@ void gtpv2c_stack::start_proc_cleanup_timer(gtpv2c_procedure& p, uint32_t time_o
   if (!p.proc_cleanup_timer_id) {
     p.proc_cleanup_timer_id = itti_inst->timer_setup (time_out_milli_seconds/1000, time_out_milli_seconds%1000, task_id);
     proc_cleanup_timers.insert(std::pair<timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
-    //Logger::gtpv2_c().trace( "Started proc cleanup timer %d, proc " PROC_ID_FMT " t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
+#if TRACE_IS_ON
+    Logger::gtpv2_c().trace( "Started proc cleanup timer %d, proc " PROC_ID_FMT " t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
+#endif
   } else {
     Logger::gtpv2_c().error( "Try to overwrite proc cleanup timer %d, proc " PROC_ID_FMT " t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.gtpc_tx_id, time_out_milli_seconds);
   }
@@ -232,7 +244,9 @@ void gtpv2c_stack::start_proc_cleanup_timer(gtpv2c_procedure& p, uint32_t time_o
 void gtpv2c_stack::stop_proc_cleanup_timer(gtpv2c_procedure& p)
 {
   itti_inst->timer_remove(p.proc_cleanup_timer_id);
-  //Logger::gtpv2_c().trace( "Stopped proc cleanup timer %d, proc " PROC_ID_FMT "",p.proc_cleanup_timer_id, p.gtpc_tx_id);
+#if TRACE_IS_ON
+  Logger::gtpv2_c().trace( "Stopped proc cleanup timer %d, proc " PROC_ID_FMT "",p.proc_cleanup_timer_id, p.gtpc_tx_id);
+#endif
   msg_out_retry_timers.erase(p.proc_cleanup_timer_id);
   p.proc_cleanup_timer_id = 0;
 }
@@ -411,7 +425,6 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   start_proc_cleanup_timer(proc, GTPV2C_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
   pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
-  start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
 
   udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();
@@ -436,7 +449,6 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   start_proc_cleanup_timer(proc, GTPV2C_PROC_TIME_OUT_MS, task_id, msg.get_sequence_number());
   pending_procedures.insert(std::pair<uint32_t, gtpv2c_procedure>(msg.get_sequence_number(), proc));
   gtpc_tx_id2seq_num.insert(std::pair<uint64_t, uint32_t>(proc.gtpc_tx_id, msg.get_sequence_number()));
-  start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
 
   udp_s_allocated.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
   return msg.get_sequence_number();

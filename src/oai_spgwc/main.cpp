@@ -29,6 +29,7 @@
 #include <thread>
 #include <signal.h>
 #include <stdint.h>
+#include <stdlib.h> // srand
 #include <unistd.h> // get_pid(), pause()
 
 using namespace gtpv2c;
@@ -65,6 +66,7 @@ void my_app_signal_handler(int s){
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
+  srand (time(NULL));
   // Logger
   Logger::init( "spgwc" );
 

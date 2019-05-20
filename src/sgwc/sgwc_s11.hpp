@@ -59,6 +59,7 @@ public:
   void send_msg(itti_s11_delete_session_response& m);
   void send_msg(itti_s11_modify_bearer_response& m);
   void send_msg(itti_s11_release_access_bearers_response& m);
+  void send_msg(itti_s11_downlink_data_notification& m);
 
   void send_echo_response(const endpoint& r_endpoint, const uint64_t trxn_id);
 

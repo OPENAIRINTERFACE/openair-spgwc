@@ -45,6 +45,7 @@ private:
   void handle_receive_delete_session_response(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
   void handle_receive_modify_bearer_response(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
   void handle_receive_release_access_bearers_response(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_downlink_data_notification(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
 
 public:
   sgw_s5s8();

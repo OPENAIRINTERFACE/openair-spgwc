@@ -118,6 +118,7 @@ public:
   void handle_itti_msg (itti_s5s8_delete_session_response& m);
   void handle_itti_msg (itti_s5s8_modify_bearer_response& m);
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& m);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification& m);
 
 };
 }

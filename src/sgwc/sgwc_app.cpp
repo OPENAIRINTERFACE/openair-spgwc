@@ -208,6 +208,12 @@ void sgwc_app_task (void *args_p)
       }
       break;
 
+    case S5S8_DOWNLINK_DATA_NOTIFICATION:
+      if (itti_s5s8_downlink_data_notification* m = dynamic_cast<itti_s5s8_downlink_data_notification*>(msg)) {
+        sgwc_app_inst->handle_itti_msg(ref(*m));
+      }
+      break;
+
     case S11_DELETE_SESSION_REQUEST:
       if (itti_s11_delete_session_request* m = dynamic_cast<itti_s11_delete_session_request*>(msg)) {
         sgwc_app_inst->handle_itti_msg(ref(*m));
@@ -462,10 +468,10 @@ void sgwc_app::handle_itti_msg (itti_s5s8_delete_session_response& m)
       }
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Received S5S8 DELETE_SESSION_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore DSResp", m.teid);
+      Logger::sgwc_app().debug("Received S5S8 DELETE_SESSION_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore!", m.teid);
     }
   } else {
-    Logger::sgwc_app().debug("Received S5S8 DELETE_SESSION_RESPONSE with dest teid " TEID_FMT " unknown, ignore DSResp", m.teid);
+    Logger::sgwc_app().debug("Received S5S8 DELETE_SESSION_RESPONSE with dest teid " TEID_FMT " unknown, ignore!", m.teid);
   }
 }
 //------------------------------------------------------------------------------
@@ -478,10 +484,10 @@ void sgwc_app::handle_itti_msg (itti_s5s8_modify_bearer_response& m)
       p.first->handle_itti_msg(m, p.second);
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore CSResp", m.teid);
+      Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore!", m.teid);
     }
   } else {
-    Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE with dest teid " TEID_FMT " unknown, ignore CSResp", m.teid);
+    Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE with dest teid " TEID_FMT " unknown, ignore!", m.teid);
   }
 }
 //------------------------------------------------------------------------------
@@ -494,10 +500,27 @@ void sgwc_app::handle_itti_msg (itti_s5s8_release_access_bearers_response& m)
       p.first->handle_itti_msg(m, p.second);
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore CSResp", m.teid);
+      Logger::sgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore!", m.teid);
     }
   } else {
-    Logger::sgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE with dest teid " TEID_FMT " unknown, ignore CSResp", m.teid);
+    Logger::sgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE with dest teid " TEID_FMT " unknown, ignore!", m.teid);
+  }
+}
+
+//------------------------------------------------------------------------------
+void sgwc_app::handle_itti_msg (itti_s5s8_downlink_data_notification& m)
+{
+  Logger::sgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
+  if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
+    std::pair<std::shared_ptr<sgw_eps_bearer_context>, std::shared_ptr<sgw_pdn_connection>> p = s5s8sgw_teid_2_sgw_contexts(m.teid);
+    if ((p.first.get()) && (p.second.get())) {
+      p.first->handle_itti_msg(m, p.second);
+      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
+    } else {
+      Logger::sgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION with dest teid " TEID_FMT ", SGW contexts not found, ignore!", m.teid);
+    }
+  } else {
+    Logger::sgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION with dest teid " TEID_FMT " unknown, ignore!", m.teid);
   }
 }
 
