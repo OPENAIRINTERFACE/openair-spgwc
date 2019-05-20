@@ -368,6 +368,11 @@ public:
     itti_s5s8_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
   }
+  itti_s5s8_downlink_data_notification_acknowledge(const gtpv2c::gtpv2c_downlink_data_notification_acknowledge& ies, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_downlink_data_notification_acknowledge(orig, dest) {
+    gtp_ies = ies;
+  }
+
   const char* get_msg_name() {return typeid(itti_s5s8_downlink_data_notification_acknowledge).name();};
 
   gtpv2c::gtpv2c_downlink_data_notification_acknowledge gtp_ies;

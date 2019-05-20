@@ -238,6 +238,12 @@ void sgwc_app_task (void *args_p)
       }
       break;
 
+    case S11_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE:
+      if (itti_s11_downlink_data_notification_acknowledge* m = dynamic_cast<itti_s11_downlink_data_notification_acknowledge*>(msg)) {
+        sgwc_app_inst->handle_itti_msg(ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::sgwc_app().info( "TIME-OUT event timer id %d", to->timer_id);
@@ -429,6 +435,23 @@ void sgwc_app::handle_itti_msg (itti_s11_release_access_bearers_request& m)
   }
 }
 //------------------------------------------------------------------------------
+void sgwc_app::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& m)
+{
+  Logger::sgwc_app().debug("Received S11 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
+  if (m.teid) {
+    if (is_s11sgw_teid_2_sgw_eps_bearer_context(m.teid)) {
+      shared_ptr<sgw_eps_bearer_context> ebc = s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
+      ebc->handle_itti_msg(m);
+    } else {
+      Logger::sgwc_app().debug("Discarding S11 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
+      return;
+    }
+  } else {
+    Logger::sgwc_app().debug("Discarding S11 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
+  }
+}
+
+//------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s5s8_create_session_response& m)
 {
   Logger::sgwc_app().debug("Received S5S8 CREATE_SESSION_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
@@ -523,4 +546,5 @@ void sgwc_app::handle_itti_msg (itti_s5s8_downlink_data_notification& m)
     Logger::sgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION with dest teid " TEID_FMT " unknown, ignore!", m.teid);
   }
 }
+
 

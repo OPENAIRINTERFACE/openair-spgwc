@@ -29,6 +29,8 @@
 #ifndef FILE_ENDPOINT_HPP_SEEN
 #define FILE_ENDPOINT_HPP_SEEN
 
+#include "conversions.hpp"
+
 #include <arpa/inet.h>
 #include <inttypes.h>
 #include <sys/socket.h>
@@ -47,10 +49,10 @@ public :
     addr_in->sin_family = AF_INET;
     addr_in->sin_port = htons(port);
     addr_in->sin_addr.s_addr = addr.s_addr;
-    
+
     addr_storage_len = sizeof(struct sockaddr_in);
   };
-  
+
   endpoint(const struct in6_addr& addr6, const uint16_t port)
   {
     struct sockaddr_in6 * addr_in6 = (struct sockaddr_in6 *)&addr_storage;
@@ -59,18 +61,34 @@ public :
     addr_in6->sin6_flowinfo = 0;
     memcpy(&addr_in6->sin6_addr, &addr6, sizeof(struct in6_addr));
     addr_in6->sin6_scope_id = 0;
-    
+
     addr_storage_len = sizeof(struct sockaddr_in6);
   };
-  
-  uint16_t port() const 
+
+  uint16_t port() const
   {
     return ntohs(((struct sockaddr_in *)&addr_storage)->sin_port);
   }
-  
-  sa_family_t family() const 
+
+  sa_family_t family() const
   {
     return addr_storage.ss_family;
+  }
+
+  std::string  toString() const
+  {
+    std::string str;
+    if (addr_storage.ss_family == AF_INET) {
+      struct sockaddr_in * addr_in = (struct sockaddr_in *)&addr_storage;
+      str.append(conv::toString(addr_in->sin_addr));
+    str.append(":").append(std::to_string(ntohs(addr_in->sin_port)));
+    }
+    else if (addr_storage.ss_family == AF_INET6) {
+      struct sockaddr_in6 * addr_in6 = (struct sockaddr_in6 *)&addr_storage;
+      str.append(conv::toString(addr_in6->sin6_addr));
+    str.append(":").append(std::to_string(ntohs(addr_in6->sin6_port)));
+    }
+    return str;
   }
 
 };

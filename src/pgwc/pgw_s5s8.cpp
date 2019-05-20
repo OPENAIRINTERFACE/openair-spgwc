@@ -236,6 +236,30 @@ void pgw_s5s8::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, co
   // else ignore
 }
 //------------------------------------------------------------------------------
+void pgw_s5s8::handle_receive_downlink_data_notification_acknowledge(gtpv2c_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t gtpc_tx_id = 0;
+  gtpv2c_downlink_data_notification_acknowledge msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
+  if (!error) {
+    itti_s5s8_downlink_data_notification_acknowledge *itti_msg = new itti_s5s8_downlink_data_notification_acknowledge(TASK_PGWC_S5S8, TASK_PGWC_APP);
+    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->gtpc_tx_id = gtpc_tx_id;
+    itti_msg->teid = msg.get_teid();
+    std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge> i = std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::pgwc_s5s8().error( "Could not send ITTI message %s to task TASK_PGWC_APP", i->get_msg_name());
+    }
+  }
+  // else ignore
+}
+
+//------------------------------------------------------------------------------
 void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   //Logger::pgwc_s5s8().trace( "handle_receive_gtpv2c_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
@@ -257,6 +281,10 @@ void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote
     break;
   case GTP_DELETE_SESSION_REQUEST: {
     handle_receive_delete_session_request(msg, remote_endpoint);
+  }
+  break;
+  case GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE: {
+    handle_receive_downlink_data_notification_acknowledge(msg, remote_endpoint);
   }
   break;
   case GTP_DELETE_SESSION_RESPONSE:
@@ -327,7 +355,6 @@ void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote
 
   case GTP_RELEASE_ACCESS_BEARERS_RESPONSE:
   case GTP_DOWNLINK_DATA_NOTIFICATION:
-  case GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE:
   case GTP_PGW_RESTART_NOTIFICATION:
   case GTP_PGW_RESTART_NOTIFICATION_ACKNOWLEDGE:
   case GTP_UPDATE_PDN_CONNECTION_SET_REQUEST:

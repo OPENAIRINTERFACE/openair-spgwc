@@ -320,6 +320,17 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_delete_session_request& d
     Logger::sgwc_app().info("S11 DELETE_SESSION_REQUEST TODO delete session locally");
   }
 }
+//------------------------------------------------------------------------------
+void sgw_eps_bearer_context::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& ddn)
+{
+  shared_ptr<sebc_procedure> sp = find_procedure(ddn.gtpc_tx_id);
+  if (sp.get()) {
+    sp->handle_itti_msg(ddn);
+    return;
+  } else {
+    Logger::sgwc_app().error("S11 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", ddn.gtpc_tx_id);
+  }
+}
 
 //------------------------------------------------------------------------------
 void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_pdn_connection> spc)

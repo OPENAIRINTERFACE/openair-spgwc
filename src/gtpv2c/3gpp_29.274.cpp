@@ -847,6 +847,15 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_downlink_data_notification& gtp_ies) : gtpv2
   if (gtp_ies.ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS)  {std::shared_ptr<gtpv2c_indication_ie> sie(new gtpv2c_indication_ie(gtp_ies.indication_flags)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_downlink_data_notification_acknowledge& gtp_ies) : gtpv2c_msg_header() {
+  ies = {};
+  set_message_type(GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE);
+
+  if (gtp_ies.ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE)  {std::shared_ptr<gtpv2c_cause_ie> sie(new gtpv2c_cause_ie(gtp_ies.cause)); add_ie(sie);}
+  if (gtp_ies.ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI)  {std::shared_ptr<gtpv2c_imsi_ie> sie(new gtpv2c_imsi_ie(gtp_ies.imsi)); add_ie(sie);}
+}
+
+//------------------------------------------------------------------------------
 gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_request& gtp_ies) : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_ECHO_REQUEST);

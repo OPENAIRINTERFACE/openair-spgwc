@@ -58,6 +58,7 @@ public:
   void send_msg(itti_s5s8_delete_session_request& m);
   void send_msg(itti_s5s8_modify_bearer_request& m);
   void send_msg(itti_s5s8_release_access_bearers_request& m);
+  void send_msg(itti_s5s8_downlink_data_notification_acknowledge& m);
 
   void time_out_itti_event(const uint32_t timer_id);
 };

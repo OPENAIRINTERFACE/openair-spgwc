@@ -959,3 +959,35 @@ int downlink_data_report_procedure::run(std::shared_ptr<pgwc::pgw_context> conte
   return RETURNok;
 }
 
+//------------------------------------------------------------------------------
+void downlink_data_report_procedure::handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& ack)
+{
+
+  ::cause_t gtp_cause = {};
+
+
+  pfcp::cause_t pfcp_cause = {.cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
+  if (ack.gtp_ies.get(gtp_cause)) {
+    switch (gtp_cause.cause_value) {
+    case REQUEST_ACCEPTED:
+      break;
+    default:
+      pfcp_cause.cause_value = CAUSE_VALUE_REQUEST_REJECTED;
+    }
+  } else {
+    Logger::pgwc_app().error( "downlink_data_report_procedure: Could not get cause from itti_s5s8_downlink_data_notification_acknowledge");
+    return;
+  }
+
+
+  itti_sxab_session_report_response *sx = new itti_sxab_session_report_response(TASK_PGWC_APP, TASK_PGWC_SX);
+  sx->seid = ppc->up_fseid.seid;
+  sx->trxn_id = this->trxn_id;
+  sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
+  std::shared_ptr<itti_sxab_session_report_response> sx_triggered = std::shared_ptr<itti_sxab_session_report_response>(sx);
+  sx->pfcp_ies.set(pfcp_cause);
+  int ret = itti_inst->send_msg(sx_triggered);
+  if (RETURNok != ret) {
+    Logger::pgwc_app().error( "Could not send ITTI message %s to task TASK_PGWC_SX", sx->pfcp_ies.get_msg_name());
+  }
+}

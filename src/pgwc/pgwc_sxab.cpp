@@ -143,7 +143,7 @@ void pgwc_sxab_task (void *args_p)
 
     case SXAB_SESSION_REPORT_RESPONSE:
       if (itti_sxab_session_report_response* m = dynamic_cast<itti_sxab_session_report_response*>(msg)) {
-        pgwc_sxab_inst->handle_itti_msg(ref(*m));
+        pgwc_sxab_inst->send_sx_msg(ref(*m));
       }
       break;
 
@@ -444,6 +444,11 @@ void pgwc_sxab::handle_receive_session_report_request(pfcp::pfcp_msg& msg, const
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i)
 {
   send_response(i.r_endpoint, i.pfcp_ies, i.trxn_id);
+}
+//------------------------------------------------------------------------------
+void pgwc_sxab::send_sx_msg(itti_sxab_session_report_response& i)
+{
+  send_response(i.r_endpoint, i.seid, i.pfcp_ies, i.trxn_id);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a)

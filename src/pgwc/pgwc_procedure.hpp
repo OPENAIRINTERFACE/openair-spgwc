@@ -65,6 +65,7 @@ public:
   virtual void handle_itti_msg (itti_sxab_session_establishment_response& resp) {}
   virtual void handle_itti_msg (itti_sxab_session_modification_response& resp) {}
   virtual void handle_itti_msg (itti_sxab_session_deletion_response& resp) {}
+  virtual void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& resp) {}
 };
 
 
@@ -171,7 +172,7 @@ public:
       pc(), sx_trigger(req), s5_triggered(), ebi() {}
   int run(std::shared_ptr<pgwc::pgw_context> context,
           std::shared_ptr<pgwc::pgw_pdn_connection>  pdn, const ebi_t& e);
-  //void handle_itti_msg (itti_sxab_session_report_response& resp);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& resp);
   void notify_failure_to_peer(const pfcp::cause_t& cause);
 
   //~downlink_data_report_procedure() {}

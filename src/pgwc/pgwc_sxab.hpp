@@ -85,7 +85,7 @@ public:
   void send_sx_msg (itti_sxab_session_establishment_request& s);
   void send_sx_msg (itti_sxab_session_modification_request& s);
   void send_sx_msg (itti_sxab_session_deletion_request& s);
-  void send_sx_msg (itti_sxab_session_report_response& s) {};
+  void send_sx_msg (itti_sxab_session_report_response& s);
 
   void send_heartbeat_request(std::shared_ptr<pfcp_association>& a);
   void send_heartbeat_response(const endpoint& r_endpoint, const uint64_t trxn_id);

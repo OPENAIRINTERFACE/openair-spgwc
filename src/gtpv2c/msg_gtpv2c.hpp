@@ -3575,6 +3575,9 @@ public:
   // Private Extension  ///< optional
   void set(const cause_t& v, const uint8_t instance = 0) {cause = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE;}
   void set(const imsi_t& v, const uint8_t instance = 0) {imsi = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI;}
+
+  bool get(cause_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE) {v = cause;return true;}return false;}
+  bool get(imsi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI) {v = imsi;return true;}return false;}
 } ;
 
 

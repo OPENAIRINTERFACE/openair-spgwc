@@ -146,6 +146,7 @@ public:
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_downlink_data_notification_acknowledge& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
 
   void time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &error);
 

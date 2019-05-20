@@ -147,6 +147,7 @@ public:
   virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_establishment_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
   virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_modification_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
   virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_deletion_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_report_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
 
   void time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &error);
 };

@@ -59,6 +59,10 @@ void sebc_procedure::handle_itti_msg (itti_s5s8_downlink_data_notification& resp
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_downlink_data_notification");
 }
+void sebc_procedure::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s11_downlink_data_notification_acknowledge");
+}
 
 //------------------------------------------------------------------------------
 int create_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
@@ -404,7 +408,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
           if (it.get_s1_u_enb_fteid(v)) {
             if (pdn->sgw_pdn_connection::get_eps_bearer(it.eps_bearer_id, sb)) {
               if (v == sb->enb_fteid_s1u) {
-                Logger::pgwc_app().debug( "modify_bearer_procedure: ebi %d enb_fteid_s1u unchanged", it.eps_bearer_id.ebi);
+                Logger::sgwc_app().debug( "modify_bearer_procedure: ebi %d enb_fteid_s1u unchanged", it.eps_bearer_id.ebi);
                 bearer_context_modified_within_modify_bearer_response bm = {};
                 bm.set(it.eps_bearer_id);
                 cause_t cause = {};
@@ -853,12 +857,28 @@ int downlink_data_notification_procedure::run(std::shared_ptr<sgw_eps_bearer_con
     s11_triggered = std::shared_ptr<itti_s11_downlink_data_notification>(s11);
 
 
-    Logger::pgwc_app().info( "Sending ITTI message %s to task TASK_SGWC_S11", s11->gtp_ies.get_msg_name());
+    Logger::sgwc_app().info( "Sending ITTI message %s to task TASK_SGWC_S11", s11->gtp_ies.get_msg_name());
     int ret = itti_inst->send_msg(s11_triggered);
     if (RETURNok != ret) {
-      Logger::pgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S11", s11->gtp_ies.get_msg_name());
+      Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S11", s11->gtp_ies.get_msg_name());
       return RETURNerror;
     }
     return RETURNok;
+  }
+}
+//------------------------------------------------------------------------------
+void downlink_data_notification_procedure::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& s11resp)
+{
+  itti_s5s8_downlink_data_notification_acknowledge *s5 = new itti_s5s8_downlink_data_notification_acknowledge(s11resp.gtp_ies, TASK_SGWC_APP, TASK_SGWC_S5S8);
+  s5->teid = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
+  s5->gtpc_tx_id = get_trxn_id();
+  s5->r_endpoint = endpoint(pdn_connection->pgw_fteid_s5_s8_cp.ipv4_address, gtpv2c::default_port);
+  std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge> s5_response = std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge>(s5);
+
+
+  Logger::sgwc_app().info( "Sending ITTI message %s to task TASK_SGWC_S5S8", s5->gtp_ies.get_msg_name());
+  int ret = itti_inst->send_msg(s5_response);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S5S8", s5->gtp_ies.get_msg_name());
   }
 }

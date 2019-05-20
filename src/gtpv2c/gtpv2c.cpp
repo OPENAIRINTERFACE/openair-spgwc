@@ -588,6 +588,34 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
   }
 }
 //------------------------------------------------------------------------------
+void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_downlink_data_notification_acknowledge& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
+{
+  std::map<uint64_t , uint32_t>::iterator it;
+  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  if (it != gtpc_tx_id2seq_num.end()) {
+    std::ostringstream oss(std::ostringstream::binary);
+    gtpv2c_msg msg(gtp_ies);
+    msg.set_teid(teid);
+    msg.set_sequence_number(it->second);
+    msg.dump_to(oss);
+    std::string bstream = oss.str();
+    Logger::gtpv2_c().trace( "Sending %s, seq %d, teid " TEID_FMT ", proc " PROC_ID_FMT "", gtp_ies.get_msg_name(), msg.get_sequence_number(), msg.get_teid(), gtp_tx_id);
+    udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), r_endpoint);
+
+    if (a == DELETE_TX) {
+      std::map<uint32_t , gtpv2c_procedure>::iterator it_proc = pending_procedures.find(it->second);
+      if (it_proc != pending_procedures.end()) {
+        stop_proc_cleanup_timer(it_proc->second);
+        pending_procedures.erase(it_proc);
+      }
+      gtpc_tx_id2seq_num.erase(it);
+    }
+  } else {
+    Logger::gtpv2_c().error( "Sending %s, gtp_tx_id " PROC_ID_FMT " proc not found, discarded!", gtp_ies.get_msg_name(), gtp_tx_id);
+  }
+}
+
+//------------------------------------------------------------------------------
 void gtpv2c_stack::notify_ul_error(const gtpv2c_procedure& p, const cause_value_e cause)
 {
   Logger::gtpv2_c().trace( "notify_ul_error proc " PROC_ID_FMT " cause %d", p.gtpc_tx_id, cause);

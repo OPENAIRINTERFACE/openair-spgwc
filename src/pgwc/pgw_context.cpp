@@ -780,6 +780,20 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_requ
   std::cout << toString() <<  std::endl;
 
 }
+//------------------------------------------------------------------------------
+void pgw_context::handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& ack)
+{
+  std::shared_ptr<pgw_procedure> proc = {};
+  std::shared_lock<std::shared_mutex> lp;
+  if (find_procedure(ack.gtpc_tx_id, proc, lp)) {
+    Logger::pgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", ack.teid, ack.gtpc_tx_id);
+    proc->handle_itti_msg(ack);
+    lp.unlock();
+    remove_procedure(proc.get());
+  } else {
+    Logger::pgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", pgw_procedure not found, discarded!", ack.teid, ack.gtpc_tx_id);
+  }
+}
 
 //------------------------------------------------------------------------------
 void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> s5_trigger)
@@ -888,12 +902,12 @@ void pgw_context::handle_itti_msg (itti_sxab_session_establishment_response& ser
   std::shared_ptr<pgw_procedure> proc = {};
   std::shared_lock<std::shared_mutex> lp;
   if (find_procedure(seresp.trxn_id, proc, lp)) {
-    Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64"\n", seresp.seid, seresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64"\n", seresp.seid, seresp.trxn_id);
     proc->handle_itti_msg(seresp);
     lp.unlock();
     remove_procedure(proc.get());
   } else {
-    Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", seresp.seid, seresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", seresp.seid, seresp.trxn_id);
   }
 }
 //------------------------------------------------------------------------------
@@ -902,12 +916,12 @@ void pgw_context::handle_itti_msg (itti_sxab_session_modification_response& smre
   std::shared_ptr<pgw_procedure> proc = {};
   std::shared_lock<std::shared_mutex> lp;
   if (find_procedure(smresp.trxn_id, proc, lp)) {
-    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64"\n", smresp.seid, smresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64"\n", smresp.seid, smresp.trxn_id);
     proc->handle_itti_msg(smresp);
     lp.unlock();
     remove_procedure(proc.get());
   } else {
-    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", smresp.seid, smresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", smresp.seid, smresp.trxn_id);
   }
   std::cout << toString() << std::endl;
 }
@@ -917,12 +931,12 @@ void pgw_context::handle_itti_msg (itti_sxab_session_deletion_response& sdresp)
   std::shared_ptr<pgw_procedure> proc = {};
   std::shared_lock<std::shared_mutex> lp;
   if (find_procedure(sdresp.trxn_id, proc, lp)) {
-    Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64"\n", sdresp.seid, sdresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64"\n", sdresp.seid, sdresp.trxn_id);
     proc->handle_itti_msg(sdresp);
     lp.unlock();
     remove_procedure(proc.get());
   } else {
-    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid %" PRIX64 "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", sdresp.seid, sdresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", sdresp.seid, sdresp.trxn_id);
   }
   std::cout << toString() << std::endl;
 }

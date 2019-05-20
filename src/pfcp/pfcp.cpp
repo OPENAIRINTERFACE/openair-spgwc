@@ -650,6 +650,33 @@ void pfcp_l4_stack::send_response(const endpoint& dest, const uint64_t seid, con
     Logger::pfcp().error( "Sending %s, trxn_id %ld proc not found, discarded!", pfcp_ies.get_msg_name(), trxn_id);
   }
 }
+//------------------------------------------------------------------------------
+void pfcp_l4_stack::send_response(const endpoint& dest, const uint64_t seid, const pfcp_session_report_response& pfcp_ies, const uint64_t trxn_id, const pfcp_transaction_action& a)
+{
+  std::map<uint64_t , uint32_t>::iterator it;
+  it = trxn_id2seq_num.find(trxn_id);
+  if (it != trxn_id2seq_num.end()) {
+    std::ostringstream oss(std::ostringstream::binary);
+    pfcp_msg msg(pfcp_ies);
+    msg.set_seid(seid);
+    msg.set_sequence_number(it->second);
+    msg.dump_to(oss);
+    std::string bstream = oss.str();
+    Logger::pfcp().trace( "Sending %s, seq %d seid " SEID_FMT " to %s", pfcp_ies.get_msg_name(), msg.get_sequence_number(), seid, dest.toString().c_str());
+    udp_s_8805.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
+
+    if (a == DELETE_TX) {
+      std::map<uint32_t , pfcp_procedure>::iterator it_proc = pending_procedures.find(it->second);
+      if (it_proc != pending_procedures.end()) {
+        stop_proc_cleanup_timer(it_proc->second);
+        pending_procedures.erase(it_proc);
+      }
+      trxn_id2seq_num.erase(it);
+    }
+  } else {
+    Logger::pfcp().error( "Sending %s, trxn_id %ld proc not found, discarded!", pfcp_ies.get_msg_name(), trxn_id);
+  }
+}
 
 //------------------------------------------------------------------------------
 void pfcp_l4_stack::notify_ul_error(const pfcp_procedure& p, const ::cause_value_e cause)

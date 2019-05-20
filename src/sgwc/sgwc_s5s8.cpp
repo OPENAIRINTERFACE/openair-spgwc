@@ -79,6 +79,12 @@ void sgw_s5s8_task (void *args_p)
       }
       break;
 
+    case S5S8_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE:
+      if (itti_s5s8_downlink_data_notification_acknowledge* m = dynamic_cast<itti_s5s8_downlink_data_notification_acknowledge*>(msg)) {
+        sgw_s5s8_inst->send_msg(ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::sgwc_s5s8().debug( "TIME-OUT event timer id %d", to->timer_id);
@@ -128,6 +134,11 @@ void sgw_s5s8::send_msg(itti_s5s8_modify_bearer_request& i)
 void sgw_s5s8::send_msg(itti_s5s8_release_access_bearers_request& i)
 {
   send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
+}
+//------------------------------------------------------------------------------
+void sgw_s5s8::send_msg(itti_s5s8_downlink_data_notification_acknowledge& i)
+{
+  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::handle_receive_create_session_response(gtpv2c_msg& msg, const endpoint& remote_endpoint)

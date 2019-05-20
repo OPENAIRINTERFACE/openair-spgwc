@@ -1221,7 +1221,7 @@ pfcp_msg::pfcp_msg(const pfcp_session_report_request& pfcp_ies) : pfcp_msg_heade
 //------------------------------------------------------------------------------
 pfcp_msg::pfcp_msg(const pfcp_session_report_response& pfcp_ies) : pfcp_msg_header() {
   ies = {};
-  set_message_type(PFCP_SESSION_REPORT_REQUEST);
+  set_message_type(PFCP_SESSION_REPORT_RESPONSE);
 
   if (pfcp_ies.cause.first) {std::shared_ptr<pfcp_cause_ie> sie(new pfcp_cause_ie(pfcp_ies.cause.second)); add_ie(sie);}
   if (pfcp_ies.offending_ie.first) {std::shared_ptr<pfcp_offending_ie_ie> sie(new pfcp_offending_ie_ie(pfcp_ies.offending_ie.second)); add_ie(sie);}

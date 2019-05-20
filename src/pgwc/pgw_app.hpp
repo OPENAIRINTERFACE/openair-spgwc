@@ -124,6 +124,7 @@ public:
   void handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request> m);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> m);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> m);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& m);
   void handle_itti_msg (itti_sxab_session_establishment_response& m);
   void handle_itti_msg (itti_sxab_session_modification_response& m);
   void handle_itti_msg (itti_sxab_session_deletion_response& m);

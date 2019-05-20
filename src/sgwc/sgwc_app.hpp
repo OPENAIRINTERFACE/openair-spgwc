@@ -114,6 +114,7 @@ public:
   void handle_itti_msg (itti_s11_delete_session_request& m);
   void handle_itti_msg (itti_s11_modify_bearer_request& m);
   void handle_itti_msg (itti_s11_release_access_bearers_request& m);
+  void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& m);
   void handle_itti_msg (itti_s5s8_create_session_response& m);
   void handle_itti_msg (itti_s5s8_delete_session_response& m);
   void handle_itti_msg (itti_s5s8_modify_bearer_response& m);

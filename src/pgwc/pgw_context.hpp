@@ -306,6 +306,7 @@ public:
   void handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request> s5_trigger);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> s5_trigger);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> s5_trigger);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& );
   void handle_itti_msg (itti_sxab_session_establishment_response& );
   void handle_itti_msg (itti_sxab_session_modification_response& );
   void handle_itti_msg (itti_sxab_session_deletion_response& );
