@@ -120,13 +120,12 @@ void pgw_app::set_seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_con
   seid2pgw_context[seid] = pc;
 }
 //------------------------------------------------------------------------------
-bool pgw_app::seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc, std::shared_lock<std::shared_mutex>& lock_found) const
+bool pgw_app::seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc) const
 {
   std::shared_lock lock(m_seid2pgw_context);
   std::map<seid_t, std::shared_ptr<pgw_context>>::const_iterator it = seid2pgw_context.find(seid);
   if (it != seid2pgw_context.end()) {
     pc = it->second;
-    lock_found.swap(lock);
     return true;
   }
   return false;
@@ -259,6 +258,7 @@ void pgw_app_task (void*)
         Logger::pgwc_app().info( "Received terminate message");
         return;
       }
+    case HEALTH_PING:
       break;
     default:
       Logger::pgwc_app().info( "no handler for msg type %d", msg->msg_type);
@@ -564,10 +564,8 @@ void pgw_app::handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge&
 void pgw_app::handle_itti_msg (itti_sxab_session_establishment_response& seresp)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(seresp.seid, pc, lpc)) {
+  if (seid_2_pgw_context(seresp.seid, pc)) {
     pc.get()->handle_itti_msg(seresp);
-    lpc.unlock();
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", seresp.seid, seresp.trxn_id);
   }
@@ -576,10 +574,8 @@ void pgw_app::handle_itti_msg (itti_sxab_session_establishment_response& seresp)
 void pgw_app::handle_itti_msg (itti_sxab_session_modification_response& smresp)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(smresp.seid, pc, lpc)) {
+  if (seid_2_pgw_context(smresp.seid, pc)) {
     pc.get()->handle_itti_msg(smresp);
-    lpc.unlock();
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", smresp.seid, smresp.trxn_id);
   }
@@ -588,10 +584,12 @@ void pgw_app::handle_itti_msg (itti_sxab_session_modification_response& smresp)
 void pgw_app::handle_itti_msg (itti_sxab_session_deletion_response& smresp)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(smresp.seid, pc, lpc)) {
+  if (seid_2_pgw_context(smresp.seid, pc)) {
     pc.get()->handle_itti_msg(smresp);
-    lpc.unlock();
+
+    if (pc->apns.size() == 0) {
+      delete_pgw_context(pc);
+    }
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", smresp.seid, smresp.trxn_id);
   }
@@ -601,10 +599,8 @@ void pgw_app::handle_itti_msg (itti_sxab_session_deletion_response& smresp)
 void pgw_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_request> snr)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(snr->seid, pc, lpc)) {
+  if (seid_2_pgw_context(snr->seid, pc)) {
     pc.get()->handle_itti_msg(snr);
-    lpc.unlock();
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION REPORT REQUEST seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", snr->seid, snr->trxn_id);
   }

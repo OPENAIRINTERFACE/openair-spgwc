@@ -116,6 +116,9 @@ void sgw_s11_task (void *args_p)
       }
       break;
 
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::sgwc_s11().info( "no handler for msg type %d", msg->msg_type);
     }

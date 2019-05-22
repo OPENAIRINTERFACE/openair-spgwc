@@ -105,7 +105,7 @@ public:
   std::shared_ptr<pgw_context> s5s8cpgw_fteid_2_pgw_context(fteid_t& ls5s8_fteid);
 
   void set_seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc);
-  bool seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc, std::shared_lock<std::shared_mutex>& lock_found) const;
+  bool seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc) const;
 
   void delete_pgw_context(std::shared_ptr<pgw_context> spc);
 

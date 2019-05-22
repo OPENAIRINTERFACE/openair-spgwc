@@ -168,6 +168,10 @@ void pgwc_sxab_task (void *args_p)
         return;
       }
       break;
+
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::pgwc_sx().info( "no handler for msg type %d", msg->msg_type);
     }

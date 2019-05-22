@@ -100,6 +100,9 @@ void pgw_s5s8_task (void *args_p)
       }
       break;
 
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::pgwc_s5s8().info( "no handler for msg type %d", msg->msg_type);
     }
@@ -163,6 +166,8 @@ void pgw_s5s8::handle_receive_create_session_request(gtpv2c_msg& msg, const endp
     if (RETURNok != ret) {
       Logger::pgwc_s5s8().error( "Could not send ITTI message %s to task TASK_PGWC_APP", i->get_msg_name());
     }
+  } else {
+    Logger::pgwc_s5s8().error( "Error signalled by lower layer while receiving CREATE_SESSION_REQUEST");
   }
   // else ignore
 }

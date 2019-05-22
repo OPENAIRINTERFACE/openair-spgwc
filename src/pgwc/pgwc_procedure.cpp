@@ -932,6 +932,14 @@ void delete_session_procedure::handle_itti_msg (itti_sxab_session_deletion_respo
   if (RETURNok != ret) {
     Logger::pgwc_app().error( "Could not send ITTI message %s to task TASK_PGWC_S5S8", s5_triggered_pending->gtp_ies.get_msg_name());
   }
+
+  // find APN context
+  pdn_duo_t pdn_duo = {};
+  if (pc->find_pdn_connection(ppc->pgw_fteid_s5_s8_cp.teid_gre_key, IS_FIND_PDN_WITH_LOCAL_TEID, pdn_duo)) {
+    pc->delete_pdn_connection(pdn_duo.first, pdn_duo.second);
+  } else {
+    Logger::pgwc_app().error("Could not delete PDN connection (APN context not found)");
+  }
 }
 //------------------------------------------------------------------------------
 int downlink_data_report_procedure::run(std::shared_ptr<pgwc::pgw_context> context,

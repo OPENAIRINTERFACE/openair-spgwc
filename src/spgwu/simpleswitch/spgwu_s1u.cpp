@@ -77,12 +77,17 @@ void spgwu_s1u_task (void *args_p)
         Logger::spgwu_s1u().info( "TIME-OUT event timer id %d", to->timer_id);
       }
       break;
+
     case TERMINATE:
       if (itti_msg_terminate *terminate = dynamic_cast<itti_msg_terminate*>(msg)) {
         Logger::spgwu_s1u().info( "Received terminate message");
         return;
       }
       break;
+
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::spgwu_s1u().info( "no handler for msg type %d", msg->msg_type);
     }

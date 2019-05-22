@@ -149,8 +149,8 @@ public:
 //------------------------------------------------------------------------------
 class delete_session_procedure : public pgw_procedure {
 public:
-  explicit delete_session_procedure(std::shared_ptr<pgw_pdn_connection>& sppc) : pgw_procedure(), ppc(sppc),
-    sx_triggered(), s5_triggered_pending(), s5_trigger() {}
+  explicit delete_session_procedure(std::shared_ptr<pgw_context> spc, std::shared_ptr<pgw_pdn_connection>& sppc) : pgw_procedure(), ppc(sppc),
+    pc(spc), sx_triggered(), s5_triggered_pending(), s5_trigger() {}
 
   int run(std::shared_ptr<itti_s5s8_delete_session_request>& req,
           std::shared_ptr<itti_s5s8_delete_session_response>&resp,

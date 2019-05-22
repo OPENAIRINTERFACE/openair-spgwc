@@ -364,6 +364,29 @@ void spgwu_sx::handle_receive_session_deletion_request(pfcp_msg& msg, const endp
   }
   // else ignore
 }
+//------------------------------------------------------------------------------
+void spgwu_sx::handle_receive_session_report_response(pfcp_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t trxn_id = 0;
+  pfcp_session_report_response msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_SPGWU_SX, error, trxn_id);
+  if (!error) {
+    itti_sxab_session_report_response *itti_msg = new itti_sxab_session_report_response(TASK_SPGWU_SX, TASK_SPGWU_APP);
+    itti_msg->pfcp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->trxn_id = trxn_id;
+    itti_msg->seid = msg.get_seid();
+    std::shared_ptr<itti_sxab_session_report_response> i = std::shared_ptr<itti_sxab_session_report_response>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::spgwu_sx().error( "Could not send ITTI message %s to task TASK_SPGWU_APP", i->get_msg_name());
+    }
+  }
+  // else ignore ?
+}
 
 //------------------------------------------------------------------------------
 void spgwu_sx::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_endpoint)
@@ -385,6 +408,10 @@ void spgwu_sx::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_end
 
   case PFCP_SESSION_DELETION_REQUEST:
     handle_receive_session_deletion_request(msg, remote_endpoint);
+    break;
+
+  case PFCP_SESSION_REPORT_RESPONSE:
+    handle_receive_session_report_response(msg, remote_endpoint);
     break;
 
   case PFCP_HEARTBEAT_REQUEST:
@@ -411,7 +438,6 @@ void spgwu_sx::handle_receive_pfcp_msg(pfcp_msg& msg, const endpoint& remote_end
   case PFCP_SESSION_MODIFICATION_RESPONSE:
   case PFCP_SESSION_DELETION_RESPONSE:
   case PFCP_SESSION_REPORT_REQUEST:
-  case PFCP_SESSION_REPORT_RESPONSE:
     Logger::spgwu_sx().info( "handle_receive_pfcp_msg msg %d length %d, not handled, discarded!", msg.get_message_type(), msg.get_message_length());
     break;
   default:

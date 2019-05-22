@@ -255,6 +255,7 @@ void sgw_eps_bearer_context::delete_pdn_connection(std::shared_ptr<sgw_pdn_conne
 {
   if (spc.get()) {
     Logger::sgwc_app().debug("sgw_eps_bearer_context::delete_pdn_connection() OK doing it");
+    sgwc_app_inst->delete_s5s8sgw_teid_2_sgw_contexts(spc->sgw_fteid_s5_s8_cp.teid_gre_key);
     erase_pdn_connection(spc);
     spc.get()->deallocate_ressources();
     spc.get()->delete_bearers();

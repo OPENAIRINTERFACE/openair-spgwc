@@ -109,6 +109,7 @@ public:
   void delete_sgw_eps_bearer_context(std::shared_ptr<sgw_eps_bearer_context> sebc);
   std::shared_ptr<sgw_eps_bearer_context> imsi64_2_sgw_eps_bearer_context(const imsi64_t& imsi64) const;
   void set_s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid, std::shared_ptr<sgw_eps_bearer_context> sebc, std::shared_ptr<sgw_pdn_connection> spc);
+  void delete_s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid);
 
   void handle_itti_msg (itti_s11_create_session_request& m);
   void handle_itti_msg (itti_s11_delete_session_request& m);

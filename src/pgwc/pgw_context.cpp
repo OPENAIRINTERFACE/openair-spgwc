@@ -226,29 +226,27 @@ std::string pgw_pdn_connection::toString() const
 //------------------------------------------------------------------------------
 void apn_context::insert_pdn_connection(std::shared_ptr<pgw_pdn_connection>& sp)
 {
-  std::unique_lock lock(m_pdn_connections);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   pdn_connections.push_back(sp);
 }
 //------------------------------------------------------------------------------
-bool apn_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, std::shared_ptr<pgw_pdn_connection>& pdn, std::shared_lock<std::shared_mutex>& lock_found)
+bool apn_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, std::shared_ptr<pgw_pdn_connection>& pdn)
 {
   pdn = {};
   if (is_local_teid) {
-    std::shared_lock lock(m_pdn_connections);
+    std::unique_lock<std::recursive_mutex> lock(m_context);
     for (auto it : pdn_connections) {
       if (xgw_s5s8c_teid == it->pgw_fteid_s5_s8_cp.teid_gre_key) {
         pdn = it;
-        lock_found.swap(lock);
         return true;
       }
     }
     return false;
   } else {
-    std::shared_lock lock(m_pdn_connections);
+    std::unique_lock<std::recursive_mutex> lock(m_context);
     for (auto it : pdn_connections) {
       if (xgw_s5s8c_teid == it->sgw_fteid_s5_s8_cp.teid_gre_key) {
         pdn = it;
-        lock_found.swap(lock);
         return true;
       }
     }
@@ -257,15 +255,12 @@ bool apn_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is
 }
 
 //------------------------------------------------------------------------------
-bool apn_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi, std::shared_lock<std::shared_mutex>& lock_found)
+bool apn_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi)
 {
-  std::shared_lock lock(m_pdn_connections);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto pit : pdn_connections) {
-    std::shared_lock<std::shared_mutex> lock_pdn = {};
-
     if (pit->has_eps_bearer(pdr_id, ebi)) {
       pdn = pit; // May make pair
-      lock_found.swap(lock_pdn);
       return true;
     }
   }
@@ -278,7 +273,7 @@ void apn_context::delete_pdn_connection(std::shared_ptr<pgw_pdn_connection>& pdn
   if (pdn_connection.get()) {
     pdn_connection->deallocate_ressources(apn_in_use);
     // remove it from collection
-    std::unique_lock lock(m_pdn_connections);
+    std::unique_lock<std::recursive_mutex> lock(m_context);
     for (std::vector<std::shared_ptr<pgw_pdn_connection>>::iterator it=pdn_connections.begin(); it!=pdn_connections.end(); ++it) {
       if (pdn_connection.get() == (*it).get()) {
         pdn_connection->deallocate_ressources(apn_in_use);
@@ -291,7 +286,7 @@ void apn_context::delete_pdn_connection(std::shared_ptr<pgw_pdn_connection>& pdn
 //------------------------------------------------------------------------------
 void apn_context::deallocate_ressources()
 {
-  std::unique_lock lock(m_pdn_connections);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   for (std::vector<std::shared_ptr<pgw_pdn_connection>>::iterator it=pdn_connections.begin(); it!=pdn_connections.end(); ++it) {
     (*it)->deallocate_ressources(apn_in_use);
   }
@@ -315,15 +310,13 @@ std::string apn_context::toString() const
 }
 
 //------------------------------------------------------------------------------
-bool pgw_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection, std::shared_lock<std::shared_mutex>& lock_found)
+bool pgw_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection)
 {
-  std::shared_lock lock(m_apns);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto ait : apns) {
     std::shared_ptr<pgw_pdn_connection> sp;
-    std::shared_lock<std::shared_mutex> lock_pdn = {};
-    if (ait->find_pdn_connection(xgw_s5s8c_teid, is_local_teid, sp, lock_pdn)) {
+    if (ait->find_pdn_connection(xgw_s5s8c_teid, is_local_teid, sp)) {
       pdn_connection = make_pair(ait, sp);
-      lock_found.swap(lock_pdn);
       return true;
     }
   }
@@ -331,15 +324,13 @@ bool pgw_context::find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is
 }
 
 //------------------------------------------------------------------------------
-bool pgw_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi, std::shared_lock<std::shared_mutex>& lock_found)
+bool pgw_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi)
 {
-  std::shared_lock lock(m_apns);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto ait : apns) {
     std::shared_ptr<pgw_pdn_connection> sp;
-    std::shared_lock<std::shared_mutex> lock_pdn = {};
-    if (ait->find_pdn_connection(pdr_id, sp, ebi, lock_pdn)) {
+    if (ait->find_pdn_connection(pdr_id, sp, ebi)) {
       pdn = sp; // May make pair
-      lock_found.swap(lock_pdn);
       return true;
     }
   }
@@ -347,17 +338,15 @@ bool pgw_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_
 }
 
 //------------------------------------------------------------------------------
-bool pgw_context::find_pdn_connection(const std::string& apn, const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection, std::shared_lock<std::shared_mutex>& lock_found)
+bool pgw_context::find_pdn_connection(const std::string& apn, const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection)
 {
   pdn_connection = {};
-  std::shared_lock<std::shared_mutex> lock_sapn = {};
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   std::shared_ptr<apn_context> sa;
-  if (find_apn_context(apn, sa, lock_sapn)) {
+  if (find_apn_context(apn, sa)) {
     std::shared_ptr<pgw_pdn_connection> sp;
     if (sa.get()) {
-      std::shared_lock<std::shared_mutex> lock_spdn;
-      if (sa->find_pdn_connection(xgw_s5s8c_teid, is_local_teid, sp, lock_spdn)) {
-        lock_found.swap(lock_spdn);
+      if (sa->find_pdn_connection(xgw_s5s8c_teid, is_local_teid, sp)) {
         // would need to make a pair of mutexes ?
         pdn_connection = make_pair(sa, sp);
         return true;
@@ -370,7 +359,7 @@ bool pgw_context::find_pdn_connection(const std::string& apn, const teid_t xgw_s
 void pgw_context::delete_apn_context(std::shared_ptr<apn_context>& sa)
 {
   if (sa.get()) {
-    std::unique_lock lock(m_apns);
+    std::unique_lock<std::recursive_mutex> lock(m_context);
     for (std::vector<std::shared_ptr<apn_context>>::iterator ait=apns.begin(); ait!=apns.end(); ++ait) {
     //for (auto ait : apns) {
       if ((*ait).get() == sa.get()) {
@@ -394,17 +383,16 @@ void pgw_context::delete_pdn_connection(std::shared_ptr<apn_context>& sa , std::
 //------------------------------------------------------------------------------
 void pgw_context::insert_apn(std::shared_ptr<apn_context>& sa)
 {
-  std::unique_lock lock(m_apns);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   apns.push_back(sa);
 }
 //------------------------------------------------------------------------------
-bool pgw_context::find_apn_context(const std::string& apn, std::shared_ptr<apn_context>& apn_context, std::shared_lock<std::shared_mutex>& lock_found)
+bool pgw_context::find_apn_context(const std::string& apn, std::shared_ptr<apn_context>& apn_context)
 {
-  std::shared_lock lock(m_apns);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto it : apns) {
     if (0 == apn.compare(it->apn_in_use)) {
       apn_context = it;
-      lock_found.swap(lock);
       return true;
     }
   }
@@ -413,17 +401,17 @@ bool pgw_context::find_apn_context(const std::string& apn, std::shared_ptr<apn_c
 //------------------------------------------------------------------------------
 void pgw_context::insert_procedure(std::shared_ptr<pgw_procedure>& sproc)
 {
-  std::unique_lock lock(m_pending_procedures);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   pending_procedures.push_back(sproc);
 }
 //------------------------------------------------------------------------------
-bool pgw_context::find_procedure(const uint64_t& trxn_id, std::shared_ptr<pgw_procedure>& proc, std::shared_lock<std::shared_mutex>& lock_found)
+bool pgw_context::find_procedure(const uint64_t& trxn_id, std::shared_ptr<pgw_procedure>& proc)
 {
-  std::shared_lock lock(m_pending_procedures);
-  auto found = std::find_if(pending_procedures.begin(), pending_procedures.end(), [trxn_id](std::shared_ptr<pgw_procedure> const& i) -> bool { return i->trxn_id == trxn_id;});
+  std::unique_lock<std::recursive_mutex> lock(m_context);
+  auto found = std::find_if(pending_procedures.begin(), pending_procedures.end(),
+                   [trxn_id](std::shared_ptr<pgw_procedure> const& i) -> bool { return i->trxn_id == trxn_id;});
   if (found != pending_procedures.end()) {
     proc = *found;
-    lock_found.swap(lock);
     return true;
   }
   return false;
@@ -431,7 +419,7 @@ bool pgw_context::find_procedure(const uint64_t& trxn_id, std::shared_ptr<pgw_pr
 //------------------------------------------------------------------------------
 void pgw_context::remove_procedure(pgw_procedure* proc)
 {
-  std::unique_lock lock(m_pending_procedures);
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   auto found = std::find_if(pending_procedures.begin(), pending_procedures.end(), [proc](std::shared_ptr<pgw_procedure> const& i) {
     return i.get() == proc;
   });
@@ -446,8 +434,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   itti_s5s8_create_session_request* csreq = s5_trigger.get();
   // If PCEF integrated in PGW, TODO create a procedure
   pdn_duo_t apn_pdn;
-  std::shared_lock<std::shared_mutex> lock_pdn = {};
-  bool found_pdn = find_pdn_connection(csreq->gtp_ies.apn.access_point_name, csreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn, lock_pdn);
+  bool found_pdn = find_pdn_connection(csreq->gtp_ies.apn.access_point_name, csreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
   std::shared_ptr<apn_context> sa = apn_pdn.first;
   std::shared_ptr<pgw_pdn_connection> sp = apn_pdn.second;
 
@@ -495,7 +482,6 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   } else {
     // TODO bearer context to be removed
   }
-  if (found_pdn) lock_pdn.unlock();
 //  for (auto it : csreq->gtp_ies.bearer_contexts_to_be_created) {
 //    pgw_eps_bearer& eps_bearer = sp->get_eps_bearer(it.eps_bearer_id);
 //    eps_bearer.ebi = it.eps_bearer_id;
@@ -739,12 +725,11 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_requ
   std::shared_ptr<apn_context> sa = {};
   std::shared_ptr<pgw_pdn_connection> sp = {};
 
-  std::shared_lock<std::shared_mutex> lock_pdn;
   bool found = false;
   if (sender_fteid_present) {
-    found = find_pdn_connection(sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn, lock_pdn);
+    found = find_pdn_connection(sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
   } else {
-    found = find_pdn_connection(dsreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn, lock_pdn);
+    found = find_pdn_connection(dsreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
   }
   if (found) {
     sa = apn_pdn.first;
@@ -752,7 +737,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_requ
 
     if (sp.get()) {
 
-      delete_session_procedure* proc = new delete_session_procedure(sp);
+      delete_session_procedure* proc = new delete_session_procedure(shared_from_this(), sp);
       std::shared_ptr<pgw_procedure> sproc = std::shared_ptr<pgw_procedure>(proc);
       insert_procedure(sproc);
 
@@ -770,7 +755,6 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_requ
         Logger::pgwc_app().info( "S5S8 DELETE_SESSION_REQUEST procedure failed");
         remove_procedure(proc);
       }
-      lock_pdn.unlock();
     }
   } else {
     if (sender_fteid_present) {
@@ -784,11 +768,9 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_requ
 void pgw_context::handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& ack)
 {
   std::shared_ptr<pgw_procedure> proc = {};
-  std::shared_lock<std::shared_mutex> lp;
-  if (find_procedure(ack.gtpc_tx_id, proc, lp)) {
+  if (find_procedure(ack.gtpc_tx_id, proc)) {
     Logger::pgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", ack.teid, ack.gtpc_tx_id);
     proc->handle_itti_msg(ack);
-    lp.unlock();
     remove_procedure(proc.get());
   } else {
     Logger::pgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", pgw_procedure not found, discarded!", ack.teid, ack.gtpc_tx_id);
@@ -808,12 +790,11 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_reque
   std::shared_ptr<apn_context> sa = {};
   std::shared_ptr<pgw_pdn_connection> sp = {};
 
-  std::shared_lock<std::shared_mutex> lock_pdn;
   bool found = false;
   if (sender_fteid_present) {
-    found = find_pdn_connection(sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn, lock_pdn);
+    found = find_pdn_connection(sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
   } else {
-    found = find_pdn_connection(mbreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn, lock_pdn);
+    found = find_pdn_connection(mbreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
   }
   if (found) {
     sa = apn_pdn.first;
@@ -839,7 +820,6 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_reque
         Logger::pgwc_app().info( "S5S8 MODIFY_BEARER_REQUEST procedure failed");
         remove_procedure(proc);
       }
-      lock_pdn.unlock();
     }
   } else {
     if (sender_fteid_present) {
@@ -855,8 +835,7 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bear
   std::shared_ptr<apn_context> sa = {};
   std::shared_ptr<pgw_pdn_connection> sp = {};
 
-  std::shared_lock<std::shared_mutex> lock_pdn;
-  bool found = find_pdn_connection(s5_trigger->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn, lock_pdn);
+  bool found = find_pdn_connection(s5_trigger->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
   if (found) {
     sa = apn_pdn.first;
     sp = apn_pdn.second;
@@ -887,7 +866,6 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bear
         pgw_app_inst->send_release_access_bearers_response_cause_request_accepted (s5_trigger->gtpc_tx_id, sp->sgw_fteid_s5_s8_cp.teid_gre_key,
                         s5_trigger->r_endpoint);
       }
-      lock_pdn.unlock();
     }
   } else {
     Logger::pgwc_app().info( "S5S8 RELEASE_ACCESS_BEARERS_REQUEST procedure failed, context not found");
@@ -900,11 +878,9 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bear
 void pgw_context::handle_itti_msg (itti_sxab_session_establishment_response& seresp)
 {
   std::shared_ptr<pgw_procedure> proc = {};
-  std::shared_lock<std::shared_mutex> lp;
-  if (find_procedure(seresp.trxn_id, proc, lp)) {
+  if (find_procedure(seresp.trxn_id, proc)) {
     Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64"\n", seresp.seid, seresp.trxn_id);
     proc->handle_itti_msg(seresp);
-    lp.unlock();
     remove_procedure(proc.get());
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", seresp.seid, seresp.trxn_id);
@@ -914,11 +890,9 @@ void pgw_context::handle_itti_msg (itti_sxab_session_establishment_response& ser
 void pgw_context::handle_itti_msg (itti_sxab_session_modification_response& smresp)
 {
   std::shared_ptr<pgw_procedure> proc = {};
-  std::shared_lock<std::shared_mutex> lp;
-  if (find_procedure(smresp.trxn_id, proc, lp)) {
+  if (find_procedure(smresp.trxn_id, proc)) {
     Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64"\n", smresp.seid, smresp.trxn_id);
     proc->handle_itti_msg(smresp);
-    lp.unlock();
     remove_procedure(proc.get());
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", smresp.seid, smresp.trxn_id);
@@ -929,14 +903,12 @@ void pgw_context::handle_itti_msg (itti_sxab_session_modification_response& smre
 void pgw_context::handle_itti_msg (itti_sxab_session_deletion_response& sdresp)
 {
   std::shared_ptr<pgw_procedure> proc = {};
-  std::shared_lock<std::shared_mutex> lp;
-  if (find_procedure(sdresp.trxn_id, proc, lp)) {
+  if (find_procedure(sdresp.trxn_id, proc)) {
     Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64"\n", sdresp.seid, sdresp.trxn_id);
     proc->handle_itti_msg(sdresp);
-    lp.unlock();
     remove_procedure(proc.get());
   } else {
-    Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", sdresp.seid, sdresp.trxn_id);
+    Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE sender teid " TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_procedure not found, discarded!", sdresp.seid, sdresp.trxn_id);
   }
   std::cout << toString() << std::endl;
 }
@@ -952,16 +924,15 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_requ
       if (req->pfcp_ies.get(data_report)) {
         pfcp::pdr_id_t pdr_id;
         if (data_report.get(pdr_id)) {
-          std::shared_lock<std::shared_mutex> lp;
           std::shared_ptr<pgw_pdn_connection> ppc = {};
           ebi_t ebi;
-          if (find_pdn_connection(pdr_id, ppc, ebi, lp)) {
+          if (find_pdn_connection(pdr_id, ppc, ebi)) {
             downlink_data_report_procedure* p = new downlink_data_report_procedure(req);
             std::shared_ptr<pgw_procedure> sproc = std::shared_ptr<pgw_procedure>(p);
             insert_procedure(sproc);
             if (p->run(shared_from_this(), ppc, ebi)) {
               // TODO handle error code
-              Logger::pgwc_app().info( "S11 CREATE_SESSION_REQUEST procedure failed");
+              Logger::pgwc_app().info( "S5S8 DOWNLINK_DATA_REPORT procedure failed");
               remove_procedure(p);
             } else {
             }
@@ -987,11 +958,11 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_requ
 //------------------------------------------------------------------------------
 std::string pgw_context::toString() const
 {
+  std::unique_lock<std::recursive_mutex> lock(m_context);
   std::string s = {};
   s.append("PGW CONTEXT:\n");
   s.append("\tIMSI:\t\t\t\t").append(imsi.toString()).append("\n");
   s.append("\tIMSI UNAUTHENTICATED:\t\t").append(std::to_string(imsi_unauthenticated_indicator)).append("\n");
-  std::shared_lock lock(m_apns);
   for (auto it : apns) {
     s.append(it->toString());
   }

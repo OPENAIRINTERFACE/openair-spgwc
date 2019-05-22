@@ -632,6 +632,7 @@ void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task
     if (it_proc != pending_procedures.end()) {
       if (it_proc->second.retry_count < GTPV2C_N3_REQUESTS) {
         it_proc->second.retry_count++;
+        it_proc->second.retry_timer_id = 0;
         start_msg_retry_timer(it_proc->second, GTPV2C_T3_RESPONSE_MS, task_id, it_proc->second.retry_msg->get_sequence_number());
         // send again message
         Logger::gtpv2_c().trace( "Retry %d Sending msg type %d, seq %d",

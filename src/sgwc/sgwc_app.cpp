@@ -138,6 +138,12 @@ void sgwc_app::set_s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid, shared_pt
   s5s8lteid2sgw_contexts[sgw_teid] = std::make_pair(sebc, spc);
 }
 //------------------------------------------------------------------------------
+void sgwc_app::delete_s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid)
+{
+  s5s8lteid2sgw_contexts.erase(sgw_teid);
+}
+
+//------------------------------------------------------------------------------
 void sgwc_app::set_s11sgw_teid_2_sgw_eps_bearer_context(const teid_t& sgw_teid, shared_ptr<sgw_eps_bearer_context> sebc)
 {
   s11lteid2sgw_eps_bearer_context[sgw_teid] = sebc;
@@ -255,6 +261,10 @@ void sgwc_app_task (void *args_p)
         return;
       }
       break;
+
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::sgwc_app().info( "no handler for ITTI msg type %d", msg->msg_type);
     }
