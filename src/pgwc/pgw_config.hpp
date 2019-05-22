@@ -31,6 +31,8 @@
 
 #include "3gpp_29.244.h"
 #include "3gpp_29.274.h"
+#include "gtpv2c.hpp"
+#include "pfcp.hpp"
 #include "thread_sched.hpp"
 
 #include <arpa/inet.h>
@@ -136,7 +138,6 @@ typedef struct interface_cfg_s {
 
 typedef struct itti_cfg_s {
   util::thread_sched_params itti_timer_sched_params;
-  util::thread_sched_params s11_sched_params;
   util::thread_sched_params sx_sched_params;
   util::thread_sched_params s5s8_sched_params;
   util::thread_sched_params pgw_app_sched_params;
@@ -223,6 +224,18 @@ public:
     }
     force_push_pco = true;
     ue_mtu = 1500;
+ 
+    itti.itti_timer_sched_params.sched_priority = 85;
+    itti.sx_sched_params.sched_priority = 84;
+    itti.s5s8_sched_params.sched_priority = 84;
+    itti.pgw_app_sched_params.sched_priority = 84;
+    itti.async_cmd_sched_params.sched_priority = 84;
+    
+    s5s8_cp.thread_rd_sched_params.sched_priority = 90;
+    s5s8_cp.port = gtpv2c::default_port;
+
+    sx.thread_rd_sched_params.sched_priority = 90;
+    sx.port = pfcp::default_port;
   };
   ~pgw_config();
   void lock() {m_rw_lock.lock();};

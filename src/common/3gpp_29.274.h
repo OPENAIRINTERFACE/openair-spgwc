@@ -391,6 +391,16 @@ struct imsi_s {
   } u1;
   uint num_digits;
 
+  imsi_s() : num_digits(0)
+  {
+    memset(u1.b, 0, sizeof(u1.b));
+  }
+
+  imsi_s(const imsi_s& i) : num_digits(i.num_digits)
+  {
+    memcpy(u1.b, i.u1.b, sizeof(u1.b));
+  }
+
   std::string toString() const
   {
     std::string s = {};
@@ -415,9 +425,9 @@ struct imsi_s {
   {
     imsi64_t imsi64 = 0;
     for (int i=0; i < IMSI_BCD8_SIZE; i++) {
-      uint8_t d2 = u1.b[i];
-      uint8_t d1 = (d2 & 0xf0) >> 4;
-      d2 = d2 & 0x0f;
+      uint8_t d1 = u1.b[i];
+      uint8_t d2 = (d1 & 0xf0) >> 4;
+      d1 = d1 & 0x0f;
       if (10 > d1) {
         imsi64 = imsi64*10 + d1;
         if (10 > d2) {
@@ -430,6 +440,39 @@ struct imsi_s {
       }
     }
     return imsi64;
+  }
+
+  imsi_s& operator++ ()     // prefix ++
+  {
+    int l_i = IMSI_BCD8_SIZE - 1;
+    uint8_t carry = 1;
+    while(l_i > 5) {
+      uint8_t b = u1.b[l_i];
+      uint8_t d0 = b & 0x0f;
+      uint8_t d1 = b & 0xf0;
+      if (d0 <= 9) {
+        d0 += carry;
+        if (d0 <= 9) {
+          u1.b[l_i] = d0 | d1;
+          return(*this);
+        } else {
+          d0 = 0;
+          u1.b[l_i] = d0 | d1;
+        }
+      }
+      if (d1 <= 9) {
+        d1 += carry;
+        if (d1 <= 9) {
+          u1.b[l_i] = d0 | d1;
+          return(*this);
+        } else {
+          d1 = 0;
+          u1.b[l_i] = d0 | d1;
+        }
+      }
+      l_i++;
+    }
+    return (*this);
   }
 } ;
 typedef struct imsi_s imsi_t;
@@ -578,7 +621,7 @@ typedef struct ip_address_s {
 //-------------------------------------
 // 8.10 Mobile Equipment Identity (MEI)
 // The ME Identity field contains either the IMEI or the IMEISV as defined in subclause 6.2 of 3GPP TS 23.003
-typedef struct mei_s {
+struct mei_s {
 #define MEI_MIN_LENGTH      (15)
 #define MEI_MAX_LENGTH      (16)
   union {
@@ -603,10 +646,74 @@ typedef struct mei_s {
     uint8_t b[MEI_MAX_LENGTH/2];
   } u1;
   uint num_digits;
-} mei_t;
+
+  mei_s() : num_digits(0)
+  {
+    memset(u1.b, 0, sizeof(u1.b));
+  }
+
+  mei_s(const mei_s& i) : num_digits(i.num_digits)
+  {
+    memcpy(u1.b, i.u1.b, sizeof(u1.b));
+  }
+
+  std::string toString() const
+  {
+    std::string s = {};
+    int l_i = 0;
+    int l_j = 0;
+    while(l_i < MEI_MAX_LENGTH/2) {
+      if((u1.b[l_i] & 0xf) > 9)
+        break;
+      s.append(std::to_string(u1.b[l_i] & 0xf));
+      l_j++;
+      if(((u1.b[l_i] & 0xf0) >> 4) > 9)
+        break;
+      s.append(std::to_string((u1.b[l_i] & 0xf0) >> 4));
+      l_j++;
+      l_i++;
+    }
+    return s;
+  }
+
+  mei_s& operator++ ()     // prefix ++
+  {
+    int l_i = MEI_MAX_LENGTH/2 - 1 - 1; // depends if imei or imei_sv -1 again
+    uint8_t carry = 1;
+    while(l_i) {
+      uint8_t b = u1.b[l_i];
+      uint8_t d0 = b & 0x0f;
+      uint8_t d1 = b & 0xf0;
+      if (d0 <= 9) {
+        d0 += carry;
+        if (d0 <= 9) {
+          u1.b[l_i] = d0 | d1;
+          return(*this);
+        } else {
+          d0 = 0;
+          u1.b[l_i] = d0 | d1;
+        }
+      }
+      if (d1 <= 9) {
+        d1 += carry;
+        if (d1 <= 9) {
+          u1.b[l_i] = d0 | d1;
+          return(*this);
+        } else {
+          d1 = 0;
+          u1.b[l_i] = d0 | d1;
+        }
+      }
+      l_i++;
+    }
+    return (*this);
+  }
+} ;
+
+typedef struct mei_s mei_t;
 //-------------------------------------
 // 8.11 MSISDN
-typedef struct msisdn_s {
+struct msisdn_s {
 #define MSISDN_MAX_LENGTH      (15)
   union {
     struct {
@@ -629,7 +736,73 @@ typedef struct msisdn_s {
     uint8_t b[MSISDN_MAX_LENGTH/2+1];
   } u1;
   uint num_digits;
-} msisdn_t;
+
+  msisdn_s() : num_digits(0)
+  {
+    memset(u1.b, 0, sizeof(u1.b));
+  }
+
+  msisdn_s(const msisdn_s& i) : num_digits(i.num_digits)
+  {
+    memcpy(u1.b, i.u1.b, sizeof(u1.b));
+  }
+
+  std::string toString() const
+  {
+    std::string s = {};
+    int l_i = 0;
+    int l_j = 0;
+    while(l_i < sizeof(u1.b)) {
+      if((u1.b[l_i] & 0xf) > 9)
+        break;
+      s.append(std::to_string(u1.b[l_i] & 0xf));
+      l_j++;
+      if(((u1.b[l_i] & 0xf0) >> 4) > 9)
+        break;
+      s.append(std::to_string((u1.b[l_i] & 0xf0) >> 4));
+      l_j++;
+      l_i++;
+    }
+    return s;
+  }
+
+  // Should be refined see spec
+  msisdn_s& operator++ ()     // prefix ++
+  {
+    int l_i = sizeof(u1.b) - 1;
+    uint8_t carry = 1;
+    while(l_i > 5) {
+      uint8_t b = u1.b[l_i];
+      uint8_t d0 = b & 0x0f;
+      uint8_t d1 = b & 0xf0;
+      if (d0 <= 9) {
+        d0 += carry;
+        if (d0 <= 9) {
+          u1.b[l_i] = d0 | d1;
+          return(*this);
+        } else {
+          d0 = 0;
+          u1.b[l_i] = d0 | d1;
+        }
+      }
+      if (d1 <= 9) {
+        d1 += carry;
+        if (d1 <= 9) {
+          u1.b[l_i] = d0 | d1;
+          return(*this);
+        } else {
+          d1 = 0;
+          u1.b[l_i] = d0 | d1;
+        }
+      }
+      l_i++;
+    }
+    return (*this);
+  }
+};
+
+typedef struct msisdn_s msisdn_t;
+
 //-------------------------------------
 // 8.12 Indication
 typedef struct indication_s {
@@ -833,9 +1006,31 @@ enum rat_type_e {
   RAT_TYPE_E_LTE_M = 9,
   RAT_TYPE_E_NR = 10,
 };
-typedef struct rat_type_s {
+struct rat_type_s {
   uint8_t rat_type;
-} rat_type_t;
+  rat_type_s() : rat_type(RAT_TYPE_E_EUTRAN_WB_EUTRAN) {}
+  rat_type_s(const rat_type_e r) : rat_type(r) {}
+  rat_type_s(const rat_type_s& i) : rat_type(i.rat_type) {}
+  //------------------------------------------------------------------------------
+  std::string toString() const
+  {
+    switch(rat_type) {
+      case RAT_TYPE_E_EUTRAN_WB_EUTRAN: return std::string("EUTRAN_WB_EUTRAN");
+      case RAT_TYPE_E_EUTRAN_NB_IOT: return std::string("EUTRAN_NB_IOT");
+      case RAT_TYPE_E_LTE_M: return std::string("LTE_M");
+      case RAT_TYPE_E_NR: return std::string("NR");
+      case RAT_TYPE_E_VIRTUAL: return std::string("VIRTUAL");
+      case RAT_TYPE_E_RESERVED: return std::string("RESERVED");
+      case RAT_TYPE_E_UTRAN: return std::string("UTRAN");
+      case RAT_TYPE_E_GERAN: return std::string("GERAN");
+      case RAT_TYPE_E_WLAN: return std::string("WLAN");
+      case RAT_TYPE_E_GAN: return std::string("GAN");
+      case RAT_TYPE_E_HSPA_EVOLUTION: return std::string("HSPA_EVOLUTION");
+      default: return std::to_string(rat_type);
+    }
+  }
+};
+typedef struct rat_type_s rat_type_t;
 //-------------------------------------
 // 8.18 Serving Network
 typedef struct serving_network_s {
@@ -1067,6 +1262,19 @@ struct fully_qualified_tunnel_endpoint_identifier_s {
   uint32_t teid_gre_key;
   struct in_addr  ipv4_address;
   struct in6_addr ipv6_address;
+
+  bool operator<(const struct fully_qualified_tunnel_endpoint_identifier_s& f) const
+  {
+    return (teid_gre_key < f.teid_gre_key) or
+    (ipv4_address.s_addr < f.ipv4_address.s_addr) or
+    (interface_type < f.interface_type) or
+    (v4 == f.v4) or
+    (v6 == f.v6) or
+    (ipv6_address.s6_addr32[0] == f.ipv6_address.s6_addr32[0]) or
+    (ipv6_address.s6_addr32[1] == f.ipv6_address.s6_addr32[1]) or
+    (ipv6_address.s6_addr32[2] == f.ipv6_address.s6_addr32[2]) or
+    (ipv6_address.s6_addr32[3] == f.ipv6_address.s6_addr32[3]);
+  }
 
   bool operator==(const struct fully_qualified_tunnel_endpoint_identifier_s& f) const
   {
@@ -1936,4 +2144,29 @@ typedef struct maximum_packet_loss_rate_s {
 // 8.135 APN Rate Control Status
 // 8.136 Extended Trace Information
 
+namespace std {
+
+template<>
+class hash<fteid_t> {
+public:
+  size_t operator()(const fteid_t &k) const
+    {
+      using std::size_t;
+      using std::hash;
+      std::size_t h1 = std::hash<uint32_t>()(k.interface_type);
+      std::size_t h2 = std::hash<uint32_t>()(k.teid_gre_key) ^ h1;
+
+      if (k.v4) {
+        h2 ^= std::hash<uint32_t>()(k.ipv4_address.s_addr);
+      }
+      if (k.v6) {
+        h2 ^= std::hash<uint32_t>()(k.ipv6_address.s6_addr32[0]);
+        h2 ^= std::hash<uint32_t>()(k.ipv6_address.s6_addr32[1]);
+        h2 ^= std::hash<uint32_t>()(k.ipv6_address.s6_addr32[2]);
+        h2 ^= std::hash<uint32_t>()(k.ipv6_address.s6_addr32[3]);
+      }
+      return h2;
+    }
+  };
+}
 #endif /* FILE_3GPP_29_274_SEEN */

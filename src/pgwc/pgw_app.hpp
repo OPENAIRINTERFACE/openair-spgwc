@@ -92,11 +92,11 @@ public:
   pgw_app(pgw_app const&)    = delete;
   void operator=(pgw_app const&)     = delete;
 
-  void send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
-  void send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const;
+  void send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
+  void send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
 
   fteid_t build_s5s8_cp_fteid(const struct in_addr ipv4_address, const teid_t teid);
   fteid_t generate_s5s8_cp_fteid(const struct in_addr ipv4_address);
@@ -105,7 +105,7 @@ public:
   std::shared_ptr<pgw_context> s5s8cpgw_fteid_2_pgw_context(fteid_t& ls5s8_fteid);
 
   void set_seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc);
-  bool seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc, std::shared_lock<std::shared_mutex>& lock_found) const;
+  bool seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc) const;
 
   void delete_pgw_context(std::shared_ptr<pgw_context> spc);
 
@@ -124,9 +124,11 @@ public:
   void handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request> m);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> m);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> m);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& m);
   void handle_itti_msg (itti_sxab_session_establishment_response& m);
   void handle_itti_msg (itti_sxab_session_modification_response& m);
   void handle_itti_msg (itti_sxab_session_deletion_response& m);
+  void handle_itti_msg (std::shared_ptr<itti_sxab_session_report_request> snr);
   void handle_itti_msg (itti_sxab_association_setup_request& m);
 
   void restore_sx_sessions(const seid_t& seid) const;

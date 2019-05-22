@@ -39,21 +39,29 @@ extern itti_mw *itti_inst;
 extern sgwc_app *sgwc_app_inst;
 extern sgwc_config sgwc_cfg;
 
-void sebc_procedure::handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+void sebc_procedure::handle_itti_msg (itti_s5s8_create_session_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_create_session_response");
 }
-void sebc_procedure::handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+void sebc_procedure::handle_itti_msg (itti_s5s8_delete_session_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_delete_session_response");
 }
-void sebc_procedure::handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+void sebc_procedure::handle_itti_msg (itti_s5s8_modify_bearer_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_modify_bearer_response");
 }
-void sebc_procedure::handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+void sebc_procedure::handle_itti_msg (itti_s5s8_release_access_bearers_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_release_access_bearers_response");
+}
+void sebc_procedure::handle_itti_msg (itti_s5s8_downlink_data_notification& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_downlink_data_notification");
+}
+void sebc_procedure::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s11_downlink_data_notification_acknowledge");
 }
 
 //------------------------------------------------------------------------------
@@ -157,7 +165,7 @@ int create_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
   //s5s8_csr->gtp_ies = msg.gtp_ies;
   //s5s8_csr->l_endpoint = {};
   // TODO PGW address in HSS
-  s5s8_csr->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(ntohl(pgw_cfg.s5s8_cp.addr4.s_addr)), sgwc_cfg.s5s8_cp.port);
+  s5s8_csr->r_endpoint = endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
   std::shared_ptr<itti_s5s8_create_session_request> msg = std::shared_ptr<itti_s5s8_create_session_request>(s5s8_csr);
   int ret = itti_inst->send_msg(msg);
@@ -279,7 +287,7 @@ int delete_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
     itti_s5s8_delete_session_request *s5s8_dsr = new itti_s5s8_delete_session_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
     s5s8_dsr->gtpc_tx_id = get_trxn_id();
     s5s8_dsr->teid = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
-    s5s8_dsr->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(ntohl(pgw_cfg.s5s8_cp.addr4.s_addr)), sgwc_cfg.s5s8_cp.port);
+    s5s8_dsr->r_endpoint = endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
     // transfer IEs from S11 msg to S5 msg
     // The SGW shall include this IE on S5/S8 if it receives the Cause from the MME/SGSN.
@@ -400,7 +408,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
           if (it.get_s1_u_enb_fteid(v)) {
             if (pdn->sgw_pdn_connection::get_eps_bearer(it.eps_bearer_id, sb)) {
               if (v == sb->enb_fteid_s1u) {
-                Logger::pgwc_app().debug( "modify_bearer_procedure: ebi %d enb_fteid_s1u unchanged", it.eps_bearer_id.ebi);
+                Logger::sgwc_app().debug( "modify_bearer_procedure: ebi %d enb_fteid_s1u unchanged", it.eps_bearer_id.ebi);
                 bearer_context_modified_within_modify_bearer_response bm = {};
                 bm.set(it.eps_bearer_id);
                 cause_t cause = {};
@@ -499,7 +507,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
         px->gtpc_tx_id = util::uint_uid_generator<uint64_t>::get_instance().get_uid();
         s5s8_mbr->gtpc_tx_id = px->gtpc_tx_id;
         s5s8_mbr->teid = px->pdn->pgw_fteid_s5_s8_cp.teid_gre_key;
-        s5s8_mbr->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(ntohl(pgw_cfg.s5s8_cp.addr4.s_addr)), sgwc_cfg.s5s8_cp.port);
+        s5s8_mbr->r_endpoint = endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
         mei_t mei;
         if (msg.gtp_ies.get(mei)) {
@@ -718,7 +726,7 @@ int release_access_bearers_request_procedure::run(shared_ptr<sgw_eps_bearer_cont
         itti_s5s8_release_access_bearers_request *s5s8 = new itti_s5s8_release_access_bearers_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
         s5s8->gtpc_tx_id = breal->gtpc_tx_id;
         s5s8->teid = it_pdn->second->pgw_fteid_s5_s8_cp.teid_gre_key;
-        s5s8->r_endpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(ntohl(it_pdn->second->pgw_fteid_s5_s8_cp.ipv4_address.s_addr)), pgw_cfg.s5s8_cp.port);
+        s5s8->r_endpoint = endpoint(it_pdn->second->pgw_fteid_s5_s8_cp.ipv4_address, pgw_cfg.s5s8_cp.port);
 
         std::shared_ptr<itti_s5s8_release_access_bearers_request> msg = std::shared_ptr<itti_s5s8_release_access_bearers_request>(s5s8);
         //breal->msg = msg;
@@ -820,3 +828,57 @@ void release_access_bearers_request_procedure::handle_itti_msg (itti_s5s8_releas
   }
 }
 
+//------------------------------------------------------------------------------
+int downlink_data_notification_procedure::run(std::shared_ptr<sgw_eps_bearer_context> sebc, std::shared_ptr<sgw_pdn_connection> pdn)
+{
+  if ((nullptr == sebc.get()) || (nullptr == pdn.get())) {
+    return RETURNerror;
+  } else {
+    ebc = sebc;
+    pdn_connection = pdn;
+
+
+    ebi_t ebi = {};
+    if (not (msg.gtp_ies.get(ebi))) {
+      Logger::sgwc_app().error( "downlink_data_notification_procedure: Could not get ebi in %s", msg.get_msg_name());
+      return RETURNerror;
+    }
+    std::shared_ptr<sgw_eps_bearer> b = {};
+    if (not pdn_connection->get_eps_bearer(ebi, b)) {
+      Logger::sgwc_app().error( "downlink_data_notification_procedure: Could not get EPS bearer context %d", ebi.ebi);
+      return RETURNerror;
+    }
+
+    itti_s11_downlink_data_notification *s11 = new itti_s11_downlink_data_notification(msg.gtp_ies, TASK_SGWC_APP, TASK_SGWC_S11);
+
+    s11->teid = ebc->mme_fteid_s11.teid_gre_key;
+    s11->gtpc_tx_id = get_trxn_id();
+    s11->r_endpoint = endpoint(ebc->mme_fteid_s11.ipv4_address, gtpv2c::default_port);
+    s11_triggered = std::shared_ptr<itti_s11_downlink_data_notification>(s11);
+
+
+    Logger::sgwc_app().info( "Sending ITTI message %s to task TASK_SGWC_S11", s11->gtp_ies.get_msg_name());
+    int ret = itti_inst->send_msg(s11_triggered);
+    if (RETURNok != ret) {
+      Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S11", s11->gtp_ies.get_msg_name());
+      return RETURNerror;
+    }
+    return RETURNok;
+  }
+}
+//------------------------------------------------------------------------------
+void downlink_data_notification_procedure::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& s11resp)
+{
+  itti_s5s8_downlink_data_notification_acknowledge *s5 = new itti_s5s8_downlink_data_notification_acknowledge(s11resp.gtp_ies, TASK_SGWC_APP, TASK_SGWC_S5S8);
+  s5->teid = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
+  s5->gtpc_tx_id = get_trxn_id();
+  s5->r_endpoint = endpoint(pdn_connection->pgw_fteid_s5_s8_cp.ipv4_address, gtpv2c::default_port);
+  std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge> s5_response = std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge>(s5);
+
+
+  Logger::sgwc_app().info( "Sending ITTI message %s to task TASK_SGWC_S5S8", s5->gtp_ies.get_msg_name());
+  int ret = itti_inst->send_msg(s5_response);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S5S8", s5->gtp_ies.get_msg_name());
+  }
+}

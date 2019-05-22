@@ -267,12 +267,12 @@ pfcp_ie * pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
 //        return ie;
 //      }
 //      break;
-//    case PFCP_IE_REPORT_TYPE: {
-//        pfcp_report_type_ie *ie = new pfcp_report_type_ie(tlv);
-//        ie->load_from(is);
-//        return ie;
-//      }
-//      break;
+    case PFCP_IE_REPORT_TYPE: {
+        pfcp_report_type_ie *ie = new pfcp_report_type_ie(tlv);
+        ie->load_from(is);
+        return ie;
+      }
+      break;
     case PFCP_IE_OFFENDING_IE: {
         pfcp_offending_ie_ie *ie = new pfcp_offending_ie_ie(tlv);
         ie->load_from(is);
@@ -531,12 +531,12 @@ pfcp_ie * pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
 //        return ie;
 //      }
 //      break;
-//    case PFCP_IE_DOWNLINK_DATA_REPORT: {
-//        pfcp_downlink_data_report_ie *ie = new pfcp_downlink_data_report_ie(tlv);
-//        ie->load_from(is);
-//        return ie;
-//      }
-//      break;
+    case PFCP_IE_DOWNLINK_DATA_REPORT: {
+        pfcp_downlink_data_report_ie *ie = new pfcp_downlink_data_report_ie(tlv);
+        ie->load_from(is);
+        return ie;
+      }
+      break;
     case PFCP_IE_OUTER_HEADER_CREATION: {
         pfcp_outer_header_creation_ie *ie = new pfcp_outer_header_creation_ie(tlv);
         ie->load_from(is);
@@ -970,11 +970,11 @@ pfcp_ie * pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
 //      }
 //      break;
     default:
-      Logger::pfcp().error("Unknown GTP IE type %d (length %d)", tlv.get_type(), tlv.get_length());
+      Logger::pfcp().error("Unknown PFCP IE type %d (length %d)", tlv.get_type(), tlv.get_length());
       return nullptr;
     }
   } else {
-    Logger::pfcp().error("GTP IE type %d length %d", tlv.get_type(), tlv.get_length());
+    Logger::pfcp().error("PFCP IE type %d length %d", tlv.get_type(), tlv.get_length());
     return nullptr;
   }
 }
@@ -1025,6 +1025,23 @@ pfcp_msg::pfcp_msg(const pfcp_association_release_response& pfcp_ies) : pfcp_msg
   set_message_type(PFCP_ASSOCIATION_RELEASE_RESPONSE);
   if (pfcp_ies.node_id.first) {std::shared_ptr<pfcp_node_id_ie> sie(new pfcp_node_id_ie(pfcp_ies.node_id.second)); add_ie(sie);}
   if (pfcp_ies.cause.first) {std::shared_ptr<pfcp_cause_ie> sie(new pfcp_cause_ie(pfcp_ies.cause.second)); add_ie(sie);}
+}
+//------------------------------------------------------------------------------
+pfcp_msg::pfcp_msg(const pfcp_node_report_request& pfcp_ies) : pfcp_msg_header() {
+  ies = {};
+  set_message_type(PFCP_NODE_REPORT_REQUEST);
+    std::pair<bool, pfcp::node_id_t>              node_id;
+  std::pair<bool, pfcp::node_report_type_t>     node_report_type;
+  // TODO LATER std::pair<bool, pfcp::user_plane_path_failure_report>  user_plane_path_failure_report;
+
+
+  if (pfcp_ies.node_id.first) {std::shared_ptr<pfcp_node_id_ie> sie(new pfcp_node_id_ie(pfcp_ies.node_id.second)); add_ie(sie);}
+  if (pfcp_ies.node_report_type.first) {std::shared_ptr<pfcp_node_report_type_ie> sie(new pfcp_node_report_type_ie(pfcp_ies.node_report_type.second)); add_ie(sie);}
+  // TODO LATER if (pfcp_ies.user_plane_path_failure_report.first) {
+  //  std::shared_ptr<pfcp_user_plane_path_failure_report_ie>
+  //    sie(new pfcp_user_plane_path_failure_report_ie(pfcp_ies.user_plane_path_failure_report.second));
+  //  add_ie(sie);
+  //}
 }
 //------------------------------------------------------------------------------
 pfcp_msg::pfcp_msg(const pfcp_session_establishment_request& pfcp_ies) : pfcp_msg_header() {
@@ -1188,7 +1205,26 @@ pfcp_msg::pfcp_msg(const pfcp_session_deletion_response& pfcp_ies) : pfcp_msg_he
   //if (pfcp_ies.overload_control_information.first) {std::shared_ptr<pfcp_overload_control_information_ie> sie(new pfcp_overload_control_information_ie(pfcp_ies.overload_control_information.second)); add_ie(sie);}
   //if (pfcp_ies.usage_report_information.first) {std::shared_ptr<pfcp_usage_report_within_session_deletion_response_ie> sie(new pfcp_usage_report_within_session_deletion_response_ie(pfcp_ies.additional_usage_reports_information.second)); add_ie(sie);}
 }
+//------------------------------------------------------------------------------
+pfcp_msg::pfcp_msg(const pfcp_session_report_request& pfcp_ies) : pfcp_msg_header() {
+  ies = {};
+  set_message_type(PFCP_SESSION_REPORT_REQUEST);
 
+  if (pfcp_ies.report_type.first) {std::shared_ptr<pfcp_report_type_ie> sie(new pfcp_report_type_ie(pfcp_ies.report_type.second)); add_ie(sie);}
+  if (pfcp_ies.downlink_data_report.first) {std::shared_ptr<pfcp_downlink_data_report_ie> sie(new pfcp_downlink_data_report_ie(pfcp_ies.downlink_data_report.second)); add_ie(sie);}
+  //TODO std::pair<bool, pfcp::usage_report_within_pfcp_session_report_request> usage_report;
+  //TODO std::pair<bool, pfcp::error_indication_report>  error_indication_report;
+  //TODO std::pair<bool, pfcp::load_control_information> load_control_information;
+  //TODO std::pair<bool, pfcp::overload_control_information> overload_control_information;
+  //TODO std::pair<bool, pfcp::additional_usage_reports_information_t>  additional_usage_reports_information;
+}
+//------------------------------------------------------------------------------
+pfcp_msg::pfcp_msg(const pfcp_session_report_response& pfcp_ies) : pfcp_msg_header() {
+  ies = {};
+  set_message_type(PFCP_SESSION_REPORT_RESPONSE);
 
-
-
+  if (pfcp_ies.cause.first) {std::shared_ptr<pfcp_cause_ie> sie(new pfcp_cause_ie(pfcp_ies.cause.second)); add_ie(sie);}
+  if (pfcp_ies.offending_ie.first) {std::shared_ptr<pfcp_offending_ie_ie> sie(new pfcp_offending_ie_ie(pfcp_ies.offending_ie.second)); add_ie(sie);}
+  // TODO if (pfcp_ies.update_bar.first) {std::shared_ptr<pfcp_update_bar_within_pfcp_session_report_response_ie> sie(new pfcp_update_bar_within_pfcp_session_report_response_ie(pfcp_ies.update_bar.second)); add_ie(sie);}
+  // TODO SPEC std::pair<bool, pfcp::sxsrrsp_flags_t>            sxsrrsp_flags;
+}

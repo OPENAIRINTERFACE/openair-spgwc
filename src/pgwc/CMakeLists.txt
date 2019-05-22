@@ -26,6 +26,7 @@ include_directories(${SRC_TOP_DIR}/gtpv2c)
 include_directories(${SRC_TOP_DIR}/pfcp)
 include_directories(${SRC_TOP_DIR}/pgwc)
 include_directories(${SRC_TOP_DIR}/sgwc)
+include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
 

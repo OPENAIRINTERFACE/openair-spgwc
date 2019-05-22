@@ -410,6 +410,7 @@ void pfcp_switch::remove_pfcp_session(std::shared_ptr<pfcp::pfcp_session>& sessi
   session->cleanup();
   cp_fseid2pfcp_sessions.erase(session->cp_fseid);
   up_seid2pfcp_sessions.erase(session->seid);
+
 }
 //------------------------------------------------------------------------------
 void pfcp_switch::remove_pfcp_session(const pfcp::fseid_t& cp_fseid)
@@ -730,14 +731,14 @@ void pfcp_switch::handle_pfcp_session_deletion_request(std::shared_ptr<itti_sxab
   Logger::pfcp_switch().info(to_string());
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id)
+void pfcp_switch::pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id)
 {
   std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>> pdrs = {};
   if (get_pfcp_ul_pdrs_by_up_teid(tunnel_id, pdrs)) {
     bool nocp = false;
     bool buff = false;
     for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::iterator it_pdr = pdrs->begin(); it_pdr < pdrs->end(); ++it_pdr) {
-      if ((*it_pdr)->look_up_pack_in_access(iph, num_bytes, r_endpoint, r_endpoint_addr_len, tunnel_id)) {
+      if ((*it_pdr)->look_up_pack_in_access(iph, num_bytes, r_endpoint, tunnel_id)) {
         std::shared_ptr<pfcp::pfcp_session> ssession = {};
         uint64_t lseid = 0;
         if ((*it_pdr)->get(lseid)) {
@@ -760,11 +761,11 @@ void pfcp_switch::pfcp_session_look_up_pack_in_access(struct iphdr* const iph, c
   }
   else {
     //Logger::pfcp_switch().info( "pfcp_session_look_up_pack_in_access tunnel " TEID_FMT " not found", tunnel_id);
-    spgwu_s1u_inst->report_error_indication(r_endpoint, r_endpoint_addr_len, tunnel_id);
+    spgwu_s1u_inst->report_error_indication(r_endpoint, tunnel_id);
   }
 }
 //------------------------------------------------------------------------------
-void pfcp_switch::pfcp_session_look_up_pack_in_access(struct ipv6hdr* const ip6h, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id)
+void pfcp_switch::pfcp_session_look_up_pack_in_access(struct ipv6hdr* const ip6h, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id)
 {
   //TODO
 }
@@ -788,12 +789,16 @@ void pfcp_switch::pfcp_session_look_up_pack_in_core(const char *buffer, const st
               pfcp::far_id_t far_id = {};
               if ((*it)->get(far_id)) {
                 std::shared_ptr<pfcp::pfcp_far> sfar = {};
+                //Logger::pfcp_switch().trace( "pfcp_session_look_up_pack_in_core %d bytes, far id %08X", num_bytes, far_id);
                 if (ssession->get(far_id.far_id, sfar)) {
+                  //Logger::pfcp_switch().trace( "pfcp_session_look_up_pack_in_core %d bytes, got far, far id %08X", num_bytes, far_id);
                   sfar->apply_forwarding_rules(iph, num_bytes, nocp, buff);
                   if (buff) {
+                    //Logger::pfcp_switch().trace( "Buffering %d bytes, far id %08X", num_bytes, far_id);
                     (*it)->buffering_requested(buffer, num_bytes);
                   }
                   if (nocp) {
+                    //Logger::pfcp_switch().trace( "Notify CP %d bytes, far id %08X", num_bytes, far_id);
                     (*it)->notify_cp_requested(ssession);
                   }
                 }

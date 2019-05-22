@@ -152,10 +152,10 @@ public:
   pfcp::fteid_t generate_fteid_s1u();
   bool create_packet_in_access(std::shared_ptr<pfcp::pfcp_pdr>& pdr, const pfcp::fteid_t& in, uint8_t& cause);
 
-  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
-  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
-  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len) {};
-  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len) {};
+  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id);
+  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id);
+  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint) {};
+  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint) {};
   //void pfcp_session_look_up(struct ethhdr* const ethh, const std::size_t num_bytes);
 
   void pfcp_session_look_up_pack_in_core(const char *buffer, const std::size_t num_bytes);

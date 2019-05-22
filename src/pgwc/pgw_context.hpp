@@ -31,7 +31,6 @@
 #include <map>
 #include <mutex>
 #include <memory>
-#include <shared_mutex>
 #include <utility>
 #include <vector>
 
@@ -161,6 +160,8 @@ public:
   //pgw_eps_bearer& get_eps_bearer(const ebi_t& ebi) {return eps_bearers[ebi.ebi];}
   void add_eps_bearer(pgw_eps_bearer& eps_bearer);
   pgw_eps_bearer& get_eps_bearer(const ebi_t& ebi);
+  bool find_eps_bearer(const pfcp::pdr_id_t& pdr_id, pgw_eps_bearer& bearer);
+  bool has_eps_bearer(const pfcp::pdr_id_t& pdr_id, ebi_t& ebi);
   void remove_eps_bearer(const ebi_t& ebi);
   void remove_eps_bearer(pgw_eps_bearer& bearer);
   void set(const paa_t& paa);
@@ -239,14 +240,15 @@ public:
 class apn_context {
 
 public:
-  apn_context() : m_pdn_connections(), in_use(false), pdn_connections() {
+  apn_context() : m_context(), in_use(false), pdn_connections() {
     apn_ambr = {0};
   }
 
   apn_context(apn_context& b) = delete;
 
   void insert_pdn_connection(std::shared_ptr<pgw_pdn_connection>& sp);
-  bool find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, std::shared_ptr<pgw_pdn_connection>& pdn, std::shared_lock<std::shared_mutex>& lock_found);
+  bool find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, std::shared_ptr<pgw_pdn_connection>& pdn);
+  bool find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi);
   void delete_pdn_connection(std::shared_ptr<pgw_pdn_connection>& pdn_connection);
   int get_num_pdn_connections() const {return pdn_connections.size();};
   // deallocate_ressources is for releasing LTE resources prior to the deletion of objects
@@ -265,8 +267,7 @@ public:
   // key is local s5s8 teid
   //map<teid_t, shared_ptr<pgw_pdn_connection>> pdn_connections;
   std::vector<std::shared_ptr<pgw_pdn_connection>> pdn_connections; // was list
-  mutable std::shared_mutex                      m_pdn_connections;
-
+  mutable std::recursive_mutex                     m_context;
 };
 
 class pgw_context;
@@ -276,25 +277,23 @@ typedef std::pair<std::shared_ptr<apn_context>, std::shared_ptr<pgw_pdn_connecti
 class pgw_context : public std::enable_shared_from_this<pgw_context> {
 
 public:
-  pgw_context() : m_pending_procedures(), m_apns(),
-      imsi(), imsi_unauthenticated_indicator(false), apns(), pending_procedures() {
-    msisdn = {0};
-  }
+  pgw_context() : m_context(), imsi(), imsi_unauthenticated_indicator(false), apns(), pending_procedures(), msisdn() {}
 
   pgw_context(pgw_context& b) = delete;
 
   //void create_procedure(itti_s5s8_create_session_request& csreq);
   void insert_procedure(std::shared_ptr<pgw_procedure>& sproc);
-  bool find_procedure(const uint64_t& trxn_id, std::shared_ptr<pgw_procedure>& proc, std::shared_lock<std::shared_mutex>& lock_found);
+  bool find_procedure(const uint64_t& trxn_id, std::shared_ptr<pgw_procedure>& proc);
   void remove_procedure(pgw_procedure* proc);
 
 #define IS_FIND_PDN_WITH_LOCAL_TEID true
 #define IS_FIND_PDN_WITH_PEER_TEID  false
 
-  bool find_pdn_connection(const std::string& apn, const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection, std::shared_lock<std::shared_mutex>& lock_found);
-  bool find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection, std::shared_lock<std::shared_mutex>& lock_found);
+  bool find_pdn_connection(const std::string& apn, const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection);
+  bool find_pdn_connection(const teid_t xgw_s5s8c_teid, const bool is_local_teid, pdn_duo_t& pdn_connection);
+  bool find_pdn_connection(const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn, ebi_t& ebi);
   void insert_apn(std::shared_ptr<apn_context>& sa);
-  bool find_apn_context(const std::string& apn, std::shared_ptr<apn_context>& apn_context, std::shared_lock<std::shared_mutex>& lock_found);
+  bool find_apn_context(const std::string& apn, std::shared_ptr<apn_context>& apn_context);
   int get_num_apn_contexts() {return apns.size();};
 
   void delete_apn_context(std::shared_ptr<apn_context>& sa);
@@ -304,9 +303,11 @@ public:
   void handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request> s5_trigger);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> s5_trigger);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> s5_trigger);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& );
   void handle_itti_msg (itti_sxab_session_establishment_response& );
   void handle_itti_msg (itti_sxab_session_modification_response& );
   void handle_itti_msg (itti_sxab_session_deletion_response& );
+  void handle_itti_msg (std::shared_ptr<itti_sxab_session_report_request>&);
 
   std::string  toString() const;
 
@@ -323,12 +324,13 @@ public:
   // NOT IMPLEMENTED OMC identity                           // Identifies the OMC that shall receive the trace record(s).
 
   std::vector<std::shared_ptr<apn_context>> apns; // was list
-  mutable std::shared_mutex               m_apns;
 
   //--------------------------------------------
   // internals
   std::vector<std::shared_ptr<pgw_procedure>> pending_procedures;
-  mutable std::shared_mutex                   m_pending_procedures;
+
+  // Big recursive lock
+  mutable std::recursive_mutex                m_context;
 };
 }
 

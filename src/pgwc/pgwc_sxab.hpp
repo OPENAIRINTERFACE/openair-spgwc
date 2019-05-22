@@ -85,21 +85,22 @@ public:
   void send_sx_msg (itti_sxab_session_establishment_request& s);
   void send_sx_msg (itti_sxab_session_modification_request& s);
   void send_sx_msg (itti_sxab_session_deletion_request& s);
-  void send_sx_msg (itti_sxab_session_report_response& s) {};
+  void send_sx_msg (itti_sxab_session_report_response& s);
 
   void send_heartbeat_request(std::shared_ptr<pfcp_association>& a);
-  void send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id);
+  void send_heartbeat_response(const endpoint& r_endpoint, const uint64_t trxn_id);
 
-  void handle_receive_pfcp_msg( pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_pfcp_msg( pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint);
 
-  void handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_association_setup_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_association_setup_request(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
 
-  void handle_receive_session_establishment_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_session_modification_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_session_establishment_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_session_modification_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_session_deletion_response(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_session_report_request(pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
 
   void time_out_itti_event(const uint32_t timer_id);
 };

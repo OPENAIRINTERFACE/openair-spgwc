@@ -23,10 +23,11 @@ add_library(GTPV2C STATIC
     gtpv2c.cpp
 )
 
-include_directories(${SRC_TOP_DIR}/gtpv2c)
 include_directories(${SRC_TOP_DIR}/common)
-include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/common/msg)
 include_directories(${SRC_TOP_DIR}/common/utils)
+include_directories(${SRC_TOP_DIR}/gtpv2c)
+include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/oai_spgw_c)
+include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)

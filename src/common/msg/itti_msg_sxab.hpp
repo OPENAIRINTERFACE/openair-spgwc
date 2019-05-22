@@ -29,9 +29,9 @@
 #define ITTI_MSG_SXAB_HPP_INCLUDED_
 
 #include "3gpp_29.244.hpp"
+#include "endpoint.hpp"
 #include "itti_msg.hpp"
 #include "msg_pfcp.hpp"
-#include <boost/asio/ip/udp.hpp>
 
 class itti_sxab_msg : public itti_msg {
 public:
@@ -53,10 +53,10 @@ public:
     destination = dest;
   }
 
-  boost::asio::ip::udp::endpoint l_endpoint;
-  boost::asio::ip::udp::endpoint r_endpoint;
-  seid_t                   seid;
-  uint64_t                       trxn_id;
+  endpoint l_endpoint;
+  endpoint r_endpoint;
+  seid_t   seid;
+  uint64_t trxn_id;
 };
 
 //-----------------------------------------------------------------------------

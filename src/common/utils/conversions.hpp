@@ -32,6 +32,7 @@
 #include <string>
 #include <netinet/in.h>
 
+
 /* Used to format an uint32_t containing an ipv4 address */
 #define IN_ADDR_FMT    "%u.%u.%u.%u"
 #define PRI_IN_ADDR(aDDRESS)               \

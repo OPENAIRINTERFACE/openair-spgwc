@@ -120,13 +120,12 @@ void pgw_app::set_seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_con
   seid2pgw_context[seid] = pc;
 }
 //------------------------------------------------------------------------------
-bool pgw_app::seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc, std::shared_lock<std::shared_mutex>& lock_found) const
+bool pgw_app::seid_2_pgw_context(const seid_t& seid, std::shared_ptr<pgw_context>& pc) const
 {
   std::shared_lock lock(m_seid2pgw_context);
   std::map<seid_t, std::shared_ptr<pgw_context>>::const_iterator it = seid2pgw_context.find(seid);
   if (it != seid2pgw_context.end()) {
     pc = it->second;
-    lock_found.swap(lock);
     return true;
   }
   return false;
@@ -223,6 +222,10 @@ void pgw_app_task (void*)
       }
       break;
 
+    case SXAB_SESSION_REPORT_REQUEST:
+      pgw_app_inst->handle_itti_msg(std::static_pointer_cast<itti_sxab_session_report_request>(shared_msg));
+      break;
+
     case S5S8_CREATE_SESSION_REQUEST:
       pgw_app_inst->handle_itti_msg(std::static_pointer_cast<itti_s5s8_create_session_request>(shared_msg));
       break;
@@ -239,6 +242,12 @@ void pgw_app_task (void*)
       pgw_app_inst->handle_itti_msg(std::static_pointer_cast<itti_s5s8_release_access_bearers_request>(shared_msg));
       break;
 
+    case S5S8_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE:
+      if (itti_s5s8_downlink_data_notification_acknowledge* m = dynamic_cast<itti_s5s8_downlink_data_notification_acknowledge*>(msg)) {
+        pgw_app_inst->handle_itti_msg(std::ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::pgwc_app().info( "TIME-OUT event timer id %d", to->timer_id);
@@ -249,6 +258,7 @@ void pgw_app_task (void*)
         Logger::pgwc_app().info( "Received terminate message");
         return;
       }
+    case HEALTH_PING:
       break;
     default:
       Logger::pgwc_app().info( "no handler for msg type %d", msg->msg_type);
@@ -285,7 +295,8 @@ pgw_app::pgw_app (const std::string& config_file) : m_s5s8_cp_teid_generator(), 
 }
 
 //------------------------------------------------------------------------------
-void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid,
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_delete_session_response *s5s8 = new itti_s5s8_delete_session_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -304,7 +315,8 @@ void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_
 
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid,
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_modify_bearer_response *s5s8 = new itti_s5s8_modify_bearer_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -322,7 +334,8 @@ void pgw_app::send_modify_bearer_response_cause_context_not_found (const uint64_
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid,
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_delete_session_response *s5s8 = new itti_s5s8_delete_session_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -340,7 +353,8 @@ void pgw_app::send_delete_session_response_cause_context_not_found (const uint64
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_release_access_bearers_response_cause_context_not_found(const uint64_t gtpc_tx_id, const teid_t teid,
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_release_access_bearers_response *s5s8 = new itti_s5s8_release_access_bearers_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -358,7 +372,8 @@ void pgw_app::send_release_access_bearers_response_cause_context_not_found(const
   }
 }
 //------------------------------------------------------------------------------
-void pgw_app::send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid, boost::asio::ip::udp::endpoint& r_endpoint) const
+void pgw_app::send_release_access_bearers_response_cause_request_accepted(const uint64_t gtpc_tx_id, const teid_t teid,
+  const endpoint& r_endpoint) const
 {
   cause_t            cause = {.cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
   itti_s5s8_release_access_bearers_response *s5s8 = new itti_s5s8_release_access_bearers_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
@@ -379,7 +394,7 @@ void pgw_app::send_release_access_bearers_response_cause_request_accepted(const 
 void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request> scsreq)
 {
   itti_s5s8_create_session_request* csreq = scsreq.get();
-  Logger::pgwc_app().debug("Received S5S8 CREATE_SESSION_REQUEST teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq->teid, csreq->gtpc_tx_id);
+  Logger::pgwc_app().debug("Received S5S8 CREATE_SESSION_REQUEST teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", csreq->teid, csreq->gtpc_tx_id);
 
   if (csreq->gtp_ies.rat_type.rat_type < RAT_TYPE_E_EUTRAN_WB_EUTRAN) {
     Logger::pgwc_app().warn("Received S5_S8 CREATE_SESSION_REQUEST with RAT != RAT_TYPE_E_EUTRAN_WB_EUTRAN: type %d", csreq->gtp_ies.rat_type);
@@ -413,7 +428,7 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
     // imsi not authenticated
     indication_t indication = {};
     if ((csreq->gtp_ies.get(indication)) && (indication.uimsi)){
-      Logger::pgwc_app().debug("TODO S5_S8 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq->teid, csreq->gtpc_tx_id);
+      Logger::pgwc_app().debug("TODO S5_S8 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", csreq->teid, csreq->gtpc_tx_id);
       return;
     } else {
       imsi64_t imsi64 = imsi.to_imsi64();
@@ -431,12 +446,12 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
       if (is_s5s8c_teid_exist(csreq->teid)) {
         pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
       } else {
-        Logger::pgwc_app().debug("Discarding S5_S8 CREATE_SESSION_REQUEST teid " TEID_FMT "  gtpc_tx_id %" PRIX64", invalid teid", csreq->teid, csreq->gtpc_tx_id);
+        Logger::pgwc_app().debug("Discarding S5_S8 CREATE_SESSION_REQUEST teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", csreq->teid, csreq->gtpc_tx_id);
         return;
       }
     } else {
       // TODO
-      Logger::pgwc_app().debug("TODO S5_S8 CREATE_SESSION_REQUEST (no IMSI) teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", csreq->teid, csreq->gtpc_tx_id);
+      Logger::pgwc_app().debug("TODO S5_S8 CREATE_SESSION_REQUEST (no IMSI) teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", csreq->teid, csreq->gtpc_tx_id);
       return;
     }
   }
@@ -446,7 +461,7 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
 void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> smbreq)
 {
   itti_s5s8_modify_bearer_request* mbreq = smbreq.get();
-  Logger::pgwc_app().debug("Received S5S8 MODIFY_BEARER_REQUEST teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", mbreq->teid, mbreq->gtpc_tx_id);
+  Logger::pgwc_app().debug("Received S5S8 MODIFY_BEARER_REQUEST teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", mbreq->teid, mbreq->gtpc_tx_id);
   fteid_t sender_fteid = {};
   bool sender_fteid_present = mbreq->gtp_ies.get(sender_fteid);
 
@@ -480,7 +495,7 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> 
 //------------------------------------------------------------------------------
 void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> smbreq)
 {
-  Logger::pgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_REQUEST teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", smbreq->teid, smbreq->gtpc_tx_id);
+  Logger::pgwc_app().debug("Received S5S8 RELEASE_ACCESS_BEARERS_REQUEST teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", smbreq->teid, smbreq->gtpc_tx_id);
 
   fteid_t l_fteid = build_s5s8_cp_fteid(pgw_cfg.s5s8_cp.addr4, smbreq->teid);
   std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
@@ -496,7 +511,7 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_
 void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request> sdsreq)
 {
   itti_s5s8_delete_session_request* dsreq = sdsreq.get();
-  Logger::pgwc_app().debug("Received S5S8 DELETE_SESSION_REQUEST teid " TEID_FMT "  gtpc_tx_id %" PRIX64" ", dsreq->teid, dsreq->gtpc_tx_id);
+  Logger::pgwc_app().debug("Received S5S8 DELETE_SESSION_REQUEST teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", dsreq->teid, dsreq->gtpc_tx_id);
 
   fteid_t sender_fteid = {};
   bool sender_fteid_present = dsreq->gtp_ies.get(sender_fteid);
@@ -533,13 +548,24 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request>
 }
 
 //------------------------------------------------------------------------------
+void pgw_app::handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& m)
+{
+  fteid_t l_fteid = build_s5s8_cp_fteid(pgw_cfg.s5s8_cp.addr4, m.teid);
+  std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
+  if (pc.get()) {
+    Logger::pgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
+    pc.get()->handle_itti_msg(m);
+  } else {
+    Logger::pgwc_app().debug("Received S5S8 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " context not found!", m.teid, m.gtpc_tx_id);
+  }
+}
+
+//------------------------------------------------------------------------------
 void pgw_app::handle_itti_msg (itti_sxab_session_establishment_response& seresp)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(seresp.seid, pc, lpc)) {
+  if (seid_2_pgw_context(seresp.seid, pc)) {
     pc.get()->handle_itti_msg(seresp);
-    lpc.unlock();
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION ESTABLISHMENT RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", seresp.seid, seresp.trxn_id);
   }
@@ -548,10 +574,8 @@ void pgw_app::handle_itti_msg (itti_sxab_session_establishment_response& seresp)
 void pgw_app::handle_itti_msg (itti_sxab_session_modification_response& smresp)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(smresp.seid, pc, lpc)) {
+  if (seid_2_pgw_context(smresp.seid, pc)) {
     pc.get()->handle_itti_msg(smresp);
-    lpc.unlock();
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION MODIFICATION RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", smresp.seid, smresp.trxn_id);
   }
@@ -560,12 +584,25 @@ void pgw_app::handle_itti_msg (itti_sxab_session_modification_response& smresp)
 void pgw_app::handle_itti_msg (itti_sxab_session_deletion_response& smresp)
 {
   std::shared_ptr<pgw_context> pc = {};
-  std::shared_lock<std::shared_mutex> lpc;
-  if (seid_2_pgw_context(smresp.seid, pc, lpc)) {
+  if (seid_2_pgw_context(smresp.seid, pc)) {
     pc.get()->handle_itti_msg(smresp);
-    lpc.unlock();
+
+    if (pc->apns.size() == 0) {
+      delete_pgw_context(pc);
+    }
   } else {
     Logger::pgwc_app().debug("Received SXAB SESSION DELETION RESPONSE seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", smresp.seid, smresp.trxn_id);
+  }
+}
+
+//------------------------------------------------------------------------------
+void pgw_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_request> snr)
+{
+  std::shared_ptr<pgw_context> pc = {};
+  if (seid_2_pgw_context(snr->seid, pc)) {
+    pc.get()->handle_itti_msg(snr);
+  } else {
+    Logger::pgwc_app().debug("Received SXAB SESSION REPORT REQUEST seid" TEID_FMT "  pfcp_tx_id %" PRIX64", pgw_context not found, discarded!", snr->seid, snr->trxn_id);
   }
 }
 
