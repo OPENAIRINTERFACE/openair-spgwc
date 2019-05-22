@@ -444,6 +444,12 @@ void pfcp_switch::add_pfcp_ul_pdr_by_up_teid(const teid_t teid, std::shared_ptr<
   }
 }
 //------------------------------------------------------------------------------
+void pfcp_switch::remove_pfcp_ul_pdrs_by_up_teid(const teid_t teid)
+{
+  ul_s1u_teid2pfcp_pdr.erase(teid);
+}
+
+//------------------------------------------------------------------------------
 void pfcp_switch::add_pfcp_dl_pdr_by_ue_ip(const uint32_t ue_ip, std::shared_ptr<pfcp::pfcp_pdr>& pdr)
 {
   folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>::const_iterator pit = ue_ipv4_hbo2pfcp_pdr.find (ue_ip);
@@ -464,6 +470,11 @@ void pfcp_switch::add_pfcp_dl_pdr_by_ue_ip(const uint32_t ue_ip, std::shared_ptr
       }
     }
   }
+}
+//------------------------------------------------------------------------------
+void pfcp_switch::remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t ue_ip)
+{
+  ue_ipv4_hbo2pfcp_pdr.erase(ue_ip);
 }
 //------------------------------------------------------------------------------
 std::string pfcp_switch::to_string() const
@@ -789,16 +800,24 @@ void pfcp_switch::pfcp_session_look_up_pack_in_core(const char *buffer, const st
               pfcp::far_id_t far_id = {};
               if ((*it)->get(far_id)) {
                 std::shared_ptr<pfcp::pfcp_far> sfar = {};
-                //Logger::pfcp_switch().trace( "pfcp_session_look_up_pack_in_core %d bytes, far id %08X", num_bytes, far_id);
+#if TRACE_IS_ON
+                Logger::pfcp_switch().trace( "pfcp_session_look_up_pack_in_core %d bytes, far id %08X", num_bytes, far_id);
+#endif
                 if (ssession->get(far_id.far_id, sfar)) {
-                  //Logger::pfcp_switch().trace( "pfcp_session_look_up_pack_in_core %d bytes, got far, far id %08X", num_bytes, far_id);
+#if TRACE_IS_ON
+                  Logger::pfcp_switch().trace( "pfcp_session_look_up_pack_in_core %d bytes, got far, far id %08X", num_bytes, far_id);
+#endif
                   sfar->apply_forwarding_rules(iph, num_bytes, nocp, buff);
                   if (buff) {
-                    //Logger::pfcp_switch().trace( "Buffering %d bytes, far id %08X", num_bytes, far_id);
+#if TRACE_IS_ON
+                    Logger::pfcp_switch().trace( "Buffering %d bytes, far id %08X", num_bytes, far_id);
+#endif
                     (*it)->buffering_requested(buffer, num_bytes);
                   }
                   if (nocp) {
-                    //Logger::pfcp_switch().trace( "Notify CP %d bytes, far id %08X", num_bytes, far_id);
+#if TRACE_IS_ON
+                    Logger::pfcp_switch().trace( "Notify CP %d bytes, far id %08X", num_bytes, far_id);
+#endif
                     (*it)->notify_cp_requested(ssession);
                   }
                 }

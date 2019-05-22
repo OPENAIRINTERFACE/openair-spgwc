@@ -102,7 +102,7 @@ private:
 
   //switching_data_per_cpu_socket             switching_data[];
   struct iovec                              msg_iov_;        /* scatter/gather array */
-  std::unordered_map<pfcp::fseid_t, std::shared_ptr<pfcp::pfcp_session>>                  cp_fseid2pfcp_sessions;
+  std::unordered_map<pfcp::fseid_t, std::shared_ptr<pfcp::pfcp_session>>                        cp_fseid2pfcp_sessions;
   folly::AtomicHashMap<uint64_t, std::shared_ptr<pfcp::pfcp_session>>                           up_seid2pfcp_sessions;
   folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>   ul_s1u_teid2pfcp_pdr;
   folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>> ue_ipv4_hbo2pfcp_pdr;
@@ -170,8 +170,8 @@ public:
   void time_out_max_commit_interval(const uint32_t timer_id);
 
   void remove_pfcp_session(const pfcp::fseid_t& cp_fseid);
-  void remove_pfcp_ul_pdrs_by_up_teid(const teid_t) {};
-  void remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t) {};
+  void remove_pfcp_ul_pdrs_by_up_teid(const teid_t);
+  void remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t);
 
   std::string to_string() const;
 };
