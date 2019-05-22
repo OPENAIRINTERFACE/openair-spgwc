@@ -592,8 +592,17 @@ void pfcp_switch::handle_pfcp_session_establishment_request(std::shared_ptr<itti
   || (cause.cause_value == CAUSE_VALUE_CONDITIONAL_IE_MISSING)){
     resp->pfcp_ies.set(offending_ie);
   }
-  // TODO warn may be huge, do a vector of string
-  Logger::pfcp_switch().info(to_string());
+
+#if DEBUG_IS_ON
+  std::cout << "\n+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+" << std::endl;
+  std::cout << "| PFCP switch Packet Detection Rule list ordered by established sessions:                                                                                                                          |" << std::endl;
+  std::cout << "+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+" << std::endl;
+  std::cout << "|  SEID          |pdr |  far   |predence|   action   |        create outer hdr         tun id| rmv outer hdr  tun id|    UE IPv4     |                                                             |" << std::endl;
+  std::cout << "+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+" << std::endl;
+  for (const auto& it : up_seid2pfcp_sessions) {
+    std::cout << it.second->to_string() << std::endl;
+  }
+#endif
 }
 //------------------------------------------------------------------------------
 void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<itti_sxab_session_modification_request> sreq, itti_sxab_session_modification_response* resp)
@@ -718,7 +727,17 @@ void pfcp_switch::handle_pfcp_session_modification_request(std::shared_ptr<itti_
   || (cause.cause_value == CAUSE_VALUE_CONDITIONAL_IE_MISSING)){
     resp->pfcp_ies.set(offending_ie);
   }
-  Logger::pfcp_switch().info(to_string());
+
+#if DEBUG_IS_ON
+  std::cout << "\n+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+" << std::endl;
+  std::cout << "| PFCP switch Packet Detection Rule list ordered by established sessions:                                                                                                                          |" << std::endl;
+  std::cout << "+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+" << std::endl;
+  std::cout << "|  SEID          |pdr |  far   |predence|   action   |        create outer hdr         tun id| rmv outer hdr  tun id|    UE IPv4     |                                                             |" << std::endl;
+  std::cout << "+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+" << std::endl;
+  for (const auto& it : up_seid2pfcp_sessions) {
+    std::cout << it.second->to_string() << std::endl;
+  }
+#endif
 }
 //------------------------------------------------------------------------------
 void pfcp_switch::handle_pfcp_session_deletion_request(std::shared_ptr<itti_sxab_session_deletion_request> sreq, itti_sxab_session_deletion_response* resp)
@@ -739,7 +758,17 @@ void pfcp_switch::handle_pfcp_session_deletion_request(std::shared_ptr<itti_sxab
   }
   pfcp_associations::get_instance().notify_del_session(fseid);
   resp->pfcp_ies.set(cause);
-  Logger::pfcp_switch().info(to_string());
+
+#if DEBUG_IS_ON
+  std::cout << "\n+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+" << std::endl;
+  std::cout << "| PFCP switch Packet Detection Rule list ordered by established sessions:                                                                                                                          |" << std::endl;
+  std::cout << "+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+" << std::endl;
+  std::cout << "|  SEID          |pdr |  far   |predence|   action   |        create outer hdr         tun id| rmv outer hdr  tun id|    UE IPv4     |                                                             |" << std::endl;
+  std::cout << "+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+" << std::endl;
+  for (const auto& it : up_seid2pfcp_sessions) {
+    std::cout << it.second->to_string() << std::endl;
+  }
+#endif
 }
 //------------------------------------------------------------------------------
 void pfcp_switch::pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id)

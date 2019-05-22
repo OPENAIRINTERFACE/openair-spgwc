@@ -296,12 +296,6 @@ void pfcp_session::cleanup()
 std::string pfcp_session::to_string() const
 {
   std::string s = {};
-  s.append("\n+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+\n");
-  s.append("| PFCP switch Packet Detection Rule list ordered by established sessions:                                                                                                        |\n");
-  s.append("+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+-------------------------------------------------------------+\n" ) ;
-  s.append("|  SEID          |pdr |  far   |predence|   action   |        create outer hdr         tun id| rmv outer hdr  tun id|    UE IPv4     |                                                             |\n");
-  s.append("+----------------+----+--------+--------+------------+---------------------------------------+----------------------+----------------+---------------------------------------------------------------------+\n");
-  //for (auto it_pdr : pdrs) {
   for (std::vector<std::shared_ptr<pfcp::pfcp_pdr>>::const_iterator it_pdr = pdrs.begin(); it_pdr!=pdrs.end(); ++it_pdr) {
     s.append(fmt::format("|{:016x}", seid)); // TODO continue this line
     std::shared_ptr<pfcp::pfcp_pdr> pdr = *it_pdr;
