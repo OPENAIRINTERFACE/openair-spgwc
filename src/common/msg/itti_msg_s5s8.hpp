@@ -30,9 +30,9 @@
 #define ITTI_MSG_S5S8_HPP_INCLUDED_
 
 #include "3gpp_29.274.hpp"
+#include "endpoint.hpp"
 #include "itti_msg.hpp"
 #include "msg_gtpv2c.hpp"
-#include <boost/asio/ip/udp.hpp>
 
 class itti_s5s8_msg : public itti_msg {
 public:
@@ -54,10 +54,10 @@ public:
     destination = dest;
   }
 
-  boost::asio::ip::udp::endpoint l_endpoint;
-  boost::asio::ip::udp::endpoint r_endpoint;
-  teid_t                   teid;
-  uint64_t                       gtpc_tx_id;
+  endpoint l_endpoint;
+  endpoint r_endpoint;
+  teid_t   teid;
+  uint64_t gtpc_tx_id;
 };
 
 class itti_s5s8_create_session_request : public itti_s5s8_msg {
@@ -327,4 +327,77 @@ public:
   gtpv2c::gtpv2c_delete_bearer_command gtp_ies;
 } ;
 
+//-----------------------------------------------------------------------------
+/** @class itti_s5s8_downlink_data_notification
+ *  @brief Downlink Data Notification, not in spec but necessary due to SGWU and PGWU tied together.
+ *
+ * The Downlink Data Notification message is sent on the S5S8 interface by the SGW to the MME as part of the S1 paging procedure.
+ */
+class itti_s5s8_downlink_data_notification   : public itti_s5s8_msg {
+public:
+  itti_s5s8_downlink_data_notification(const task_id_t origin, const task_id_t destination):
+    itti_s5s8_msg(S5S8_DOWNLINK_DATA_NOTIFICATION, origin, destination) {
+  }
+  itti_s5s8_downlink_data_notification(const itti_s5s8_downlink_data_notification& i) : itti_s5s8_msg(i) {
+    gtp_ies = i.gtp_ies;
+  }
+  itti_s5s8_downlink_data_notification(const itti_s5s8_downlink_data_notification& i, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_msg(i, orig, dest)  {
+    gtp_ies = i.gtp_ies;
+  }
+  const char* get_msg_name() {return typeid(itti_s5s8_downlink_data_notification).name();};
+
+  gtpv2c::gtpv2c_downlink_data_notification gtp_ies;
+} ;
+
+//-----------------------------------------------------------------------------
+/** @class itti_s5s8_downlink_data_notification_acknowledge
+ *  @brief Downlink Data Notification Acknowledge, not in spec but necessary due to SGWU and PGWU tied together.
+ *
+ * The Downlink Data Notification Acknowledge message is sent on the S5S8 interface by the MME to the SGW as part of the S1 paging procedure.
+ */
+class itti_s5s8_downlink_data_notification_acknowledge   : public itti_s5s8_msg {
+public:
+  itti_s5s8_downlink_data_notification_acknowledge(const task_id_t origin, const task_id_t destination):
+    itti_s5s8_msg(S5S8_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE, origin, destination) {
+  }
+  itti_s5s8_downlink_data_notification_acknowledge(const itti_s5s8_downlink_data_notification_acknowledge& i) : itti_s5s8_msg(i) {
+    gtp_ies = i.gtp_ies;
+  }
+  itti_s5s8_downlink_data_notification_acknowledge(const itti_s5s8_downlink_data_notification_acknowledge& i, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_msg(i, orig, dest)  {
+    gtp_ies = i.gtp_ies;
+  }
+  itti_s5s8_downlink_data_notification_acknowledge(const gtpv2c::gtpv2c_downlink_data_notification_acknowledge& ies, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_downlink_data_notification_acknowledge(orig, dest) {
+    gtp_ies = ies;
+  }
+
+  const char* get_msg_name() {return typeid(itti_s5s8_downlink_data_notification_acknowledge).name();};
+
+  gtpv2c::gtpv2c_downlink_data_notification_acknowledge gtp_ies;
+} ;
+
+
+//-----------------------------------------------------------------------------
+/** @class itti_s5s8_downlink_data_notification_failure_indication
+ *  @brief Downlink Data Notification Failure Indication, not in spec but necessary due to SGWU and PGWU tied together.
+ *
+ */
+class itti_s5s8_downlink_data_notification_failure_indication   : public itti_s5s8_msg {
+public:
+  itti_s5s8_downlink_data_notification_failure_indication(const task_id_t origin, const task_id_t destination):
+    itti_s5s8_msg(S5S8_DOWNLINK_DATA_NOTIFICATION_FAILURE_INDICATION, origin, destination) {
+  }
+  itti_s5s8_downlink_data_notification_failure_indication(const itti_s5s8_downlink_data_notification_failure_indication& i) : itti_s5s8_msg(i) {
+    gtp_ies = i.gtp_ies;
+  }
+  itti_s5s8_downlink_data_notification_failure_indication(const itti_s5s8_downlink_data_notification_failure_indication& i, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_msg(i, orig, dest)  {
+    gtp_ies = i.gtp_ies;
+  }
+  const char* get_msg_name() {return typeid(itti_s5s8_downlink_data_notification_failure_indication).name();};
+
+  gtpv2c::gtpv2c_downlink_data_notification_failure_indication gtp_ies;
+} ;
 #endif /* ITTI_MSG_S5S8_HPP_INCLUDED_ */

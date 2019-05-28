@@ -28,13 +28,12 @@
 #ifndef FILE_SGWU_SX_HPP_SEEN
 #define FILE_SGWU_SX_HPP_SEEN
 
+#include "endpoint.hpp"
 #include "pfcp.hpp"
 #include "itti_msg_sxab.hpp"
 #include "msg_pfcp.hpp"
 #include "spgwu_pfcp_association.hpp"
 
-#include <boost/asio.hpp>
-#include <boost/asio/ip/address.hpp>
 #include <thread>
 
 namespace spgwu {
@@ -89,25 +88,24 @@ public:
   void send_sx_msg (itti_sxab_session_establishment_response& s);
   void send_sx_msg (itti_sxab_session_modification_response& s);
   void send_sx_msg (itti_sxab_session_deletion_response& s);
-  void send_sx_msg (itti_sxab_session_report_request& s) {};
+  void send_sx_msg (itti_sxab_session_report_request& s) ;
 
   void send_sx_msg(const pfcp::fseid_t& cp_fseid, const pfcp::pfcp_session_report_request& s);
 
   void send_heartbeat_request(std::shared_ptr<pfcp_association>& a);
-  void send_heartbeat_response(const boost::asio::ip::udp::endpoint& r_endpoint, const uint64_t trxn_id);
+  void send_heartbeat_response(const endpoint& r_endpoint, const uint64_t trxn_id);
 
-  void handle_receive_pfcp_msg( pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_pfcp_msg( pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& remote_endpoint);
   // node related
-  void handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_association_setup_response(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
+  void handle_receive_heartbeat_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_heartbeat_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_association_setup_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
   // session related
-  void handle_receive_session_establishment_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_session_modification_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-  void handle_receive_session_deletion_request(pfcp::pfcp_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint);
-
-
+  void handle_receive_session_establishment_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_session_modification_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_session_deletion_request(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_session_report_response(pfcp::pfcp_msg& msg, const endpoint& remote_endpoint);
 
   void time_out_itti_event(const uint32_t timer_id);
 };

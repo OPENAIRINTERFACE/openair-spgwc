@@ -134,19 +134,20 @@ void xgpp_conv::pfcp_cause_to_core_cause(const pfcp::cause_t& pc, cause_t& c)
       c.cause_value = SYSTEM_FAILURE; // ? ...
   }
 }
+
 //------------------------------------------------------------------------------
-bool xgpp_conv::sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_storage& peer_sockaddr, gtp_u_peer_address_t& peer_address)
+bool xgpp_conv::endpoint_to_gtp_u_peer_address(const endpoint& ep, gtp_u_peer_address_t& peer_address)
 {
-  switch (peer_sockaddr.ss_family) {
+  switch (ep.family()) {
     case AF_INET: {
-      const struct sockaddr_in * const sin = reinterpret_cast<const sockaddr_in* const>(&peer_sockaddr);
+      const struct sockaddr_in * const sin = reinterpret_cast<const sockaddr_in* const>(&ep.addr_storage);
       peer_address.ipv4_address.s_addr = sin->sin_addr.s_addr;
       peer_address.is_v4 = true;
       return true;
     }
     break;
     case AF_INET6: {
-      const struct sockaddr_in6 * const sin6 = reinterpret_cast<const sockaddr_in6* const>(&peer_sockaddr);
+      const struct sockaddr_in6 * const sin6 = reinterpret_cast<const sockaddr_in6* const>(&ep.addr_storage);
       peer_address.ipv6_address = sin6->sin6_addr;
       peer_address.is_v4 = false;
       return true;
@@ -156,5 +157,4 @@ bool xgpp_conv::sockaddr_storage_to_gtp_u_peer_address(const struct sockaddr_sto
       return false;
   }
 }
-
 

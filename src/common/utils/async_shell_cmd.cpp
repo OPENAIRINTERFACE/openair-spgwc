@@ -78,17 +78,23 @@ void async_cmd_task (void* args_p)
         }
       }
       break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::async_cmd().info( "TIME-OUT event timer id %d", to->timer_id);
       }
       break;
+
     case TERMINATE:
       if (itti_msg_terminate *terminate = dynamic_cast<itti_msg_terminate*>(msg)) {
         Logger::async_cmd().info( "Received terminate message");
         return;
       }
       break;
+
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::sgwc_app().info( "no handler for msg type %d", msg->msg_type);
     }

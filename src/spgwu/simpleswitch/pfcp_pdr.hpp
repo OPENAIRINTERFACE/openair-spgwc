@@ -30,17 +30,18 @@
 
 #include <linux/ip.h>
 #include <linux/ipv6.h>
+#include "endpoint.hpp"
 #include "msg_pfcp.hpp"
 #include <mutex>
 
 namespace pfcp {
 
   class pfcp_session;
-  
+
   class pfcp_pdr {
     public:
-      mutable std::mutex                                       lock;
-      uint64_t                                                 local_seid;
+      mutable std::mutex                                 lock;
+      uint64_t                                           local_seid;
       pfcp::pdr_id_t                                     pdr_id;
       std::pair<bool, pfcp::precedence_t>                precedence;
       std::pair<bool, pfcp::pdi>                         pdi;
@@ -49,12 +50,12 @@ namespace pfcp {
       std::pair<bool, pfcp::urr_id_t>                    urr_id;
       std::pair<bool, pfcp::qer_id_t>                    qer_id;
       std::pair<bool, pfcp::activate_predefined_rules_t> activate_predefined_rules;
-      
-      bool                                                     notified_cp;
+
+      bool                                               notified_cp;
 
       explicit pfcp_pdr(uint64_t lseid) : lock(), local_seid(lseid), pdr_id(), precedence(), pdi(), outer_header_removal(), far_id(), urr_id(), qer_id(), activate_predefined_rules(), notified_cp(false) {}
 
-      explicit pfcp_pdr(const pfcp::create_pdr& c) : 
+      explicit pfcp_pdr(const pfcp::create_pdr& c) :
           lock(), local_seid(0), pdr_id(c.pdr_id.second), precedence(c.precedence), pdi(c.pdi), outer_header_removal(c.outer_header_removal),
           far_id(c.far_id), urr_id(c.urr_id), qer_id(c.qer_id), activate_predefined_rules(c.activate_predefined_rules), notified_cp(false)
       {}
@@ -90,12 +91,12 @@ namespace pfcp {
 
       bool update(const pfcp::update_pdr& update, uint8_t& cause_value);
 
-      bool look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
+      bool look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id);
       bool look_up_pack_in_core(struct iphdr* const iph, const std::size_t num_bytes);
 
       void buffering_requested(const char *buffer, const std::size_t num_bytes);
       void notify_cp_requested(std::shared_ptr<pfcp::pfcp_session> session);
-      
+
       // For sorting in collections
       bool operator<(const pfcp_pdr &rhs) const { return (precedence.second.precedence < rhs.precedence.second.precedence); }
   };

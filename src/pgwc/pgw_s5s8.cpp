@@ -80,6 +80,12 @@ void pgw_s5s8_task (void *args_p)
       }
       break;
 
+    case S5S8_DOWNLINK_DATA_NOTIFICATION:
+      if (itti_s5s8_downlink_data_notification* m = dynamic_cast<itti_s5s8_downlink_data_notification*>(msg)) {
+        pgw_s5s8_inst->send_msg(ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::pgwc_s5s8().debug( "TIME-OUT event timer id %d", to->timer_id);
@@ -94,6 +100,9 @@ void pgw_s5s8_task (void *args_p)
       }
       break;
 
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::pgwc_s5s8().info( "no handler for msg type %d", msg->msg_type);
     }
@@ -102,7 +111,7 @@ void pgw_s5s8_task (void *args_p)
 }
 
 //------------------------------------------------------------------------------
-pgw_s5s8::pgw_s5s8 () : gtpv2c_stack(string(inet_ntoa(pgw_cfg.s5s8_cp.addr4)), pgw_cfg.s5s8_cp.port)
+pgw_s5s8::pgw_s5s8 () : gtpv2c_stack(string(inet_ntoa(pgw_cfg.s5s8_cp.addr4)), pgw_cfg.s5s8_cp.port, pgw_cfg.s5s8_cp.thread_rd_sched_params)
 {
   Logger::pgwc_s5s8().startup("Starting...");
   if (itti_inst->create_task(TASK_PGWC_S5S8, pgw_s5s8_task, nullptr) ) {
@@ -133,7 +142,12 @@ void pgw_s5s8::send_msg(itti_s5s8_release_access_bearers_response& i)
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive_create_session_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgw_s5s8::send_msg(itti_s5s8_downlink_data_notification& i)
+{
+  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_PGWC_S5S8, i.gtpc_tx_id);
+}
+//------------------------------------------------------------------------------
+void pgw_s5s8::handle_receive_create_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -152,11 +166,13 @@ void pgw_s5s8::handle_receive_create_session_request(gtpv2c_msg& msg, const boos
     if (RETURNok != ret) {
       Logger::pgwc_s5s8().error( "Could not send ITTI message %s to task TASK_PGWC_APP", i->get_msg_name());
     }
+  } else {
+    Logger::pgwc_s5s8().error( "Error signalled by lower layer while receiving CREATE_SESSION_REQUEST");
   }
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive_delete_session_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgw_s5s8::handle_receive_delete_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -179,7 +195,7 @@ void pgw_s5s8::handle_receive_delete_session_request(gtpv2c_msg& msg, const boos
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgw_s5s8::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -202,7 +218,7 @@ void pgw_s5s8::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const boost
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgw_s5s8::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   bool error = true;
   uint64_t gtpc_tx_id = 0;
@@ -225,7 +241,31 @@ void pgw_s5s8::handle_receive_release_access_bearers_request(gtpv2c_msg& msg, co
   // else ignore
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgw_s5s8::handle_receive_downlink_data_notification_acknowledge(gtpv2c_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t gtpc_tx_id = 0;
+  gtpv2c_downlink_data_notification_acknowledge msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
+  if (!error) {
+    itti_s5s8_downlink_data_notification_acknowledge *itti_msg = new itti_s5s8_downlink_data_notification_acknowledge(TASK_PGWC_S5S8, TASK_PGWC_APP);
+    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->gtpc_tx_id = gtpc_tx_id;
+    itti_msg->teid = msg.get_teid();
+    std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge> i = std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::pgwc_s5s8().error( "Could not send ITTI message %s to task TASK_PGWC_APP", i->get_msg_name());
+    }
+  }
+  // else ignore
+}
+
+//------------------------------------------------------------------------------
+void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
   //Logger::pgwc_s5s8().trace( "handle_receive_gtpv2c_msg msg type %d length %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
@@ -246,6 +286,10 @@ void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip:
     break;
   case GTP_DELETE_SESSION_REQUEST: {
     handle_receive_delete_session_request(msg, remote_endpoint);
+  }
+  break;
+  case GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE: {
+    handle_receive_downlink_data_notification_acknowledge(msg, remote_endpoint);
   }
   break;
   case GTP_DELETE_SESSION_RESPONSE:
@@ -316,7 +360,6 @@ void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip:
 
   case GTP_RELEASE_ACCESS_BEARERS_RESPONSE:
   case GTP_DOWNLINK_DATA_NOTIFICATION:
-  case GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE:
   case GTP_PGW_RESTART_NOTIFICATION:
   case GTP_PGW_RESTART_NOTIFICATION_ACKNOWLEDGE:
   case GTP_UPDATE_PDN_CONNECTION_SET_REQUEST:
@@ -334,7 +377,8 @@ void pgw_s5s8::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const boost::asio::ip:
   }
 }
 //------------------------------------------------------------------------------
-void pgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, boost::asio::ip::udp::endpoint& remote_endpoint)
+void pgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transferred,
+                              const endpoint& remote_endpoint)
 {
   //Logger::pgwc_s5s8().info( "handle_receive(%d bytes)", bytes_transferred);
   //std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;

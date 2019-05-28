@@ -102,7 +102,7 @@ private:
 
   //switching_data_per_cpu_socket             switching_data[];
   struct iovec                              msg_iov_;        /* scatter/gather array */
-  std::unordered_map<pfcp::fseid_t, std::shared_ptr<pfcp::pfcp_session>>                  cp_fseid2pfcp_sessions;
+  std::unordered_map<pfcp::fseid_t, std::shared_ptr<pfcp::pfcp_session>>                        cp_fseid2pfcp_sessions;
   folly::AtomicHashMap<uint64_t, std::shared_ptr<pfcp::pfcp_session>>                           up_seid2pfcp_sessions;
   folly::AtomicHashMap<teid_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>>   ul_s1u_teid2pfcp_pdr;
   folly::AtomicHashMap<uint32_t, std::shared_ptr<std::vector<std::shared_ptr<pfcp::pfcp_pdr>>>> ue_ipv4_hbo2pfcp_pdr;
@@ -152,10 +152,10 @@ public:
   pfcp::fteid_t generate_fteid_s1u();
   bool create_packet_in_access(std::shared_ptr<pfcp::pfcp_pdr>& pdr, const pfcp::fteid_t& in, uint8_t& cause);
 
-  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
-  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
-  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len) {};
-  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len) {};
+  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id);
+  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint, const uint32_t tunnel_id);
+  void pfcp_session_look_up_pack_in_access(struct iphdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint) {};
+  void pfcp_session_look_up_pack_in_access(struct ipv6hdr* const iph, const std::size_t num_bytes, const endpoint& r_endpoint) {};
   //void pfcp_session_look_up(struct ethhdr* const ethh, const std::size_t num_bytes);
 
   void pfcp_session_look_up_pack_in_core(const char *buffer, const std::size_t num_bytes);
@@ -170,8 +170,8 @@ public:
   void time_out_max_commit_interval(const uint32_t timer_id);
 
   void remove_pfcp_session(const pfcp::fseid_t& cp_fseid);
-  void remove_pfcp_ul_pdrs_by_up_teid(const teid_t) {};
-  void remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t) {};
+  void remove_pfcp_ul_pdrs_by_up_teid(const teid_t);
+  void remove_pfcp_dl_pdrs_by_ue_ip(const uint32_t);
 
   std::string to_string() const;
 };

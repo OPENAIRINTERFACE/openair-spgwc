@@ -269,6 +269,7 @@ ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common ${CMAKE_CURRENT_BI
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common/utils ${CMAKE_CURRENT_BINARY_DIR}/utils)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/gtpv2c ${CMAKE_CURRENT_BINARY_DIR}/gtpv2c)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/pfcp ${CMAKE_CURRENT_BINARY_DIR}/pfcp)
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/udp ${CMAKE_CURRENT_BINARY_DIR}/udp)
 if(${SGW_AUTOTEST})
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/gtpv1u ${CMAKE_CURRENT_BINARY_DIR}/gtpv1u)
 endif(${SGW_AUTOTEST})
@@ -290,6 +291,7 @@ include_directories(${SRC_TOP_DIR}/common/utils)
 include_directories(${SRC_TOP_DIR}/gtpv2c)
 include_directories(${SRC_TOP_DIR}/pfcp)
 include_directories(${SRC_TOP_DIR}/sgwc)
+include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
 add_executable(spgwc
@@ -310,5 +312,5 @@ if(${SGW_AUTOTEST})
   SET(GTPV1U_LIB GTPV1U)
 endif(${SGW_AUTOTEST})
 
-target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SGWC PGWC ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
+target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SGWC PGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
 

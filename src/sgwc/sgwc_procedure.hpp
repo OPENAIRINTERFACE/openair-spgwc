@@ -29,6 +29,7 @@
 */
 
 #include "itti_msg_s11.hpp"
+#include "itti_msg_s5s8.hpp"
 #include "msg_gtpv2c.hpp"
 #include "uint_generator.hpp"
 
@@ -62,6 +63,8 @@ public:
   virtual void handle_itti_msg (itti_s5s8_delete_session_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s5s8_modify_bearer_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s5s8_release_access_bearers_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
+  virtual void handle_itti_msg (itti_s5s8_downlink_data_notification& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
+  virtual void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp);
 
 };
 //------------------------------------------------------------------------------
@@ -141,10 +144,10 @@ public:
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   //void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
-  itti_s11_release_access_bearers_request     msg;
+  itti_s11_release_access_bearers_request                 msg;
   std::vector<std::shared_ptr<bearers_to_be_released>>    bearers;
   std::shared_ptr<sgw_eps_bearer_context>                 ebc;
-  cause_t                                           cause;
+  cause_t                                                 cause;
 };
 //------------------------------------------------------------------------------
 class delete_session_request_procedure : public sebc_procedure {
@@ -158,10 +161,29 @@ public:
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
-  itti_s11_delete_session_request msg;
+  itti_s11_delete_session_request             msg;
   std::shared_ptr<sgw_eps_bearer_context>     ebc;
   std::shared_ptr<sgw_pdn_connection>         pdn_connection;
 };
+
+//------------------------------------------------------------------------------
+class downlink_data_notification_procedure : public sebc_procedure {
+public:
+  explicit downlink_data_notification_procedure(itti_s5s8_downlink_data_notification& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg),
+      s11_triggered(), ebc(), pdn_connection() {}
+  int run(std::shared_ptr<sgw_eps_bearer_context> context,
+          std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp);
+
+  //~downlink_data_notification_procedure() {}
+
+  itti_s5s8_downlink_data_notification                    msg;
+  std::shared_ptr<itti_s11_downlink_data_notification>    s11_triggered;
+  std::shared_ptr<sgw_eps_bearer_context>                 ebc;
+  std::shared_ptr<sgw_pdn_connection>                     pdn_connection;
+
+};
+
 }
 #include "sgwc_eps_bearer_context.hpp"
 

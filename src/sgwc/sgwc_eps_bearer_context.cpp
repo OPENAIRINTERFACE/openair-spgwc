@@ -210,6 +210,23 @@ void sgw_eps_bearer_context::create_procedure(itti_s11_delete_session_request& d
   }
 }
 //------------------------------------------------------------------------------
+void sgw_eps_bearer_context::create_procedure(itti_s5s8_downlink_data_notification& ddn, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  downlink_data_notification_procedure* p = new downlink_data_notification_procedure(ddn);
+  insert_procedure(p);
+  int rc = p->run(shared_from_this(), spc);
+  switch (rc) {
+  case RETURNerror:
+    // TODO handle error code
+    Logger::sgwc_app().info( "S5S8 DOWNLINK_DATA_NOTIFICATION procedure failed");
+  case RETURNclear:
+    remove_procedure(p);
+    break;
+  case RETURNok:
+  default:;
+  }
+}
+//------------------------------------------------------------------------------
 void sgw_eps_bearer_context::insert_procedure(sebc_procedure* proc)
 {
   pending_procedures.push_back(shared_ptr<sebc_procedure>(proc));
@@ -238,6 +255,7 @@ void sgw_eps_bearer_context::delete_pdn_connection(std::shared_ptr<sgw_pdn_conne
 {
   if (spc.get()) {
     Logger::sgwc_app().debug("sgw_eps_bearer_context::delete_pdn_connection() OK doing it");
+    sgwc_app_inst->delete_s5s8sgw_teid_2_sgw_contexts(spc->sgw_fteid_s5_s8_cp.teid_gre_key);
     erase_pdn_connection(spc);
     spc.get()->deallocate_ressources();
     spc.get()->delete_bearers();
@@ -303,6 +321,17 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_delete_session_request& d
     Logger::sgwc_app().info("S11 DELETE_SESSION_REQUEST TODO delete session locally");
   }
 }
+//------------------------------------------------------------------------------
+void sgw_eps_bearer_context::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& ddn)
+{
+  shared_ptr<sebc_procedure> sp = find_procedure(ddn.gtpc_tx_id);
+  if (sp.get()) {
+    sp->handle_itti_msg(ddn);
+    return;
+  } else {
+    Logger::sgwc_app().error("S11 DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", ddn.gtpc_tx_id);
+  }
+}
 
 //------------------------------------------------------------------------------
 void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_pdn_connection> spc)
@@ -355,6 +384,17 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_delete_session_response&
     }
   } else {
     Logger::sgwc_app().debug("S5S8 DELETE_SESSION_RESPONSE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", dsresp.gtpc_tx_id);
+  }
+}
+//------------------------------------------------------------------------------
+void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_downlink_data_notification& ddn, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  shared_ptr<sebc_procedure> sp = find_procedure(ddn.gtpc_tx_id);
+  if (sp.get()) {
+    Logger::sgwc_app().error("S5S8 DOWNLINK_DATA_NOTIFICATION ignored, existing procedure found gtpc_tx_id %d!", ddn.gtpc_tx_id);
+    return;
+  } else {
+    create_procedure(ddn, spc);
   }
 }
 //------------------------------------------------------------------------------

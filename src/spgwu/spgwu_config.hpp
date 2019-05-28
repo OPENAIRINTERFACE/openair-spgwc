@@ -31,6 +31,8 @@
 
 
 #include "3gpp_29.244.h"
+#include "gtpv1u.hpp"
+#include "pfcp.hpp"
 #include "thread_sched.hpp"
 #include <libconfig.h++>
 #include <mutex>
@@ -126,7 +128,22 @@ public:
   std::vector<pfcp::node_id_t> spgwcs;
 
 
-  spgwu_config() : m_rw_lock(), pid_dir(), instance(0), s1_up(), sgi(), gateway(), sx(), itti(), pdns(), spgwcs(), max_pfcp_sessions(100) {};
+  spgwu_config() : m_rw_lock(), pid_dir(), instance(0), s1_up(), sgi(), gateway(), sx(), itti(), pdns(), spgwcs(), max_pfcp_sessions(100)
+  {
+    itti.itti_timer_sched_params.sched_priority = 85;
+    itti.s1u_sched_params.sched_priority = 84;
+    itti.sx_sched_params.sched_priority = 84;
+    itti.spgwu_app_sched_params.sched_priority = 84;
+    itti.async_cmd_sched_params.sched_priority = 84;
+    
+    s1_up.thread_rd_sched_params.sched_priority = 98;
+    s1_up.port = gtpv1u::default_port;
+
+    sgi.thread_rd_sched_params.sched_priority = 98;
+    
+    sx.thread_rd_sched_params.sched_priority = 95;
+    sx.port = pfcp::default_port;  
+  };
   void lock() {m_rw_lock.lock();};
   void unlock() {m_rw_lock.unlock();};
   int load(const std::string& config_file);

@@ -796,10 +796,10 @@ namespace pfcp {
 
         if (i64 < this64) return true;
         else if (i64 > this64) return false;
-        i64 = ((uint64_t)i.ipv6_address.s6_addr32[4] << 32) |
-              ((uint64_t)i.ipv6_address.s6_addr32[5]);
-        this64 = ((uint64_t)this->ipv6_address.s6_addr32[4] << 32) |
-                 ((uint64_t)this->ipv6_address.s6_addr32[5]);
+        i64 = ((uint64_t)i.ipv6_address.s6_addr32[2] << 32) |
+              ((uint64_t)i.ipv6_address.s6_addr32[3]);
+        this64 = ((uint64_t)this->ipv6_address.s6_addr32[2] << 32) |
+                 ((uint64_t)this->ipv6_address.s6_addr32[3]);
         if (i64 < this64) return true;
         else if (i64 > this64) return false;
       } else if (this->v6) return true;

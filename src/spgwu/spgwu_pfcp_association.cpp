@@ -46,7 +46,7 @@ void pfcp_association::notify_add_session(const pfcp::fseid_t& cp_fseid)
     sessions.insert(cp_fseid);
 }
 //------------------------------------------------------------------------------
-bool pfcp_association::has_session(const pfcp::fseid_t& cp_fseid)
+bool pfcp_association::has_session(const pfcp::fseid_t& cp_fseid) const
 {
   std::unique_lock<std::mutex> l(m_sessions);
   auto it = sessions.find(cp_fseid);

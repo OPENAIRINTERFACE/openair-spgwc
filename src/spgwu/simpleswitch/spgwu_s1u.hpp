@@ -28,6 +28,7 @@
 #ifndef FILE_SGWU_S1U_HPP_SEEN
 #define FILE_SGWU_S1U_HPP_SEEN
 
+#include "endpoint.hpp"
 #include "gtpv1u.hpp"
 #include "itti_msg_s1u.hpp"
 #include "msg_gtpv1u.hpp"
@@ -44,8 +45,8 @@ private:
   std::thread::id                      thread_id;
   std::thread                          thread;
 
-  void handle_receive_gtpv1u_msg(gtpv1u::gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
-  void handle_receive_echo_request(gtpv1u::gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
+  void handle_receive_gtpv1u_msg(gtpv1u::gtpv1u_msg& msg, const endpoint& r_endpoint);
+  void handle_receive_echo_request(gtpv1u::gtpv1u_msg& msg, const endpoint& r_endpoint);
 
 public:
   spgwu_s1u();
@@ -64,14 +65,14 @@ public:
   //void send_msg (itti_s1u_supported_extension_headers_notification& s) {};
   //void send_msg (itti_s1u_end_marker& s) {};
 
-  void handle_receive_s1u_msg( gtpv1u::gtpv1u_msg& msg, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
-  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len);
+  void handle_receive_s1u_msg( gtpv1u::gtpv1u_msg& msg, const endpoint& r_endpoint);
+  void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint);
 
   void send_g_pdu(const struct in_addr& peer_addr, const uint16_t peer_udp_port, const uint32_t tunnel_id, const char* send_buffer, const ssize_t num_bytes);
   void send_g_pdu(const struct in6_addr& peer_addr, const uint16_t peer_udp_port, const uint32_t tunnel_id, const char* send_buffer, const ssize_t num_bytes);
 
   void time_out_itti_event(const uint32_t timer_id);
-  void report_error_indication(const struct sockaddr_storage& r_endpoint, const socklen_t& r_endpoint_addr_len, const uint32_t tunnel_id);
+  void report_error_indication(const endpoint& r_endpoint, const uint32_t tunnel_id);
 };
 }
 #endif /* FILE_SGWU_S1U_HPP_SEEN */

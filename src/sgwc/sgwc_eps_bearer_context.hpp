@@ -207,6 +207,7 @@ public:
   void create_procedure(itti_s11_modify_bearer_request& );
   void create_procedure(itti_s11_delete_session_request& );
   void create_procedure(itti_s11_release_access_bearers_request& );
+  void create_procedure(itti_s5s8_downlink_data_notification&, std::shared_ptr<sgw_pdn_connection> spc);
 
   void insert_procedure(sebc_procedure* proc);
   std::shared_ptr<sebc_procedure> find_procedure(const uint64_t& gtpc_tx_id);
@@ -223,10 +224,12 @@ public:
   void handle_itti_msg (itti_s11_modify_bearer_request& m);
   void handle_itti_msg (itti_s11_release_access_bearers_request& m);
   void handle_itti_msg (itti_s11_delete_session_request& m);
+  void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& m);
   void handle_itti_msg (itti_s5s8_create_session_response& m, std::shared_ptr<sgw_pdn_connection> spc);
   void handle_itti_msg (itti_s5s8_delete_session_response& m, std::shared_ptr<sgw_pdn_connection> spc);
   void handle_itti_msg (itti_s5s8_modify_bearer_response& m, std::shared_ptr<sgw_pdn_connection> spc);
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& m, std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg (itti_s5s8_downlink_data_notification& m, std::shared_ptr<sgw_pdn_connection> spc);
 
 
   std::string toString() const;

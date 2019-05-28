@@ -2562,6 +2562,7 @@ public:
   void set(const serving_network_t& v, const uint8_t instance = 0) {serving_network = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SERVING_NETWORK;}
   void set(const rat_type_t& v, const uint8_t instance = 0) {rat_type = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_RAT_TYPE;}
   void set(const indication_t& v, const uint8_t instance = 0) {indication_flags = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_INDICATION_FLAGS;}
+  void set(const fteid_t& v, const uint8_t instance = 0) {sender_fteid_for_cp = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE;}
   void set_sender_fteid_for_cp(const fteid_t& v) {sender_fteid_for_cp = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE;}
   void set(const ambr_t& v, const uint8_t instance = 0) {apn_ambr = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_APN_AMBR;}
   void set(const delay_value_t& v, const uint8_t instance = 0) {delay_dl_packet_notif_req = v;ie_presence_mask |= GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_DELAY_DOWNLINK_PACKET_NOTIFICATION_REQUEST;}
@@ -3517,6 +3518,13 @@ public:
   void set(const imsi_t& v, const uint8_t instance = 0) {imsi = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_PR_IE_IMSI;}
   void set(const fteid_t& v, const uint8_t instance = 0) {sender_fteid_for_cp = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_PR_IE_SENDER_FTEID_FOR_CP;}
   void set(const indication_t& v, const uint8_t instance = 0) {indication_flags = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS;}
+
+  bool get(cause_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_CAUSE) {v = cause;return true;}return false;}
+  bool get(ebi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_EPS_BEARER_ID) {v = eps_bearer_id;return true;}return false;}
+  bool get(arp_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_ARP) {v = arp;return true;}return false;}
+  bool get(imsi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_IMSI) {v = imsi;return true;}return false;}
+  bool get(fteid_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_SENDER_FTEID_FOR_CP) {v = sender_fteid_for_cp;return true;}return false;}
+  bool get(indication_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS) {v = indication_flags;return true;}return false;}
 };
 
 //-----------------------------------------------------------------------------
@@ -3567,6 +3575,9 @@ public:
   // Private Extension  ///< optional
   void set(const cause_t& v, const uint8_t instance = 0) {cause = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE;}
   void set(const imsi_t& v, const uint8_t instance = 0) {imsi = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI;}
+
+  bool get(cause_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE) {v = cause;return true;}return false;}
+  bool get(imsi_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI) {v = imsi;return true;}return false;}
 } ;
 
 

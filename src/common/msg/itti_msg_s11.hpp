@@ -30,9 +30,9 @@
 #define ITTI_MSG_S11_HPP_INCLUDED_
 
 #include "3gpp_29.274.hpp"
+#include "endpoint.hpp"
 #include "itti_msg.hpp"
 #include "msg_gtpv2c.hpp"
-#include <boost/asio/ip/udp.hpp>
 
 class itti_s11_msg : public itti_msg {
 public:
@@ -54,10 +54,10 @@ public:
     destination = dest;
   }
 
-  boost::asio::ip::udp::endpoint l_endpoint;
-  boost::asio::ip::udp::endpoint r_endpoint;
-  teid_t                         teid;
-  uint64_t                       gtpc_tx_id;
+  endpoint l_endpoint;
+  endpoint r_endpoint;
+  teid_t   teid;
+  uint64_t gtpc_tx_id;
 };
 
 class itti_s11_create_session_request : public itti_s11_msg {
@@ -390,6 +390,10 @@ public:
   itti_s11_downlink_data_notification(const itti_s11_downlink_data_notification& i, const task_id_t orig, const task_id_t dest) :
     itti_s11_msg(i, orig, dest)  {
     gtp_ies = i.gtp_ies;
+  }
+  itti_s11_downlink_data_notification(const gtpv2c::gtpv2c_downlink_data_notification& ies, const task_id_t orig, const task_id_t dest) :
+    itti_s11_downlink_data_notification(orig, dest) {
+    gtp_ies = ies;
   }
   const char* get_msg_name() {return typeid(itti_s11_downlink_data_notification).name();};
 

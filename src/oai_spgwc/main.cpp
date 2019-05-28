@@ -25,11 +25,11 @@
 #include "sgwc_app.hpp"
 #include "sgwc_config.hpp"
 
-#include <boost/asio.hpp>
 #include <iostream>
 #include <thread>
 #include <signal.h>
 #include <stdint.h>
+#include <stdlib.h> // srand
 #include <unistd.h> // get_pid(), pause()
 
 using namespace gtpv2c;
@@ -44,10 +44,23 @@ pgw_app *pgw_app_inst = nullptr;
 sgwc_app *sgwc_app_inst = nullptr;
 pgw_config pgw_cfg;
 sgwc_config sgwc_cfg;
-boost::asio::io_service io_service;
+
+void send_heartbeat_to_tasks(const uint32_t sequence);
 
 //------------------------------------------------------------------------------
-void my_app_signal_handler(int s){
+void send_heartbeat_to_tasks(const uint32_t sequence)
+{
+  itti_msg_ping *itti_msg = new itti_msg_ping(TASK_SGWC_APP, TASK_ALL, sequence);
+  std::shared_ptr<itti_msg_ping> i = std::shared_ptr<itti_msg_ping>(itti_msg);
+  int ret = itti_inst->send_broadcast_msg(i);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_ALL", i->get_msg_name());
+  }
+}
+
+//------------------------------------------------------------------------------
+void my_app_signal_handler(int s)
+{
   std::cout << "Caught signal " << s << std::endl;
   Logger::system().startup( "exiting" );
   itti_inst->send_terminate_msg(TASK_SGWC_APP);
@@ -67,6 +80,7 @@ void my_app_signal_handler(int s){
 //------------------------------------------------------------------------------
 int main(int argc, char **argv)
 {
+  srand (time(NULL));
   // Logger
   Logger::init( "spgwc" );
 
@@ -118,9 +132,6 @@ int main(int argc, char **argv)
   fprintf(fp, "STARTED\n");
   fflush(fp);
   fclose(fp);
-
-  // once all udp servers initialized
-  io_service.run();
 
   pause();
   return 0;

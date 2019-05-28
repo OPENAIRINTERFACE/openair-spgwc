@@ -85,6 +85,10 @@ void spgwu_app_task (void *args_p)
       spgwu_app_inst->handle_itti_msg(std::static_pointer_cast<itti_sxab_session_deletion_request>(shared_msg));
       break;
 
+    case SXAB_SESSION_REPORT_RESPONSE:
+      spgwu_app_inst->handle_itti_msg(std::static_pointer_cast<itti_sxab_session_report_response>(shared_msg));
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         switch (to->arg1_user) {
@@ -99,12 +103,17 @@ void spgwu_app_task (void *args_p)
         }
       }
       break;
+
     case TERMINATE:
       if (itti_msg_terminate *terminate = dynamic_cast<itti_msg_terminate*>(msg)) {
         Logger::spgwu_app().info( "Received terminate message");
         return;
       }
       break;
+
+    case HEALTH_PING:
+      break;
+
     default:
       Logger::spgwu_app().info( "no handler for ITTI msg type %d", msg->msg_type);
     }
@@ -155,7 +164,6 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<itti_s1u_echo_request> m)
 
   // May insert a call to a function here(throttle for example)
   s1u_resp->gtp_ies.r_endpoint = m->gtp_ies.r_endpoint;
-  s1u_resp->gtp_ies.r_endpoint_addr_len = m->gtp_ies.r_endpoint_addr_len;
   s1u_resp->gtp_ies.teid = m->gtp_ies.teid;
   s1u_resp->gtp_ies.sequence_number = m->gtp_ies.sequence_number;
 
@@ -217,6 +225,12 @@ void spgwu_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_deletion_requ
   if (RETURNok != ret) {
     Logger::spgwu_app().error( "Could not send ITTI message %s to task TASK_PGWC_SX", sx_resp->get_msg_name());
   }
+}
+
+//------------------------------------------------------------------------------
+void spgwu_app::handle_itti_msg (std::shared_ptr<itti_sxab_session_report_response> m)
+{
+  Logger::spgwu_app().info("Received SXAB_SESSION_REPORT_RESPONSE seid " SEID_FMT " ", m->seid);
 }
 
 

@@ -99,49 +99,82 @@ int spgwu_config::get_pfcp_fseid(pfcp::fseid_t& fseid)
 //------------------------------------------------------------------------------
 int spgwu_config::load_thread_sched_params(const Setting& thread_sched_params_cfg, util::thread_sched_params& cfg)
 {
+  try {
+    thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
+  try {
+    std::string thread_rd_sched_policy;
+    thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
+    util::trim(thread_rd_sched_policy);
+    if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
+      cfg.sched_policy = SCHED_OTHER;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
+      cfg.sched_policy = SCHED_IDLE;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
+      cfg.sched_policy = SCHED_BATCH;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
+      cfg.sched_policy = SCHED_FIFO;
+    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
+      cfg.sched_policy = SCHED_RR;
+    } else {
+      Logger::spgwu_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
+      return RETURNerror;
+    }
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
-  std::string thread_rd_sched_policy;
-  thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
-  util::trim(thread_rd_sched_policy);
-  if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
-    cfg.sched_policy = SCHED_OTHER;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
-    cfg.sched_policy = SCHED_IDLE;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
-    cfg.sched_policy = SCHED_BATCH;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
-    cfg.sched_policy = SCHED_FIFO;
-  } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
-    cfg.sched_policy = SCHED_RR;
-  } else {
-    Logger::spgwu_app().error("thread_rd_sched_policy: %s, unknown in config file", thread_rd_sched_policy.c_str());
-    return RETURNerror;
+  try {
+    thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
+    if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
+      Logger::spgwu_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
+      return RETURNerror;
+    }
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
-  thread_sched_params_cfg.lookupValue(SPGWU_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
-  if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
-    Logger::spgwu_app().error("thread_rd_sched_priority: %d, must be in interval [1..99] in config file", cfg.sched_priority);
-    return RETURNerror;
-  }
+
   return RETURNok;
 }
 //------------------------------------------------------------------------------
 int spgwu_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg)
 {
-  const Setting& sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
-  load_thread_sched_params(sched_params_cfg, cfg.itti_timer_sched_params);
+  try {
+    const Setting& sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
+    load_thread_sched_params(sched_params_cfg, cfg.itti_timer_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& s1u_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS];
-  load_thread_sched_params(s1u_sched_params_cfg, cfg.s1u_sched_params);
+  try {
+    const Setting& s1u_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_S1U_SCHED_PARAMS];
+    load_thread_sched_params(s1u_sched_params_cfg, cfg.s1u_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& sx_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
-  load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+  try {
+    const Setting& sx_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
+    load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& spgwu_app_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
-  load_thread_sched_params(spgwu_app_sched_params_cfg, cfg.spgwu_app_sched_params);
+  try {
+    const Setting& spgwu_app_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_SX_SCHED_PARAMS];
+    load_thread_sched_params(spgwu_app_sched_params_cfg, cfg.spgwu_app_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
-  const Setting& async_cmd_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
-  load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
+  try {
+    const Setting& async_cmd_sched_params_cfg = itti_cfg[SPGWU_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
+    load_thread_sched_params(async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
   return RETURNok;
 }
@@ -177,8 +210,12 @@ int spgwu_config::load_interface(const Setting& if_cfg, interface_cfg_t& cfg)
       cfg.network4.s_addr = htons(ntohs(cfg.addr4.s_addr) & 0xFFFFFFFF << (32 - std::stoi (util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(SPGWU_CONFIG_STRING_PORT, cfg.port);
-    const Setting& sched_params_cfg = if_cfg[SPGWU_CONFIG_STRING_SCHED_PARAMS];
-    load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
+    try {
+      const Setting& sched_params_cfg = if_cfg[SPGWU_CONFIG_STRING_SCHED_PARAMS];
+      load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
+    } catch(const SettingNotFoundException &nfex) {
+      Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+    }
   }
   return RETURNok;
 }
@@ -208,17 +245,37 @@ int spgwu_config::load(const string& config_file)
 
   const Setting& root = cfg.getRoot();
 
-  try
-  {
+  try {
     const Setting& spgwu_cfg = root[SPGWU_CONFIG_STRING_SPGWU_CONFIG];
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().error("%s : %s", nfex.what(), nfex.getPath());
+    return RETURNerror;
+  }
 
-    spgwu_cfg.lookupValue(SPGWU_CONFIG_STRING_INSTANCE, instance);
+
+  const Setting& spgwu_cfg = root[SPGWU_CONFIG_STRING_SPGWU_CONFIG];
+
+  try {
+   spgwu_cfg.lookupValue(SPGWU_CONFIG_STRING_INSTANCE, instance);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
+
+  try {
     spgwu_cfg.lookupValue(SPGWU_CONFIG_STRING_PID_DIRECTORY, pid_dir);
     util::trim(pid_dir);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
+  try {
     const Setting& itti_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_ITTI_TASKS];
     load_itti(itti_cfg, itti);
+  } catch(const SettingNotFoundException &nfex) {
+    Logger::spgwu_app().info("%s : %s, using defaults", nfex.what(), nfex.getPath());
+  }
 
+  try {
     const Setting& nw_if_cfg = spgwu_cfg[SPGWU_CONFIG_STRING_INTERFACES];
 
     const Setting& s1_up_cfg = nw_if_cfg[SPGWU_CONFIG_STRING_INTERFACE_S1U_S12_S4_UP];
