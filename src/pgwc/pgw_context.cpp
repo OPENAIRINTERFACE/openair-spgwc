@@ -543,6 +543,10 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
   //------
   // PCO
   //------
+  protocol_configuration_options_t dummy = {};
+  // TODO csreq->gtp_ies.has_pco()
+  bool pco_ie_present = csreq->gtp_ies.get(dummy);
+
   protocol_configuration_options_t pco_resp = {};
   protocol_configuration_options_ids_t pco_ids = {
       .pi_ipcp = 0,
@@ -551,7 +555,9 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
       .ci_ipv4_address_allocation_via_dhcpv4 = 0,
       .ci_ipv4_link_mtu_request = 0};
 
-  pgw_app_inst->process_pco_request(csreq->gtp_ies.pco, pco_resp, pco_ids);
+  if (pco_ie_present) {
+    pgw_app_inst->process_pco_request(csreq->gtp_ies.pco, pco_resp, pco_ids);
+  }
   switch (sp->pdn_type.pdn_type) {
   case PDN_TYPE_E_IPV4: {
       // Use NAS by default if no preference is set.
@@ -663,7 +669,9 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_requ
         sp->set(paa);
       }
     }
-    s5s8->gtp_ies.set(pco_resp);
+    if (pco_ie_present) {
+     s5s8->gtp_ies.set(pco_resp);
+    }
     s5s8->gtp_ies.set_s5_s8_pgw_fteid(sp->pgw_fteid_s5_s8_cp);
     //apn_restriction
     s5s8->gtp_ies.set(sa->apn_ambr);
@@ -971,4 +979,5 @@ std::string pgw_context::toString() const
   //apns.reserve(MAX_APN_PER_UE);
   return s;
 }
+
 
