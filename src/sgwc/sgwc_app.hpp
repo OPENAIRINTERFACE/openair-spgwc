@@ -101,6 +101,8 @@ public:
   sgwc_app(sgwc_app const&) = delete;
   void operator=(sgwc_app const&) = delete;
 
+  void send_create_session_response_cause (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint, const cause_t &cause) const;
+
   fteid_t generate_s5s8_cp_fteid(const struct in_addr ipv4_address);
   fteid_t generate_s11_cp_fteid(const struct in_addr ipv4_address);
   std::pair<std::shared_ptr<sgw_eps_bearer_context>, std::shared_ptr<sgw_pdn_connection>> s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid) const;

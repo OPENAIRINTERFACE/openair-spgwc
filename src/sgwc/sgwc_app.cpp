@@ -349,6 +349,8 @@ void sgwc_app::handle_itti_msg (itti_s11_create_session_request& csreq)
 
   if ((csreq.teid) && (not sgwc_app_inst->is_s11c_teid_exist(csreq.teid))) {
     Logger::sgwc_app().warn("Received S11 CSReq with dest teid " TEID_FMT " unknown, ignore CSreq", csreq.teid);
+    cause_t  cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
+    send_create_session_response_cause (csreq.gtpc_tx_id, csreq.teid, csreq.r_endpoint, cause);
     return;
   }
 
@@ -397,7 +399,7 @@ void sgwc_app::handle_itti_msg (itti_s11_delete_session_request& m)
       ebc->handle_itti_msg(m);
       Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
-      Logger::sgwc_app().debug("Discarding S11 CREATE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
+      Logger::sgwc_app().debug("Discarding S11 DELETE_SESSION_REQUEST sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
       return;
     }
   } else {
@@ -557,4 +559,21 @@ void sgwc_app::handle_itti_msg (itti_s5s8_downlink_data_notification& m)
   }
 }
 
+//------------------------------------------------------------------------------
+void sgwc_app::send_create_session_response_cause (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint, const cause_t &cause) const
+{
+  itti_s11_create_session_response *s11 = new itti_s11_create_session_response(TASK_SGWC_APP, TASK_SGWC_S11);
+  //------
+  // GTPV2C-Stack
+  //------
+  s11->gtpc_tx_id = gtpc_tx_id;
+  s11->teid = teid;
+  s11->r_endpoint = r_endpoint;
+  s11->gtp_ies.set(cause);
+  std::shared_ptr<itti_s11_create_session_response> msg = std::shared_ptr<itti_s11_create_session_response>(s11);
+  int ret = itti_inst->send_msg(msg);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S11", s11->get_msg_name());
+  }
+}
 
