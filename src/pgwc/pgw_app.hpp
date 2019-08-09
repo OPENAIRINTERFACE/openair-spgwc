@@ -92,6 +92,7 @@ public:
   pgw_app(pgw_app const&)    = delete;
   void operator=(pgw_app const&)     = delete;
 
+  void send_create_session_response_cause (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint, const cause_t &cause) const;
   void send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
   void send_delete_session_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;
   void send_modify_bearer_response_cause_context_not_found (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint) const;

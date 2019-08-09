@@ -293,6 +293,23 @@ pgw_app::pgw_app (const std::string& config_file) : m_s5s8_cp_teid_generator(), 
 
   Logger::pgwc_app().startup( "Started" );
 }
+//------------------------------------------------------------------------------
+void pgw_app::send_create_session_response_cause (const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint, const cause_t &cause) const
+{
+  itti_s5s8_create_session_response *s5s8 = new itti_s5s8_create_session_response(TASK_PGWC_APP, TASK_PGWC_S5S8);
+  //------
+  // GTPV2C-Stack
+  //------
+  s5s8->gtpc_tx_id = gtpc_tx_id;
+  s5s8->teid = teid;
+  s5s8->r_endpoint = r_endpoint;
+  s5s8->gtp_ies.set(cause);
+  std::shared_ptr<itti_s5s8_create_session_response> msg = std::shared_ptr<itti_s5s8_create_session_response>(s5s8);
+  int ret = itti_inst->send_msg(msg);
+  if (RETURNok != ret) {
+    Logger::pgwc_app().error( "Could not send ITTI message %s to task TASK_PGWC_S5S8", s5s8->get_msg_name());
+  }
+}
 
 //------------------------------------------------------------------------------
 void pgw_app::send_delete_session_response_cause_request_accepted (const uint64_t gtpc_tx_id, const teid_t teid,
@@ -411,6 +428,8 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
   }
   if ((csreq->teid) && (not pgw_app_inst->is_s5s8c_teid_exist(csreq->teid))) {
     Logger::pgwc_app().warn("Received S5_S8 CREATE_SESSION_REQUEST with dest teid " TEID_FMT " unknown, ignore message", csreq->teid);
+    cause_t  cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
+    send_create_session_response_cause (csreq->gtpc_tx_id, csreq->teid, csreq->r_endpoint, cause);
     return;
   }
 
@@ -418,6 +437,8 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
     // MME sent request with teid = 0. This is not valid...
     Logger::pgwc_app().warn("Received CREATE_SESSION_REQUEST unknown requested APN %s, ignore message", csreq->gtp_ies.apn.access_point_name.c_str());
     // TODO send reply
+    cause_t  cause = {.cause_value = MISSING_OR_UNKNOWN_APN, .pce = 0, .bce = 0, .cs = 0};
+    send_create_session_response_cause (csreq->gtpc_tx_id, csreq->teid, csreq->r_endpoint, cause);
     return;
   }
 
