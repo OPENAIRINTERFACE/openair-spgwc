@@ -429,7 +429,7 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
   if ((csreq->teid) && (not pgw_app_inst->is_s5s8c_teid_exist(csreq->teid))) {
     Logger::pgwc_app().warn("Received S5_S8 CREATE_SESSION_REQUEST with dest teid " TEID_FMT " unknown, ignore message", csreq->teid);
     cause_t  cause = {.cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
-    send_create_session_response_cause (csreq->gtpc_tx_id, csreq->teid, csreq->r_endpoint, cause);
+    send_create_session_response_cause (csreq->gtpc_tx_id, csreq->gtp_ies.sender_fteid_for_cp.teid_gre_key, csreq->r_endpoint, cause);
     return;
   }
 
@@ -438,7 +438,7 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_create_session_request>
     Logger::pgwc_app().warn("Received CREATE_SESSION_REQUEST unknown requested APN %s, ignore message", csreq->gtp_ies.apn.access_point_name.c_str());
     // TODO send reply
     cause_t  cause = {.cause_value = MISSING_OR_UNKNOWN_APN, .pce = 0, .bce = 0, .cs = 0};
-    send_create_session_response_cause (csreq->gtpc_tx_id, csreq->teid, csreq->r_endpoint, cause);
+    send_create_session_response_cause (csreq->gtpc_tx_id, csreq->gtp_ies.sender_fteid_for_cp.teid_gre_key, csreq->r_endpoint, cause);
     return;
   }
 

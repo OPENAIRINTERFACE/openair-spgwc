@@ -520,7 +520,9 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response& gtp_ies) : gtpv2c_m
   ies = {};
   set_message_type(GTP_CREATE_SESSION_RESPONSE);
 
-  if (gtp_ies.cause.first) {std::shared_ptr<gtpv2c_cause_ie> sie(new gtpv2c_cause_ie(gtp_ies.cause.second)); add_ie(sie);}
+  if (gtp_ies.cause.first) {
+    std::shared_ptr<gtpv2c_cause_ie> sie(new gtpv2c_cause_ie(gtp_ies.cause.second)); add_ie(sie);
+  } else throw gtpc_missing_ie_exception("GTP_CREATE_SESSION_RESPONSE", "GTP_IE_CAUSE");
   //if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_CHANGE_REPORTING_ACTION) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
   //if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_CSG_INFORMATION_REPORTING_ACTION) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
   //if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_HENB_INFORMATION_REPORTING) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}

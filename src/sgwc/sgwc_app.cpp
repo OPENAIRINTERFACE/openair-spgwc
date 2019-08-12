@@ -467,20 +467,27 @@ void sgwc_app::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge&
 void sgwc_app::handle_itti_msg (itti_s5s8_create_session_response& m)
 {
   Logger::sgwc_app().debug("Received S5S8 CREATE_SESSION_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
-  if (m.gtp_ies.s5_s8_pgw_fteid.second.interface_type != S5_S8_PGW_GTP_C) {
-    Logger::sgwc_app().warn("Received S5S8 CREATE_SESSION_RESPONSE with s5_s8_pgw_fteid.interface_type != S5_S8_PGW_GTP_C %d, ignore CSResp", m.gtp_ies.sender_fteid_for_cp.second.interface_type);
-    return;
-  }
-  if (m.gtp_ies.s5_s8_pgw_fteid.second.teid_gre_key == 0) {
-    // MME sent request with teid = 0. This is not valid...
-    Logger::sgwc_app().warn("Received S5S8 CREATE_SESSION_RESPONSE with s5_s8_pgw_fteid.teid = 0, ignore CSResp");
-    return;
+  if (m.gtp_ies.cause.second.cause_value < CONTEXT_NOT_FOUND) {
+    if (m.gtp_ies.s5_s8_pgw_fteid.second.interface_type != S5_S8_PGW_GTP_C) {
+      Logger::sgwc_app().warn("Received S5S8 CREATE_SESSION_RESPONSE with s5_s8_pgw_fteid.interface_type != S5_S8_PGW_GTP_C %d, ignore CSResp", m.gtp_ies.sender_fteid_for_cp.second.interface_type);
+      return;
+    }
+    if (m.gtp_ies.s5_s8_pgw_fteid.second.teid_gre_key == 0) {
+      // MME sent request with teid = 0. This is not valid...
+      Logger::sgwc_app().warn("Received S5S8 CREATE_SESSION_RESPONSE with s5_s8_pgw_fteid.teid = 0, ignore CSResp");
+      return;
+    }
   }
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
     std::pair<std::shared_ptr<sgw_eps_bearer_context>, std::shared_ptr<sgw_pdn_connection>> p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
+      // cleanup
+      if (0 == p.first->get_num_pdn_connections()) {
+        delete_sgw_eps_bearer_context(p.first);
+      } else {
+        Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
+      }
     } else {
       Logger::sgwc_app().debug("Received S5S8 CREATE_SESSION_RESPONSE with dest teid " TEID_FMT ", SGW contexts not found, ignore CSResp", m.teid);
     }

@@ -104,6 +104,20 @@ public:
   virtual ~gtpc_ie_exception() throw(){}
 };
 
+struct gtpc_missing_ie_exception : public gtpc_exception {
+public:
+  gtpc_missing_ie_exception(uint8_t gtpc_msg, uint8_t ie_type) throw() {
+    phrase = fmt::format("GTPV2-C msg {} missing IE {} Exception", gtpc_msg, ie_type);
+  }
+  gtpc_missing_ie_exception(const char* gtpc_msg, const char* ie_type) throw() {
+    phrase = fmt::format("GTPV2-C msg {} missing IE {} Exception", gtpc_msg, ie_type);
+  }
+  gtpc_missing_ie_exception(std::string& aphrase) throw() {
+    phrase = aphrase;
+  }
+  virtual ~gtpc_missing_ie_exception() throw(){}
+};
+
 struct gtpc_ie_unimplemented_exception : public gtpc_ie_exception {
 public:
   gtpc_ie_unimplemented_exception(uint8_t ie_type) throw() : gtpc_ie_exception(ie_type) {

@@ -144,6 +144,7 @@ public:
   void remove_eps_bearer(const ebi_t& ebi);
   void remove_eps_bearer(std::shared_ptr<sgw_eps_bearer> bearer);
   void delete_bearers();
+  int get_num_bearers() {return sgw_eps_bearers.size();};
   bool is_released() const {return is_dl_up_tunnels_released;}
 
   //fteid_t generate_s5s8_up_fteid(const struct in_addr ipv4_address, const bearer_qos_t& bearer_qos);

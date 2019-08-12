@@ -258,6 +258,10 @@ void create_session_request_procedure::handle_itti_msg (itti_s5s8_create_session
         }
       }
     }
+  } else if (csresp.gtp_ies.cause.second.cause_value >= CONTEXT_NOT_FOUND) {
+    if (pdn->get_num_bearers()) {
+      ebc->delete_pdn_connection(pdn);
+    }
   }
 
 
