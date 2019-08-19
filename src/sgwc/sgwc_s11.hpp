@@ -55,6 +55,7 @@ public:
   void operator=(sgw_s11 const&)     = delete;
 
   void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& remote_endpoint);
+  void notify_ul_error(const endpoint& r_endpoint, const teid_t l_teid, const cause_value_e cause, const uint64_t gtpc_tx_id);
 
   void send_msg(itti_s11_create_session_response& m);
   void send_msg(itti_s11_delete_session_response& m);

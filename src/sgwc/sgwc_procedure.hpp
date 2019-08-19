@@ -63,9 +63,9 @@ public:
   virtual void handle_itti_msg (itti_s5s8_delete_session_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s5s8_modify_bearer_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s5s8_release_access_bearers_response& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
+  virtual void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s5s8_downlink_data_notification& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp);
-
 };
 //------------------------------------------------------------------------------
 class sgw_eps_bearer_context;
@@ -81,6 +81,7 @@ public:
   void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
 
   itti_s11_create_session_request msg;
   std::shared_ptr<sgw_eps_bearer_context> ebc;
@@ -112,6 +113,7 @@ public:
   void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   //void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
   itti_s11_modify_bearer_request msg;
   std::vector<std::shared_ptr<pdn_bearers_to_be_xied>>        pdn_bearers;
@@ -143,6 +145,7 @@ public:
   void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   //void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
   itti_s11_release_access_bearers_request                 msg;
   std::vector<std::shared_ptr<bearers_to_be_released>>    bearers;
@@ -160,6 +163,7 @@ public:
   //void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
   itti_s11_delete_session_request             msg;
   std::shared_ptr<sgw_eps_bearer_context>     ebc;
@@ -174,6 +178,7 @@ public:
   int run(std::shared_ptr<sgw_eps_bearer_context> context,
           std::shared_ptr<sgw_pdn_connection> spc);
   void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp);
+  void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
 
   //~downlink_data_notification_procedure() {}
 

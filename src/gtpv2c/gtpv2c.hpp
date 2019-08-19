@@ -50,6 +50,7 @@ class gtpv2c_procedure {
 public:
   std::shared_ptr<gtpv2c_msg> retry_msg;
   endpoint                    remote_endpoint;
+  teid_t                      local_teid; // for peer not responding
   timer_id_t                  retry_timer_id;
   timer_id_t                  proc_cleanup_timer_id;
   uint64_t                    gtpc_tx_id;
@@ -64,6 +65,7 @@ public:
   gtpv2c_procedure() :
       retry_msg(),
       remote_endpoint(),
+      local_teid(0),
       retry_timer_id(0),
       proc_cleanup_timer_id(0),
       gtpc_tx_id(0),
@@ -74,6 +76,7 @@ public:
   gtpv2c_procedure(const gtpv2c_procedure& p) :
     retry_msg(p.retry_msg),
     remote_endpoint(p.remote_endpoint),
+    local_teid(p.local_teid),
     retry_timer_id(p.retry_timer_id),
     proc_cleanup_timer_id(p.proc_cleanup_timer_id),
     gtpc_tx_id(p.gtpc_tx_id),
@@ -129,6 +132,8 @@ public:
   static const uint8_t version = 2;
   gtpv2c_stack(const std::string& ip_address, const unsigned short port_num, const util::thread_sched_params& sched_param);
   virtual void handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint);
+  virtual void notify_ul_error(const endpoint& r_endpoint, const teid_t l_teid, const cause_value_e cause, const uint64_t gtpc_tx_id);
+
   void handle_receive_message_cb(const gtpv2c_msg& msg, const endpoint& r_endpoint, const task_id_t& task_id, bool& error, uint64_t& gtpc_tx_id);
 
   // Path mangement messages
@@ -136,11 +141,11 @@ public:
   virtual void send_triggered_message(const endpoint& r_endpoint, const gtpv2c_echo_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
 
   // Tunnel management messages
-  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
-  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
 
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);

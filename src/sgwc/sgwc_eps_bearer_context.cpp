@@ -373,6 +373,17 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_release_access_bearers_r
   }
 }
 //------------------------------------------------------------------------------
+void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  shared_ptr<sebc_procedure> sp = find_procedure(resp.gtpc_tx_id);
+  if (sp.get()) {
+    sp->handle_itti_msg(resp, shared_from_this(), spc);
+    remove_procedure(sp.get());
+  } else {
+    Logger::sgwc_app().debug("S5S8 RELEASE_ACCESS_BEARERS_RESPONSE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", resp.gtpc_tx_id);
+  }
+}
+//------------------------------------------------------------------------------
 void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_pdn_connection> spc)
 {
   shared_ptr<sebc_procedure> sp = find_procedure(dsresp.gtpc_tx_id);

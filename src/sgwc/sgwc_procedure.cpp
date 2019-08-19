@@ -55,6 +55,10 @@ void sebc_procedure::handle_itti_msg (itti_s5s8_release_access_bearers_response&
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_release_access_bearers_response");
 }
+void sebc_procedure::handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_remote_peer_not_responding");
+}
 void sebc_procedure::handle_itti_msg (itti_s5s8_downlink_data_notification& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
 {
   Logger::sgwc_app().error( "Unhandled message itti_s5s8_downlink_data_notification");
@@ -93,6 +97,7 @@ int create_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
   // Forward to P-GW (temp use ITTI instead of ITTI/GTPv2-C/UDP)
   itti_s5s8_create_session_request *s5s8_csr = new itti_s5s8_create_session_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
   s5s8_csr->gtpc_tx_id = get_trxn_id();
+  s5s8_csr->l_teid = p->sgw_fteid_s5_s8_cp.teid_gre_key;
 
   // transfer IEs from S11 msg to S5 msg
   // Mandatory imsi
@@ -271,6 +276,39 @@ void create_session_request_procedure::handle_itti_msg (itti_s5s8_create_session
     Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGW_11", s11_csresp->get_msg_name());
   }
 }
+
+//------------------------------------------------------------------------------
+void create_session_request_procedure::handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> pdn)
+{
+  marked_for_removal = true;
+
+  if (pdn->get_num_bearers()) {
+    ebc->delete_pdn_connection(pdn);
+  }
+
+  itti_s11_create_session_response *s11_csresp = new itti_s11_create_session_response(TASK_SGWC_APP, TASK_SGWC_S11);
+  s11_csresp->gtpc_tx_id = get_trxn_id();
+  s11_csresp->r_endpoint = this->msg.r_endpoint;
+  s11_csresp->teid = this->msg.gtp_ies.sender_fteid_for_cp.teid_gre_key;
+  s11_csresp->l_teid = resp.l_teid;
+
+  cause_t cause = {.cause_value=REMOTE_PEER_NOT_RESPONDING,
+                   .pce=0,
+                   .bce=0,
+                   .cs=1,
+                   .offending_ie_instance = 0, .filler = 0, .offending_ie_type = 0, .offending_ie_length = 0};
+  s11_csresp->gtp_ies.set(cause);
+
+  s11_csresp->gtp_ies.set_sender_fteid_for_cp(ebc->sgw_fteid_s11_s4_cp);
+
+
+  std::shared_ptr<itti_s11_create_session_response> msg_send = std::shared_ptr<itti_s11_create_session_response>(s11_csresp);
+  int ret = itti_inst->send_msg(msg_send);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGW_11", s11_csresp->get_msg_name());
+  }
+}
+
 //------------------------------------------------------------------------------
 int delete_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
 {
@@ -291,6 +329,7 @@ int delete_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
     itti_s5s8_delete_session_request *s5s8_dsr = new itti_s5s8_delete_session_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
     s5s8_dsr->gtpc_tx_id = get_trxn_id();
     s5s8_dsr->teid = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
+    s5s8_dsr->l_teid = pdn_connection->sgw_fteid_s5_s8_cp.teid_gre_key;
     s5s8_dsr->r_endpoint = endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
     // transfer IEs from S11 msg to S5 msg
@@ -511,6 +550,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
         px->gtpc_tx_id = util::uint_uid_generator<uint64_t>::get_instance().get_uid();
         s5s8_mbr->gtpc_tx_id = px->gtpc_tx_id;
         s5s8_mbr->teid = px->pdn->pgw_fteid_s5_s8_cp.teid_gre_key;
+        s5s8_mbr->l_teid = px->pdn->sgw_fteid_s5_s8_cp.teid_gre_key;
         s5s8_mbr->r_endpoint = endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
         mei_t mei;

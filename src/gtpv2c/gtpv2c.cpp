@@ -86,7 +86,12 @@ uint32_t gtpv2c_stack::get_next_seq_num() {
 //------------------------------------------------------------------------------
 void gtpv2c_stack::handle_receive(char* recv_buffer, const std::size_t bytes_transferred, const endpoint& r_endpoint)
 {
-  Logger::gtpv2_c().error( "TODO implement in derived class");
+  Logger::gtpv2_c().error( "TODO implement gtpv2c_stack::handle_receive in derived class");
+}
+//------------------------------------------------------------------------------
+void gtpv2c_stack::notify_ul_error(const endpoint& r_endpoint, const teid_t teid, const cause_value_e cause, const uint64_t gtpc_tx_id)
+{
+  Logger::gtpv2_c().error( "TODO implement gtpv2c_stack::notify_ul_error in derived class");
 }
 //------------------------------------------------------------------------------
 bool gtpv2c_stack::check_initial_message_type(const uint8_t initial)
@@ -332,11 +337,11 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const gtpv2c_e
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
-uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
+uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t r_teid, const teid_t l_teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
 {
   std::ostringstream oss(std::ostringstream::binary);
   gtpv2c_msg msg(gtp_ies);
-  msg.set_teid(teid);
+  msg.set_teid(r_teid);
   msg.set_sequence_number(get_next_seq_num());
   msg.dump_to(oss);
   //std::cout << string_to_hex(oss.str()) << std::endl;
@@ -347,6 +352,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
+  proc.local_teid = l_teid;
   proc.retry_msg = std::make_shared<gtpv2c_msg>(msg);
   proc.remote_endpoint = dest;
   start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
@@ -358,11 +364,11 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
-uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
+uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t r_teid, const teid_t l_teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
 {
   std::ostringstream oss(std::ostringstream::binary);
   gtpv2c_msg msg(gtp_ies);
-  msg.set_teid(teid);
+  msg.set_teid(r_teid);
   msg.set_sequence_number(get_next_seq_num());
   msg.dump_to(oss);
   std::string bstream = oss.str();
@@ -371,6 +377,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
+  proc.local_teid = l_teid;
   proc.retry_msg = std::make_shared<gtpv2c_msg>(msg);
   proc.remote_endpoint = dest;
   start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
@@ -382,11 +389,11 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
-uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
+uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t r_teid, const teid_t l_teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
 {
   std::ostringstream oss(std::ostringstream::binary);
   gtpv2c_msg msg(gtp_ies);
-  msg.set_teid(teid);
+  msg.set_teid(r_teid);
   msg.set_sequence_number(get_next_seq_num());
   msg.dump_to(oss);
   std::string bstream = oss.str();
@@ -395,6 +402,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
+  proc.local_teid = l_teid;
   proc.retry_msg = std::make_shared<gtpv2c_msg>(msg);
   proc.remote_endpoint = dest;
   start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
@@ -406,11 +414,11 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
-uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
+uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t r_teid, const teid_t l_teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
 {
   std::ostringstream oss(std::ostringstream::binary);
   gtpv2c_msg msg(gtp_ies);
-  msg.set_teid(teid);
+  msg.set_teid(r_teid);
   msg.set_sequence_number(get_next_seq_num());
   msg.dump_to(oss);
   std::string bstream = oss.str();
@@ -419,6 +427,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
+  proc.local_teid = l_teid;
   proc.retry_msg = std::make_shared<gtpv2c_msg>(msg);
   proc.remote_endpoint = dest;
   start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
@@ -430,11 +439,11 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   return msg.get_sequence_number();
 }
 //------------------------------------------------------------------------------
-uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
+uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t r_teid, const teid_t l_teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id)
 {
   std::ostringstream oss(std::ostringstream::binary);
   gtpv2c_msg msg(gtp_ies);
-  msg.set_teid(teid);
+  msg.set_teid(r_teid);
   msg.set_sequence_number(get_next_seq_num());
   msg.dump_to(oss);
   std::string bstream = oss.str();
@@ -443,6 +452,7 @@ uint32_t gtpv2c_stack::send_initial_message(const endpoint& dest, const teid_t t
   gtpv2c_procedure proc = {};
   proc.initial_msg_type = msg.get_message_type();
   proc.gtpc_tx_id = gtp_tx_id;
+  proc.local_teid = l_teid;
   proc.retry_msg = std::make_shared<gtpv2c_msg>(msg);
   proc.remote_endpoint = dest;
   start_msg_retry_timer(proc, GTPV2C_T3_RESPONSE_MS, task_id, msg.get_sequence_number());
@@ -480,14 +490,14 @@ void gtpv2c_stack::send_triggered_message(const endpoint& dest, const gtpv2c_ech
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
+void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t r_teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
 {
   std::map<uint64_t , uint32_t>::iterator it;
   it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
-    msg.set_teid(teid);
+    msg.set_teid(r_teid);
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     std::string bstream = oss.str();
@@ -507,14 +517,14 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
+void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t r_teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
 {
   std::map<uint64_t , uint32_t>::iterator it;
   it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
-    msg.set_teid(teid);
+    msg.set_teid(r_teid);
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     std::string bstream = oss.str();
@@ -534,14 +544,14 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
+void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t r_teid, const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
 {
   std::map<uint64_t , uint32_t>::iterator it;
   it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
-    msg.set_teid(teid);
+    msg.set_teid(r_teid);
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     std::string bstream = oss.str();
@@ -561,14 +571,14 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
+void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t r_teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
 {
   std::map<uint64_t , uint32_t>::iterator it;
   it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
-    msg.set_teid(teid);
+    msg.set_teid(r_teid);
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     std::string bstream = oss.str();
@@ -588,14 +598,14 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
   }
 }
 //------------------------------------------------------------------------------
-void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_downlink_data_notification_acknowledge& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
+void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid_t r_teid, const gtpv2c_downlink_data_notification_acknowledge& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a)
 {
   std::map<uint64_t , uint32_t>::iterator it;
   it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
-    msg.set_teid(teid);
+    msg.set_teid(r_teid);
     msg.set_sequence_number(it->second);
     msg.dump_to(oss);
     std::string bstream = oss.str();
@@ -615,11 +625,6 @@ void gtpv2c_stack::send_triggered_message(const endpoint& r_endpoint, const teid
   }
 }
 
-//------------------------------------------------------------------------------
-void gtpv2c_stack::notify_ul_error(const gtpv2c_procedure& p, const cause_value_e cause)
-{
-  Logger::gtpv2_c().trace( "notify_ul_error proc " PROC_ID_FMT " cause %d", p.gtpc_tx_id, cause);
-}
 //------------------------------------------------------------------------------
 void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task_id, bool &handled)
 {
@@ -643,7 +648,12 @@ void gtpv2c_stack::time_out_event(const uint32_t timer_id, const task_id_t& task
         udp_s.async_send_to(reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), it_proc->second.remote_endpoint);
       } else {
         // abort procedure
-        notify_ul_error(it_proc->second, cause_value_e::REMOTE_PEER_NOT_RESPONDING);
+        notify_ul_error(it_proc->second.remote_endpoint, it_proc->second.local_teid, cause_value_e::REMOTE_PEER_NOT_RESPONDING, it_proc->second.gtpc_tx_id);
+        handled = true;
+        it_proc->second.proc_cleanup_timer_id = 0;
+        Logger::gtpv2_c().trace( "Delete proc " PROC_ID_FMT " Retry %d seq %d timer id %u",
+              it_proc->second.gtpc_tx_id, it_proc->second.retry_count, it_proc->first, timer_id);
+        pending_procedures.erase(it_proc);
       }
     }
   } else {

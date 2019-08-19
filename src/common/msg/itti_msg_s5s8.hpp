@@ -41,11 +41,12 @@ public:
     l_endpoint = {};
     r_endpoint = {};
     teid = UNASSIGNED_TEID;
+    l_teid = UNASSIGNED_TEID;
     gtpc_tx_id = 0;
   }
 
   itti_s5s8_msg(const itti_s5s8_msg& i) : itti_msg(i), l_endpoint(i.l_endpoint),
-    r_endpoint(i.r_endpoint), teid(i.teid), gtpc_tx_id(i.gtpc_tx_id) {}
+    r_endpoint(i.r_endpoint), teid(i.teid), l_teid(i.l_teid), gtpc_tx_id(i.gtpc_tx_id) {}
 
   itti_s5s8_msg(const itti_s5s8_msg& i, const task_id_t orig, const task_id_t dest) :
   itti_s5s8_msg(i)
@@ -56,10 +57,21 @@ public:
 
   endpoint l_endpoint;
   endpoint r_endpoint;
-  teid_t   teid;
+  teid_t   teid; // remote teid
+  teid_t   l_teid; // local teid
   uint64_t gtpc_tx_id;
 };
 
+class itti_s5s8_remote_peer_not_responding : public itti_s5s8_msg {
+public:
+  itti_s5s8_remote_peer_not_responding(const task_id_t orig, const task_id_t dest):
+    itti_s5s8_msg(S5S8_REMOTE_PEER_NOT_RESPONDING, orig, dest) {}
+  itti_s5s8_remote_peer_not_responding(const itti_s5s8_remote_peer_not_responding& i) : itti_s5s8_msg(i)  {}
+  itti_s5s8_remote_peer_not_responding(const itti_s5s8_remote_peer_not_responding& i, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_msg(i, orig, dest) {}
+  const char* get_msg_name() {return "S5S8_REMOTE_PEER_NOT_RESPONDING";};
+};
+//-----------------------------------------------------------------------------
 class itti_s5s8_create_session_request : public itti_s5s8_msg {
 public:
   itti_s5s8_create_session_request(const task_id_t orig, const task_id_t dest):

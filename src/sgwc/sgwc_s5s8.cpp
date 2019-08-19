@@ -121,22 +121,22 @@ sgw_s5s8::sgw_s5s8 () : gtpv2c_stack(string(inet_ntoa(sgwc_cfg.s5s8_cp.addr4)), 
 //------------------------------------------------------------------------------
 void sgw_s5s8::send_msg(itti_s5s8_create_session_request& i)
 {
-  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
+  send_initial_message(i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::send_msg(itti_s5s8_delete_session_request& i)
 {
-  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
+  send_initial_message(i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::send_msg(itti_s5s8_modify_bearer_request& i)
 {
-  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
+  send_initial_message(i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::send_msg(itti_s5s8_release_access_bearers_request& i)
 {
-  send_initial_message(i.r_endpoint, i.teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
+  send_initial_message(i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_SGWC_S5S8, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::send_msg(itti_s5s8_downlink_data_notification_acknowledge& i)
@@ -387,6 +387,27 @@ void sgw_s5s8::handle_receive(char* recv_buffer, const std::size_t bytes_transfe
     handle_receive_gtpv2c_msg(msg, remote_endpoint);
   } catch (gtpc_exception& e) {
     Logger::sgwc_s5s8().info( "handle_receive exception %s", e.what());
+  }
+}
+//------------------------------------------------------------------------------
+void sgw_s5s8::notify_ul_error(const endpoint& r_endpoint, const teid_t l_teid, const cause_value_e cause, const uint64_t gtpc_tx_id)
+{
+  switch (cause) {
+    case cause_value_e::REMOTE_PEER_NOT_RESPONDING:
+      {
+        itti_s5s8_remote_peer_not_responding *itti_msg = new itti_s5s8_remote_peer_not_responding(TASK_SGWC_S5S8, TASK_SGWC_APP);
+        itti_msg->r_endpoint = r_endpoint;
+        itti_msg->gtpc_tx_id = gtpc_tx_id;
+        itti_msg->l_teid = l_teid;
+        std::shared_ptr<itti_s5s8_remote_peer_not_responding> i = std::shared_ptr<itti_s5s8_remote_peer_not_responding>(itti_msg);
+        int ret = itti_inst->send_msg(i);
+        if (RETURNok != ret) {
+          Logger::sgwc_s5s8().error( "Could not send ITTI message %s to task TASK_SGWC_APP", i->get_msg_name());
+        }
+      }
+      break;
+    default:
+      Logger::sgwc_s5s8().warn( "notify_ul_error cause %d not handled", cause);
   }
 }
 //------------------------------------------------------------------------------
