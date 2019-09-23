@@ -15,6 +15,7 @@
 */
 
 #include "logger.hpp"
+#include "spdlog/sinks/syslog_sink.h"
 
 #include <iostream>
 #include <sstream>
@@ -23,37 +24,29 @@
 
 Logger *Logger::m_singleton = NULL;
 
-void Logger::_init( const char *app )
+void Logger::_init( const char *app, const bool log_stdout, bool const log_rot_file )
 {
+   int num_sinks = 0;
    spdlog::set_async_mode( 2048 );
 #if TRACE_IS_ON
    spdlog::level::level_enum llevel = spdlog::level::trace;
-   m_sinks.push_back( std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>() );
-   std::string filename = fmt::format("./{}.log", app);
-   m_sinks.push_back( std::make_shared<spdlog::sinks::rotating_file_sink_mt>( filename, 5 * 1024 * 1024, 3 ) );
-   m_sinks[0].get()->set_level( llevel  );
-   m_sinks[1].get()->set_level( llevel  );
 #elif DEBUG_IS_ON
    spdlog::level::level_enum llevel = spdlog::level::debug;
-   m_sinks.push_back( std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>() );
-   std::string filename = fmt::format("./{}.log", app);
-   m_sinks.push_back( std::make_shared<spdlog::sinks::rotating_file_sink_mt>( filename, 5 * 1024 * 1024, 3 ) );
-   m_sinks[0].get()->set_level( llevel  );
-   m_sinks[1].get()->set_level( llevel  );
 #elif INFO_IS_ON
    spdlog::level::level_enum llevel = spdlog::level::info;
-   m_sinks.push_back( std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>() );
-   std::string filename = fmt::format("./{}.log", app);
-   m_sinks.push_back( std::make_shared<spdlog::sinks::rotating_file_sink_mt>( filename, 5 * 1024 * 1024, 3 ) );
-   m_sinks[0].get()->set_level( llevel  );
-   m_sinks[1].get()->set_level( llevel  );
 #else
    spdlog::level::level_enum llevel = spdlog::level::warn;
-   std::string filename = fmt::format("./{}.log", app);
-   m_sinks.push_back( std::make_shared<spdlog::sinks::rotating_file_sink_mt>( filename, 5 * 1024 * 1024, 3 ) );
-   m_sinks[0].get()->set_level( llevel  );
 #endif
-   //m_sinks.push_back( std::make_shared<spdlog::sinks::syslog_sink>() );
+   if (log_stdout) {
+      std::string filename = fmt::format("./{}.log", app);
+      m_sinks.push_back( std::make_shared<spdlog::sinks::ansicolor_stdout_sink_mt>() );
+      m_sinks[num_sinks++].get()->set_level( llevel  );
+   }
+   if (log_rot_file) {
+      std::string filename = fmt::format("./{}.log", app);
+      m_sinks.push_back( std::make_shared<spdlog::sinks::rotating_file_sink_mt>( filename, 5 * 1024 * 1024, 3 ) );
+      m_sinks[num_sinks++].get()->set_level( llevel  );
+   }
 
    std::stringstream ss;
    ss << "[%Y-%m-%dT%H:%M:%S.%f] [" << app << "] [%n] [%l] %v";

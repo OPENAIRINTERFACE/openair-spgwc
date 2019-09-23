@@ -74,8 +74,8 @@ class Logger
 {
 public:
 
-   static void init( const char *app ) { singleton()._init( app ); }
-   static void init( const std::string &app ) { init( app.c_str() ); }
+   static void init( const char *app, const bool log_stdout, const bool log_rot_file ) { singleton()._init( app, log_stdout, log_rot_file ); }
+   static void init( const std::string &app, const bool log_stdout, const bool log_rot_file ) { init( app.c_str(), log_stdout, log_rot_file ); }
 
    static _Logger &async_cmd() { return *singleton().m_async_cmd; }
    static _Logger &enb_s1u() { return *singleton().m_enb_s1u; }
@@ -112,7 +112,7 @@ private:
    Logger() {}
    ~Logger() {}
 
-   void _init( const char *app );
+   void _init( const char *app, const bool log_stdout, const bool log_rot_file);
 
    std::vector<spdlog::sink_ptr> m_sinks;
 

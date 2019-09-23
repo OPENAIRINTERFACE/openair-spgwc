@@ -81,8 +81,6 @@ void my_app_signal_handler(int s)
 int main(int argc, char **argv)
 {
   srand (time(NULL));
-  // Logger
-  Logger::init( "spgwc" );
 
   // Command line options
   if ( !Options::parse( argc, argv ) )
@@ -90,6 +88,10 @@ int main(int argc, char **argv)
      std::cout << "Options::parse() failed" << std::endl;
      return 1;
   }
+
+  // Logger
+  Logger::init( "spgwc" , Options::getlogStdout() , Options::getlogRotFilelog());
+
   Logger::sgwc_app().startup( "Options parsed" );
 
   struct sigaction sigIntHandler;

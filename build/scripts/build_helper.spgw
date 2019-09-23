@@ -97,6 +97,8 @@ install_spdlog_from_git() {
     git clone $GIT_URL
     cd spdlog && git checkout master
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    # enable syslog, Useless (defined in SPGW code)
+    sed -i '/#define SPDLOG_ENABLE_SYSLOG/s/^\/\///g' include/spdlog/tweakme.h
     popd
   fi
   return 0
