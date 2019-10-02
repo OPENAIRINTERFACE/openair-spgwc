@@ -66,7 +66,7 @@ bool Options::parseInputOptions( int argc, char **argv )
 
    struct option long_options[] = {
       { "help",         no_argument,        NULL, 'h' },
-      { "libconfigcfg", required_argument,  NULL, 'f' },
+      { "libconfigcfg", required_argument,  NULL, 'c' },
       { "stdoutlog", no_argument,  NULL, 'o' },
       { "rotatelog", no_argument,  NULL, 'r' },
       { NULL,0,NULL,0 }
@@ -91,7 +91,7 @@ bool Options::parseInputOptions( int argc, char **argv )
          {
             switch ( optopt )
             {
-               case 'c': { std::cout << "Option -l (libconfig config) requires an argument"         << std::endl; break; }
+               case 'c': { std::cout << "Option -c (libconfig config) requires an argument"         << std::endl; break; }
                case 'o': { std::cout << "Option -o do not requires an argument, can be also set with option -r." << std::endl; break; }
                case 'r': { std::cout << "Option -r do not requires an argument, can be also set with option -o." << std::endl; break; }
                default: { std::cout << "Unrecognized option [" << c << "]"                         << std::endl; break; }
