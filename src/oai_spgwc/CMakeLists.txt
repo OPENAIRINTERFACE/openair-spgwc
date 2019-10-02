@@ -118,12 +118,17 @@ ENDIF(STATIC_LINKING)
 ################################################################
 # Build type
 ################################################################
-add_list_string_option(CMAKE_BUILD_TYPE "RelWithDebInfo" "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." Debug Release
-RelWithDebInfo MinSizeRel)
+add_list_string_option(CMAKE_BUILD_TYPE "RelWithDebInfo" "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." RelWithDebInfo Debug Release MinSizeRel)
 Message("Build type is ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_boolean_option(LOG_OAI True         "Thread safe logging API")
   add_boolean_option(LOG_OAI_MINIMAL True "Thread safe logging API, log only levels above NOTICE")
+  set(ASAN)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_boolean_option(LOG_OAI True         "Thread safe logging API")
+  add_boolean_option(LOG_OAI_MINIMAL True "Thread safe logging API, log only levels above NOTICE")
+  set(ASAN)
 endif()
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_boolean_option(LOG_OAI True "Thread safe logging API")
@@ -131,7 +136,10 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 if (CMAKE_BUILD_TYPE STREQUAL "")
    set(CMAKE_BUILD_TYPE "MinSizeRel")
+   set(ASAN)
 endif()
+
+Message("ASAN is ${ASAN}")
 
 ################################################################
 # Processor architecture
