@@ -19,6 +19,7 @@
 3. [OpenAirInterface Core Network Deployment](#3-oai-core-network-deployment)
 4. [OpenAirInterface SPGW-CUPS Fundamentals](#4-oai-spgw-cups-fundamentals)
 5. [OpenAirInterface SGW Feature List](./FEATURE_SET_SGW.md)
+6. [OpenAirInterface PGW Feature List](./FEATURE_SET_PGW.md)
 
 # 1. OpenAirInterface Core Network Block Diagram #
 

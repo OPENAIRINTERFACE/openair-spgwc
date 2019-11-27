@@ -63,8 +63,8 @@ Based on document **3GPP TS 23.401 V15.5.0 §4.4.3.2**.
 |        |  and optionally Paging Policy Differentiation                |                    |                                                |
 | 5      | Lawful Interception                                          | :x:                |                                                |
 | 6      | Packet routing and forwarding                                | :heavy_check_mark: |                                                |
-| 7      | Transport level packet marking in the uplink & the downlink  | :x:                |                                                |
-|        |  e.g. setting the DiffServ Code Point, based on the QCI, and |                    | Could be supported                             |
+| 7      | Transport level packet marking in the uplink & the downlink  | :x:                | Could be supported                             |
+|        |  e.g. setting the DiffServ Code Point, based on the QCI, and |                    |                                                |
 |        |  optionally the ARP priority level, of the associated EPS bearer |                |                                                |
 | 8      | Accounting for inter-operator charging.                      | :x:                |                                                |
 |        | -- For GTP based S5/S8, the SGW generates accounting data per UE and bearer |     |                                                |
