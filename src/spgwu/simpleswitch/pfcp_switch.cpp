@@ -256,7 +256,8 @@ int pfcp_switch::create_pdn_socket (const char * const ifname)
 //------------------------------------------------------------------------------
 void pfcp_switch::setup_pdn_interfaces()
 {
-  std::string cmd = fmt::format("ip link set dev {0} down > /dev/null 2>&1; ip link del {0} > /dev/null 2>&1; sync; sleep 1; ip link add {0} type dummy; ip link set dev {0} up", PDN_INTERFACE_NAME);
+  std::string pdn_interface_name = fmt::format(PDN_INTERFACE_NAME"{0}",spgwu_cfg.instance);
+  std::string cmd = fmt::format("ip link set dev {0} down > /dev/null 2>&1; ip link del {0} > /dev/null 2>&1; sync; sleep 1; ip link add {0} type dummy; ip link set dev {0} up", pdn_interface_name);
   int rc = system ((const char*)cmd.c_str());
 
   for (auto it : spgwu_cfg.pdns) {
@@ -264,7 +265,7 @@ void pfcp_switch::setup_pdn_interfaces()
       struct in_addr address4 = {};
       address4.s_addr = it.network_ipv4.s_addr + be32toh(1);
 
-      std::string cmd = fmt::format("ip -4 addr add {}/{} dev {}", conv::toString(address4).c_str(), it.prefix_ipv4, PDN_INTERFACE_NAME);
+      std::string cmd = fmt::format("ip -4 addr add {}/{} dev {}", conv::toString(address4).c_str(), it.prefix_ipv4, pdn_interface_name);
       rc = system ((const char*)cmd.c_str());
 
       if (it.snat) {
@@ -276,12 +277,12 @@ void pfcp_switch::setup_pdn_interfaces()
       }
     }
     if (it.prefix_ipv6) {
-      std::string cmd = fmt::format("echo 0 > /proc/sys/net/ipv6/conf/{}/disable_ipv6", PDN_INTERFACE_NAME);
+      std::string cmd = fmt::format("echo 0 > /proc/sys/net/ipv6/conf/{}/disable_ipv6", pdn_interface_name);
       rc = system ((const char*)cmd.c_str());
 
       struct in6_addr addr6 = it.network_ipv6;
       addr6.s6_addr[15] = 1;
-      cmd = fmt::format("ip -6 addr add {}/{} dev {}", conv::toString(addr6).c_str(), it.prefix_ipv6, PDN_INTERFACE_NAME);
+      cmd = fmt::format("ip -6 addr add {}/{} dev {}", conv::toString(addr6).c_str(), it.prefix_ipv6, pdn_interface_name);
       rc = system ((const char*)cmd.c_str());
 //      if ((it.snat) && (/* SGI has IPv6 address*/)){
       //        cmd = fmt::format("ip6tables -t nat -A POSTROUTING -s {}/{} -o {} -j SNAT --to-source {}", conv::toString(addr6).c_str(), it.prefix_ipv6, xxx);
@@ -297,13 +298,13 @@ void pfcp_switch::setup_pdn_interfaces()
   rc = system ("/sbin/sysctl -w net.ipv4.conf.all.accept_redirects=0");
   rc = system ("/sbin/sysctl -w net.ipv4.conf.default.accept_redirects=0");
 
-  cmd = fmt::format("/sbin/sysctl -w net.ipv4.conf.{}.send_redirects=0", PDN_INTERFACE_NAME);
+  cmd = fmt::format("/sbin/sysctl -w net.ipv4.conf.{}.send_redirects=0", pdn_interface_name);
   rc = system ((const char*)cmd.c_str());
-  cmd = fmt::format("/sbin/sysctl -w net.ipv4.conf.{}.accept_redirects=0", PDN_INTERFACE_NAME);
+  cmd = fmt::format("/sbin/sysctl -w net.ipv4.conf.{}.accept_redirects=0", pdn_interface_name);
   rc = system ((const char*)cmd.c_str());
 
 
-  if ((sock_r = create_pdn_socket(PDN_INTERFACE_NAME, false, pdn_if_index)) <= 0) {
+  if ((sock_r = create_pdn_socket(pdn_interface_name.c_str(), false, pdn_if_index)) <= 0) {
     Logger::pfcp_switch().error("Could not set PDN dummy read socket");
     sleep(2);
     exit(EXIT_FAILURE);

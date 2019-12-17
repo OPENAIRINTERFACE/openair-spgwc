@@ -259,8 +259,8 @@ void sgwc_config::display ()
 
   Logger::sgwc_app().info("==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
   Logger::sgwc_app().info( "Configuration SGW-C:");
-  //Logger::sgwc_app().info( "- Instance ..............: %s", instance);
-  //Logger::sgwc_app().info( "- PID dir ...............: %s", pid_dir.c_str());
+  Logger::sgwc_app().info( "- Instance ..............: %d", instance);
+  Logger::sgwc_app().info( "- PID dir ...............: %s", pid_dir.c_str());
   Logger::sgwc_app().info( "- S5_S8-C Networking:");
   Logger::sgwc_app().info( "    iface ............: %s", s5s8_cp.if_name.c_str());
   Logger::sgwc_app().info( "    ipv4.addr ........: %s", inet_ntoa (s5s8_cp.addr4));
