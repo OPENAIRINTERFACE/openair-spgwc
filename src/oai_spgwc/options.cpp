@@ -106,6 +106,15 @@ bool Options::parseInputOptions( int argc, char **argv )
          }
       }
    }
+
+   if (!(options & libconfigcfg)) {
+     const char* env_libconfig_p = std::getenv("CONFIG_FILE");
+     if (env_libconfig_p) {
+       m_libconfigcfg = env_libconfig_p;
+       options |= libconfigcfg;
+       std::cout << "config file set from env variable CONFIG_FILE " << env_libconfig_p << std::endl;
+     }
+   }
    return result;
 }
 
