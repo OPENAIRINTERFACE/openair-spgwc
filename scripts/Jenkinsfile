@@ -356,7 +356,7 @@ pipeline {
         cleanup {
             script {
                 echo '\u2705 \u001B[32mCleaning build VMs and log files\u001B[0m'
-                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci clean-build --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} > clean-build.log 2>&1"
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci clean-build --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-image True > clean-build.log 2>&1"
 
                 echo '\u2705 \u001B[32mGenerating Report\u001B[0m'
                 sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci report-html-build --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --separate-cups True --incremental True > report-build.log 2>&1"
