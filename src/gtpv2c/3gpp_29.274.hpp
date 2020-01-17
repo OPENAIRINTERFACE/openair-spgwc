@@ -356,6 +356,8 @@ public:
   explicit gtpv2c_msg(const gtpv2c_release_access_bearers_response& gtp_ies);
   explicit gtpv2c_msg(const gtpv2c_downlink_data_notification& gtp_ies);
   explicit gtpv2c_msg(const gtpv2c_downlink_data_notification_acknowledge& gtp_ies);
+  explicit gtpv2c_msg(const gtpv2c_remote_ue_report_notification& gtp_ies);
+  explicit gtpv2c_msg(const gtpv2c_remote_ue_report_acknowledge& gtp_ies);
 
   ~gtpv2c_msg() {
     ies.clear();
@@ -452,6 +454,17 @@ public:
       i.get()->to_core_type(s, i.get()->tlv.u1.bf.instance);
     }
   }
+void to_core_type(gtpv2c_remote_ue_report_notification& s) {
+    for (auto i : ies) {
+      i.get()->to_core_type(s, i.get()->tlv.u1.bf.instance);
+    }
+  }
+void to_core_type(gtpv2c_remote_ue_report_acknowledge& s) {
+    for (auto i : ies) {
+      i.get()->to_core_type(s, i.get()->tlv.u1.bf.instance);
+    }
+  }
+
 
   void dump_to(std::ostream& os)  {
     gtpv2c_msg_header::dump_to(os);
@@ -544,7 +557,7 @@ public:
     u1.digits.digit9 = i.u1.digits.digit9;
     u1.digits.digit10 = i.u1.digits.digit10;
     u1.digits.digit11 = i.u1.digits.digit11;
-    u1.digits.digit12 = i.u1.digits.digit12;
+    u1.digits.digit12 = i.u1.digits.digit12; 
     u1.digits.digit13 = i.u1.digits.digit13;
     u1.digits.digit14 = i.u1.digits.digit14;
     u1.digits.digit15 = i.u1.digits.digit15;
@@ -1734,7 +1747,6 @@ public:
       s.set(bearer_context, instance);
   }
 };
-
 //-------------------------------------
 // 8.29 Charging ID
 class gtpv2c_charging_id_ie : public gtpv2c_ie {
@@ -4094,6 +4106,240 @@ gtpv2c_ie(GTP_IE_RAN_NAS_CAUSE){
   }
 };
 
+//-------------------------------------
+// 8.122 Remote UE Context
+class gtpv2c_remote_ue_context_ie : public gtpv2c_grouped_ie {
+public:
+  //--------
+  explicit gtpv2c_remote_ue_context_ie(const remote_ue_context& r) : gtpv2c_grouped_ie(GTP_IE_REMOTE_UE_CONTEXT) {
+    std::cout << this << "gtpv2c_remote_ue_context_ie::gtpv2c_remote_ue_context_ie(const remote_ue_context& b)" << std::endl;
+  }
+  //--------
+  gtpv2c_remote_ue_context_ie() : gtpv2c_grouped_ie(GTP_IE_REMOTE_UE_CONTEXT){
+    tlv.length = 0;
+  }
+  //--------
+  explicit gtpv2c_remote_ue_context_ie(const gtpv2c_tlv& t) : gtpv2c_grouped_ie(t) {
+  };
+  //--------
+  void to_core_type(remote_ue_context& c) {
+    for (auto sie : ies) {
+      sie.get()->to_core_type(c, sie.get()->tlv.get_instance());
+    }
+  }
+  //--------
+  void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
+      remote_ue_context remote_ue_context = {};
+      to_core_type(remote_ue_context);
+      s.set(remote_ue_context, instance);
+  }
+};
+//-------------------------------------
+// 8.123 Remote User ID
+
+class gtpv2c_remote_user_id_ie : public gtpv2c_ie {
+public:
+  union {
+    struct {
+      uint8_t spare1 :6;
+      uint8_t imeif :1;
+      uint8_t msisdnf :1;
+     } bf;
+uint8_t b;
+  } u1;
+  uint8_t num_digits ;
+  //std::string imsi
+  union {
+    struct {
+      uint8_t digit1:4;
+      uint8_t digit2:4;
+      uint8_t digit3:4;
+      uint8_t digit4:4;
+      uint8_t digit5:4;
+      uint8_t digit6:4;
+      uint8_t digit7:4;
+      uint8_t digit8:4;
+      uint8_t digit9:4;
+      uint8_t digit10:4;
+      uint8_t digit11:4;
+      uint8_t digit12:4;
+      uint8_t digit13:4;
+      uint8_t digit14:4;
+      uint8_t digit15:4;
+      uint8_t filler:4;
+    } digits;                                                 /*!< \brief  IMSI shall consist of decimal digits (0 through 9) only.*/
+//#define IMSI_BCD8_SIZE                    8                /*!< \brief  The number of digits in IMSI shall not exceed 15.       */
+    uint8_t b[IMSI_BCD8_SIZE];
+  } u2;
+  
+
+//--------
+  explicit gtpv2c_remote_user_id_ie(const remote_user_id_t& i) : gtpv2c_ie(GTP_IE_REMOTE_USER_ID) {
+    u1.bf.spare1 = i.spare1;
+    u1.bf.imeif = i.imeif;
+    u1.bf.msisdnf = i.msisdnf;
+    num_digits = i.num_digits;
+    //u2.digits.filler = i.filler;
+    u2.digits.digit1 = i.digit1;
+    u2.digits.digit2 = i.digit2;
+    u2.digits.digit3 = i.digit3;
+    u2.digits.digit4 = i.digit4;
+    u2.digits.digit5 = i.digit5;
+    u2.digits.digit6 = i.digit6;
+    u2.digits.digit7 = i.digit7;
+    u2.digits.digit8 = i.digit8;
+    u2.digits.digit9 = i.digit9;
+    u2.digits.digit10 = i.digit10;
+    u2.digits.digit11 = i.digit11;
+    u2.digits.digit12 = i.digit12; 
+    u2.digits.digit13 = i.digit13;
+    u2.digits.digit14 = i.digit14;
+    u2.digits.digit15 = i.digit15;
+    num_digits = i.num_digits;
+    tlv.set_length((num_digits + 1)/2);
+
+    //if (type_of_the_offending_ie) { choose right test?
+    //if (MANDATORY_IE_INCORRECT == cause_value) {
+     // tlv.length = 6;
+    //} else {
+      //tlv.length = 2;
+    //}
+  }
+
+//--------
+  gtpv2c_remote_user_id_ie() : gtpv2c_ie(GTP_IE_REMOTE_USER_ID) {
+    u1.bf.spare1 = 0;
+    u1.bf.imeif = 0;
+    u1.bf.msisdnf = 0;
+    num_digits = 0;
+    tlv.length = 2;
+  }; 
+  //--------
+  explicit gtpv2c_remote_user_id_ie(const gtpv2c_tlv& t) : gtpv2c_ie(t) {
+    u1.bf.spare1 = 0;
+    u1.bf.imeif = 0;
+    u1.bf.msisdnf = 0;
+    num_digits = 0;
+  };
+  //-----------
+void to_core_type(remote_user_id_t& r) {
+    r.spare1 = u1.bf.spare1;
+    r.imeif = u1.bf.imeif;
+    r.msisdnf = u1.bf.msisdnf;
+    r.num_digits  = num_digits;
+    r.digit1 = u2.digits.digit1;
+    r.digit2 = u2.digits.digit2;
+    r.digit3 = u2.digits.digit3;
+    r.digit4 = u2.digits.digit4;
+    r.digit5 = u2.digits.digit5;
+    r.digit6 = u2.digits.digit6;
+    r.digit7 = u2.digits.digit7;
+    r.digit8 = u2.digits.digit8;
+    r.digit9 = u2.digits.digit9;
+    r.digit10 = u2.digits.digit10;
+    r.digit11 = u2.digits.digit11;
+    r.digit12 = u2.digits.digit12;
+    r.digit13 = u2.digits.digit13;
+    r.digit14 = u2.digits.digit14;
+    r.digit15 = u2.digits.digit15;
+    //r.filler = u1.digits.filler;
+    //r.num_digits = num_digits;
+      }
+  //-----------
+void dump_to(std::ostream& os) {
+    tlv.dump_to(os);
+    os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
+    os.write(reinterpret_cast<const char*>(&num_digits), sizeof(num_digits));
+    os.write(reinterpret_cast<const char*>(u2.b), sizeof(u2.b));
+      }
+  //--------
+void load_from(std::istream& is) {
+    //tlv.load_from(is);
+    is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
+    is.read(reinterpret_cast<char*>(&u2.b), sizeof(u2.b));
+    num_digits = tlv.get_length()*2;
+    if ((u2.b[tlv.get_length()-1] & 0xF0) == 0xF0) {
+      num_digits -= 1;
+    }
+    if (num_digits > 15) num_digits = 15; // should not happen
+  }
+
+  void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
+      remote_user_id_t remoteuserid = {};
+      to_core_type(remoteuserid);
+      s.set(remoteuserid, instance);
+  }
+};
+
+//-------------------------------------
+// 8.124 Remote UE IP Information
+class gtpv2c_remote_ue_ip_information_ie : public gtpv2c_ie {
+public:
+  union {
+    in_addr  ipv4_address; //network byte order
+    in6_addr ipv6_address;
+  } u1;
+  bool is_ipv4;
+  //--------
+  explicit gtpv2c_remote_ue_ip_information_ie(const remote_ue_ip_information_ie_t& i) :
+gtpv2c_ie(GTP_IE_IP_ADDRESS) {
+    is_ipv4 = i.is_ipv4;
+    if (is_ipv4) {
+      u1.ipv6_address = in6addr_any;
+      u1.ipv4_address = i.remote_ue_ip_address.ipv4_address;
+      tlv.length = 4;
+    } else {
+      u1.ipv6_address = i.remote_ue_ip_address.ipv6_address;
+      tlv.length = 16;
+    }
+  }
+  //--------
+  gtpv2c_remote_ue_ip_information_ie() : gtpv2c_ie(GTP_IE_IP_ADDRESS){
+    tlv.length = 4;
+    u1.ipv6_address = in6addr_any;
+    is_ipv4 = true;
+  }
+  //--------
+  explicit gtpv2c_remote_ue_ip_information_ie(const gtpv2c_tlv& t) : gtpv2c_ie(t) {
+    u1.ipv6_address = in6addr_any;
+    is_ipv4 = true;
+  };
+  //--------
+  void to_core_type(remote_ue_ip_information_ie_t& i) {
+    i.is_ipv4 = is_ipv4;
+    if (is_ipv4) {
+      i.remote_ue_ip_address.ipv6_address = in6addr_any;
+      i.remote_ue_ip_address.ipv4_address = u1.ipv4_address;
+    } else {
+      i.remote_ue_ip_address.ipv6_address = u1.ipv6_address;
+    }
+  }
+  //--------
+  void dump_to(std::ostream& os) {
+    tlv.dump_to(os);
+    if (is_ipv4)
+      ipv4_address_dump_to(os, u1.ipv4_address);
+    else
+      ipv6_address_dump_to(os, u1.ipv6_address);
+  }
+  //--------
+  void load_from(std::istream& is) {
+    //tlv.load_from(is);
+    if (tlv.length == 4) {
+      ipv4_address_load_from(is, u1.ipv4_address);
+    } else if (tlv.length == 16) {
+      ipv6_address_load_from(is, u1.ipv6_address);
+    } else {
+      throw gtpc_tlv_bad_length_exception(tlv.type, tlv.length);
+    }
+  }
+  //--------
+  void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
+      remote_ue_ip_information_ie_t remote_ue_ip_address = {};
+      to_core_type(remote_ue_ip_address);
+      s.set(remote_ue_ip_address, instance);
+  }
+} ;
 //-------------------------------------
 // 8.125 CIoT Optimizations Support Indication
 class gtpv2c_ciot_optimizations_support_indication_ie : public gtpv2c_ie {

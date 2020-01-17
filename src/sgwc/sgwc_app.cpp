@@ -219,6 +219,13 @@ void sgwc_app_task (void *args_p)
         sgwc_app_inst->handle_itti_msg(ref(*m));
       }
       break;
+    
+    case S5S8_REMOTE_UE_REPORT_ACKNOWLEDGE:
+      if (itti_s5s8_remote_peer_not_responding* m = dynamic_cast<itti_s5s8_remote_peer_not_responding*>(msg)) {
+        sgwc_app_inst->handle_itti_msg(ref(*m));
+      }
+      break;
+    
 
     case S11_CREATE_SESSION_REQUEST:
         /*
@@ -228,6 +235,12 @@ void sgwc_app_task (void *args_p)
          * UE requests PDN connectivity
          */
       if (itti_s11_create_session_request* m = dynamic_cast<itti_s11_create_session_request*>(msg)) {
+        sgwc_app_inst->handle_itti_msg(ref(*m));
+      }
+      break;
+    
+    case S11_REMOTE_UE_REPORT_NOTIFICATION:
+      if (itti_s11_remote_ue_report_notification* m = dynamic_cast<itti_s11_remote_ue_report_notification*>(msg)) {
         sgwc_app_inst->handle_itti_msg(ref(*m));
       }
       break;
@@ -481,6 +494,23 @@ void sgwc_app::handle_itti_msg (itti_s11_downlink_data_notification_acknowledge&
 }
 
 //------------------------------------------------------------------------------
+void sgwc_app::handle_itti_msg (itti_s11_remote_ue_report_notification& m)
+{
+  Logger::sgwc_app().debug("Received S11 REMOTE_UE_REPORT_NOTIFICATION sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
+  if (m.teid) {
+    if (is_s11sgw_teid_2_sgw_eps_bearer_context(m.teid)) {
+      shared_ptr<sgw_eps_bearer_context> ebc = s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
+      ebc->handle_itti_msg(m);
+    } else {
+      Logger::sgwc_app().debug("Discarding S11 REMOTE_UE_REPORT_NOTIFICATION sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
+      return;
+    }
+  } else {
+    Logger::sgwc_app().debug("Discarding S11 REMOTE_UE_REPORT_NOTIFICATION sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT ", invalid teid", m.teid, m.gtpc_tx_id);
+  }
+}
+
+//------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg (itti_s5s8_create_session_response& m)
 {
   Logger::sgwc_app().debug("Received S5S8 CREATE_SESSION_RESPONSE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
@@ -547,6 +577,23 @@ void sgwc_app::handle_itti_msg (itti_s5s8_modify_bearer_response& m)
     }
   } else {
     Logger::sgwc_app().debug("Received S5S8 MODIFY_BEARER_RESPONSE with dest teid " TEID_FMT " unknown, ignore!", m.teid);
+  }
+}
+
+//------------------------------------------------------------------------------
+void sgwc_app::handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& m)
+{
+  Logger::sgwc_app().debug("Received S5S8 REMOTE_UE_REPORT_ACKNOWLEDGE sender teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", m.teid, m.gtpc_tx_id);
+  if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
+    std::pair<std::shared_ptr<sgw_eps_bearer_context>, std::shared_ptr<sgw_pdn_connection>> p = s5s8sgw_teid_2_sgw_contexts(m.teid);
+    if ((p.first.get()) && (p.second.get())) {
+      p.first->handle_itti_msg(m, p.second);
+      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!", p.first->toString().c_str());
+    } else {
+      Logger::sgwc_app().debug("Received S5S8 S5S8_REMOTE_UE_REPORT_ACKNOWLEDGE with dest teid " TEID_FMT ", SGW contexts not found, ignore!", m.teid);
+    }
+  } else {
+    Logger::sgwc_app().debug("Received S5S8 S5S8_REMOTE_UE_REPORT_ACKNOWLEDGE with dest teid " TEID_FMT " unknown, ignore!", m.teid);
   }
 }
 //------------------------------------------------------------------------------

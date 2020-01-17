@@ -588,6 +588,7 @@ typedef struct cause_s {
   uint8_t  offending_ie_type;
   uint16_t offending_ie_length;
 } cause_t;
+
 //------------------------------------------------------------------------------
 // 8.5 recovery
 //typedef struct recovery_s {
@@ -2092,8 +2093,24 @@ typedef struct remote_user_id_s {
   uint8_t spare1 :6;
   uint8_t imeif :1;
   uint8_t msisdnf :1;
-  uint8_t length_of_imsi;
-  std::string imsi;
+  uint8_t num_digits;
+  uint8_t digit1:4;
+  uint8_t digit2:4;
+  uint8_t digit3:4;
+  uint8_t digit4:4;
+  uint8_t digit5:4;
+  uint8_t digit6:4;
+  uint8_t digit7:4;
+  uint8_t digit8:4;
+  uint8_t digit9:4;
+  uint8_t digit10:4;
+  uint8_t digit11:4;
+  uint8_t digit12:4;
+  uint8_t digit13:4;
+  uint8_t digit14:4;
+  uint8_t digit15:4;
+  uint8_t filler:4;  
+  //std::string imsi;
   uint8_t length_of_msisdn;
   std::string msisdn;
   uint8_t length_of_imei;
@@ -2102,9 +2119,13 @@ typedef struct remote_user_id_s {
 
 //-------------------------------------
 // 8.124 Remote UE IP Information
-typedef struct remote_ue_ip_information_ie_t {
-  std::string remote_ue_ip_information;
-} remote_ue_ip_information_ie;
+typedef struct remote_ue_ip_information_ie_s {
+  bool is_ipv4; // if not ipv4, then it is ipv6
+  union {
+    struct in_addr  ipv4_address;
+    struct in6_addr ipv6_address;
+  } remote_ue_ip_address;
+} remote_ue_ip_information_ie_t;
 
 //-------------------------------------
 // 8.125 CIoT Optimizations Support Indication

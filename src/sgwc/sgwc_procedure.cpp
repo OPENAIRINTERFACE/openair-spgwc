@@ -67,7 +67,10 @@ void sebc_procedure::handle_itti_msg (itti_s11_downlink_data_notification_acknow
 {
   Logger::sgwc_app().error( "Unhandled message itti_s11_downlink_data_notification_acknowledge");
 }
-
+void sebc_procedure::handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  Logger::sgwc_app().error( "Unhandled message itti_s5s8_remote_ue_report_acknowledge");
+}
 //------------------------------------------------------------------------------
 int create_session_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
 {
@@ -306,6 +309,110 @@ void create_session_request_procedure::handle_itti_msg (itti_s5s8_remote_peer_no
   int ret = itti_inst->send_msg(msg_send);
   if (RETURNok != ret) {
     Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGW_11", s11_csresp->get_msg_name());
+  }
+}
+
+//------------------------------------------------------------------------------
+int remote_ue_report_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
+{
+  // TODO check if compatible with ongoing procedures if any
+  //for (auto p : pending_procedures) {
+  //  if (p) {
+  //
+  //  }
+  //}
+  //std::shared_ptr<sgw_pdn_connection> pdn = {};
+  //if (c->find_pdn_connection(msg.gtp_ies.apn.access_point_name, msg.gtp_ies.pdn_type, pdn)) {
+    //Logger::sgwc_app().info( "PDN connection already exist for APN %s", msg.gtp_ies.apn.access_point_name.c_str());
+    //return RETURNerror;
+  //}
+  ebc = c;
+
+  sgw_pdn_connection* p = new sgw_pdn_connection();
+  //p->apn_in_use = msg.gtp_ies.apn.access_point_name;
+  //p->pdn_type = msg.gtp_ies.pdn_type;
+  std::shared_ptr<sgw_pdn_connection> spc = ebc->insert_pdn_connection(p);
+  // TODO : default_bearer
+  //p->default_bearer = msg.gtp_ies.bearer_contexts_to_be_created.at(0).eps_bearer_id;
+  p->sgw_fteid_s5_s8_cp = sgwc_app_inst->generate_s5s8_cp_fteid(sgwc_cfg.s5s8_cp.addr4);
+  sgwc_app_inst->set_s5s8sgw_teid_2_sgw_contexts(p->sgw_fteid_s5_s8_cp.teid_gre_key, c, spc);
+ 
+ // Forward to P-GW (temp use ITTI instead of ITTI/GTPv2-C/UDP)
+  itti_s5s8_remote_ue_report_notification *s5s8_ruer = new itti_s5s8_remote_ue_report_notification(TASK_SGWC_APP, TASK_SGWC_S5S8);
+  s5s8_ruer->gtpc_tx_id = get_trxn_id();
+  s5s8_ruer->l_teid = p->sgw_fteid_s5_s8_cp.teid_gre_key;
+
+// transfer IEs from S11 msg to S5 msg
+ if (msg.gtp_ies.has_remote_ue_context_to_be_connected()) {
+    for (auto i : msg.gtp_ies.remote_ue_context_connected) {
+      remote_ue_context_connected_within_remote_ue_report_notification r = {};
+      remote_user_id_t remoteuserid {}; if (i.get(remoteuserid)) r.set(remoteuserid);
+      remote_ue_ip_information_ie_t remoteueip {}; if (i.get(remoteueip)) r.set(remoteueip);
+      //ebi_t ebi = {}; if (i.get(ebi)) b.set(ebi);
+      //bearer_qos_t bearer_qos = {}; if (i.get(bearer_qos)) b.set(bearer_qos);
+      // get_s5_s8_u_sgw_fteid
+      // Wrong FTEID
+      //fteid_t s5s8_up_fteid = {};
+      //if (i.get(s5s8_up_fteid)) b.set_s5_s8_u_sgw_fteid(s5s8_up_fteid);;
+
+      s5s8_ruer->gtp_ies.add_remote_ue_context_to_be_connected(r);
+
+      //ebi_t cebi = {.ebi = ebi};
+      //sgw_eps_bearer* eps_bearer = new sgw_eps_bearer();
+      //eps_bearer->ebi = cebi;
+      //eps_bearer->sgw_fteid_s5_s8_up = s5s8_up_fteid;
+      //eps_bearer->eps_bearer_qos = bearer_qos;
+      //spc->add_eps_bearer(std::shared_ptr<sgw_eps_bearer>(eps_bearer));
+    }
+  }
+  if (msg.gtp_ies.has_remote_ue_context_to_be_disconnected()) {
+    for (auto i : msg.gtp_ies.remote_ue_context_disconnected) {
+      remote_ue_context_disconnected_within_remote_ue_report_notification r = {};
+      remote_user_id_t remoteuserid {}; if (i.get(remoteuserid)) r.set(remoteuserid);
+      s5s8_ruer->gtp_ies.add_remote_ue_context_to_be_disconnected(r);
+
+      //ebi_t cebi = {.ebi = ebi};
+      //std::shared_ptr<sgw_eps_bearer> seb = {};
+      //if (spc->get_eps_bearer(cebi, seb)) {
+        //seb->deallocate_ressources();
+        // TODO check when have to remove the bearer
+        //spc->remove_eps_bearer(seb);
+      //}
+    }
+  } 
+
+std::shared_ptr<itti_s5s8_remote_ue_report_notification> msg = std::shared_ptr<itti_s5s8_remote_ue_report_notification>(s5s8_ruer);
+  int ret = itti_inst->send_msg(msg);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGWC_S5S8", s5s8_ruer->get_msg_name());
+    return RETURNerror;
+  }
+  return RETURNok;
+}
+
+//------------------------------------------------------------------------------
+void remote_ue_report_procedure::handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& ruerack, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> pdn)
+{
+marked_for_removal = true;
+  //TODO Get PDN connection and fill the field
+  if (nullptr == pdn.get()) {
+    Logger::sgwc_app().error( "remote_ue_report_procedure handling REMOTE_UE_REPORT_ACKNOWLEDGE, Could not get sgw_pdn_connection object, discarding");
+    return;
+  }
+
+  itti_s11_remote_ue_report_acknowledge *s11_ruerack = new itti_s11_remote_ue_report_acknowledge(TASK_SGWC_APP, TASK_SGWC_S11);
+  s11_ruerack->gtpc_tx_id = get_trxn_id();
+  s11_ruerack->r_endpoint = this->msg.r_endpoint;
+  //s11_ruerack->teid = this->msg.gtp_ies.sender_fteid_for_cp.teid_gre_key;
+
+  // transfer IEs from S5 msg to S11 msg
+  // Mandatory cause
+  cause_t cause = {}; if (ruerack.gtp_ies.get(cause)) s11_ruerack->gtp_ies.set(cause);
+  
+  std::shared_ptr<itti_s11_remote_ue_report_acknowledge> msg_send = std::shared_ptr<itti_s11_remote_ue_report_acknowledge>(s11_ruerack);
+  int ret = itti_inst->send_msg(msg_send);
+  if (RETURNok != ret) {
+    Logger::sgwc_app().error( "Could not send ITTI message %s to task TASK_SGW_11", s11_ruerack->get_msg_name());
   }
 }
 

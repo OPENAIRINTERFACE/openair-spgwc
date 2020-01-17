@@ -39,6 +39,7 @@
 namespace gtpv2c {
 
 class bearer_context;
+class remote_ue_context;
 
 class gtpv2c_ies_container {
 public:
@@ -161,9 +162,9 @@ public:
   // TODO GTP_IE_MILLISECOND_TIME_STAMP
   // TODO GTP_IE_MONITORING_EVENT_INFORMATION
   // TODO GTP_IE_ECGI_LIST
-  // TODO GTP_IE_REMOTE_UE_CONTEXT
-  // TODO GTP_IE_REMOTE_USER_ID
-  // TODO GTP_IE_REMOTE_UE_IP_INFORMATION
+  virtual bool get(remote_ue_context& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_REMOTE_UE_CONTEXT, __FILE__, __LINE__);}
+  virtual bool get(remote_user_id_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_REMOTE_USER_ID, __FILE__,__LINE__);}
+  virtual bool get(remote_ue_ip_information_ie_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_REMOTE_UE_IP_INFORMATION, __FILE__,__LINE__);}
   virtual bool get(ciot_optimizations_support_indication_t& v, const uint8_t instance = 0) const {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION, __FILE__,
 __LINE__);}
   // TODO GTP_IE_SCEF_PDN_CONNECTION
@@ -298,9 +299,9 @@ __FILE__, __LINE__);}
   // TODO GTP_IE_MILLISECOND_TIME_STAMP
   // TODO GTP_IE_MONITORING_EVENT_INFORMATION
   // TODO GTP_IE_ECGI_LIST
-  // TODO GTP_IE_REMOTE_UE_CONTEXT
-  // TODO GTP_IE_REMOTE_USER_ID
-  // TODO GTP_IE_REMOTE_UE_IP_INFORMATION
+  virtual void set(const remote_ue_context& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_REMOTE_UE_CONTEXT, __FILE__, __LINE__);}
+  virtual void set(const remote_user_id_t& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_REMOTE_USER_ID, __FILE__, __LINE__);}
+  virtual void set(const remote_ue_ip_information_ie_t& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_REMOTE_UE_IP_INFORMATION, __FILE__, __LINE__);}
   virtual void set(const ciot_optimizations_support_indication_t& v, const uint8_t instance = 0) {throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION, __FILE__, __LINE__);}
   // TODO GTP_IE_SCEF_PDN_CONNECTION
   // TODO GTP_IE_HEADER_COMPRESSION_CONFIGURATION
@@ -315,6 +316,33 @@ __FILE__, __LINE__);}
   // TODO GTP_IE_MAXIMUM_PACKET_LOSS
   virtual ~gtpv2c_ies_container() {};
 };
+
+class remote_ue_context : public gtpv2c_ies_container{
+public:
+  std::pair<bool, remote_user_id_t>                    remote_user_id;
+  std::pair<bool, remote_ue_ip_information_ie_t>       remote_ue_ip;
+
+  remote_ue_context() :
+    remote_user_id(),
+    remote_ue_ip(){}
+  
+  remote_ue_context(const remote_ue_context& r) :
+    remote_user_id(r.remote_user_id),
+    remote_ue_ip(r.remote_ue_ip)  
+  {}
+  remote_ue_context& operator=(remote_ue_context other)
+  {
+    std::swap(remote_user_id, other.remote_user_id);
+    std::swap(remote_ue_ip, other.remote_ue_ip);
+  }
+
+//virtual ~remote_ue_context() {};
+  virtual void set(const remote_user_id_t& v, const uint8_t instance = 0) {remote_user_id.first = true; remote_user_id.second = v;}
+  virtual void set(const remote_ue_ip_information_ie_t& v, const uint8_t instance = 0) {remote_ue_ip.first = true; remote_ue_ip.second = v;}
+
+  virtual bool get(remote_user_id_t& v, const uint8_t instance = 0) const {if (remote_user_id.first) {v = remote_user_id.second;return true;}return false;}
+  virtual bool get(remote_ue_ip_information_ie_t& v, const uint8_t instance = 0) const {if (remote_ue_ip.first) {v = remote_ue_ip.second;return true;}return false;}
+}; 
 
 class bearer_context : public gtpv2c_ies_container {
 public:
@@ -3626,6 +3654,160 @@ public:
   void set(const cause_t& v, const uint8_t instance = 0) {cause = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_CAUSE;}
   void set(const node_type_t& v, const uint8_t instance = 0) {originating_node = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_ORIGINATING_NODE;}
   void set(const imsi_t& v, const uint8_t instance = 0) {imsi = v;ie_presence_mask |= DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_IMSI;}
+};
+
+//-----------------------------------------------------------------------------
+/** @class gtpv2c_remote_ue_report_notification
+ *  @brief Remote UE Report Notification Message
+ *
+ * The Remote UE Report Notification Message is sent on the S11 interface by the MME to the SGW as part of the Remote UE connectivity/disconnectivity procedure.
+ */
+class remote_ue_context_connected_within_remote_ue_report_notification : public gtpv2c_ies_container {
+public:
+  uint32_t                      ie_presence_mask;
+#define GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID                             ((uint64_t)1)
+#define GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_IP_INFORMATION                  ((uint64_t)1 << 1)
+
+remote_user_id_t                remote_user_id;  ///< Remote User ID,  Mandatory CSR. This IE provides information (IMSI and, if available one IMEI and/or MSISDN identity)
+
+remote_ue_ip_information_ie_t   remote_ue_ip;   ///< Remote UE IP Information,  Mandatory CSR
+
+void set(const remote_user_id_t& v, const uint8_t instance = 0) {remote_user_id = v; ie_presence_mask |= GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID;}
+void set(const remote_ue_ip_information_ie_t& v, const uint8_t instance = 0) {remote_ue_ip = v; ie_presence_mask |= GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_IP_INFORMATION;}
+bool get(remote_user_id_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID) {v = remote_user_id;return true;}return false;}
+bool get(remote_ue_ip_information_ie_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_IP_INFORMATION) {v = remote_ue_ip;return true;}return false;}
+
+remote_ue_context_connected_within_remote_ue_report_notification()
+{
+  ie_presence_mask = 0;
+  remote_user_id = {};
+  remote_ue_ip = {};
+}
+
+explicit remote_ue_context_connected_within_remote_ue_report_notification(const remote_ue_context& r) : remote_ue_context_connected_within_remote_ue_report_notification()
+{
+    ie_presence_mask = 0;
+    if (r.get(remote_user_id, 0)) ie_presence_mask |= GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID;
+    if (r.get(remote_ue_ip, 0)) ie_presence_mask |= GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_IP_INFORMATION;
+}
+};
+
+class remote_ue_context_disconnected_within_remote_ue_report_notification : public gtpv2c_ies_container {
+public:
+  uint32_t                      ie_presence_mask;
+#define GTPV2C_REMOTE_UE_CONTEXT_DISCONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID                             ((uint64_t)1)
+
+remote_user_id_t                remote_user_id;  ///< Remote User ID,  Mandatory CSR. This IE provides information (IMSI and, if available one IMEI and/or MSISDN identity)
+
+void set(const remote_user_id_t& v, const uint8_t instance = 0) {remote_user_id = v; ie_presence_mask |= GTPV2C_REMOTE_UE_CONTEXT_DISCONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID;}
+
+bool get(remote_user_id_t& v, const uint8_t instance = 0) const {if (ie_presence_mask & GTPV2C_REMOTE_UE_CONTEXT_DISCONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID) {v = remote_user_id;return true;}return false;}
+
+remote_ue_context_disconnected_within_remote_ue_report_notification()
+{
+  ie_presence_mask = 0;
+  remote_user_id = {};
+}
+
+explicit remote_ue_context_disconnected_within_remote_ue_report_notification(const remote_ue_context& r) : remote_ue_context_disconnected_within_remote_ue_report_notification()
+{
+    ie_presence_mask = 0;
+    if (r.get(remote_user_id, 0)) ie_presence_mask |= GTPV2C_REMOTE_UE_CONTEXT_DISCONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID;
+}
+};
+
+class gtpv2c_remote_ue_report_notification : public gtpv2c_ies_container {
+public:
+#define GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED                                 ((uint64_t)1)
+#define GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED                              ((uint64_t)1 << 1)
+static const uint8_t msg_id = GTP_REMOTE_UE_REPORT_NOTIFICATION;
+uint64_t           ie_presence_mask;
+
+std::vector<remote_ue_context_connected_within_remote_ue_report_notification> remote_ue_context_connected;
+
+std::vector<remote_ue_context_disconnected_within_remote_ue_report_notification> remote_ue_context_disconnected;
+
+gtpv2c_remote_ue_report_notification() :
+    ie_presence_mask(0),
+    remote_ue_context_connected(),
+    remote_ue_context_disconnected()
+{}
+gtpv2c_remote_ue_report_notification(const gtpv2c_remote_ue_report_notification& i) :
+    ie_presence_mask(i.ie_presence_mask),
+    remote_ue_context_connected(i.remote_ue_context_connected),
+    remote_ue_context_disconnected(i.remote_ue_context_disconnected) {}
+
+gtpv2c_remote_ue_report_notification& operator=(gtpv2c_remote_ue_report_notification i)
+    {
+      std::swap(ie_presence_mask, i.ie_presence_mask);
+      std::swap(remote_ue_context_connected, i.remote_ue_context_connected);
+      std::swap(remote_ue_context_disconnected, i.remote_ue_context_disconnected);
+    }
+static const char* get_msg_name() {return "REMOTE_UE_REPORT_NOTIFICATION";};
+
+  bool has_remote_ue_context_to_be_connected() const {if (ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED) return true; else return false;}
+  bool has_remote_ue_context_to_be_disconnected() const {if (ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED) return true; else return false;}
+  
+  void add_remote_ue_context_to_be_connected(const remote_ue_context_connected_within_remote_ue_report_notification& v) {
+      remote_ue_context_connected.push_back(v);
+      ie_presence_mask |= GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED;
+  }
+  void add_remote_ue_context_to_be_disconnected(const remote_ue_context_disconnected_within_remote_ue_report_notification& v) {
+      remote_ue_context_disconnected.push_back(v);
+      ie_presence_mask |= GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED;
+  }
+   void set(const remote_ue_context& v, const uint8_t instance = 0) {
+    switch (instance) {
+    case 0: {
+        remote_ue_context_connected_within_remote_ue_report_notification b(v);
+        add_remote_ue_context_to_be_connected(b);
+      }
+      break;
+    case 1: {
+        remote_ue_context_disconnected_within_remote_ue_report_notification b(v);
+        add_remote_ue_context_to_be_disconnected(b);
+      }
+      break;
+    default:
+      throw gtpc_tlv_bad_instance_exception(GTP_IE_BEARER_CONTEXT, instance);
+    }
+   }
+};
+
+//-----------------------------------------------------------------------------
+/** @class gtpv2c_remote_ue_report_acknowledge
+ *  @brief Remote UE Report Acknowledge
+ *
+ * The Remote UE Report Acknowledge will be sent on S11 interface as the Remote UE connectivity/disconnectivity procedure.
+*/
+class gtpv2c_remote_ue_report_acknowledge : public gtpv2c_ies_container{
+public:
+  static const uint8_t msg_id = GTP_REMOTE_UE_REPORT_ACKNOWLEDGE;
+
+  // here fields listed in 3GPP TS 29.274
+  std::pair<bool, cause_t>            cause;               ///< If the SGW cannot accept any of the IEs within Remote UE Report Notification
+  ///< message, the SGW shall send the Create Session Response with appropriate reject Cause value.  
+
+gtpv2c_remote_ue_report_acknowledge(): 
+cause()
+{}
+
+gtpv2c_remote_ue_report_acknowledge(const gtpv2c_remote_ue_report_acknowledge& i): 
+cause(i.cause)
+{}
+
+gtpv2c_remote_ue_report_acknowledge& operator=(gtpv2c_remote_ue_report_acknowledge other)
+  {
+    std::swap(cause, other.cause);
+    return *this;
+  }
+
+static const char* get_msg_name() {return "REMOTE_UE_REPORT_ACKNOWLEDGE";};
+
+bool get(cause_t& v, const uint8_t instance = 0) const {if (cause.first) {v = cause.second;return true;}return false;}
+void set(const cause_t& v, const uint8_t instance = 0) {cause.first = true; cause.second = v;}
+void clear_cause(const uint8_t instance = 0) {cause.first = false; cause.second = {};}
+
 };
 
 } // namespace gtpv2c

@@ -114,12 +114,14 @@ public:
   void delete_s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid);
 
   void handle_itti_msg (itti_s11_create_session_request& m);
+  void handle_itti_msg (itti_s11_remote_ue_report_notification& m);
   void handle_itti_msg (itti_s11_delete_session_request& m);
   void handle_itti_msg (itti_s11_modify_bearer_request& m);
   void handle_itti_msg (itti_s11_release_access_bearers_request& m);
   void handle_itti_msg (itti_s11_remote_peer_not_responding& m);
   void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& m);
   void handle_itti_msg (itti_s5s8_create_session_response& m);
+  void handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& m);
   void handle_itti_msg (itti_s5s8_delete_session_response& m);
   void handle_itti_msg (itti_s5s8_modify_bearer_response& m);
   void handle_itti_msg (itti_s5s8_release_access_bearers_response& m);

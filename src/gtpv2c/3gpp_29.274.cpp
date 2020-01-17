@@ -349,9 +349,21 @@ gtpv2c_ie * gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream& is) {
     //case GTP_IE_MILLISECOND_TIME_STAMP:
     //case GTP_IE_MONITORING_EVENT_INFORMATION:
     //case GTP_IE_ECGI_LIST:
-    //case GTP_IE_REMOTE_UE_CONTEXT:
-    //case GTP_IE_REMOTE_USER_ID:
-    //case GTP_IE_REMOTE_UE_IP_INFORMATION:
+    case GTP_IE_REMOTE_UE_CONTEXT:{
+      
+    }
+    break;
+
+    case GTP_IE_REMOTE_USER_ID:{
+
+    }break;
+    
+    case GTP_IE_REMOTE_UE_IP_INFORMATION:{
+     gtpv2c_remote_ue_ip_information_ie *ie = new gtpv2c_remote_ue_ip_information_ie(tlv);
+        ie->load_from(is);
+        return ie; 
+    }break;
+
     case GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION: {
         gtpv2c_ciot_optimizations_support_indication_ie *ie = new gtpv2c_ciot_optimizations_support_indication_ie(tlv);
         ie->load_from(is);
@@ -825,6 +837,54 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_request& gtp_ies) : g
   if (gtp_ies.indication_flags.first) {std::shared_ptr<gtpv2c_indication_ie> sie(new gtpv2c_indication_ie(gtp_ies.indication_flags.second)); add_ie(sie);}
   //if (gtp_ies.ie_presence_mask & GTPV2C_RELEASE_ACCESS_BEARERS_REQUEST_PR_IE_PRIVATE_EXTENSION) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci)); add_ie(sie);}
 }
+
+//------------------------------------------------------------------------------
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_remote_ue_report_notification& gtp_ies) : gtpv2c_msg_header() {
+ ies = {};
+  set_message_type(GTP_REMOTE_UE_REPORT_NOTIFICATION);
+  if (gtp_ies.ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED) {
+    if (gtp_ies.remote_ue_context_connected.size() > 0){
+      for (auto i : gtp_ies.remote_ue_context_connected) {
+        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_REMOTE_UE_CONTEXT);
+        if (i.ie_presence_mask & GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID) {
+           std::shared_ptr<gtpv2c_remote_user_id_ie> 
+           sie(new gtpv2c_remote_user_id_ie(i.remote_user_id));
+            gie->add_ie(sie);}
+        if (i.ie_presence_mask & GTPV2C_REMOTE_UE_CONTEXT_CONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_IP_INFORMATION) {
+          std::shared_ptr<gtpv2c_remote_ue_ip_information_ie> 
+          sie(new gtpv2c_remote_ue_ip_information_ie(i.remote_ue_ip));
+          //sie.get()->tlv.set_instance(1);
+          gie->add_ie(sie);
+        }
+      }
+    }
+  }
+    
+  if (gtp_ies.ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED) {
+    if (gtp_ies.remote_ue_context_disconnected.size() > 0) {
+      for (auto i : gtp_ies.remote_ue_context_disconnected) {
+        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_REMOTE_UE_CONTEXT);
+        gie->tlv.set_instance(1);
+        if (i.ie_presence_mask & GTPV2C_REMOTE_UE_CONTEXT_DISCONNECTED_WITHIN_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_USER_ID) {
+          std::shared_ptr<gtpv2c_remote_user_id_ie> sie(new gtpv2c_remote_user_id_ie(i.remote_user_id)); 
+          gie->add_ie(sie);}
+        std::shared_ptr<gtpv2c_grouped_ie> sie(gie);
+        add_ie(sie);
+      }
+    }
+  }
+}
+//------------------------------------------------------------------------------
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_remote_ue_report_acknowledge& gtp_ies) : gtpv2c_msg_header() {
+  ies = {};
+  set_message_type(GTP_REMOTE_UE_REPORT_ACKNOWLEDGE);
+  if (gtp_ies.cause.first) {std::shared_ptr<gtpv2c_cause_ie> sie(new gtpv2c_cause_ie(gtp_ies.cause.second)); add_ie(sie);}
+  //if (gtp_ies..first) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci.second)); add_ie(sie);}
+  //if (gtp_ies.indication_flags.first) {std::shared_ptr<gtpv2c_indication_ie> sie(new gtpv2c_indication_ie(gtp_ies.indication_flags.second)); add_ie(sie);}
+  //if (gtp_ies..first) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci.second)); add_ie(sie);}
+  //if (gtp_ies.first) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci.second)); add_ie(sie);}
+  //if (gtp_ies.first) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci.second)); add_ie(sie);}
+}
 //------------------------------------------------------------------------------
 gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_response& gtp_ies) : gtpv2c_msg_header() {
   ies = {};
@@ -837,6 +897,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_response& gtp_ies) : 
   //if (gtp_ies.first) {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci.second)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
+
 gtpv2c_msg::gtpv2c_msg(const gtpv2c_downlink_data_notification& gtp_ies) : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_DOWNLINK_DATA_NOTIFICATION);

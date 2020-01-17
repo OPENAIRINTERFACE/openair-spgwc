@@ -327,7 +327,6 @@ public:
   gtpv2c::gtpv2c_release_access_bearers_request gtp_ies;
 } ;
 
-
 //-----------------------------------------------------------------------------
 /** @class itti_s11_release_access_bearers_response
  *  @brief Release AccessBearers Response
@@ -457,7 +456,56 @@ public:
   }
   const char* get_msg_name() {return typeid(itti_s11_downlink_data_notification_failure_indication).name();};
 
-  gtpv2c::gtpv2c_downlink_data_notification_failure_indication gtp_ies;
+  gtpv2c::gtpv2c_downlink_data_notification_failure_indication gtp_ies; 
 } ;
+
+//-----------------------------------------------------------------------------
+/** @class itti_s11_remote_ue_report_notification
+ *  @brief Remote UE Report Notification message
+ *
+ * The Remote UE Report Notification message shall sent on the S11 interface by
+ * the MME to the SGW as part of the Remote UE connection/disconnection procedure.
+ * The message shall also be sent on the S5/S8 interface by the SGW to the PGW.
+ * */
+ class itti_s11_remote_ue_report_notification   : public itti_s11_msg {
+public:
+  itti_s11_remote_ue_report_notification(const task_id_t origin, const task_id_t destination): itti_s11_msg(S11_REMOTE_UE_REPORT_NOTIFICATION, origin, destination) {
+  }
+  itti_s11_remote_ue_report_notification(const itti_s11_remote_ue_report_notification& i) : itti_s11_msg(i) {
+    gtp_ies = i.gtp_ies;
+  }
+  itti_s11_remote_ue_report_notification(const itti_s11_remote_ue_report_notification& i, const task_id_t orig, const task_id_t dest) :
+    itti_s11_msg(i, orig, dest)  {
+    gtp_ies = i.gtp_ies;
+  }
+  const char* get_msg_name() {return typeid(itti_s11_remote_ue_report_notification).name();};
+
+  gtpv2c::gtpv2c_remote_ue_report_notification gtp_ies;
+} ;
+
+//-----------------------------------------------------------------------------
+/** @class itti_s11_remote_ue_report_acknowledge
+ *  @brief Remote UE Report Acknowledge message
+ *
+ * The Remote UE Report Acknowledge message shall sent on the S11 interface by
+ * the SGW to the MME as part of the Remote UE connection/disconnection procedure.
+ * The message shall also be sent on the S5/S8 interface by the PGW to the SGW.
+ * */
+class itti_s11_remote_ue_report_acknowledge  : public itti_s11_msg {
+public:
+  itti_s11_remote_ue_report_acknowledge(const task_id_t origin, const task_id_t destination):
+    itti_s11_msg(S11_REMOTE_UE_REPORT_ACKNOWLEDGE, origin, destination) {
+  }
+  itti_s11_remote_ue_report_acknowledge(const itti_s11_remote_ue_report_acknowledge& i) : itti_s11_msg(i) {
+    gtp_ies = i.gtp_ies;
+  }
+  itti_s11_remote_ue_report_acknowledge(const itti_s11_remote_ue_report_acknowledge& i, const task_id_t orig, const task_id_t dest) :
+    itti_s11_msg(i, orig, dest)  {
+    gtp_ies = i.gtp_ies;
+  }
+  const char* get_msg_name() {return typeid(itti_s11_remote_ue_report_acknowledge).name();};
+
+  gtpv2c::gtpv2c_remote_ue_report_acknowledge gtp_ies;
+};
 
 #endif /* ITTI_MSG_S11_HPP_INCLUDED_ */

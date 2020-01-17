@@ -108,6 +108,39 @@ public:
 };
 
 //-----------------------------------------------------------------------------
+class itti_s5s8_remote_ue_report_notification : public itti_s5s8_msg {
+public:
+  itti_s5s8_remote_ue_report_notification(const task_id_t orig, const task_id_t dest):
+    itti_s5s8_msg(S5S8_REMOTE_UE_REPORT_NOTIFICATION, orig, dest) {}
+  itti_s5s8_remote_ue_report_notification(const itti_s5s8_remote_ue_report_notification& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies)  {}
+  itti_s5s8_remote_ue_report_notification(const itti_s5s8_remote_ue_report_notification& i, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_REMOTE_UE_REPORT_NOTIFICATION";};
+
+  gtpv2c::gtpv2c_remote_ue_report_notification gtp_ies;
+};
+
+//-----------------------------------------------------------------------------
+/** @class itti_s5s8_remote_ue_report_acknowledge_t
+ *  @brief Remote UE Report Acknowledge
+ *
+ * The Remote UE Report Acknowledge will be sent on S5S8 interface as
+ * part of these procedures:
+ * - Remote UE Report procedure
+ */
+class itti_s5s8_remote_ue_report_acknowledge  : public itti_s5s8_msg {
+public:
+  itti_s5s8_remote_ue_report_acknowledge(const task_id_t orig, const task_id_t dest):
+    itti_s5s8_msg(S5S8_REMOTE_UE_REPORT_ACKNOWLEDGE, orig, dest) {}
+  itti_s5s8_remote_ue_report_acknowledge(const itti_s5s8_remote_ue_report_acknowledge& i) : itti_s5s8_msg(i), gtp_ies(i.gtp_ies) {}
+  itti_s5s8_remote_ue_report_acknowledge(const itti_s5s8_remote_ue_report_acknowledge& i, const task_id_t orig, const task_id_t dest) :
+    itti_s5s8_msg(i, orig, dest), gtp_ies(i.gtp_ies) {}
+  const char* get_msg_name() {return "S5S8_REMOTE_UE_REPORT_ACKNOWLEDGE";};
+
+  gtpv2c::gtpv2c_remote_ue_report_acknowledge gtp_ies;
+};
+
+//-----------------------------------------------------------------------------
 /** @class itti_s5s8_create_bearer_request
  *  @brief Create Bearer Request
  *

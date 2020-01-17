@@ -66,6 +66,7 @@ public:
   virtual void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s5s8_downlink_data_notification& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
   virtual void handle_itti_msg (itti_s11_downlink_data_notification_acknowledge& resp);
+  virtual void handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
 };
 //------------------------------------------------------------------------------
 class sgw_eps_bearer_context;
@@ -187,6 +188,22 @@ public:
   std::shared_ptr<sgw_eps_bearer_context>                 ebc;
   std::shared_ptr<sgw_pdn_connection>                     pdn_connection;
 
+};
+
+//------------------------------------------------------------------------------
+class remote_ue_report_procedure : public sebc_procedure {
+public:
+  explicit remote_ue_report_procedure(itti_s11_remote_ue_report_notification& msg) : sebc_procedure(msg.gtpc_tx_id), msg(msg), ebc(nullptr) {}
+  int run(std::shared_ptr<sgw_eps_bearer_context> ebc);
+  void handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& rurack, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg (itti_s5s8_create_session_response& csresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_delete_session_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_modify_bearer_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_release_access_bearers_response& dsresp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc) {}
+  void handle_itti_msg (itti_s5s8_remote_peer_not_responding& resp, std::shared_ptr<sgw_eps_bearer_context> ebc, std::shared_ptr<sgw_pdn_connection> spc){}
+
+  itti_s11_remote_ue_report_notification msg;
+  std::shared_ptr<sgw_eps_bearer_context> ebc;
 };
 
 }

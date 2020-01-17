@@ -135,6 +135,19 @@ void sgw_eps_bearer_context::create_procedure(itti_s11_create_session_request& c
   }
 }
 //------------------------------------------------------------------------------
+void sgw_eps_bearer_context::create_procedure(itti_s11_remote_ue_report_notification& ruerepnot)
+{
+  remote_ue_report_procedure* p = new remote_ue_report_procedure(ruerepnot);
+  insert_procedure(p);
+  if (p->run(sgwc_app_inst->s11sgw_teid_2_sgw_eps_bearer_context(this->sgw_fteid_s11_s4_cp.teid_gre_key))) {
+    // TODO handle error code
+    Logger::sgwc_app().info( "S11 REMOTE_UE_REPORT_NOTIFICATION procedure failed");
+    remove_procedure(p);
+  } else {
+  }
+}
+//------------------------------------------------------------------------------
+
 void sgw_eps_bearer_context::create_procedure(itti_s11_modify_bearer_request& mbreq)
 {
   //Assuming actually that only one pdn_connection per modify bearer request
@@ -290,6 +303,17 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s11_modify_bearer_request& mb
   }
 }
 //------------------------------------------------------------------------------
+void sgw_eps_bearer_context::handle_itti_msg (itti_s11_remote_ue_report_notification& ruerepnot)
+{
+  shared_ptr<sebc_procedure> sp = find_procedure(ruerepnot.gtpc_tx_id);
+  if (sp.get()) {
+    Logger::sgwc_app().error("S11 REMOTE_UE_REPORT_NOTIFICATION ignored, existing procedure found gtpc_tx_id %d!", ruerepnot.gtpc_tx_id);
+    return;
+  } else {
+    create_procedure(ruerepnot);
+  }
+}
+//------------------------------------------------------------------------------
 void sgw_eps_bearer_context::handle_itti_msg (itti_s11_release_access_bearers_request& rabreq)
 {
   shared_ptr<sebc_procedure> sp = find_procedure(rabreq.gtpc_tx_id);
@@ -347,6 +371,20 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_create_session_response&
   }
 }
 //------------------------------------------------------------------------------
+void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& ruerack, std::shared_ptr<sgw_pdn_connection> spc)
+{
+  shared_ptr<sebc_procedure> sp = find_procedure(ruerack.gtpc_tx_id);
+  if (sp.get()) {
+    dynamic_pointer_cast<remote_ue_report_procedure>(sp)->handle_itti_msg(ruerack, shared_from_this(), spc);
+    if (sp.get()->marked_for_removal) {
+      remove_procedure(sp.get());
+    }
+  } else {
+    Logger::sgwc_app().debug("S5S8 REMOTE_UE_REPORT_ACKNOWLEDGE ignored, no procedure found gtpc_tx_id " PROC_ID_FMT "!", ruerack.gtpc_tx_id);
+  }
+}
+//------------------------------------------------------------------------------
+
 void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_modify_bearer_response& resp, std::shared_ptr<sgw_pdn_connection> spc)
 {
   shared_ptr<sebc_procedure> sp = find_procedure(resp.gtpc_tx_id);
@@ -398,6 +436,7 @@ void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_delete_session_response&
   }
 }
 //------------------------------------------------------------------------------
+
 void sgw_eps_bearer_context::handle_itti_msg (itti_s5s8_downlink_data_notification& ddn, std::shared_ptr<sgw_pdn_connection> spc)
 {
   shared_ptr<sebc_procedure> sp = find_procedure(ddn.gtpc_tx_id);

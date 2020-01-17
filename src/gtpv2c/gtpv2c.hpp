@@ -142,12 +142,14 @@ public:
 
   // Tunnel management messages
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_create_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
+  virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_remote_ue_report_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_delete_session_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_modify_bearer_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_release_access_bearers_request& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
   virtual uint32_t send_initial_message(const endpoint& r_endpoint, const teid_t r_teid, const teid_t l_teid, const gtpv2c_downlink_data_notification& gtp_ies, const task_id_t& task_id, const uint64_t gtp_tx_id);
 
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
+  virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_remote_ue_report_acknowledge& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);
   virtual void send_triggered_message(const endpoint& r_endpoint, const teid_t teid, const gtpv2c_release_access_bearers_response& gtp_ies, const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a = DELETE_TX);

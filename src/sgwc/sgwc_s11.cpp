@@ -77,7 +77,13 @@ void sgw_s11_task (void *args_p)
         sgw_s11_inst->send_msg(ref(*m));
       }
       break;
-
+    
+    case S11_REMOTE_UE_REPORT_ACKNOWLEDGE:
+      if (itti_s11_remote_ue_report_acknowledge* m = dynamic_cast<itti_s11_remote_ue_report_acknowledge*>(msg)) {
+        sgw_s11_inst->send_msg(ref(*m));
+      }
+      break;
+    
     case S11_DELETE_SESSION_RESPONSE:
       if (itti_s11_delete_session_response* m = dynamic_cast<itti_s11_delete_session_response*>(msg)) {
         sgw_s11_inst->send_msg(ref(*m));
@@ -142,6 +148,11 @@ void sgw_s11::send_msg(itti_s11_create_session_response& i)
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
+void sgw_s11::send_msg(itti_s11_remote_ue_report_acknowledge& i)
+{
+  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+}
+//------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_delete_session_response& i)
 {
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
@@ -184,6 +195,32 @@ void sgw_s11::handle_receive_create_session_request(gtpv2c_msg& msg, const endpo
   }
   // else ignore
 }
+
+//------------------------------------------------------------------------------
+void sgw_s11::handle_receive_remote_ue_report_notification(gtpv2c_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t gtpc_tx_id = 0;
+  gtpv2c_remote_ue_report_notification msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
+  if (!error) {
+    itti_s11_remote_ue_report_notification *itti_msg = new itti_s11_remote_ue_report_notification(TASK_SGWC_S11, TASK_SGWC_APP);
+    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->gtpc_tx_id = gtpc_tx_id;
+    itti_msg->teid = msg.get_teid();
+    std::shared_ptr<itti_s11_remote_ue_report_notification> i = std::shared_ptr<itti_s11_remote_ue_report_notification>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::sgwc_s11().error( "Could not send ITTI message %s to task TASK_SGWC_APP", i->get_msg_name());
+    }
+  }
+  // else ignore
+}
+
+
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_delete_session_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {
@@ -333,6 +370,12 @@ void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_
     handle_receive_create_session_request(msg, remote_endpoint);
   }
   break;
+
+case GTP_REMOTE_UE_REPORT_NOTIFICATION: {
+    handle_receive_remote_ue_report_notification(msg, remote_endpoint);
+  }
+  break;
+
   case GTP_MODIFY_BEARER_REQUEST: {
     handle_receive_modify_bearer_request(msg, remote_endpoint);
   }
@@ -363,7 +406,6 @@ void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg, const endpoint& remote_
   case GTP_DELETE_SESSION_RESPONSE:
   case GTP_CHANGE_NOTIFICATION_REQUEST:
   case GTP_CHANGE_NOTIFICATION_RESPONSE:
-  case GTP_REMOTE_UE_REPORT_NOTIFICATION:
   case GTP_REMOTE_UE_REPORT_ACKNOWLEDGE:
   case GTP_MODIFY_BEARER_COMMAND:
   case GTP_MODIFY_BEARER_FAILURE_INDICATION:

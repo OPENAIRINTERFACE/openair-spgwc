@@ -48,6 +48,7 @@ private:
   void handle_receive_modify_bearer_request(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
   void handle_receive_release_access_bearers_request(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
   void handle_receive_downlink_data_notification_acknowledge(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_remote_ue_report_notification(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint );
 
 public:
   sgw_s11();
@@ -58,6 +59,7 @@ public:
   void notify_ul_error(const endpoint& r_endpoint, const teid_t l_teid, const cause_value_e cause, const uint64_t gtpc_tx_id);
 
   void send_msg(itti_s11_create_session_response& m);
+  void send_msg(itti_s11_remote_ue_report_acknowledge& m);
   void send_msg(itti_s11_delete_session_response& m);
   void send_msg(itti_s11_modify_bearer_response& m);
   void send_msg(itti_s11_release_access_bearers_response& m);
