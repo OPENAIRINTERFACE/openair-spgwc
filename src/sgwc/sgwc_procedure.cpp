@@ -343,7 +343,7 @@ int remote_ue_report_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
   s5s8_ruer->l_teid = p->sgw_fteid_s5_s8_cp.teid_gre_key;
 
 // transfer IEs from S11 msg to S5 msg
- if (msg.gtp_ies.has_remote_ue_context_to_be_connected()) {
+ if (msg.gtp_ies.has_remote_ue_context_connected()) {
     for (auto i : msg.gtp_ies.remote_ue_context_connected) {
       remote_ue_context_connected_within_remote_ue_report_notification r = {};
       remote_user_id_t remoteuserid {}; if (i.get(remoteuserid)) r.set(remoteuserid);
@@ -355,7 +355,7 @@ int remote_ue_report_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
       //fteid_t s5s8_up_fteid = {};
       //if (i.get(s5s8_up_fteid)) b.set_s5_s8_u_sgw_fteid(s5s8_up_fteid);;
 
-      s5s8_ruer->gtp_ies.add_remote_ue_context_to_be_connected(r);
+      s5s8_ruer->gtp_ies.add_remote_ue_context_connected(r);
 
       //ebi_t cebi = {.ebi = ebi};
       //sgw_eps_bearer* eps_bearer = new sgw_eps_bearer();
@@ -365,11 +365,11 @@ int remote_ue_report_procedure::run(shared_ptr<sgw_eps_bearer_context> c)
       //spc->add_eps_bearer(std::shared_ptr<sgw_eps_bearer>(eps_bearer));
     }
   }
-  if (msg.gtp_ies.has_remote_ue_context_to_be_disconnected()) {
+  if (msg.gtp_ies.has_remote_ue_context_disconnected()) {
     for (auto i : msg.gtp_ies.remote_ue_context_disconnected) {
       remote_ue_context_disconnected_within_remote_ue_report_notification r = {};
       remote_user_id_t remoteuserid {}; if (i.get(remoteuserid)) r.set(remoteuserid);
-      s5s8_ruer->gtp_ies.add_remote_ue_context_to_be_disconnected(r);
+      s5s8_ruer->gtp_ies.add_remote_ue_context_disconnected(r);
 
       //ebi_t cebi = {.ebi = ebi};
       //std::shared_ptr<sgw_eps_bearer> seb = {};

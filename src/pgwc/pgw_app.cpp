@@ -248,6 +248,10 @@ void pgw_app_task (void*)
       }
       break;
 
+    case S5S8_REMOTE_UE_REPORT_NOTIFICATION:
+      pgw_app_inst->handle_itti_msg(std::static_pointer_cast<itti_s5s8_remote_ue_report_notification>(shared_msg));
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::pgwc_app().info( "TIME-OUT event timer id %d", to->timer_id);
@@ -524,6 +528,21 @@ void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_
     pc.get()->handle_itti_msg(smbreq);
   } else {
     Logger::pgwc_app().info("Received S5_S8 RELEASE_ACCESS_BEARERS_REQUEST with dest teid " TEID_FMT " unknown, no sender FTEID, discarded!", smbreq->teid);
+    return;
+  }
+}
+
+//------------------------------------------------------------------------------
+void pgw_app::handle_itti_msg (std::shared_ptr<itti_s5s8_remote_ue_report_notification> sruerepreq)
+{
+  Logger::pgwc_app().debug("Received S5_S8 REMOTE_UE_REPORT_NOTIFICATION teid " TEID_FMT "  gtpc_tx_id " PROC_ID_FMT " ", sruerepreq->teid, sruerepreq->gtpc_tx_id);
+
+  fteid_t l_fteid = build_s5s8_cp_fteid(pgw_cfg.s5s8_cp.addr4, sruerepreq->teid);
+  std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
+  if (pc.get()) {
+    pc.get()->handle_itti_msg(sruerepreq);
+  } else {
+    Logger::pgwc_app().info("Received S5_S8 REMOTE_UE_REPORT_NOTIFICATION with dest teid " TEID_FMT " unknown, no sender FTEID, discarded!", sruerepreq->teid);
     return;
   }
 }

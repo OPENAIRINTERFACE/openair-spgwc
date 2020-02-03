@@ -828,6 +828,60 @@ void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_reque
   }
   std::cout << toString() <<  std::endl;
 }
+
+//------------------------------------------------------------------------------
+void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_remote_ue_report_notification> s5_trigger)
+{
+  std::cout << toString() << std::endl;
+
+  itti_s5s8_remote_ue_report_notification* ruerepreq = s5_trigger.get();
+
+  //fteid_t sender_fteid = {};
+  //bool sender_fteid_present = mbreq->gtp_ies.get(sender_fteid);
+  //pdn_duo_t apn_pdn = {};
+  //std::shared_ptr<apn_context> sa = {};
+
+  std::shared_ptr<pgw_pdn_connection> sp = {};
+
+  //bool found = false;
+  //if (sender_fteid_present) {
+  //  found = find_pdn_connection(sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
+  //} else {
+  // found = find_pdn_connection(mbreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
+  //}
+  // if (found) {
+  //  sa = apn_pdn.first;
+  //sp = apn_pdn.second;
+
+  // if (sp.get()) {
+
+    remote_ue_report_procedure* proc = new remote_ue_report_procedure(sp);
+    std::shared_ptr<pgw_procedure> sproc = std::shared_ptr<pgw_procedure>(proc);
+    insert_procedure(sproc);
+    itti_s5s8_remote_ue_report_acknowledge *s5s8 = new itti_s5s8_remote_ue_report_acknowledge(TASK_PGWC_APP, TASK_PGWC_S5S8);
+    std::shared_ptr<itti_s5s8_remote_ue_report_acknowledge> s5_triggered_pending = std::shared_ptr<itti_s5s8_remote_ue_report_acknowledge>(s5s8);
+      //------
+      // GTPV2C-Stack 
+      //------
+    s5s8->gtpc_tx_id = s5_trigger->gtpc_tx_id;
+    s5s8->teid = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
+    s5s8->r_endpoint = s5_trigger->r_endpoint;
+
+    if (proc->run(s5_trigger, s5_triggered_pending, shared_from_this())) {
+        // error !
+    Logger::pgwc_app().info( "S5S8 REMOTE_UE_REPORT_NOTIFICATION procedure failed");
+    remove_procedure(proc);
+    }
+    //}
+ // } 
+  //else {
+   // if (sender_fteid_present) {
+     // pgw_app_inst->send_modify_bearer_response_cause_context_not_found (mbreq->gtpc_tx_id, sender_fteid.teid_gre_key, mbreq->r_endpoint);
+    //}
+  //}
+  std::cout << toString() <<  std::endl;
+}
+
 //------------------------------------------------------------------------------
 void pgw_context::handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> s5_trigger)
 {

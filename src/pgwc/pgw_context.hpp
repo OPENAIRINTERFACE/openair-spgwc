@@ -260,7 +260,7 @@ public:
 
   bool                  in_use;
   std::string           apn_in_use;               // The APN currently used, as received from the SGW.
-  ambr_t          apn_ambr;                 // APN AMBR: The maximum aggregated uplink and downlink MBR values to be shared across all Non-GBR bearers, which are established for this APN.
+  ambr_t                apn_ambr;                 // APN AMBR: The maximum aggregated uplink and downlink MBR values to be shared across all Non-GBR bearers, which are established for this APN.
   // APN Rate Control: The APN-Rate-Control limits the maximum number of uplink/downlink packets and the maximum number of
   //                   additional exception report packets per a specific time unit (e.g. minute, hour, day, week) for this APN. It includes an
   //                   indication as to whether or not Exception reports may still be sent when the limit has been met.
@@ -303,6 +303,7 @@ public:
   void handle_itti_msg (std::shared_ptr<itti_s5s8_delete_session_request> s5_trigger);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_modify_bearer_request> s5_trigger);
   void handle_itti_msg (std::shared_ptr<itti_s5s8_release_access_bearers_request> s5_trigger);
+  void handle_itti_msg (std::shared_ptr<itti_s5s8_remote_ue_report_notification> s5_trigger);
   void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& );
   void handle_itti_msg (itti_sxab_session_establishment_response& );
   void handle_itti_msg (itti_sxab_session_modification_response& );
@@ -313,7 +314,7 @@ public:
 
 
   imsi_t         imsi;                           // IMSI (International Mobile Subscriber Identity) is the subscriber permanent identity.
-  bool                 imsi_unauthenticated_indicator; // This is an IMSI indicator to show the IMSI is unauthenticated.
+  bool           imsi_unauthenticated_indicator; // This is an IMSI indicator to show the IMSI is unauthenticated.
   // TO BE CHECKED me_identity_t    me_identity;       // Mobile Equipment Identity (e.g. IMEI/IMEISV).
   msisdn_t               msisdn;                       // The basic MSISDN of the UE. The presence is dictated by its storage in the HSS.
   //  selected_cn_operator_id                          // Selected core network operator identity (to support networksharing as defined in TS 23.251

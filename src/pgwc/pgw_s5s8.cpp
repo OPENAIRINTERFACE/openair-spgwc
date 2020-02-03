@@ -86,6 +86,12 @@ void pgw_s5s8_task (void *args_p)
       }
       break;
 
+    case S5S8_REMOTE_UE_REPORT_ACKNOWLEDGE:
+      if (itti_s5s8_remote_ue_report_acknowledge* m = dynamic_cast<itti_s5s8_remote_ue_report_acknowledge*>(msg)) {
+        pgw_s5s8_inst->send_msg(ref(*m));
+      }
+      break;
+
     case TIME_OUT:
       if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
         Logger::pgwc_s5s8().debug( "TIME-OUT event timer id %d", to->timer_id);
@@ -142,6 +148,11 @@ void pgw_s5s8::send_msg(itti_s5s8_release_access_bearers_response& i)
   send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
+void pgw_s5s8::send_msg(itti_s5s8_remote_ue_report_acknowledge& i)
+{
+  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+}
+//------------------------------------------------------------------------------
 void pgw_s5s8::send_msg(itti_s5s8_downlink_data_notification& i)
 {
   send_initial_message(i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_PGWC_S5S8, i.gtpc_tx_id);
@@ -194,6 +205,31 @@ void pgw_s5s8::handle_receive_delete_session_request(gtpv2c_msg& msg, const endp
   }
   // else ignore
 }
+
+//------------------------------------------------------------------------------
+void pgw_s5s8::handle_receive_remote_ue_report_notification(gtpv2c_msg& msg, const endpoint& remote_endpoint)
+{
+  bool error = true;
+  uint64_t gtpc_tx_id = 0;
+  gtpv2c_remote_ue_report_notification msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_PGWC_S5S8, error, gtpc_tx_id);
+  if (!error) {
+    itti_s5s8_remote_ue_report_notification *itti_msg = new itti_s5s8_remote_ue_report_notification(TASK_PGWC_S5S8, TASK_PGWC_APP);
+    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->r_endpoint = remote_endpoint;
+    itti_msg->gtpc_tx_id = gtpc_tx_id;
+    itti_msg->teid = msg.get_teid();
+    std::shared_ptr<itti_s5s8_remote_ue_report_notification> i = std::shared_ptr<itti_s5s8_remote_ue_report_notification>(itti_msg);
+    int ret = itti_inst->send_msg(i);
+    if (RETURNok != ret) {
+      Logger::pgwc_s5s8().error( "Could not send ITTI message %s to task TASK_PGWC_APP", i->get_msg_name());
+    }
+  }
+  // else ignore
+}
+
 //------------------------------------------------------------------------------
 void pgw_s5s8::handle_receive_modify_bearer_request(gtpv2c_msg& msg, const endpoint& remote_endpoint)
 {

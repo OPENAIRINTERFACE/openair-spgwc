@@ -111,7 +111,7 @@ public:
   void async_send_to(const char* send_buffer, const ssize_t num_bytes, const endpoint& r_endpoint)
   {
     ssize_t bytes_written = sendto (socket_, send_buffer, num_bytes, 0, (struct sockaddr *)&r_endpoint.addr_storage, r_endpoint.addr_storage_len);
-    if (bytes_written != num_bytes) {
+  if (bytes_written != num_bytes) {
       Logger::udp().error( "sendto failed(%d:%s)\n", errno, strerror (errno));
     }   
   }
@@ -120,7 +120,7 @@ public:
   {
     ssize_t bytes_written = sendto (socket_, send_buffer, num_bytes, 0, (struct sockaddr *)&r_endpoint, sizeof(struct sockaddr_in));
     if (bytes_written != num_bytes) {
-      Logger::udp().error( "sendto failed(%d:%s)\n", errno, strerror (errno));
+        Logger::udp().error( "sendto failed(%d:%s)\n", errno, strerror (errno));
     }   
   }
 

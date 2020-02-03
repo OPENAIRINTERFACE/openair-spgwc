@@ -285,6 +285,47 @@ void session_establishment_procedure::handle_itti_msg (itti_sxab_session_establi
 }
 
 //------------------------------------------------------------------------------
+int remote_ue_report_procedure::run(std::shared_ptr<itti_s5s8_remote_ue_report_notification>& req,
+    std::shared_ptr<itti_s5s8_remote_ue_report_acknowledge>& resp,
+    std::shared_ptr<pgwc::pgw_context> pc)
+    {
+     bool send_sx = false;
+
+  // TODO check if compatible with ongoing procedures if any
+  pfcp::node_id_t up_node_id = {};
+  if (not pfcp_associations::get_instance().select_up_node(up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
+    // TODO
+    ::cause_t cause = {};
+    cause.pce = 1;
+    cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
+    resp->gtp_ies.set(cause);
+    return RETURNerror;
+  }
+
+//-------------------
+  s5_trigger = req;
+  s5_triggered_pending = resp;
+  s5_triggered_pending->gtpc_tx_id = req->gtpc_tx_id;
+  itti_sxab_session_modification_request *sx_smr = new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
+  sx_smr->seid = ppc->up_fseid.seid;
+  sx_smr->trxn_id = this->trxn_id;
+  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
+  sx_triggered = std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
+  
+//-------------------
+
+//for (auto it : s5_trigger->gtp_ies.remote_ue_context_connected) {
+//gtpv2c::remote_ue_context_connected_within_remote_ue_report_notification bcc = {};
+//s5_triggered_pending->gtp_ies.add_remote_ue_context_connected(bcc); 
+//continue;
+
+
+//}
+
+    }
+
+
+//------------------------------------------------------------------------------
 int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request>& req,
     std::shared_ptr<itti_s5s8_modify_bearer_response>& resp,
     std::shared_ptr<pgwc::pgw_context> pc)
@@ -331,7 +372,7 @@ int modify_bearer_procedure::run(std::shared_ptr<itti_s5s8_modify_bearer_request
       Logger::pgwc_app().error( "modify_bearer_procedure: missing pgw_eps_bearer ebi %d", it.eps_bearer_id.ebi);
       ::cause_t cause = {};
       cause.pce = 1;
-      // TODO cause
+      // TODO cause`
       cause.cause_value = SYSTEM_FAILURE;
       resp->gtp_ies.set(cause);
 

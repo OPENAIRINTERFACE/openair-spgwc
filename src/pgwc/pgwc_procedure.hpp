@@ -65,7 +65,9 @@ public:
   virtual void handle_itti_msg (itti_sxab_session_establishment_response& resp) {}
   virtual void handle_itti_msg (itti_sxab_session_modification_response& resp) {}
   virtual void handle_itti_msg (itti_sxab_session_deletion_response& resp) {}
-  virtual void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& resp) {}
+  virtual void handle_itti_msg (itti_s5s8_downlink_data_notification_acknowledge& resp) {} 
+  virtual void handle_itti_msg (itti_s5s8_remote_ue_report_acknowledge& resp) {}
+
 };
 
 
@@ -128,6 +130,26 @@ public:
   std::shared_ptr<pgw_pdn_connection>                     ppc;
   std::shared_ptr<pgwc::pgw_context>                      pc;
 };
+
+//------------------------------------------------------------------------------
+class remote_ue_report_procedure : public pgw_procedure {
+public:
+  explicit remote_ue_report_procedure(std::shared_ptr<pgw_pdn_connection>& sppc) : pgw_procedure(), ppc(sppc),
+      sx_triggered(), s5_triggered_pending(), s5_trigger() {}
+  int run(std::shared_ptr<itti_s5s8_remote_ue_report_notification>& req,
+          std::shared_ptr<itti_s5s8_remote_ue_report_acknowledge>&resp,
+          std::shared_ptr<pgwc::pgw_context> pc);
+  //void handle_itti_msg (itti_sxab_session_modification_response& resp);
+
+  //~remote_ue_report_procedure() {}
+
+  std::shared_ptr<itti_s5s8_remote_ue_report_notification>      s5_trigger;
+  std::shared_ptr<itti_s5s8_remote_ue_report_acknowledge>       s5_triggered_pending;
+  std::shared_ptr<itti_sxab_session_modification_request>       sx_triggered;
+  std::shared_ptr<pgw_pdn_connection>                           ppc;
+  std::shared_ptr<pgwc::pgw_context>                            pc;
+};
+
 //------------------------------------------------------------------------------
 class release_access_bearers_procedure : public pgw_procedure {
 public:

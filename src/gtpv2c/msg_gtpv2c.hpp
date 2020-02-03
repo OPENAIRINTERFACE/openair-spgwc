@@ -3745,14 +3745,14 @@ gtpv2c_remote_ue_report_notification& operator=(gtpv2c_remote_ue_report_notifica
     }
 static const char* get_msg_name() {return "REMOTE_UE_REPORT_NOTIFICATION";};
 
-  bool has_remote_ue_context_to_be_connected() const {if (ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED) return true; else return false;}
-  bool has_remote_ue_context_to_be_disconnected() const {if (ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED) return true; else return false;}
+  bool has_remote_ue_context_connected() const {if (ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED) return true; else return false;}
+  bool has_remote_ue_context_disconnected() const {if (ie_presence_mask & GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED) return true; else return false;}
   
-  void add_remote_ue_context_to_be_connected(const remote_ue_context_connected_within_remote_ue_report_notification& v) {
+  void add_remote_ue_context_connected(const remote_ue_context_connected_within_remote_ue_report_notification& v) {
       remote_ue_context_connected.push_back(v);
       ie_presence_mask |= GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_CONNECTED;
   }
-  void add_remote_ue_context_to_be_disconnected(const remote_ue_context_disconnected_within_remote_ue_report_notification& v) {
+  void add_remote_ue_context_disconnected(const remote_ue_context_disconnected_within_remote_ue_report_notification& v) {
       remote_ue_context_disconnected.push_back(v);
       ie_presence_mask |= GTPV2C_REMOTE_UE_REPORT_NOTIFICATION_PR_IE_REMOTE_UE_CONTEXT_DISCONNECTED;
   }
@@ -3760,12 +3760,12 @@ static const char* get_msg_name() {return "REMOTE_UE_REPORT_NOTIFICATION";};
     switch (instance) {
     case 0: {
         remote_ue_context_connected_within_remote_ue_report_notification b(v);
-        add_remote_ue_context_to_be_connected(b);
+        add_remote_ue_context_connected(b);
       }
       break;
     case 1: {
         remote_ue_context_disconnected_within_remote_ue_report_notification b(v);
-        add_remote_ue_context_to_be_disconnected(b);
+        add_remote_ue_context_disconnected(b);
       }
       break;
     default:

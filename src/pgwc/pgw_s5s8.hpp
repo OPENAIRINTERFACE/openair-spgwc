@@ -46,6 +46,7 @@ private:
   void handle_receive_modify_bearer_request(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
   void handle_receive_release_access_bearers_request(gtpv2c::gtpv2c_msg& msg, const endpoint& r_endpoint);
   void handle_receive_downlink_data_notification_acknowledge(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
+  void handle_receive_remote_ue_report_notification(gtpv2c::gtpv2c_msg& msg, const endpoint& remote_endpoint);
 
 public:
   pgw_s5s8();
@@ -60,6 +61,8 @@ public:
   void send_msg(itti_s5s8_modify_bearer_response& m);
   void send_msg(itti_s5s8_release_access_bearers_response& m);
   void send_msg(itti_s5s8_downlink_data_notification& i);
+  void send_msg(itti_s5s8_remote_ue_report_acknowledge& m);
+
 
   void time_out_itti_event(const uint32_t timer_id);
 };
