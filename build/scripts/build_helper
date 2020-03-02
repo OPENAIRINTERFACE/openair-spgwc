@@ -39,7 +39,14 @@ case "$OS_DISTRO" in
   ubuntu) OS_BASEDISTRO="debian"; INSTALLER="apt-get"; CMAKE="cmake" ;;
 esac
 
-SUDO='sudo -S -E'
+IS_CONTAINER=`egrep -c "docker|kubepods" /proc/self/cgroup`
+
+if [ $IS_CONTAINER -eq 0 ]
+then
+  SUDO='sudo -S -E'
+else
+  SUDO=''
+fi
 
 ###############################
 ## echo and  family
