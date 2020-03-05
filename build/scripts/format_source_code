@@ -1,0 +1,29 @@
+#!/bin/bash
+THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
+
+DEFAULT_DIR="$THIS_SCRIPT_PATH/../../src"
+
+if [ $# -eq 1 ] ; then
+  SRC_DIR=$1
+else
+  SRC_DIR=$DEFAULT_DIR
+fi
+
+# Current working dir
+if [ ! -d $SRC_DIR ]; then
+  echo "$SRC_DIR does not exist!"
+  SRC_DIR=`pwd`
+  read -p "Do you want format source code in this current working dir $SRC_DIR ? <y/N> " prompt
+  if [[ $prompt =~ [nN](o)* ]]
+  then
+    exit 0
+  fi
+fi
+
+echo "Formating source code in $SRC_DIR ..."
+find $SRC_DIR -iname *.h -o -iname *.c \
+     -o -iname *.cc  -o -iname *.hh \
+     -o -iname "*.[hc]pp"  \
+    | xargs clang-format -style=file -i -fallback-style=none
+echo "Formating source code in $SRC_DIR done"
+
