@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,13 +40,13 @@
  */
 typedef struct protocol_configuration_options_ids_s {
   // Protocol identifiers (from configuration protocol options list)
-  uint8_t pi_ipcp: 1;
+  uint8_t pi_ipcp : 1;
 
   // Container identifiers (from additional parameters list)
-  uint8_t ci_dns_server_ipv4_address_request: 1;
-  uint8_t ci_ip_address_allocation_via_nas_signalling: 1;
-  uint8_t ci_ipv4_address_allocation_via_dhcpv4: 1;
-  uint8_t ci_ipv4_link_mtu_request: 1;
+  uint8_t ci_dns_server_ipv4_address_request : 1;
+  uint8_t ci_ip_address_allocation_via_nas_signalling : 1;
+  uint8_t ci_ipv4_address_allocation_via_dhcpv4 : 1;
+  uint8_t ci_ipv4_link_mtu_request : 1;
 } protocol_configuration_options_ids_t;
 
 #endif

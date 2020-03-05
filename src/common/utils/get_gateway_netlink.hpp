@@ -31,7 +31,7 @@
 #include <string>
 
 namespace util {
-  bool get_iface_l2_addr(const std::string& iface, std::string& mac);
-  bool get_gateway_and_iface(std::string& gw, std::string& iface);
-}
+bool get_iface_l2_addr(const std::string& iface, std::string& mac);
+bool get_gateway_and_iface(std::string& gw, std::string& iface);
+}  // namespace util
 #endif /* FILE_GET_GATEWAY_NETLINK_HPP_SEEN */

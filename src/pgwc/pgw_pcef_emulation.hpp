@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -20,21 +20,21 @@
  */
 
 /*! \file pgw_pcef_emulation.hpp
-* \brief
-* \author Lionel Gauthier
-* \company Eurecom
-* \email: lionel.gauthier@eurecom.fr
-*/
+ * \brief
+ * \author Lionel Gauthier
+ * \company Eurecom
+ * \email: lionel.gauthier@eurecom.fr
+ */
 
 #ifndef FILE_PGW_PCEF_EMULATION_SEEN
 #define FILE_PGW_PCEF_EMULATION_SEEN
 
 #include <stdbool.h>
 
-#include "queue.h"
 #include "3gpp_24.007.h"
 #include "3gpp_24.008.h"
 #include "3gpp_29.274.h"
+#include "queue.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,7 +55,7 @@ typedef enum {
 } pf_id_t;
 
 typedef enum {
-  SDF_ID_MIN = (EPS_BEARER_IDENTITY_LAST+1),
+  SDF_ID_MIN = (EPS_BEARER_IDENTITY_LAST + 1),
   SDF_ID_GBR_VOLTE_16K,
   SDF_ID_GBR_VOLTE_24K,
   SDF_ID_GBR_VOLTE_40K,
@@ -75,39 +75,48 @@ typedef enum {
   SDF_ID_MAX
 } sdf_id_t;
 
+typedef struct packet_filter_s sdf_filter_t;
 
-typedef struct packet_filter_s   sdf_filter_t;
-
-
-// Each service data flow template may contain any number of service data flow filters;
+// Each service data flow template may contain any number of service data flow
+// filters;
 typedef struct sdf_template_s {
-  uint8_t                        number_of_packet_filters;
+  uint8_t number_of_packet_filters;
 #define SERVICE_DATA_FLOW_TEMPLATE_NB_PACKET_FILTERS_MAX 8
-  sdf_filter_t                   sdf_filter[SERVICE_DATA_FLOW_TEMPLATE_NB_PACKET_FILTERS_MAX];
-  // Our understanding is the following: For non GBR different SDF filters can map to same SDF if they have the same QCI and ARP.
-  // SDFs (or aggregation of SDFs) with the same QCI and ARP can be delivered through the same EPS bearer.
+  sdf_filter_t sdf_filter[SERVICE_DATA_FLOW_TEMPLATE_NB_PACKET_FILTERS_MAX];
+  // Our understanding is the following: For non GBR different SDF filters can
+  // map to same SDF if they have the same QCI and ARP. SDFs (or aggregation of
+  // SDFs) with the same QCI and ARP can be delivered through the same EPS
+  // bearer.
 } sdf_template_t;
 
-// Each PCC rule contains a service data flow template, which defines the data for the service data flow detection
+// Each PCC rule contains a service data flow template, which defines the data
+// for the service data flow detection
 typedef struct pcc_rule_s {
-  bstring        name;
-  bool           is_activated;
-  sdf_id_t       sdf_id;
+  bstring name;
+  bool is_activated;
+  sdf_id_t sdf_id;
   sdf_template_t sdf_template;
-  bearer_qos_t   bearer_qos;
-  uint32_t       precedence;
+  bearer_qos_t bearer_qos;
+  uint32_t precedence;
   STAILQ_ENTRY(pcc_rule_s) entries;
 } pcc_rule_t;
 
 struct pgw_config_s;
 
-int pgw_pcef_emulation_init (const struct pgw_config_s * const pgw_config_p);
-void pgw_pcef_emulation_exit (void);
-void pgw_pcef_emulation_apply_rule(const sdf_id_t sdf_id, const struct pgw_config_s * const pgw_config_p);
-void pgw_pcef_emulation_apply_sdf_filter(sdf_filter_t   * const sdf_f, const sdf_id_t sdf_id, const struct pgw_config_s * const pgw_config_p);
-bstring pgw_pcef_emulation_packet_filter_2_iptable_string(packet_filter_contents_t * const packetfiltercontents, uint8_t direction);
-int pgw_pcef_get_sdf_parameters (const sdf_id_t sdf_id, bearer_qos_t * const bearer_qos, packet_filter_t * const packet_filter, uint8_t * const num_pf);
-pcc_rule_t*  pgw_pcef_get_rule_by_id(const sdf_id_t sdf_id);
+int pgw_pcef_emulation_init(const struct pgw_config_s* const pgw_config_p);
+void pgw_pcef_emulation_exit(void);
+void pgw_pcef_emulation_apply_rule(
+    const sdf_id_t sdf_id, const struct pgw_config_s* const pgw_config_p);
+void pgw_pcef_emulation_apply_sdf_filter(
+    sdf_filter_t* const sdf_f, const sdf_id_t sdf_id,
+    const struct pgw_config_s* const pgw_config_p);
+bstring pgw_pcef_emulation_packet_filter_2_iptable_string(
+    packet_filter_contents_t* const packetfiltercontents, uint8_t direction);
+int pgw_pcef_get_sdf_parameters(const sdf_id_t sdf_id,
+                                bearer_qos_t* const bearer_qos,
+                                packet_filter_t* const packet_filter,
+                                uint8_t* const num_pf);
+pcc_rule_t* pgw_pcef_get_rule_by_id(const sdf_id_t sdf_id);
 
 #ifdef __cplusplus
 }

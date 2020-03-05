@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,14 +29,14 @@
 #ifndef FILE_SERIALIZABLE_HPP_SEEN
 #define FILE_SERIALIZABLE_HPP_SEEN
 
-#include <string>
 #include <iostream>
+#include <string>
 
 class stream_serializable {
-public:
-  virtual void dump_to(std::ostream& os)  = 0;
+ public:
+  virtual void dump_to(std::ostream& os) = 0;
   virtual void load_from(std::istream& is) = 0;
-  //virtual ~serializable() = 0;
+  // virtual ~serializable() = 0;
 };
 
 #endif /* FILE_SERIALIZABLE_HPP_SEEN */
