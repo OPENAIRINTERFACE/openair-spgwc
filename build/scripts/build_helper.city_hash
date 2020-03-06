@@ -19,7 +19,7 @@
 #      contact@openairinterface.org
 ################################################################################
 
-# file build_helper.fb_folly
+# file build_helper.city_hash
 # brief
 # author Lionel GAUTHIER
 #
@@ -30,10 +30,10 @@ source $THIS_SCRIPT_PATH/build_helper
 
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
-install_fb_folly_from_git(){
+install_city_hash_from_git(){
   if [ $1 -eq 0 ]; then
     OPTION=""
-    read -p "Do you want to install FaceBook folly (github)? <y/N> " prompt
+    read -p "Do you want to install google city hash (github)? <y/N> " prompt
   else
     prompt='y'
     OPTION="-y"
@@ -47,60 +47,21 @@ install_fb_folly_from_git(){
 
   if [[ $prompt =~ [yY](es)* ]]
   then
- 
-    $SUDO apt-get install $OPTION \
-      g++ \
-      cmake \
-      libboost-all-dev \
-      libevent-dev \
-      libdouble-conversion-dev \
-      libgoogle-glog-dev \
-      libgflags-dev \
-      libiberty-dev \
-      liblz4-dev \
-      liblzma-dev \
-      libsnappy-dev \
-      make \
-      zlib1g-dev \
-      binutils-dev \
-      libjemalloc-dev \
-      libssl-dev \
-      pkg-config
-    ret=$?;[[ $ret -ne 0 ]] && return $ret
-
     pushd /tmp
-
+    $SUDO rm -rf /tmp/cityhash
+    git clone https://github.com/google/cityhash.git
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    cd cityhash
+    git checkout 8af9b8c2b889d80c22d6bc26ba0df1afb79a30db
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    ./configure
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     if [ $debug -eq 1 ]; then
-      # For advanced debugging options
-      $SUDO apt-get install $OPTION \
-        libunwind8-dev \
-        libelf-dev \
-        libdwarf-dev
-      ret=$?;[[ $ret -ne 0 ]] && return $ret
-      
-      wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz && \
-      tar zxf release-1.8.0.tar.gz && \
-      rm -f release-1.8.0.tar.gz && \
-      cd googletest-release-1.8.0 && \
-      cmake . && \
-      make && \
-      $SUDO make install
-      ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
-      cd ..
+      make all check CXXFLAGS="-g -O3"
+    else
+      make all check CXXFLAGS="-O3"
     fi
-
-    
-    $SUDO rm -rf /tmp/folly
-    git clone https://github.com/facebook/folly.git
-    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
-    cd folly
-    git checkout -f v2019.11.11.00
-    mkdir _build && cd _build
-    cmake  ..
-    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
-    make -j $(nproc)
-    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
-    $SUDO make install
+    sudo make install
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
   fi

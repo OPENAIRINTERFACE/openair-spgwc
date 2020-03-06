@@ -30,8 +30,10 @@
 SCRIPT=$(readlink -f ${BASH_SOURCE})
 THIS_SCRIPT_PATH=`dirname $SCRIPT`
 source $THIS_SCRIPT_PATH/build_helper
+source $THIS_SCRIPT_PATH/build_helper.city_hash
 source $THIS_SCRIPT_PATH/build_helper.libconfig
 source $THIS_SCRIPT_PATH/build_helper.fb_folly
+source $THIS_SCRIPT_PATH/build_helper.modycamel
 
 #-------------------------------------------------------------------------------
 #arg1 is force (0 or 1) (no interactive script)
@@ -226,12 +228,17 @@ check_install_spgwc_deps() {
   #install_fmt $1
   #ret=$?;[[ $ret -ne 0 ]] && return $ret
 
-  install_fb_folly_from_source $1 $2
+  install_fb_folly_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
   install_spdlog_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
+  install_modycamel_from_git $1 $2
+  ret=$?;[[ $ret -ne 0 ]] && return $ret
+
+  install_city_hash_from_git  $1 $2
+  ret=$?;[[ $ret -ne 0 ]] && return $ret
   return 0
 }
 #-------------------------------------------------------------------------------
