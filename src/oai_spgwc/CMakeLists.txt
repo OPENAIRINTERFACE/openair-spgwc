@@ -277,9 +277,6 @@ ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common/utils ${CMAKE_CURR
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/gtpv2c ${CMAKE_CURRENT_BINARY_DIR}/gtpv2c)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/pfcp ${CMAKE_CURRENT_BINARY_DIR}/pfcp)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/udp ${CMAKE_CURRENT_BINARY_DIR}/udp)
-if(${SGW_AUTOTEST})
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/gtpv1u ${CMAKE_CURRENT_BINARY_DIR}/gtpv1u)
-endif(${SGW_AUTOTEST})
 
 #ENABLE_TESTING()
 #ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/test ${CMAKE_CURRENT_BINARY_DIR}/test)
@@ -289,17 +286,33 @@ endif(${SGW_AUTOTEST})
 
 add_definitions("-DPACKAGE_NAME=\"SPGW-C\"")
 
-include_directories(${SRC_TOP_DIR}/pgwc)
-include_directories(${SRC_TOP_DIR}/oai_spgwc)
 include_directories(${SRC_TOP_DIR}/common)
-include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/common/msg)
 include_directories(${SRC_TOP_DIR}/common/utils)
 include_directories(${SRC_TOP_DIR}/gtpv2c)
+include_directories(${SRC_TOP_DIR}/itti)
+include_directories(${SRC_TOP_DIR}/oai_spgwc)
 include_directories(${SRC_TOP_DIR}/pfcp)
-include_directories(${SRC_TOP_DIR}/sgwc)
 include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+
+add_library (SPGWC STATIC
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_app.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_config.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_context.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_pfcp_association.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_pco.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_s5s8.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgwc_procedure.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgwc_sxab.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_app.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_config.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_eps_bearer_context.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_pdn_connection.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_procedure.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_s11.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_s5s8.cpp
+  )
 
 add_executable(spgwc
   ${SRC_TOP_DIR}/oai_spgwc/main.cpp
@@ -319,5 +332,5 @@ if(${SGW_AUTOTEST})
   SET(GTPV1U_LIB GTPV1U)
 endif(${SGW_AUTOTEST})
 
-target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SGWC PGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
+target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SPGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
 

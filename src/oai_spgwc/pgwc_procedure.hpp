@@ -215,6 +215,6 @@ class downlink_data_report_procedure : public pgw_procedure {
 };
 
 }  // namespace pgwc
-#include "../pgwc/pgw_context.hpp"
+#include "pgw_context.hpp"
 
 #endif
