@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -40,13 +40,12 @@
 // Configure-Nak, Configure-Reject, Terminate-Request, Terminate-Ack
 // and Code-Reject) are used. Other Codes should be treated as
 // unrecognized and should result in Code-Rejects.
-#define IPCP_CODE_CONFIGURE_REQUEST                                     (0x01)
-#define IPCP_CODE_CONFIGURE_ACK                                         (0x02)
-#define IPCP_CODE_CONFIGURE_NACK                                        (0x03)
-#define IPCP_CODE_CONFIGURE_REJECT                                      (0x04)
-#define IPCP_CODE_TERMINATE_REQUEST                                     (0x05)
-#define IPCP_CODE_TERMINATE_ACK                                         (0x06)
-#define IPCP_CODE_REJECT                                                (0x07)
-
+#define IPCP_CODE_CONFIGURE_REQUEST (0x01)
+#define IPCP_CODE_CONFIGURE_ACK (0x02)
+#define IPCP_CODE_CONFIGURE_NACK (0x03)
+#define IPCP_CODE_CONFIGURE_REJECT (0x04)
+#define IPCP_CODE_TERMINATE_REQUEST (0x05)
+#define IPCP_CODE_TERMINATE_ACK (0x06)
+#define IPCP_CODE_REJECT (0x07)
 
 #endif

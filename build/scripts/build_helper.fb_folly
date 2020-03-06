@@ -94,6 +94,7 @@ install_fb_folly_from_source(){
     git clone https://github.com/facebook/folly.git
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     cd folly
+    git checkout -f v2019.11.11.00
     mkdir _build && cd _build
     cmake  ..
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret

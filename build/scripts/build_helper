@@ -39,8 +39,14 @@ case "$OS_DISTRO" in
   ubuntu) OS_BASEDISTRO="debian"; INSTALLER="apt-get"; CMAKE="cmake" ;;
 esac
 
-SUDO='sudo -S -E'
+IS_CONTAINER=`egrep -c "docker|kubepods" /proc/self/cgroup`
 
+if [ $IS_CONTAINER -eq 0 ]
+then
+  SUDO='sudo -S -E'
+else
+  SUDO=''
+fi
 ###############################
 ## echo and  family
 ###############################
@@ -54,7 +60,6 @@ cyan='\E[36m'
 white='\E[37m'
 reset_color='\E[00m'
 COLORIZE=1
-
 #-------------------------------------------------------------------------------
 cecho()  {
     # Color-echo
@@ -67,13 +72,11 @@ cecho()  {
     echo -e "$message"
     return
 }
-
 echo_error()   { cecho "$*" $red          ;}
 echo_fatal()   { cecho "$*" $red; exit -1 ;}
 echo_warning() { cecho "$*" $yellow       ;}
 echo_success() { cecho "$*" $green        ;}
 echo_info()    { cecho "$*" $blue         ;}
-
 #-------------------------------------------------------------------------------
 # From https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
 # arg1 is a dotted (or not) version number (ex 4.10.6.56-ubunutu) 
@@ -101,7 +104,6 @@ version_gt() {
 ########################
 # distribution helpers #
 ########################
-
 #-------------------------------------------------------------------------------
 # This function return a string to identify the distribution we are running
 # If we can't check the distribution, it returns "Unknown"
@@ -126,35 +128,13 @@ check_supported_distribution() {
     esac
     return 1
 }
-
 ###########################
 # Cleaners
 ###########################
-
-#-------------------------------------------------------------------------------
-clean_kernel() {
-  $SUDO modprobe ip_tables
-  $SUDO modprobe x_tables
-  $SUDO iptables -P INPUT ACCEPT
-  $SUDO iptables -F INPUT
-  $SUDO iptables -P OUTPUT ACCEPT
-  $SUDO iptables -F OUTPUT
-  $SUDO iptables -P FORWARD ACCEPT
-  $SUDO iptables -F FORWARD
-  $SUDO iptables -t nat -F
-  $SUDO iptables -t mangle -F
-  $SUDO iptables -t filter -F
-  $SUDO iptables -t raw -F
-  echo_info "Flushed iptables"
-}
-
-
 #-------------------------------------------------------------------------------
 disable_ipv6() {
   $SUDO sysctl -w net.ipv6.conf.all.disable_ipv6=1
 }
-
-
 #-------------------------------------------------------------------------------
 # Compare two versions of software. Returns true if $version is greater than $req_version
 # arg1 = version
@@ -163,12 +143,9 @@ disable_ipv6() {
 function version_gt() { 
   test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; 
 }
-
-
 ###################################
 # Compilers
 ###################################
-
 # From https://stackoverflow.com/a/20473191
 # test if a list include item
 # arg1 is list, ex "item1 item2 ..."
@@ -212,11 +189,9 @@ compilations() {
      return 1
   fi
 }
-
 ###################################
 # make test
 ###################################
-
 # arg 1 Build directory OPENAIRCN_DIR/build/?/build
 # arg 2 Executable target name
 # arg 3 Executable name (no path)
@@ -235,7 +210,6 @@ make_test() {
   fi
   echo_success "unit tests end"
 }
-
 #-------------------------------------------------------------------------------
 # arg1 is package name
 test_install_package() {
@@ -249,8 +223,6 @@ test_install_package() {
     }
   fi
 }
-
-
 #-------------------------------------------------------------------------------
 update_package_db() {
   if [ ! -f /tmp/no_more_update_package_db ]; then
@@ -269,7 +241,6 @@ update_package_db() {
   fi
   return 0
 }
-
 #-------------------------------------------------------------------------------
 check_enable_epel_repos() {
   # on Enterprise Linuxes, ensure EPEL repos are installed
@@ -283,8 +254,6 @@ check_enable_epel_repos() {
     fi
   fi
 }
-
-
 ################################
 # set_openair_env
 ###############################
@@ -293,9 +262,9 @@ set_openair_env(){
   fullpath=`readlink -f $BASH_SOURCE`
   [ -f "/.$fullpath" ] || fullpath=`readlink -f $PWD/$fullpath`
   openair_path=${fullpath%/build/*}
-  openair_path=${openair_path%/scripts/*}
-  openair_path=${openair_path%/src/nas/*}
-  openair_path=${openair_path%/src/s6a/*}
+  openair_path=${openair_path%/build/scripts/*}
+  openair_path=${openair_path%/src/pfcp/*}
+  openair_path=${openair_path%/src/oai_spgwc/*}
   export OPENAIRCN_DIR=$openair_path
 }
 

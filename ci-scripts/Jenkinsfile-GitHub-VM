@@ -1,0 +1,468 @@
+#!/bin/groovy
+/*
+ * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The OpenAirInterface Software Alliance licenses this file to You under
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this file
+ * except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.openairinterface.org/?page_id=698
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *-------------------------------------------------------------------------------
+ * For more information about the OpenAirInterface (OAI) Software Alliance:
+ *      contact@openairinterface.org
+ */
+
+// Abstraction function to send social media messages:
+// like on Slack or Mattermost
+def sendSocialMediaMessage(pipeChannel, pipeColor, pipeMessage) {
+    if (params.pipelineUsesSlack != null) {
+        if (params.pipelineUsesSlack) {
+            slackSend channel: pipeChannel, color: pipeColor, message: pipeMessage
+        }
+    }
+}
+
+// Location of the CN executor node 
+def cn_ci_host = params.Host_CN_CI_Server
+
+// Name of the VM resources
+def cn_ci_resource = params.VM_Resources
+
+//--------------------------------------------------------
+// Pipeline start
+pipeline {
+    agent {
+        label cn_ci_host
+    }
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+        ansiColor('xterm')
+        lock (cn_ci_resource)
+    }
+    environment {
+        // Some of these parameters will move to GUI Job configuration
+        dns1 = "192.168.106.10"
+        dns2 = "192.168.106.12"
+        vm_display = "False"
+        mme_vm_template = "oai-ci-cn-mme"
+        hss_vm_template = "oai-ci-cn-hss"
+        spgwc_vm_template = "oai-ci-cn-spgwc"
+        spgwu_vm_template = "oai-ci-cn-spgwu"
+        MYPYTHONPATH="${WORKSPACE}/ci-scripts/python/oaicnci/"
+    }
+
+    stages {
+        stage ('Verify Parameters') {
+            steps {
+                script {
+                    echo '\u2705 \u001B[32mVerify Parameters\u001B[0m'
+                    echo "Node       is ${NODE_NAME}"
+                    echo "Git URL    is ${GIT_URL}"
+
+                    removeGitHubInfo()
+                    if (env.ghprbPullId != null) {
+                        echo "======= THIS IS A PULL REQUEST ======"
+                        echo "PR ID      is ${env.ghprbPullId}"
+                        echo "PR LINK    is ${env.ghprbPullLink}"
+                        echo "PR TITLE   is ${env.ghprbPullTitle}"
+                        sh "./scripts/doGitHubPullRequestTempMerge.sh --src-branch ${env.ghprbSourceBranch} --src-commit ${env.ghprbActualCommit} --target-branch ${env.ghprbTargetBranch} --target-commit ${GIT_COMMIT}"
+                        sh "sleep 10"
+                    } else {
+                        echo "======= THIS IS A PUSH EVENT ======"
+                        echo "Git Branch is ${GIT_BRANCH}"
+                        echo "Git Commit is ${GIT_COMMIT}"
+                        // Making a hard copy of the SHA-ONE
+                        getCommitSha()
+                    }
+
+                    echo "Git Branch is ${GIT_BRANCH}"
+                    echo "Git Commit is ${GIT_COMMIT}"
+
+                    def allParametersPresent = true
+
+                    if (params.ToolGitLabRepository_Credentials == null) {
+                        allParametersPresent = false
+                    }
+                    if (params.ToolGitLabRepository_Tag == null) {
+                        allParametersPresent = false
+                    }
+                    if (allParametersPresent) {
+                        sh "sudo git clean -x -d -f > /dev/null 2>&1"
+                        if (fileExists("ci-scripts")) {
+                            sh "sudo rm -Rf ci-scripts > /dev/null 2>&1"
+                        }
+                        if (fileExists("ci-cn")) {
+                            sh "sudo rm -Rf ci-cn > /dev/null 2>&1"
+                        }
+                        withCredentials([
+                            [$class: 'UsernamePasswordMultiBinding', credentialsId: "${params.ToolGitLabRepository_Credentials}", usernameVariable: 'git_username', passwordVariable: 'git_password']
+                            ]) {
+                                sh "git clone https://${git_username}:${git_password}@gitlab.eurecom.fr/oai/openair-cn-ci-scripts.git ci-scripts > git_clone.log 2>&1"
+                                if (!("none".equals(params.ToolGitLabRepository_Tag))) {
+                                    dir ('ci-scripts') {
+                                        sh "git checkout -f ${params.ToolGitLabRepository_Tag} >> ../git_clone.log 2>&1"
+                                    }
+                                }
+                        }
+                    } else {
+                        echo '\u26D4 \u001B[31;1m Cannot retrieve Private GitLab w/ tools without credentials or a tag definition\u001B[0m \u2639'
+                        sh "exit EXIT_FAILURE"
+                    }
+                }
+            }
+        }
+        stage ('Retrieve Source Code') {
+            steps {
+                echo '\u2705 \u001B[32mRetrieve Source Code\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci init --management-nw '192.168.21.0/24' > init.log 2>&1"
+                script {
+                    if (env.ghprbPullId != null) {
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci scm --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --git-pull-request True --git-commit-id ${env.ghprbActualCommit} --git-branch ${env.ghprbSourceBranch} --git-target-branch ${env.ghprbTargetBranch} > scm.log 2>&1"
+                    } else {
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci scm --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} > scm.log 2>&1"
+                    }
+                }
+            }
+        }
+        stage ('Verify Coding Guidelines') {
+            steps {
+                echo '\u2705 \u001B[32mVerifying Coding Guidelines\u001B[0m'
+                script {
+                    if (env.ghprbPullId != null) {
+                         sh "./ci-scripts/checkCodingFormattingRules.sh --src-branch ${env.ghprbSourceBranch} --target-branch ${env.ghprbTargetBranch}"
+                    } else {
+                         sh "./ci-scripts/checkCodingFormattingRules.sh"
+                    }
+                }
+            }
+        }
+        stage ('Static Code Analysis') {
+            steps {
+                echo '\u2705 \u001B[32mStatic Code Analysis with cppcheck\u001B[0m'
+                sh "cppcheck --enable=warning --force --xml --xml-version=2 . 2> cppcheck.xml 1> cppcheck_build.log"
+                script {
+                    if (fileExists('cppcheck.xml')) {
+                        archiveArtifacts artifacts: 'cppcheck.xml'
+                    }
+                    sh "git clone https://github.com/OPENAIRINTERFACE/openair-cn.git ci-cn > git_clone_cn.log 2>&1"
+                    dir ('ci-cn') {
+                        sh "git checkout develop > /dev/null 2>&1"
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ../ci-scripts/host/scripts/sak4ci scm --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} > ../scm-cn.log 2>&1"
+                        sh "sudo mv openair-cn_b${BUILD_NUMBER}.tar.bz2 .. > /dev/null 2>&1"
+                    }
+                }
+            }
+        }
+        stage ('Start MME VM') {
+            steps {
+                echo '\u2705 \u001B[32mStarting MME VM\u001B[0m'
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-vm --clone-template False --snapshot none --start-vm True --vm-display ${vm_display} --nf-type mme --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --template-domain ${mme_vm_template} --dns1 ${dns1} --dns2 ${dns2} > mme_vm_start.log 2>&1"
+                }
+            }
+        }
+        stage ('Start HSS VM') {
+            steps {
+                echo '\u2705 \u001B[32mStarting HSS VM\u001B[0m'
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-vm --clone-template False --snapshot none --start-vm True --vm-display ${vm_display} --nf-type hss --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --template-domain ${hss_vm_template} --dns1 ${dns1} --dns2 ${dns2} > hss_vm_start.log 2>&1"
+                }
+            }
+        }
+        stage ('Start SPGWC VM') {
+            steps {
+                echo '\u2705 \u001B[32mStarting SPGWC VM\u001B[0m'
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-vm --clone-template False --snapshot none --start-vm True --vm-display ${vm_display} --nf-type spgw --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --template-domain ${spgwc_vm_template} --dns1 ${dns1} --dns2 ${dns2} > spgwc_vm_start.log 2>&1"
+                }
+            }
+        }
+        stage ('Start SPGWU VM') {
+            steps {
+                echo '\u2705 \u001B[32mStarting SPGWU VM\u001B[0m'
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-vm --clone-template False --snapshot none --start-vm True --vm-display ${vm_display} --nf-type spgwu --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --template-domain ${spgwu_vm_template} --dns1 ${dns1} --dns2 ${dns2} > spgwu_vm_start.log 2>&1"
+                }
+            }
+        }
+        stage('Install libs & sw') {
+            parallel {
+                stage ('MME SW') {
+                    steps {
+                        echo '\u2705 \u001B[32mInstalling libs and packages for MME\u001B[0m'
+                        timeout(time: 25, unit: 'MINUTES') {
+                            sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-libs-packs4nf --nf-type mme --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --incremental True > mme_install_libs.log 2>&1"
+                        }
+                    }
+                }
+                stage ('HSS SW') {
+                    steps {
+                        echo '\u2705 \u001B[32mInstalling libs and packages for HSS\u001B[0m'
+                        timeout(time: 25, unit: 'MINUTES') {
+                            sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-libs-packs4nf --nf-type hss --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --option Release14 --incremental True > hss_install_libs.log 2>&1"
+                        }
+                    }
+                }
+                stage ('SPGWC SW') {
+                    steps {
+                        echo '\u2705 \u001B[32mInstalling libs and packages for SPGW-C\u001B[0m'
+                        timeout(time: 25, unit: 'MINUTES') {
+                            sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-libs-packs4nf --nf-type spgw --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --option CUPS --separate-cups True --incremental True > spgwc_install_libs.log 2>&1"
+                        }
+                    }
+                }
+                stage ('SPGWU SW') {
+                    steps {
+                        echo '\u2705 \u001B[32mInstalling libs and packages for SPGW-U\u001B[0m'
+                        timeout(time: 25, unit: 'MINUTES') {
+                            sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci install-libs-packs4nf --nf-type spgwu --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --option CUPS --separate-cups True --incremental True > spgwu_install_libs.log 2>&1"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build Core Network Functions') {
+            parallel {
+                stage ('Build MME') {
+                    steps {
+                        echo '\u2705 \u001B[32mBuilding MME vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci build-nf --nf-type mme --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --build-type Release > mme_build.log 2>&1"
+                    }
+                }
+                stage ('Build HSS') {
+                    steps {
+                        echo '\u2705 \u001B[32mBuilding HSS vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci build-nf --nf-type hss --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --build-type Release --option Release14 > hss_build.log 2>&1"
+                    }
+                }
+                stage ('Build SPGWC') {
+                    steps {
+                        echo '\u2705 \u001B[32mBuilding SPGW-C vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci build-nf --nf-type spgw --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --build-type Release --option CUPS --separate-cups True > spgwc_build.log 2>&1"
+                    }
+                }
+                stage ('Build SPGWU') {
+                    steps {
+                        echo '\u2705 \u001B[32mBuilding SPGW-U vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci build-nf --nf-type spgwu --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-alive True --build-type Release --option CUPS --separate-cups True > spgwu_build.log 2>&1"
+                    }
+                }
+            }
+        }
+        stage('Generate CN configs') {
+            parallel {
+                stage ('Config MME') {
+                    steps {
+                        echo '\u2705 \u001B[32mConfiguring MME vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci configure-nf --nf-type mme --keep-vm-alive True --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --incremental True > mme_config.log 2>&1"
+                    }
+                }
+                stage ('Config HSS') {
+                    steps {
+                        echo '\u2705 \u001B[32mConfiguring HSS vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci configure-nf --nf-type hss --keep-vm-alive True --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option Release14 --incremental True > hss_config.log 2>&1"
+                    }
+                }
+                stage ('Config SPGWC') {
+                    steps {
+                        echo '\u2705 \u001B[32mConfiguring SPGW-C vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci configure-nf --nf-type spgw --keep-vm-alive True --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option CUPS --separate-cups True --incremental True > spgwc_config.log 2>&1"
+                    }
+                }
+                stage ('Config SPGWU') {
+                    steps {
+                        echo '\u2705 \u001B[32mConfiguring SPGW-U vNF\u001B[0m'
+                        sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci configure-nf --nf-type spgwu --keep-vm-alive True --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option CUPS --separate-cups True --incremental True > spgwu_config.log 2>&1"
+                    }
+                }
+            }
+        }
+        stage('Start Core Network Functions') {
+            steps {
+                echo '\u2705 \u001B[32mStarting HSS vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci start-nf --nf-type hss --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option Release14 > hss_vnf_start.log 2>&1"
+                sh "sleep 5"
+
+                echo '\u2705 \u001B[32mStarting MME vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci start-nf --nf-type mme --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} > mme_vnf_start.log 2>&1"
+
+                echo '\u2705 \u001B[32mStarting SPGW-C vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci start-nf --nf-type spgw --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option CUPS --separate-cups True > spgwc_vnf_start.log 2>&1"
+                sh "sleep 5"
+
+                echo '\u2705 \u001B[32mStarting SPGW-U vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci start-nf --nf-type spgwu --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option CUPS --separate-cups True > spgwu_vnf_start.log 2>&1"
+
+                sh "sleep 30"
+            }
+        }
+        stage('Stop Core Network Functions') {
+            steps {
+                echo '\u2705 \u001B[32mStopping HSS vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci stop-nf --nf-type hss --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option Release14 > hss_vnf_stop.log 2>&1"
+                echo '\u2705 \u001B[32mStopping MME vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci stop-nf --nf-type mme --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} > mme_vnf_stop.log 2>&1"
+
+                echo '\u2705 \u001B[32mStopping SPGW-C vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci stop-nf --nf-type spgw --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option CUPS --separate-cups True > spgwc_vnf_stop.log 2>&1"
+
+                echo '\u2705 \u001B[32mStopping SPGW-U vNF\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci stop-nf --nf-type spgwu --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --option CUPS --separate-cups True > spgwu_vnf_stop.log 2>&1"
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                def message = "Build job #" + BUILD_ID + " completed"
+                updateGithubCommitStatus(currentBuild, message)
+                def socialMessage = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): passed (" + BUILD_URL + ")"
+                sendSocialMediaMessage('ci-epc', 'good', socialMessage)
+            }
+        }
+        failure {
+            script {
+                def message = "Build job #" + BUILD_ID + " : One step of job failed"
+                updateGithubCommitStatus(currentBuild, message)
+                def socialMessage = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): failed (" + BUILD_URL + ")"
+                sendSocialMediaMessage('ci-epc', 'danger', socialMessage)
+            }
+        }
+        unstable {
+            script {
+                def message = "Build job #" + BUILD_ID + " : One step of job is unstable"
+                updateGithubCommitStatus(currentBuild, message)
+                def socialMessage = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): unstable (" + BUILD_URL + ")"
+                sendSocialMediaMessage('ci-epc', 'danger', socialMessage)
+            }
+        }
+        aborted {
+            script {
+                def message = "Build job #" + BUILD_ID + " aborted: pipeline script issue?"
+                updateGithubCommitStatus(currentBuild, message)
+                def socialMessage = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): aborted (" + BUILD_URL + ")"
+                sendSocialMediaMessage('ci-epc', 'danger', socialMessage)
+            }
+        }
+        cleanup {
+            script {
+                echo '\u2705 \u001B[32mCleaning build VMs and log files\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci clean-build --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --keep-vm-image True > clean-build.log 2>&1"
+
+                echo '\u2705 \u001B[32mGenerating Report\u001B[0m'
+                sh "sudo -HE env MYPYTHONPATH=${MYPYTHONPATH} ./ci-scripts/host/scripts/sak4ci report-html-build --job-name ${JOB_NAME} --build-id ${BUILD_NUMBER} --separate-cups True --incremental True > report-build.log 2>&1"
+                if (fileExists('test_results_oai_cn.html')) {
+                    sh "sudo sed -i -e 's#Build-ID: ${BUILD_ID}#Build-ID: <a href=\"${BUILD_URL}\">${BUILD_ID}</a>#' test_results_oai_cn.html"
+                    if (env.ghprbPullId != null) {
+                        sh "sudo sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_cn.html"
+                        sh "sudo sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_cn.html"
+                    }
+                    archiveArtifacts artifacts: 'test_results_oai_cn.html'
+                }
+
+                // Private Archives
+                if (fileExists("${WORKSPACE}/../../local_archives")) {
+                    sh "tar -cf ${JOB_NAME}-build-${BUILD_ID}.tar *.log"
+                    if (fileExists("${WORKSPACE}/archives")) {
+                        sh "tar -rf ${JOB_NAME}-build-${BUILD_ID}.tar archives"
+                    }
+                    sh "bzip2 ${JOB_NAME}-build-${BUILD_ID}.tar"
+                    sh "mv ${JOB_NAME}-build-${BUILD_ID}.tar.bz2 ${WORKSPACE}/../../local_archives"
+                }
+                // Public Archives --> artifacts
+                if (fileExists("${WORKSPACE}/archives")) {
+                    sh "tar -cjhf ${JOB_NAME}-build-${BUILD_ID}.tar.bz2 archives"
+                    archiveArtifacts artifacts: '*-build-*.tar.bz2'
+                    sh "sudo rm -Rf ${WORKSPACE}/archives ${JOB_NAME}-build-${BUILD_ID}.tar.bz2 > /dev/null 2>&1"
+                }
+                // Full clean-up
+                if (fileExists("${WORKSPACE}/ci-scripts")) {
+                    sh "sudo rm -Rf ${WORKSPACE}/ci-scripts > /dev/null 2>&1"
+                }
+                if (fileExists("${WORKSPACE}/ci-cn")) {
+                    sh "sudo rm -Rf ${WORKSPACE}/ci-cn > /dev/null 2>&1"
+                }
+
+                // Sending an email to the last committer. Maybe not the Pull Request's author.
+                def emailTo = getCommitterEmail()
+                emailext attachmentsPattern: '*results*.html',
+                     body: '''Hi,
+Here are attached HTML report files for $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
+
+Regards,
+OAI CI Team''',
+                     replyTo: 'no-reply@openairinterface.org',
+                     subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',
+                     to: emailTo
+            }
+        }
+    }
+}
+
+// Removing all info -- do not know if git clean command removes them
+def removeGitHubInfo() {
+  if (fileExists('.git/remote-url')) {
+    sh "rm -f .git/remote-url"
+  }
+  if (fileExists('.git/current-commit')) {
+    sh "rm -f .git/current-commit"
+  }
+  if (fileExists('.git/commit-email')) {
+    sh "rm -f .git/commit-email"
+  }
+}
+
+// GitHub retrieve email of last committer
+def getCommitterEmail() {
+  if (!fileExists('.git/commit-email')) {
+      sh "git log -1 --pretty=format:\"%ce\" > .git/commit-email"
+      // Workaround for issue when merge to develop from the Pull Request GitHub webpage
+      // Click on merge button creates a commit with an email address in noreply@github.com
+      sh "if [ `egrep -c \"noreply@github.com\" .git/commit-email` -eq 1 ]; then echo \"raphael.defosseux@openairinterface.org\" > .git/commit-email; fi"
+  }
+  return readFile(".git/commit-email").trim()
+}
+
+// Github commit update functions
+def getRepoURL() {
+  if (!fileExists('.git/remote-url')) {
+      sh "git config --get remote.origin.url > .git/remote-url"
+  }
+  return readFile(".git/remote-url").trim()
+}
+
+def getCommitSha() {
+  if (!fileExists('.git/current-commit')) {
+    sh "git rev-parse HEAD > .git/current-commit"
+  }
+  return readFile(".git/current-commit").trim()
+}
+
+def updateGithubCommitStatus(build, jobMessage) {
+  // workaround https://issues.jenkins-ci.org/browse/JENKINS-38674
+  repoUrl = getRepoURL()
+  commitSha = getCommitSha()
+
+  step([
+    $class: 'GitHubCommitStatusSetter',
+    reposSource: [$class: "ManuallyEnteredRepositorySource", url: repoUrl],
+    commitShaSource: [$class: "ManuallyEnteredShaSource", sha: commitSha],
+    errorHandlers: [[$class: 'ShallowAnyErrorHandler']],
+    statusResultSource: [
+      $class: 'ConditionalStatusResultSource',
+      results: [
+        [$class: 'AnyBuildResult', state: build.currentResult, message: jobMessage]
+      ]
+    ]
+  ])
+}
+

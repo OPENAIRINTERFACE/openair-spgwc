@@ -118,21 +118,28 @@ ENDIF(STATIC_LINKING)
 ################################################################
 # Build type
 ################################################################
-add_list_string_option(CMAKE_BUILD_TYPE "RelWithDebInfo" "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." Debug Release
-RelWithDebInfo MinSizeRel)
+add_list_string_option(CMAKE_BUILD_TYPE "RelWithDebInfo" "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." RelWithDebInfo Debug Release MinSizeRel)
 Message("Build type is ${CMAKE_BUILD_TYPE}")
 if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_boolean_option(LOG_OAI True         "Thread safe logging API")
   add_boolean_option(LOG_OAI_MINIMAL True "Thread safe logging API, log only levels above NOTICE")
-  SET(ASAN asan)
+  set(ASAN)
+endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_boolean_option(LOG_OAI True         "Thread safe logging API")
+  add_boolean_option(LOG_OAI_MINIMAL True "Thread safe logging API, log only levels above NOTICE")
+  set(ASAN)
 endif()
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_boolean_option(LOG_OAI True "Thread safe logging API")
-  SET(ASAN asan)
+  set(ASAN "asan")
 endif()
 if (CMAKE_BUILD_TYPE STREQUAL "")
    set(CMAKE_BUILD_TYPE "MinSizeRel")
+   set(ASAN)
 endif()
+
+Message("ASAN is ${ASAN}")
 
 ################################################################
 # Processor architecture
@@ -163,7 +170,7 @@ else (STATIC_LINKING)
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -g -fstack-protector-all -DMALLOC_CHECK_=3 -DINFO_IS_ON=1 -DDEBUG_IS_ON=1 -DTRACE_IS_ON=1 -O0 -fsanitize=address -fno-omit-frame-pointer")
 endif(STATIC_LINKING)
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS} -O2 -fno-omit-frame-pointer -s -DINFO_IS_ON=1 ")
-set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -g  -O2 -DINFO_IS_ON=1 ")
+set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -g  -O1 -DINFO_IS_ON=1 ")
 set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS} -Os -s")
 
 if(STATIC_LINKING)
@@ -172,7 +179,7 @@ else(STATIC_LINKING)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -std=c++17  -g -fstack-protector-all -DMALLOC_CHECK_=3 -DINFO_IS_ON=1 -DDEBUG_IS_ON=1 -DTRACE_IS_ON=1 -O0 -fsanitize=address -fno-omit-frame-pointer")
 endif(STATIC_LINKING)
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -std=c++17  -O2 -fno-omit-frame-pointer -s -DINFO_IS_ON=1")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -std=c++17 -g -O2 -DINFO_IS_ON=1")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -std=c++17 -g -O1 -DINFO_IS_ON=1")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS} -std=c++17 -Os -s")
 
 
@@ -270,9 +277,6 @@ ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common/utils ${CMAKE_CURR
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/gtpv2c ${CMAKE_CURRENT_BINARY_DIR}/gtpv2c)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/pfcp ${CMAKE_CURRENT_BINARY_DIR}/pfcp)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/udp ${CMAKE_CURRENT_BINARY_DIR}/udp)
-if(${SGW_AUTOTEST})
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/gtpv1u ${CMAKE_CURRENT_BINARY_DIR}/gtpv1u)
-endif(${SGW_AUTOTEST})
 
 #ENABLE_TESTING()
 #ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/test ${CMAKE_CURRENT_BINARY_DIR}/test)
@@ -282,17 +286,33 @@ endif(${SGW_AUTOTEST})
 
 add_definitions("-DPACKAGE_NAME=\"SPGW-C\"")
 
-include_directories(${SRC_TOP_DIR}/pgwc)
-include_directories(${SRC_TOP_DIR}/oai_spgwc)
 include_directories(${SRC_TOP_DIR}/common)
-include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/common/msg)
 include_directories(${SRC_TOP_DIR}/common/utils)
 include_directories(${SRC_TOP_DIR}/gtpv2c)
+include_directories(${SRC_TOP_DIR}/itti)
+include_directories(${SRC_TOP_DIR}/oai_spgwc)
 include_directories(${SRC_TOP_DIR}/pfcp)
-include_directories(${SRC_TOP_DIR}/sgwc)
 include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+
+add_library (SPGWC STATIC
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_app.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_config.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_context.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_pfcp_association.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_pco.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgw_s5s8.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgwc_procedure.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/pgwc_sxab.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_app.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_config.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_eps_bearer_context.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_pdn_connection.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_procedure.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_s11.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/sgwc_s5s8.cpp
+  )
 
 add_executable(spgwc
   ${SRC_TOP_DIR}/oai_spgwc/main.cpp
@@ -312,5 +332,5 @@ if(${SGW_AUTOTEST})
   SET(GTPV1U_LIB GTPV1U)
 endif(${SGW_AUTOTEST})
 
-target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SGWC PGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
+target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SPGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
 
