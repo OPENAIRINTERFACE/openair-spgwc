@@ -18,35 +18,34 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
 /*! \file 3gpp_129.244.h
   \brief
   \author Lionel Gauthier
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
-
 #ifndef FILE_3GPP_129_244_H_SEEN
 #define FILE_3GPP_129_244_H_SEEN
-#include "3gpp_29.274.h"
-#include "common_root_types.h"
-#include "conversions.hpp"
-#include "logger.hpp"  // for fmt::format in spdlog
-
+//--C includes -----------------------------------------------------------------
 #include <arpa/inet.h>
 #include <stdint.h>
+//--C++ includes ---------------------------------------------------------------
 #include <string>
 #include <vector>
+//--Other includes -------------------------------------------------------------
+#include "3gpp_29.274.h"
+#include "Logger.hpp"  // for fmt::format in spdlog
+#include "common_root_types.h"
+#include "conversions.hpp"
 
 namespace pfcp {
-
-struct pfcp_exception : public std::exception {
-  pfcp_exception() throw() {
+struct PfcpException : public std::exception {
+  PfcpException() throw() {
     cause = 0;
     phrase.assign("PFCP Exception unknown cause");
   }
 
-  pfcp_exception(int acause) throw() {
+  PfcpException(int acause) throw() {
     cause = acause;
     phrase = fmt::format("PFCP Exception cause {}", cause);
   }
@@ -57,96 +56,92 @@ struct pfcp_exception : public std::exception {
   std::string phrase;
 };
 
-struct pfcp_msg_bad_length_exception : public pfcp_exception {
+struct PfcpMsgBadLengthException : public PfcpException {
  public:
-  pfcp_msg_bad_length_exception(const uint8_t msg_type, const uint16_t hdr_size,
-                                const uint16_t ie_size,
-                                const uint16_t check_ie_size, const char* file,
-                                const int line) throw() {
+  PfcpMsgBadLengthException(const uint8_t msg_type, const uint16_t hdr_size,
+                            const uint16_t ie_size,
+                            const uint16_t check_ie_size, const char* file,
+                            const int line) throw() {
     phrase = fmt::format(
         "PFCP msg {} Bad Length hdr.length {}/ sum ie {} / check sum ie {} "
         "Exception {}:{}",
         msg_type, hdr_size, ie_size, check_ie_size, file, line);
   }
-  pfcp_msg_bad_length_exception(std::string& aphrase) throw() {
-    phrase = aphrase;
-  }
-  virtual ~pfcp_msg_bad_length_exception() throw() {}
+  PfcpMsgBadLengthException(std::string& aphrase) throw() { phrase = aphrase; }
+  virtual ~PfcpMsgBadLengthException() throw() {}
 };
 
-struct pfcp_msg_unimplemented_ie_exception : public pfcp_exception {
+struct PfcpMsgUnimplementedIeException : public PfcpException {
  public:
-  pfcp_msg_unimplemented_ie_exception(const uint8_t msg_type,
-                                      const uint16_t ie_type,
-                                      const uint8_t instance = 0) throw() {
+  PfcpMsgUnimplementedIeException(const uint8_t msg_type,
+                                  const uint16_t ie_type,
+                                  const uint8_t instance = 0) throw() {
     phrase =
         fmt::format("PFCP msg {} Unimplemented {} IE Instance {} Exception",
                     msg_type, ie_type, instance);
   }
-  pfcp_msg_unimplemented_ie_exception(std::string& aphrase) throw() {
+  PfcpMsgUnimplementedIeException(std::string& aphrase) throw() {
     phrase = aphrase;
   }
-  virtual ~pfcp_msg_unimplemented_ie_exception() throw() {}
+  virtual ~PfcpMsgUnimplementedIeException() throw() {}
 };
 
-struct pfcp_msg_illegal_ie_exception : public pfcp_exception {
+struct PfcpMsgIllegalIeException : public PfcpException {
  public:
-  pfcp_msg_illegal_ie_exception(const uint8_t msg_type, const uint16_t ie_type,
-                                const char* file, const int line) throw() {
+  PfcpMsgIllegalIeException(const uint8_t msg_type, const uint16_t ie_type,
+                            const char* file, const int line) throw() {
     phrase = fmt::format("PFCP msg {} Illegal IE {} Exception {}:{}", msg_type,
                          ie_type, file, line);
   }
-  pfcp_msg_illegal_ie_exception(std::string& aphrase) throw() {
-    phrase = aphrase;
-  }
-  virtual ~pfcp_msg_illegal_ie_exception() throw() {}
+  PfcpMsgIllegalIeException(std::string& aphrase) throw() { phrase = aphrase; }
+  virtual ~PfcpMsgIllegalIeException() throw() {}
 };
 
-struct pfcp_ie_exception : public pfcp_exception {
+struct PfcpIeException : public PfcpException {
  public:
-  pfcp_ie_exception(uint16_t ie_type) throw() {
+  PfcpIeException(uint16_t ie_type) throw() {
     phrase = fmt::format("PFCP IE {} Exception", ie_type);
   }
-  pfcp_ie_exception(std::string& aphrase) throw() { phrase = aphrase; }
-  virtual ~pfcp_ie_exception() throw() {}
+  PfcpIeException(std::string& aphrase) throw() { phrase = aphrase; }
+  virtual ~PfcpIeException() throw() {}
 };
 
-struct pfcp_ie_unimplemented_exception : public pfcp_ie_exception {
+struct PfcpIeUnimplementedException : public PfcpIeException {
  public:
-  pfcp_ie_unimplemented_exception(uint16_t ie_type) throw()
-      : pfcp_ie_exception(ie_type) {
+  PfcpIeUnimplementedException(uint16_t ie_type) throw()
+      : PfcpIeException(ie_type) {
     phrase = fmt::format("PFCP IE {} Unimplemented Exception", ie_type);
   }
-  virtual ~pfcp_ie_unimplemented_exception() throw() {}
+  virtual ~PfcpIeUnimplementedException() throw() {}
 };
 
-struct pfcp_tlv_exception : public pfcp_ie_exception {
+struct PfcpTlvException : public PfcpIeException {
  public:
-  pfcp_tlv_exception(uint16_t ie_type) throw() : pfcp_ie_exception(ie_type) {
+  PfcpTlvException(uint16_t ie_type) throw() : PfcpIeException(ie_type) {
     phrase = fmt::format("PFCP IE TLV {} Exception", ie_type);
   }
-  virtual ~pfcp_tlv_exception() throw() {}
+  virtual ~PfcpTlvException() throw() {}
 };
 
-struct pfcp_tlv_bad_length_exception : public pfcp_tlv_exception {
+struct PfcpTlvBadLengthException : public PfcpTlvException {
  public:
-  pfcp_tlv_bad_length_exception(uint16_t ie_type, uint16_t ie_length,
-                                const char* file, const int line) throw()
-      : pfcp_tlv_exception(ie_type) {
+  PfcpTlvBadLengthException(uint16_t ie_type, uint16_t ie_length,
+                            const char* file, const int line) throw()
+      : PfcpTlvException(ie_type) {
     phrase = fmt::format("PFCP IE TLV {} Bad Length {} Exception {}:{}",
                          ie_type, ie_length, file, line);
   }
-  virtual ~pfcp_tlv_bad_length_exception() throw() {}
+  virtual ~PfcpTlvBadLengthException() throw() {}
 };
 
-struct pfcp_ie_value_exception : public pfcp_ie_exception {
+struct PfcpIeValueException : public PfcpIeException {
  public:
-  pfcp_ie_value_exception(uint16_t ie_type, const char* field) throw()
-      : pfcp_ie_exception(ie_type) {
+  PfcpIeValueException(uint16_t ie_type, const char* field) throw()
+      : PfcpIeException(ie_type) {
     phrase =
         fmt::format("PFCP IE {} Bad Value of {} Exception", ie_type, field);
   }
-  virtual ~pfcp_ie_value_exception() throw() {}
+  virtual ~PfcpIeValueException() throw() {}
 };
 
 #define PFCP_IE_CREATE_PDR (1)
@@ -331,6 +326,7 @@ struct pfcp_ie_value_exception : public pfcp_ie_exception {
 #define PFCP_SESSION_DELETION_RESPONSE (55)
 #define PFCP_SESSION_REPORT_REQUEST (56)
 #define PFCP_SESSION_REPORT_RESPONSE (57)
+#define PFCP_LAST_HANDLED_MESSAGE PFCP_SESSION_REPORT_RESPONSE
 }  // namespace pfcp
 
 namespace pfcp {
@@ -353,7 +349,8 @@ enum cause_value_e {
   CAUSE_VALUE_PFCP_ENTITY_IN_CONGESTION = 74,
   CAUSE_VALUE_NO_RESOURCES_AVAILABLE = 75,
   CAUSE_VALUE_SERVICE_NOT_SUPPORTED = 76,
-  CAUSE_VALUE_SYSTEM_FAILURE = 77
+  CAUSE_VALUE_SYSTEM_FAILURE = 77,
+  CAUSE_VALUE_REDIRECTION_REQUESTED = 78
 };
 
 typedef struct cause_s {

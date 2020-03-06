@@ -18,41 +18,31 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
-/*! \file itti_async_shell_cmd.hpp
+/*! \file SpgwsPco.hpp
   \brief
   \author Lionel Gauthier
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
+#ifndef FILE_SPGWC_PCO_HPP_SEEN
+#define FILE_SPGWC_PCO_HPP_SEEN
+#include <stdint.h>
+/**
+ * protocol_configuration_options_ids_t
+ *
+ * Container for caching which protocol/container identifiers have been set in
+ * the message sent by the UE.
+ *
+ * ID specifications based on 3GPP #24.008.
+ */
+typedef struct protocol_configuration_options_ids_s {
+  // Protocol identifiers (from configuration protocol options list)
+  uint8_t pi_ipcp : 1;
 
-#ifndef FILE_ITTI_ASYNC_SHELL_CMD_SEEN
-#define FILE_ITTI_ASYNC_SHELL_CMD_SEEN
-
-#include "itti_msg.hpp"
-
-class itti_async_shell_cmd : public itti_msg {
- public:
-  itti_async_shell_cmd(const task_id_t origin, const task_id_t destination,
-                       const std::string& system_cmd, bool is_abort_on_error,
-                       const char* src_file, const int src_line)
-      : itti_msg(ASYNC_SHELL_CMD, origin, destination),
-        system_command(system_cmd),
-        is_abort_on_error(is_abort_on_error),
-        src_file(src_file),
-        src_line(src_line) {}
-  itti_async_shell_cmd(const itti_async_shell_cmd& i)
-      : itti_msg(i),
-        system_command(i.system_command),
-        is_abort_on_error(i.is_abort_on_error),
-        src_file(i.src_file),
-        src_line(i.src_line) {}
-  const char* get_msg_name() { return typeid(itti_msg_ping).name(); };
-  std::string system_command;
-  bool is_abort_on_error;
-  // debug
-  std::string src_file;
-  int src_line;
-};
-
-#endif /* FILE_ITTI_ASYNC_SHELL_CMD_SEEN */
+  // Container identifiers (from additional parameters list)
+  uint8_t ci_dns_server_ipv4_address_request : 1;
+  uint8_t ci_ip_address_allocation_via_nas_signalling : 1;
+  uint8_t ci_ipv4_address_allocation_via_dhcpv4 : 1;
+  uint8_t ci_ipv4_link_mtu_request : 1;
+} protocol_configuration_options_ids_t;
+#endif

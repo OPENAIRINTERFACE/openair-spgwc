@@ -26,17 +26,19 @@
   \email: lionel.gauthier@eurecom.fr
 */
 
-#ifndef FILE_3GPP_29_274_SEEN
-#define FILE_3GPP_29_274_SEEN
-#include "3gpp_24.008.h"
-#include "3gpp_commons.h"
-#include "common_root_types.h"
-#include "conversions.hpp"
-#include "logger.hpp"  // for fmt::format in spdlog
-
+#ifndef FILE_3GPP_29_274_H_SEEN
+#define FILE_3GPP_29_274_H_SEEN
+//--C includes -----------------------------------------------------------------
 #include <arpa/inet.h>
 #include <stdint.h>
+//--C++ includes ---------------------------------------------------------------
 #include <string>
+//--Other includes -------------------------------------------------------------
+#include "3gpp_24.008.h"
+#include "3gpp_commons.h"
+#include "Logger.hpp"  // for fmt::format in spdlog
+#include "common_root_types.h"
+#include "conversions.hpp"
 
 extern const char* interface_type2char[];
 
@@ -385,6 +387,7 @@ struct gtpc_ie_value_exception : public gtpc_ie_exception {
 #define GTP_MBMS_SESSION_UPDATE_RESPONSE (234)
 #define GTP_MBMS_SESSION_STOP_REQUEST (235)
 #define GTP_MBMS_SESSION_STOP_RESPONSE (236)
+#define GTP_LAST_HANDLED_MESSAGE GTP_MBMS_SESSION_STOP_RESPONSE
 
 }  // namespace gtpv2c
 
@@ -2169,4 +2172,4 @@ class hash<fteid_t> {
   }
 };
 }  // namespace std
-#endif /* FILE_3GPP_29_274_SEEN */
+#endif /* FILE_3GPP_29_274_H_SEEN */

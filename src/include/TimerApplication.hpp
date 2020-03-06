@@ -18,25 +18,30 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
-/*! \file serializable.hpp
+/*! \file TimerApplication.hpp
   \brief
   \author Lionel Gauthier
+  \date 2020
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
-
-#ifndef FILE_SERIALIZABLE_HPP_SEEN
-#define FILE_SERIALIZABLE_HPP_SEEN
-
-#include <iostream>
-#include <string>
-
-class stream_serializable {
+#ifndef FILE_TIMERAPPLICATION_HPP_SEEN
+#define FILE_TIMERAPPLICATION_HPP_SEEN
+//--related header -------------------------------------------------------------
+//--C includes -----------------------------------------------------------------
+#include <inttypes.h>
+//--C++ includes ---------------------------------------------------------------
+#include <cstddef>
+//--Other includes -------------------------------------------------------------
+#include "EndPoint.hpp"
+//------------------------------------------------------------------------------
+typedef uint32_t timer_id_t;
+#define INVALID_TIMER_ID (timer_id_t)0
+//------------------------------------------------------------------------------
+class TimerApplication {
  public:
-  virtual void dump_to(std::ostream& os) = 0;
-  virtual void load_from(std::istream& is) = 0;
-  // virtual ~serializable() = 0;
+  virtual void TimeOutNotification(const timer_id_t tid, uint64_t arg1_user = 0,
+                                   uint64_t arg2_user = 0);
+  virtual ~TimerApplication();
 };
-
-#endif /* FILE_SERIALIZABLE_HPP_SEEN */
+#endif /* FILE_TIMERAPPLICATION_HPP_SEEN */

@@ -22,24 +22,25 @@
 /*! \file 3gpp_29.281.h
   \brief
   \author Lionel Gauthier
+  \date 201?-2020
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
-
-#ifndef FILE_3GPP_29_281_SEEN
-#define FILE_3GPP_29_281_SEEN
-#include "3gpp_29.274.h"
-#include "3gpp_commons.h"
-#include "common_root_types.h"
-#include "logger.hpp"  // for fmt::format in spdlog
-
+#ifndef FILE_3GPP_29_281_H_SEEN
+#define FILE_3GPP_29_281_H_SEEN
+//--C includes -----------------------------------------------------------------
 #include <arpa/inet.h>
 #include <stdint.h>
+//--C++ includes ---------------------------------------------------------------
 #include <string>
 #include <vector>
+//--Other includes -------------------------------------------------------------
+#include "3gpp_29.274.h"
+#include "3gpp_commons.h"
+#include "Logger.hpp"  // for fmt::format in spdlog
+#include "common_root_types.h"
 
 namespace gtpv1u {
-
 struct gtpu_exception : public std::exception {
   gtpu_exception() throw() {
     cause = 0;
@@ -185,4 +186,4 @@ typedef struct extension_header_type_list_s {
 //  std::string  extension_value;
 //} private_extension_t;
 
-#endif /* FILE_3GPP_29_281_SEEN */
+#endif /* FILE_3GPP_29_281_H_SEEN */
