@@ -22,8 +22,6 @@ openair-spgwc
     ├── itti :      Inter task interface 
     ├── oai_spgwc : SPGW-C main directory, contains the "main" CMakeLists.txt file.
     ├── pfcp :      Generic PFCP stack implementation.
-    ├── pgwc :      PGW-C network fonctions procedures and contexts.
-    ├── sgwc :      SGW-C network fonctions procedures and contexts.
     └── udp :       UDP server implementation.
 
 RELEASE NOTES:
