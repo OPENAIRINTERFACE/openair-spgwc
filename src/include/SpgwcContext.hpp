@@ -182,6 +182,7 @@ class PdnConnection : public std::enable_shared_from_this<PdnConnection> {
   void ReleaseFarId(const pfcp::far_id_t far_id);
   // void create_procedure(itti_s5s8_create_session_response& m);
   // void insert_procedure(SpgwcProcedure* proc);
+  const bool Released(void) const { return released; };
 
   std::string apn_in_use;
   bool ipv4;  // IP Address(es): IPv4 address and/or IPv6 prefix
@@ -224,14 +225,15 @@ class ApnContext {
   //                       std::shared_ptr<PdnConnection>& pdn);
   // bool FindPdnConnection(const pfcp::pdr_id_t& pdr_id,
   //                       std::shared_ptr<PdnConnection>& pdn, ebi_t& ebi);
-  // void DeletePdnConnection(std::shared_ptr<PdnConnection> pdn_connection);
+  void DeletePdnConnection(std::shared_ptr<PdnConnection> pdn_connection,
+                           std::shared_ptr<SpgwcContext> t_visited);
   int GetNumPdnConnections() const { return pdn_connections.size(); };
   // DeallocateRessources is for releasing LTE resources prior to the deletion
   // of objects since shared_ptr is actually heavy used for handling objects,
   // deletion of object instances cannot be always guaranteed when removing them
   // from a collection, so that is why actually the deallocation of resources is
   // not done in the destructor of objects.
-  // void DeallocateRessources();
+  void DeallocateRessources(std::shared_ptr<SpgwcContext> t_visited){};
 
   std::string toString() const;
 
@@ -269,24 +271,27 @@ class SpgwcContext : public std::enable_shared_from_this<SpgwcContext> {
 
   SpgwcContext(SpgwcContext& b) = delete;
 
-  // void create_procedure(itti_s5s8_create_session_request& csreq);
-  void InsertProcedure(std::shared_ptr<SpgwcProcedure>& sproc);
-  bool FindProcedure(const uint64_t trxn_id,
-                     std::shared_ptr<SpgwcProcedure>& proc);
-  void RemoveProcedure(SpgwcProcedure* proc);
+  void InsertProcedure(std::shared_ptr<SpgwcProcedure> sproc);
+  std::pair<const bool, std::shared_ptr<SpgwcProcedure>> FindProcedure(
+      const uint64_t t_trxn_id);
+  void RemoveProcedure(std::shared_ptr<SpgwcProcedure> proc);
 
-  std::tuple<bool, std::shared_ptr<ApnContext>, std::shared_ptr<PdnConnection>>
+  std::pair<const bool, std::shared_ptr<EpsBearer>> FindBearer(const ebi_t ebi);
+  std::tuple<const bool, std::shared_ptr<ApnContext>,
+             std::shared_ptr<PdnConnection>>
   FindPdnConnection(const std::string& t_apn, pdn_type_t t_pdn_type);
-  // std::pair<bool, apn_pdn_t> FindPdnConnection(const std::string& apn,
-  //                                             const teid_t c_teid,
-  //                                             const bool is_local_teid);
-  // bool FindPdnConnection(const teid_t xgw_s5s8c_teid, const bool
-  // is_local_teid,
-  //                       apn_pdn_t& pdn_connection);
+  std::pair<const bool, std::shared_ptr<PdnConnection>>
+  FindPdnConnectionByDefaultEbi(const ebi_t linked_ebi);
+  std::pair<const bool, std::shared_ptr<PdnConnection>> FindPdnConnection(
+      const ebi_t t_ebi);
+  std::tuple<const bool, std::shared_ptr<PdnConnection>, const ebi_t>
+  FindPdnConnection(const pfcp::pdr_id_t pdr_id);
+  std::pair<const bool, std::vector<std::shared_ptr<PdnConnection>>>
+  FindPdnConnectionsByReleaseState(const bool t_released);
   // bool FindPdnConnection(const pfcp::pdr_id_t& pdr_id,
   //                       std::shared_ptr<PdnConnection>& pdn, ebi_t& ebi);
   void InsertApn(std::shared_ptr<ApnContext> sa);
-  std::pair<bool, std::shared_ptr<ApnContext>> FindApnContext(
+  std::pair<const bool, std::shared_ptr<ApnContext>> FindApnContext(
       const std::string& apn);
 
   // int GetNumApnContexts() { return apns.size(); };
@@ -328,9 +333,11 @@ class SpgwcContext : public std::enable_shared_from_this<SpgwcContext> {
                   const EndPoint& remote_endpoint, const seid_t local_seid,
                   const uint64_t trxn_id);
   bool AddBearer(const EpsBearer& b, std::shared_ptr<spgwc::PdnConnection> pdn);
-  std::shared_ptr<EpsBearer> GetBearer(const pfcp::pdr_id_t pdr_id);
-  std::shared_ptr<EpsBearer> GetBearer(const pfcp::far_id_t far_id);
-  std::shared_ptr<EpsBearer> GetBearer(const ebi_t ebi);
+  std::pair<const bool, std::shared_ptr<EpsBearer>> GetBearer(
+      const pfcp::pdr_id_t pdr_id);
+  std::pair<const bool, std::shared_ptr<EpsBearer>> GetBearer(
+      const pfcp::far_id_t far_id);
+  std::pair<const bool, std::shared_ptr<EpsBearer>> GetBearer(const ebi_t ebi);
 
   std::string toString() const;
 

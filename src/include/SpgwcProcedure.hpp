@@ -168,10 +168,8 @@ class ModifyBearerRequestProcedure : public SpgwcProcedure {
         bearer_contexts_modified(),
         bearer_contexts_marked_for_removal() {}
 
-  int Run(std::shared_ptr<gtpv2c::Gtpv2cModifyBearerRequest> req,
-          std::shared_ptr<gtpv2c::Gtpv2cModifyBearerResponse> resp,
-          std::shared_ptr<spgwc::SpgwcContext> c,
-          std::shared_ptr<spgwc::PdnConnection> p);
+  int Run(std::unique_ptr<gtpv2c::Gtpv2cModifyBearerRequest> t_s11_req,
+          std::shared_ptr<spgwc::SpgwcContext> t_ctxt);
 
   void ProcessMsg(std::unique_ptr<pfcp::PfcpSessionModificationResponse> resp);
 
@@ -200,15 +198,13 @@ class DeleteSessionRequestProcedure : public SpgwcProcedure {
       : SpgwcProcedure(t_trxn_id),
         s11_remote_endpoint_(t_remote_endpoint),
         s11_local_teid_(t_local_teid),
-        pdn_(nullptr),
+        pdn_(),
         ctxt_(nullptr),
         sx_triggered_(),
-        s11_triggered_pending_(),
         s11_trigger_(),
         sx_trxn_id_(0) {}
 
   int Run(std::unique_ptr<gtpv2c::Gtpv2cDeleteSessionRequest> req,
-          std::shared_ptr<gtpv2c::Gtpv2cDeleteSessionResponse> resp,
           std::shared_ptr<spgwc::SpgwcContext> c,
           std::shared_ptr<spgwc::PdnConnection> p);
   void ProcessMsg(std::unique_ptr<pfcp::PfcpSessionDeletionResponse> resp);
@@ -216,7 +212,6 @@ class DeleteSessionRequestProcedure : public SpgwcProcedure {
   //~DeleteSessionRequestProcedure() {}
 
   std::unique_ptr<gtpv2c::Gtpv2cDeleteSessionRequest> s11_trigger_;
-  std::shared_ptr<gtpv2c::Gtpv2cDeleteSessionResponse> s11_triggered_pending_;
   std::shared_ptr<pfcp::PfcpSessionDeletionRequest> sx_triggered_;
   std::shared_ptr<spgwc::PdnConnection> pdn_;
   std::shared_ptr<spgwc::SpgwcContext> ctxt_;

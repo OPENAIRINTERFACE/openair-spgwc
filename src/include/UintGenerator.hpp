@@ -18,23 +18,24 @@
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
-
-/*! \file uint_uid_generator.hpp
+/*! \file UintGenerator.hpp
    \author  Lionel GAUTHIER
    \date 2019
+   \company Eurecom
    \email: lionel.gauthier@eurecom.fr
 */
-
 #ifndef FILE_UINT_GENERATOR_HPP_SEEN
 #define FILE_UINT_GENERATOR_HPP_SEEN
-
+//--related header -------------------------------------------------------------
+//--C includes -----------------------------------------------------------------
+//--C++ includes ---------------------------------------------------------------
 #include <mutex>
 #include <set>
-
+//--Other includes -------------------------------------------------------------
+//------------------------------------------------------------------------------
 namespace util {
-
 template <class UINT>
-class uint_generator {
+class UintGenerator {
  private:
   UINT uid_generator;
   std::mutex m_uid_generator;
@@ -43,15 +44,15 @@ class uint_generator {
   std::mutex m_uid_generated;
 
  public:
-  uint_generator() : m_uid_generator(), m_uid_generated() {
+  UintGenerator() : m_uid_generator(), m_uid_generated() {
     uid_generator = 0;
     uid_generated = {};
   };
 
-  uint_generator(uint_generator const&) = delete;
-  void operator=(uint_generator const&) = delete;
+  UintGenerator(UintGenerator const&) = delete;
+  void operator=(UintGenerator const&) = delete;
 
-  UINT get_uid() {
+  UINT GetUid() {
     std::unique_lock<std::mutex> lr(m_uid_generator);
     UINT uid = ++uid_generator;
     while (true) {
@@ -59,15 +60,13 @@ class uint_generator {
       std::unique_lock<std::mutex> ld(m_uid_generated);
       if (uid_generated.count(uid) == 0) {
         uid_generated.insert(uid);
-        ld.unlock();
-        lr.unlock();
         return uid;
       }
       uid = ++uid_generator;
     }
   }
 
-  void free_uid(UINT uid) {
+  void FreeUid(UINT uid) {
     std::unique_lock<std::mutex> l(m_uid_generated);
     uid_generated.erase(uid);
     l.unlock();
@@ -75,7 +74,7 @@ class uint_generator {
 };
 
 template <class UINT>
-class uint_uid_generator {
+class UintUidGenerator {
  private:
   UINT uid_generator;
   std::mutex m_uid_generator;
@@ -83,21 +82,21 @@ class uint_uid_generator {
   std::set<UINT> uid_generated;
   std::mutex m_uid_generated;
 
-  uint_uid_generator() : m_uid_generator(), m_uid_generated() {
+  UintUidGenerator() : m_uid_generator(), m_uid_generated() {
     uid_generator = 0;
     uid_generated = {};
   };
 
  public:
-  static uint_uid_generator& get_instance() {
-    static uint_uid_generator instance;
+  static UintUidGenerator& GetInstance() {
+    static UintUidGenerator instance;
     return instance;
   }
 
-  uint_uid_generator(uint_uid_generator const&) = delete;
-  void operator=(uint_uid_generator const&) = delete;
+  UintUidGenerator(UintUidGenerator const&) = delete;
+  void operator=(UintUidGenerator const&) = delete;
 
-  UINT get_uid() {
+  UINT GetUid() {
     std::unique_lock<std::mutex> lr(m_uid_generator);
     UINT uid = ++uid_generator;
     while (true) {
@@ -113,12 +112,11 @@ class uint_uid_generator {
     }
   }
 
-  void free_uid(UINT uid) {
+  void FreeUid(UINT uid) {
     std::unique_lock<std::mutex> l(m_uid_generated);
     uid_generated.erase(uid);
     l.unlock();
   }
 };
-
 }  // namespace util
 #endif  // FILE_UINT_GENERATOR_HPP_SEEN
