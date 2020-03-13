@@ -39,8 +39,10 @@ class UdpApplication {
  public:
   virtual void NotifyReceive(char* recv_buffer,
                              const std::size_t bytes_transferred,
-                             const EndPoint& r_endpoint);
-  virtual void NotifyReceiveError(int err_no, const EndPoint& r_endpoint);
-  virtual ~UdpApplication();
+                             const EndPoint& r_endpoint,
+                             const uint16_t local_port) = 0;
+  virtual void NotifyReceiveError(int err_no, const EndPoint& r_endpoint) = 0;
+  UdpApplication(){};
+  virtual ~UdpApplication(){};
 };
 #endif /* FILE_UDPAPPLICATION_HPP_SEEN */

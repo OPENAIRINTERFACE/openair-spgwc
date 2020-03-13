@@ -43,15 +43,18 @@ class TimerService {
    *  \param task_id      task id of the task requesting the timer
    *  @returns 0 on failure, timer id otherwise
    **/
-  timer_id_t TimerSetup(uint32_t interval_sec, uint32_t interval_us,
+  virtual timer_id_t TimerSetup(const uint32_t interval_sec,
+                                const uint32_t interval_us,
                         TimerApplication *ta, uint64_t arg1_user = 0,
-                        uint64_t arg2_user = 0);
+                                uint64_t arg2_user = 0) = 0;
 
   /** \brief Remove the timer from list
    *  \param timer_id unique timer id
    *  \param task_id task id of the task that requested the timer
    *  @returns -1 on failure, 0 otherwise
    **/
-  int TimerRemove(timer_id_t timer_id);
+  virtual int TimerRemove(const timer_id_t timer_id) = 0;
+  TimerService(){};
+  virtual ~TimerService(){};
 };
 #endif /* FILE_TIMERSERVICE_HPP_SEEN */

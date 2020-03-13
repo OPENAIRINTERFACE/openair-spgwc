@@ -41,7 +41,8 @@ typedef uint32_t timer_id_t;
 class TimerApplication {
  public:
   virtual void TimeOutNotification(const timer_id_t tid, uint64_t arg1_user = 0,
-                                   uint64_t arg2_user = 0);
-  virtual ~TimerApplication();
+                                   uint64_t arg2_user = 0) = 0;
+  TimerApplication(){};
+  virtual ~TimerApplication(){};
 };
 #endif /* FILE_TIMERAPPLICATION_HPP_SEEN */

@@ -33,23 +33,29 @@
 #include <cstddef>
 //--Other includes -------------------------------------------------------------
 #include "EndPoint.hpp"
-#include "gtpv2c.hpp"
+#include "Gtpv2cApplication.hpp"
 //------------------------------------------------------------------------------
 namespace gtpv2c {
 class GtpV2cService {
  public:
-  virtual uint64_t SendInitialMessage(std::unique_ptr<gtpv2c::Gtpv2cMsg> t_msg,
+  virtual void SendInitialMessage(std::shared_ptr<gtpv2c::Gtpv2cMsg> t_msg,
                                       const EndPoint& t_remote_endpoint,
-                                      const teid_t t_dest_teid,
-                                      const uint64_t t_trxn_id = 0);
-  virtual uint64_t SendTriggeredMessage(
-      std::unique_ptr<gtpv2c::Gtpv2cMsg> t_msg,
-      const EndPoint& t_remote_endpoint, const teid_t t_dest_teid,
-      const uint64_t t_trxn_id, const int t_trxn_action);
+                                  const uint16_t t_local_port,
+                                  const teid_t t_local_teid,
+                                  const std::pair<bool, teid_t> t_dest_teid,
+                                  const uint64_t t_trxn_id = 0) = 0;
+  virtual void SendTriggeredMessage(std::shared_ptr<gtpv2c::Gtpv2cMsg> t_msg,
+                                    const EndPoint& t_remote_endpoint,
+                                    const uint16_t t_local_port,
+                                    const std::pair<bool, teid_t> t_dest_teid,
+                                    const uint64_t t_trxn_id,
+                                    const int t_trxn_action) = 0;
 
-  virtual void RegisterApplication(GtpV2cApplication* app);
+  virtual void RegisterApplication(GtpV2cApplication* app) = 0;
 
-  virtual ~GtpV2cService() = default;
+  GtpV2cService(){};
+  virtual ~GtpV2cService(){};
 };
 }  // namespace gtpv2c
+#include "gtpv2c.hpp"
 #endif /* FILE_GTPV2CSERVICE_HPP_SEEN */

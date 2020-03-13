@@ -35,6 +35,7 @@
 #include <thread>
 //--Other includes -------------------------------------------------------------
 #include "Gtpv2cApplication.hpp"
+#include "Gtpv2cService.hpp"
 #include "gtpv2c.hpp"
 //------------------------------------------------------------------------------
 namespace spgwc {
@@ -52,36 +53,39 @@ class SpgwcS11 : public GtpV2cApplication {
   // implement GtpV2cApplication interface
   void NotifyReceiveMsg(std::unique_ptr<gtpv2c::Gtpv2cMsg> msg,
                         const EndPoint& remote_endpoint,
-                        const uint64_t gtpc_tx_id);
-  void NotifyTriggeredResponseTimeOut(gtpv2c::Gtpv2cMsg& msg,
-                                      const EndPoint& remote_endpoint);
+                        const uint16_t t_local_port,
+                        const uint64_t gtpc_tx_id) override;
+  void NotifyTriggeredResponseTimeOut(const EndPoint& remote_endpoint,
+                                      const teid_t t_local_teid,
+                                      const uint64_t t_trxn_id) override;
+  void NotifySduServiceSubmitted2LowerLayer(
+      const EndPoint& t_remote_endpoint, const teid_t t_local_teid,
+      const uint64_t t_trxn_id,
+      const std::pair<bool, teid_t> t_dest_teid) override;
   void NotifyError(const EndPoint& remote_endpoint, const uint64_t gtpc_tx_id,
-                   const uint32_t teid, const cause_value_e cause);
+                   const uint32_t teid, const cause_value_e cause) override;
 
   // interface with SPGWC Application
-  uint64_t SendMsg(std::shared_ptr<gtpv2c::Gtpv2cCreateSessionResponse> t_msg,
+  void SendMsg(std::shared_ptr<gtpv2c::Gtpv2cCreateSessionResponse> t_msg,
                    const EndPoint& t_remote_endpoint, const teid_t t_dest_teid,
                    const uint64_t t_gtpc_tx_id);
-  uint64_t SendMsg(std::shared_ptr<gtpv2c::Gtpv2cDeleteSessionResponse> t_msg,
+  void SendMsg(std::shared_ptr<gtpv2c::Gtpv2cDeleteSessionResponse> t_msg,
                    const EndPoint& t_remote_endpoint, const teid_t t_dest_teid,
                    const uint64_t t_gtpc_tx_id);
-  uint64_t SendMsg(std::shared_ptr<gtpv2c::Gtpv2cModifyBearerResponse> t_msg,
+  void SendMsg(std::shared_ptr<gtpv2c::Gtpv2cModifyBearerResponse> t_msg,
                    const EndPoint& t_remote_endpoint, const teid_t t_dest_teid,
                    const uint64_t t_gtpc_tx_id);
-  uint64_t SendMsg(
+  void SendMsg(
       std::shared_ptr<gtpv2c::Gtpv2cReleaseAccessBearersResponse> t_msg,
       const EndPoint& t_remote_endpoint, const teid_t t_dest_teid,
       const uint64_t t_gtpc_tx_id);
-  uint64_t SendMsg(
-      std::shared_ptr<gtpv2c::Gtpv2cDownlinkDataNotification> t_msg,
+  void SendMsg(std::shared_ptr<gtpv2c::Gtpv2cDownlinkDataNotification> t_msg,
       const EndPoint& t_remote_endpoint, const teid_t t_dest_teid,
       const uint64_t t_gtpc_tx_id);
-  uint64_t SendMsg(std::shared_ptr<gtpv2c::Gtpv2cEchoResponse> t_msg,
-                   const EndPoint& t_remote_endpoint,
-                   const uint64_t t_gtpc_tx_id);
-  uint64_t SendEchoResponse(const EndPoint& t_remote_endpoint,
-                            uint8_t restart_counter,
-                            const uint64_t t_gtpc_tx_id);
+  void SendMsg(std::shared_ptr<gtpv2c::Gtpv2cEchoResponse> t_msg,
+               const EndPoint& t_remote_endpoint, const uint64_t t_gtpc_tx_id);
+  void SendEchoResponse(const EndPoint& t_remote_endpoint,
+                        uint8_t restart_counter, const uint64_t t_gtpc_tx_id);
 
  private:
   std::thread::id thread_id;

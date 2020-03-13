@@ -304,6 +304,8 @@ class SpgwcApp {
                const EndPoint& remote_endpoint, const uint64_t trxn_id);
   void Receive(std::unique_ptr<pfcp::PfcpHeartbeatResponse> m,
                const EndPoint& remote_endpoint, const uint64_t trxn_id);
+  void Receive(std::unique_ptr<pfcp::PfcpAssociationSetupRequest> m,
+               const EndPoint& remote_endpoint, const uint64_t trxn_id);
   void Receive(std::unique_ptr<pfcp::PfcpAssociationSetupResponse> m,
                const EndPoint& remote_endpoint, const uint64_t trxn_id);
   void Receive(std::unique_ptr<pfcp::PfcpSessionEstablishmentResponse> m,
@@ -321,6 +323,12 @@ class SpgwcApp {
   void Receive(std::unique_ptr<pfcp::PfcpNodeReportRequest> m,
                const EndPoint& remote_endpoint, const seid_t local_seid,
                const uint64_t trxn_id);
+  void NotifyTriggeredResponseTimeOut(const EndPoint& t_remote_endpoint,
+                                      const teid_t t_local_teid,
+                                      const uint64_t t_trxn_id);
+  void NotifySduServiceSubmitted2LowerLayer(
+      const EndPoint& t_remote_endpoint, const teid_t t_local_teid,
+      const uint64_t t_trxn_id, const std::pair<bool, teid_t> t_dest_teid);
 };
 }  // namespace spgwc
 #endif /* FILE_SPGWC_APP_HPP_SEEN */

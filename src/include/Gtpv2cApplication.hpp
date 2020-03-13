@@ -37,21 +37,24 @@
 //------------------------------------------------------------------------------
 class GtpV2cApplication {
  public:
-  virtual void NotifyReceiveMsg(const std::unique_ptr<gtpv2c::Gtpv2cMsg> msg,
-                                const EndPoint& remote_endpoint,
-                                const uint64_t gtpc_tx_id);
+  virtual void NotifyReceiveMsg(const std::unique_ptr<gtpv2c::Gtpv2cMsg> t_msg,
+                                const EndPoint& t_remote_endpoint,
+                                const uint16_t t_local_port,
+                                const uint64_t t_trxn_id) = 0;
 
-  virtual void NotifyTriggeredResponseTimeOut(gtpv2c::Gtpv2cMsg& msg,
-                                              const EndPoint& remote_endpoint);
+  virtual void NotifyTriggeredResponseTimeOut(const EndPoint& t_remote_endpoint,
+                                              const teid_t t_local_teid,
+                                              const uint64_t t_trxn_id) = 0;
 
-  virtual void NotifyError(const EndPoint& remote_endpoint,
-                           const uint64_t gtpc_tx_id, const uint32_t teid,
-                           const cause_value_e cause);
+  virtual void NotifyError(const EndPoint& t_remote_endpoint,
+                           const uint64_t t_trxn_id, const teid_t t_teid,
+                           const cause_value_e t_cause) = 0;
   virtual void NotifySduServiceSubmitted2LowerLayer(
-      const EndPoint& remote_endpoint, const uint64_t gtpc_tx_id,
-      const uint32_t teid);
+      const EndPoint& t_remote_endpoint, const teid_t t_local_teid,
+      const uint64_t t_trxn_id, const std::pair<bool, teid_t> t_dest_teid) = 0;
 
-  virtual ~GtpV2cApplication();
+  GtpV2cApplication(){};
+  virtual ~GtpV2cApplication(){};
 };
 
 #endif /* FILE_GTPV2CAPPLICATION_HPP_SEEN */

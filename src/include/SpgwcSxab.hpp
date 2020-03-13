@@ -40,98 +40,126 @@ namespace spgwc {
 class SpgwcSxab;
 typedef void (SpgwcSxab::*PfcpMsgHandler)(std::unique_ptr<pfcp::PfcpMsg>,
                                           const EndPoint&,
-                                          const uint64_t trxn_id);
+                                          const uint64_t t_trxn_id);
 //------------------------------------------------------------------------------
 class SpgwcSxab : public PfcpApplication {
  public:
   SpgwcSxab(pfcp::PfcpService& service);
   SpgwcSxab(SpgwcSxab const&) = delete;
   void operator=(SpgwcSxab const&) = delete;
-
+  //--------------------------------------------
   // implement PfcpApplication interface
-  void NotifyReceiveMsg(std::unique_ptr<pfcp::PfcpMsg> msg,
-                        const EndPoint& remote_endpoint,
-                        const uint64_t trxn_id);
-  void NotifyTriggeredResponseTimeOut(pfcp::PfcpMsg& msg,
-                                      const EndPoint& remote_endpoint);
-  void NotifyError(const EndPoint& remote_endpoint, const uint64_t trxn_id,
-                   const seid_t teid, const cause_value_e cause);
-
+  void NotifyReceiveMsg(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                        const EndPoint& t_remote_endpoint,
+                        const uint16_t t_local_port, const uint64_t t_trxn_id);
+  void NotifyTriggeredResponseTimeOut(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                      const EndPoint& t_remote_endpoint);
+  void NotifyError(const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id,
+                   const seid_t t_seid, const pfcp::cause_value_e t_cause);
+  void NotifySduServiceSubmitted2LowerLayer(const EndPoint& t_remote_endpoint,
+                                            const uint64_t t_trxn_id,
+                                            const seid_t t_seid);
+  //--------------------------------------------
   // interface with SPGWC/SPGWU Application
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpAssociationSetupRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpAssociationSetupResponse> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
+  void SendMsg(std::shared_ptr<pfcp::PfcpAssociationSetupResponse> t_msg,
+               const EndPoint& t_remote_endpoint,
+               const std::pair<bool, seid_t> t_dest_seid,
+               const uint64_t t_trxn_id);
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpAssociationReleaseRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpAssociationReleaseResponse> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
+  void SendMsg(std::shared_ptr<pfcp::PfcpAssociationReleaseResponse> t_msg,
+               const EndPoint& t_remote_endpoint,
+               const std::pair<bool, seid_t> t_dest_seid,
+               const uint64_t t_trxn_id);
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpAssociationUpdateRequest> t_msg,
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
+  void SendMsg(std::shared_ptr<pfcp::PfcpAssociationUpdateResponse> t_msg,
+               const EndPoint& t_remote_endpoint,
+               const std::pair<bool, seid_t> t_dest_seid,
+               const uint64_t t_trxn_id);
+  void SendMsg(std::shared_ptr<pfcp::PfcpHeartbeatRequest> t_msg,
                    const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpAssociationUpdateResponse> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpHeartbeatRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpHeartbeatResponse> t_msg,
+  void SendMsg(std::shared_ptr<pfcp::PfcpHeartbeatResponse> t_msg,
                    const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpNodeReportRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpNodeReportResponse> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
+  void SendMsg(std::shared_ptr<pfcp::PfcpNodeReportResponse> t_msg,
+               const EndPoint& t_remote_endpoint,
+               const std::pair<bool, seid_t> t_dest_seid,
+               const uint64_t t_trxn_id);
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpSessionEstablishmentRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpSessionModificationRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
   uint64_t SendMsg(std::shared_ptr<pfcp::PfcpSessionDeletionRequest> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
-  uint64_t SendMsg(std::shared_ptr<pfcp::PfcpSessionReportResponse> t_msg,
-                   const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id);
+                   const EndPoint& t_remote_endpoint,
+                   const std::pair<bool, seid_t> t_dest_seid,
+                   const uint64_t t_trxn_id);
+  void SendMsg(std::shared_ptr<pfcp::PfcpSessionReportResponse> t_msg,
+               const EndPoint& t_remote_endpoint,
+               const std::pair<bool, seid_t> t_dest_seid,
+               const uint64_t t_trxn_id);
 
-  void SendEchoResponse(const EndPoint& t_remote_endpoint,
-                        uint8_t restart_counter, const uint64_t t_trxn_id);
+  void SendHeartbeatResponse(const EndPoint& t_remote_endpoint,
+                             uint32_t t_recovery_time_stamp,
+                             const uint64_t t_trxn_id);
+  void SendHeartbeatRequest(const EndPoint& t_remote_endpoint,
+                            uint32_t t_recovery_time_stamp,
+                            const uint64_t t_trxn_id);
 
  private:
   std::thread::id thread_id;
   std::thread thread;
   pfcp::PfcpService& pfcp_service_;
   static const std::array<PfcpMsgHandler, PFCP_LAST_HANDLED_MESSAGE> handlers_;
-  void HandleReceiveUnhandledMessage(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                     const EndPoint& remote_endpoint,
-                                     const uint64_t trxn_id);
-  void HandleReceivePfcpMsg(std::unique_ptr<pfcp::PfcpMsg> msg,
-                            const EndPoint& remote_endpoint,
-                            const uint64_t trxn_id);
+  void HandleReceiveUnhandledMessage(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                     const EndPoint& t_remote_endpoint,
+                                     const uint64_t t_trxn_id);
+  void HandleReceivePfcpMsg(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                            const EndPoint& t_remote_endpoint,
+                            const uint64_t t_trxn_id);
 
-  void HandleReceiveHeartbeatRequest(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                     const EndPoint& remote_endpoint,
-                                     const uint64_t trxn_id);
-  void HandleReceiveHeartbeatResponse(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                      const EndPoint& remote_endpoint,
-                                      const uint64_t trxn_id);
-  void HandleReceiveAssociationSetupRequest(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                            const EndPoint& remote_endpoint,
-                                            const uint64_t trxn_id);
-  void HandleReceiveAssociationSetupResponse(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                             const EndPoint& remote_endpoint,
-                                             const uint64_t trxn_id);
+  void HandleReceiveHeartbeatRequest(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                     const EndPoint& t_remote_endpoint,
+                                     const uint64_t t_trxn_id);
+  void HandleReceiveHeartbeatResponse(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                      const EndPoint& t_remote_endpoint,
+                                      const uint64_t t_trxn_id);
+  void HandleReceiveAssociationSetupRequest(
+      std::unique_ptr<pfcp::PfcpMsg> t_msg, const EndPoint& t_remote_endpoint,
+      const uint64_t t_trxn_id);
+  void HandleReceiveAssociationSetupResponse(
+      std::unique_ptr<pfcp::PfcpMsg> t_msg, const EndPoint& t_remote_endpoint,
+      const uint64_t t_trxn_id);
   void HandleReceiveSessionEstablishmentResponse(
-      std::unique_ptr<pfcp::PfcpMsg> msg, const EndPoint& remote_endpoint,
-      const seid_t local_seid, const uint64_t trxn_id);
+      std::unique_ptr<pfcp::PfcpMsg> t_msg, const EndPoint& t_remote_endpoint,
+      const uint64_t t_trxn_id);
   void HandleReceiveSessionModificationResponse(
-      std::unique_ptr<pfcp::PfcpMsg> msg, const EndPoint& remote_endpoint,
-      const seid_t local_seid, const uint64_t trxn_id);
-  void HandleReceiveSessionDeletionResponse(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                            const EndPoint& remote_endpoint,
-                                            const seid_t local_seid,
-                                            const uint64_t trxn_id);
-  void HandleReceiveSessionReportRequest(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                         const EndPoint& remote_endpoint,
-                                         const seid_t local_seid,
-                                         const uint64_t trxn_id);
-  void HandleReceiveNodeReportRequest(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                      const EndPoint& remote_endpoint,
-                                      const seid_t local_seid,
-                                      const uint64_t trxn_id);
+      std::unique_ptr<pfcp::PfcpMsg> t_msg, const EndPoint& t_remote_endpoint,
+      const uint64_t t_trxn_id);
+  void HandleReceiveSessionDeletionResponse(
+      std::unique_ptr<pfcp::PfcpMsg> t_msg, const EndPoint& t_remote_endpoint,
+      const uint64_t t_trxn_id);
+  void HandleReceiveSessionReportRequest(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                         const EndPoint& t_remote_endpoint,
+                                         const uint64_t t_trxn_id);
+  void HandleReceiveNodeReportRequest(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                      const EndPoint& t_remote_endpoint,
+                                      const uint64_t t_trxn_id);
 };
 }  // namespace spgwc
 #endif /* FILE_SXAB_HPP_SEEN */

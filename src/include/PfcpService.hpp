@@ -34,19 +34,22 @@
 //--Other includes -------------------------------------------------------------
 #include "EndPoint.hpp"
 #include "PfcpApplication.hpp"
-#include "pfcp.hpp"
 //------------------------------------------------------------------------------
 namespace pfcp {
 class PfcpService {
  public:
   virtual uint64_t SendRequest(std::shared_ptr<pfcp::PfcpMsg> t_msg,
                                const EndPoint& t_remote_endpoint,
-                               const uint64_t t_trxn_id);
+                               const std::pair<bool, seid_t> t_dest_seid,
+                               const uint64_t t_trxn_id) = 0;
   virtual void SendResponse(std::shared_ptr<pfcp::PfcpMsg> t_msg,
                             const EndPoint& t_remote_endpoint,
+                            const std::pair<bool, seid_t> t_dest_seid,
                             const uint64_t t_trxn_id, const int t_trxn_action);
-  virtual void RegisterApplication(PfcpApplication* app);
-  virtual ~PfcpService();
+  virtual void RegisterApplication(PfcpApplication* app) = 0;
+  PfcpService(){};
+  virtual ~PfcpService(){};
 };
 }  // namespace pfcp
+#include "pfcp.hpp"
 #endif /* FILE_PFCPSERVICE_HPP_SEEN */

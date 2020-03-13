@@ -37,18 +37,22 @@
 //------------------------------------------------------------------------------
 class PfcpApplication {
  public:
-  virtual void NotifyReceiveMsg(std::unique_ptr<pfcp::PfcpMsg> msg,
-                                const EndPoint& remote_endpoint,
-                                const uint64_t gtpc_tx_id);
+  virtual void NotifyReceiveMsg(std::unique_ptr<pfcp::PfcpMsg> t_msg,
+                                const EndPoint& t_remote_endpoint,
+                                const uint16_t t_local_port,
+                                const uint64_t t_trxn_id) = 0;
 
   virtual void NotifyTriggeredResponseTimeOut(
-      std::unique_ptr<pfcp::PfcpMsg> msg, const EndPoint& remote_endpoint);
+      std::unique_ptr<pfcp::PfcpMsg> msg, const EndPoint& remote_endpoint) = 0;
 
-  virtual void NotifyError(const EndPoint& remote_endpoint,
-                           const uint64_t trxn_id, const seid_t seid,
-                           const pfcp::cause_value_e cause);
-
-  virtual ~PfcpApplication();
+  virtual void NotifyError(const EndPoint& t_remote_endpoint,
+                           const uint64_t t_trxn_id, const seid_t t_seid,
+                           const pfcp::cause_value_e t_cause) = 0;
+  virtual void NotifySduServiceSubmitted2LowerLayer(
+      const EndPoint& t_remote_endpoint, const uint64_t t_trxn_id,
+      const seid_t t_seid) = 0;
+  PfcpApplication(){};
+  virtual ~PfcpApplication(){};
 };
 
 #endif /* FILE_PFCPAPPLICATION_HPP_SEEN */

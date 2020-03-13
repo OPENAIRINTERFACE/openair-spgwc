@@ -41,19 +41,21 @@
 class UdpService {
  public:
   virtual void AsyncSendTo(const uint key, const char* send_buffer,
-                           const ssize_t num_bytes, const EndPoint& r_endpoint);
+                           const ssize_t num_bytes,
+                           const EndPoint& r_endpoint) = 0;
 
   virtual void AsyncSendTo(const uint key, const char* send_buffer,
                            const ssize_t num_bytes,
-                           const struct sockaddr_in& r_endpoint);
+                           const struct sockaddr_in& r_endpoint) = 0;
 
   virtual void AsyncSendTo(const uint key, const char* send_buffer,
                            const ssize_t num_bytes,
-                           const struct sockaddr_in6& r_endpoint);
+                           const struct sockaddr_in6& r_endpoint) = 0;
 
-  virtual uint16_t RegisterApplication(
+  virtual std::pair<uint16_t, uint16_t> RegisterApplication(
       UdpApplication* app, const char* address, const uint16_t rx_port_num,
-      const util::ThreadSchedParams& sched_params);
-  virtual ~UdpService();
+      const util::ThreadSchedParams& sched_params) = 0;
+  UdpService(){};
+  virtual ~UdpService(){};
 };
 #endif /* FILE_UDPSERVICE_HPP_SEEN */

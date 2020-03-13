@@ -23,8 +23,10 @@
 
 //#define SPDLOG_LEVEL_NAMES { "trace", "debug", "info",  "warning", "error",
 //"critical", "off" };
+#ifndef SPDLOG_LEVEL_NAMES
 #define SPDLOG_LEVEL_NAMES \
   {"trace", "debug", "info ", "start", "warn ", "error", "off  "};
+#endif
 
 #define SPDLOG_ENABLE_SYSLOG
 #include "spdlog/spdlog.h"
