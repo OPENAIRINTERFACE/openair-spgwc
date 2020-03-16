@@ -325,7 +325,7 @@ pipeline {
       script {
         // Killing all containers
         try {
-          myShCmd('docker rm -f ci-oai-sgwc ci-oai-spgwu', new_host_flag, new_host_user, new_host)
+          myShCmd('docker rm -f ci-oai-spgwc ci-oai-spgwu', new_host_flag, new_host_user, new_host)
         } catch (Exception e) {
           echo "No problem: we may not started all containers"
         }
