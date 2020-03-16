@@ -228,7 +228,7 @@ pipeline {
         stage('Deploy OAI-SPGWU-TINY') {
           steps {
             script {
-              myShCmd('docker run --name ci-oai-spgwu -d oai-spgwu-tiny:develop /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
+              myShCmd('docker run --privileged --name ci-oai-spgwu -d oai-spgwu-tiny:develop /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
               // First connect S1-U --> will be eth1
               myShCmd('docker network connect ci-s1u ci-oai-spgwu',  new_host_flag, new_host_user, new_host)
               // Then connect SX --> will be eth2
