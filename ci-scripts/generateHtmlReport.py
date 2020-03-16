@@ -428,7 +428,7 @@ class HtmlReport():
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
 				cell_msg += 'KO:\n'
-			cell_msg += ' -- build_hss_rel14 --check-installed-software --force\n'
+			cell_msg += ' -- build_spgwc --install-deps --force\n'
 			if package_install:
 				cell_msg += '   ** Packages Installation: OK\n'
 			else:
