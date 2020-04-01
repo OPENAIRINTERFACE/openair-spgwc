@@ -42,6 +42,10 @@ def new_host_flag = false
 def new_host = ""
 def new_host_user = ""
 
+// Variables to pass to the FED Test job
+def spgwc_tag = 'develop'
+def spgwc_branch = 'develop'
+
 //-------------------------------------------------------------------------------
 // Pipeline start
 pipeline {
@@ -87,6 +91,8 @@ pipeline {
             echo "PR TITLE   is ${env.ghprbPullTitle}"
             sh "./ci-scripts/doGitHubPullRequestTempMerge.sh --src-branch ${env.ghprbSourceBranch} --src-commit ${env.ghprbActualCommit} --target-branch ${env.ghprbTargetBranch} --target-commit ${GIT_COMMIT}"
             sh "sleep 10"
+            spgwc_tag = 'ci-temp'
+            spgwc_branch = env.ghprbSourceBranch
           } else {
             echo "======= THIS IS A PUSH EVENT ======"
             echo "Git Branch is ${GIT_BRANCH}"
@@ -219,7 +225,7 @@ pipeline {
         }
       }
     }
-    stage('Deploy Full EPC') {
+    stage('Deploy Sanity Check Test') {
       stages {
         stage('Create Docker Networks') {
           steps {
@@ -326,6 +332,35 @@ pipeline {
           copyFrom2ndServer('archives/*_check_run.log', 'archives', new_host_flag, new_host_user, new_host)
           sh "echo 'OAI-SPGW-C CHECK START/STOP: KO' > archives/spgwc_cnf_check_start.log"
           sh "echo 'OAI-SPGW-U CHECK START/STOP: KO' > archives/spgwu_cnf_check_start.log"
+        }
+      }
+    }
+    stage ('Undeploy Sanity Check Test') {
+      steps {
+        script {
+          // Killing all containers
+          myShCmd('docker rm -f ci-oai-spgwc ci-oai-spgwu', new_host_flag, new_host_user, new_host)
+          // Removing all intermediate networks
+          myShCmd('docker network rm ci-s11 ci-sx ci-s1u', new_host_flag, new_host_user, new_host)
+        }
+      }
+    }
+    stage ('Testing in FED environment') {
+      steps {
+        script {
+          localStatus = build job: 'CI-OpenAir-EPC-FED',
+            parameters: [
+              string(name: 'SPGWC_TAG', value: String.valueOf(spgwc_tag)),
+              string(name: 'SPGWC_BRANCH', value: String.valueOf(spgwc_branch))
+            ], propagate: false
+          localResult = localStatus.getResult()
+
+          if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
+            echo "Federation Test Job is OK"
+          } else {
+            echo "Federation Test Job is KO"
+            sh "ci-scripts/fail.sh"
+          }
         }
       }
     }
