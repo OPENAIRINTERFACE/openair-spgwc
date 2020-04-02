@@ -29,6 +29,9 @@ class spgwcConfigGen():
 		self.kind = ''
 		self.s11c_name = ''
 		self.sxc_name = ''
+		self.apn = 'apn.oai.svc.cluster.local'
+		self.dns1_ip = '192.168.18.129'
+		self.dns2_ip = '8.8.4.4'
 		self.fromDockerFile = False
 
 	def GenerateSpgwcConfigurer(self):
@@ -51,9 +54,9 @@ class spgwcConfigGen():
 		else:
 			spgwcFile.write('PREFIX=\'/usr/local/etc/oai\'\n')
 		spgwcFile.write('\n')
-		spgwcFile.write('MY_APN=\'apn.oai.svc.cluster.local\'\n')
-		spgwcFile.write('MY_PRIMARY_DNS=\'192.168.18.129\'\n')
-		spgwcFile.write('MY_SECONDARY_DNS=\'8.8.4.4\'\n')
+		spgwcFile.write('MY_APN=\'' + self.apn + '\'\n')
+		spgwcFile.write('MY_PRIMARY_DNS=\'' + self.dns1_ip + '\'\n')
+		spgwcFile.write('MY_SECONDARY_DNS=\'' + self.dns2_ip + '\'\n')
 		spgwcFile.write('\n')
 		if not self.fromDockerFile:
 			spgwcFile.write('mkdir -p $PREFIX\n')
@@ -94,6 +97,10 @@ def Usage():
 	print('  --s11c=[SPGW-C S11 Interface Name]')
 	print('  --sxc=[SPGW-C SX Interface Name]')
 	print('  --from_docker_file')
+	print('------------------------------------------------------------------------------------------- SPGW-C Not Mandatory -----')
+	print('  --apn=[Access Point Name]')
+	print('  --dns1_ip=[First DNS IP address]')
+	print('  --dns2_ip=[Second DNS IP address]')
 
 argvs = sys.argv
 argc = len(argvs)
@@ -115,6 +122,15 @@ while len(argvs) > 1:
 	elif re.match('^\-\-sxc=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-sxc=(.+)$', myArgv, re.IGNORECASE)
 		mySpgwcCfg.sxc_name = matchReg.group(1)
+	elif re.match('^\-\-apn=(.+)$', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-apn=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.apn = matchReg.group(1)
+	elif re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.dns1_ip = matchReg.group(1)
+	elif re.match('^\-\-dns2_ip=(.+)$', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-dns2_ip=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.dns2_ip = matchReg.group(1)
 	elif re.match('^\-\-from_docker_file', myArgv, re.IGNORECASE):
 		mySpgwcCfg.fromDockerFile = True
 	else:
