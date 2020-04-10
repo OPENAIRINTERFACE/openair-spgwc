@@ -39,8 +39,7 @@ ARG CI_DEST_BRANCH
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
     psmisc \
     git \
   && rm -rf /var/lib/apt/lists/*
@@ -71,9 +70,8 @@ FROM ubuntu:bionic as oai-spgwc
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes
 # We install some debug tools for the moment in addition of mandatory libraries
-RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
     psmisc \
     net-tools \
     tshark \
