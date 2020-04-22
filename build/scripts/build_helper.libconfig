@@ -29,7 +29,7 @@ THIS_SCRIPT_PATH=`dirname $SCRIPT`
 source $THIS_SCRIPT_PATH/build_helper
 
 #-------------------------------------------------------------------------------
-# Motivation: seems libconfig++ need to be compiled with same application C++ compiler, 
+# Motivation: seems libconfig++ need to be compiled with same application C++ compiler,
 # otherwise you encounter strange linker errors. (ubuntu 16.04)
 
 #arg1 is force (0 or 1) (no interactive script)
@@ -84,7 +84,7 @@ install_libconfig_from_source(){
     autoreconf -fi
     ./configure
     ret=$?;[[ $ret -ne 0 ]] && return $ret
-    make -j `nproc` > /tmp/log_compile_config 2>&1
+    make $JNPROC > /tmp/log_compile_config 2>&1
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     $SUDO make install
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret

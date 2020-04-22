@@ -47,7 +47,7 @@ install_fb_folly_from_source(){
 
   if [[ $prompt =~ [yY](es)* ]]
   then
- 
+
     $SUDO apt-get install $OPTION \
       g++ \
       cmake \
@@ -77,7 +77,7 @@ install_fb_folly_from_source(){
         libelf-dev \
         libdwarf-dev
       ret=$?;[[ $ret -ne 0 ]] && return $ret
-      
+
       wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz && \
       tar zxf release-1.8.0.tar.gz && \
       rm -f release-1.8.0.tar.gz && \
@@ -89,7 +89,7 @@ install_fb_folly_from_source(){
       cd ..
     fi
 
-    
+
     $SUDO rm -rf /tmp/folly
     git clone https://github.com/facebook/folly.git
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
@@ -98,7 +98,7 @@ install_fb_folly_from_source(){
     mkdir _build && cd _build
     cmake  ..
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
-    make -j $(nproc)
+    make $JNPROC
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     $SUDO make install
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret

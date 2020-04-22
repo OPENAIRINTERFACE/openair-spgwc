@@ -111,6 +111,9 @@ function main()
         shift;
         ;;
       -j | --jobs)
+        # JNPROC used in build of 3rd party libraries
+        export JNPROC="-j`nproc`"
+        # used in building OAI executable
         make_args="$make_args -j`nproc`"
         shift;
         ;;

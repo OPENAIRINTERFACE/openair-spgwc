@@ -57,7 +57,7 @@ install_fmt() {
     cd fmt
     cmake .
     ret=$?;[[ $ret -ne 0 ]] && return $ret
-    make -j `nproc`
+    make $JNPROC
     ret=$?;[[ $ret -ne 0 ]] && return $ret
     $SUDO make install
     cd /tmp
