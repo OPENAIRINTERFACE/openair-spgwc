@@ -940,6 +940,29 @@ struct paa_s {
         return false;
     }
   }
+  //------------------------------------------------------------------------------
+  std::string get_ip_as_string() const
+  {
+    std::string s = {};
+    switch (pdn_type.pdn_type) {
+      case PDN_TYPE_E_IPV4:
+        s.append(conv::toString(ipv4_address));
+        break;
+      case PDN_TYPE_E_IPV6:
+        s.append(conv::toString(ipv6_address));
+        break;
+      case PDN_TYPE_E_IPV4V6:
+        // TODO
+        s.append(conv::toString(ipv4_address));
+        s.append("|");
+        s.append(conv::toString(ipv6_address));
+        break;
+      case PDN_TYPE_E_NON_IP:
+      default:
+        ;
+    }
+    return s;
+  }  
 };
 
 typedef struct paa_s paa_t;
