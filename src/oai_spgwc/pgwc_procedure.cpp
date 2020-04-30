@@ -20,6 +20,7 @@
  */
 
 #include "pgwc_procedure.hpp"
+#include "async_shell_cmd.hpp"
 #include "3gpp_29.244.h"
 #include "3gpp_29.274.h"
 #include "3gpp_conversions.hpp"
@@ -40,6 +41,7 @@ using namespace pfcp;
 using namespace pgwc;
 using namespace std;
 
+extern util::async_shell_cmd *async_shell_cmd_inst;
 extern itti_mw* itti_inst;
 extern pgwc::pgw_app* pgw_app_inst;
 extern pgwc::pgw_config pgw_cfg;
@@ -772,6 +774,40 @@ void modify_bearer_procedure::handle_itti_msg(
               pgw_eps_bearer b2 = b;
               ppc->add_eps_bearer(b2);
 
+              //TODO: send to LL-MEC
+              if (pgw_cfg.mosaic_5g.enabled) {
+                struct in_addr remote_controller = { .s_addr = 0 };
+                remote_controller.s_addr = pgw_cfg.mosaic_5g.remote_controller
+                    .s_addr;
+                char command[500];
+                snprintf(command, 500, "curl -d '{\"eps_bearer_id\":%u, \"imsi\":\"%" PRIu64 "\", \"s1_ul_teid\":\"0x%x\", \"s1_dl_teid\":\"0x%x\", \"ue_ip\":\"%s\", \"enb_ip\":\"%s\"}' -X POST http://%s:%d/bearer",
+                    b.ebi,
+                    pc->imsi.to_imsi64(),  // ebc->imsi.to_imsi64(),
+                    b.pgw_fteid_s5_s8_up.teid_gre_key,//seb->sgw_fteid_s1u_s12_s4u_s11u.teid_gre_key,
+                    b.sgw_fteid_s5_s8_up.teid_gre_key,//seb->enb_fteid_s1u.teid_gre_key,//
+                    conv::toString(ppc->ipv4_address).c_str(),//paa.get_ip_as_string().c_str(),
+                    b.sgw_fteid_s5_s8_up.ipv4_address,//inet_ntoa(seb->enb_fteid_s1u.ipv4_address),
+                    inet_ntoa(remote_controller),
+                    pgw_cfg.mosaic_5g.remote_controller_port);
+
+                /*std::string command_str = fmt::format("curl -d '{\"eps_bearer_id\":{}, \"imsi\":\"{}\", \"s1_ul_teid\":\"0x{:04x}\", \"s1_dl_teid\":\"0x{:04x}\", \"ue_ip\":\"{}\", \"enb_ip\":\"{}\"}' -X POST http://{}:{}/ue",
+                 ebi.ebi,
+                 ebc->imsi.to_imsi64(),
+                 seb->sgw_fteid_s1u_s12_s4u_s11u.teid_gre_key,
+                 seb->enb_fteid_s1u.teid_gre_key,
+                 paa.get_ip_as_string(),
+                 inet_ntoa(seb->enb_fteid_s1u.ipv4_address),
+                 inet_ntoa(remote_controller),
+                 sgwc_cfg.mosaic_5g.remote_controller_port); */
+                std::string command_str(command);
+                Logger::pgwc_app().debug(
+                    "Send Curl command to LL-MEC Controller: %s",
+                    command_str.c_str());
+                async_shell_cmd_inst->run_command(TASK_PGWC_APP, false,
+                __FILE__,
+                                                  __LINE__, command_str);
+              }
+
               gtpv2c::bearer_context_modified_within_modify_bearer_response
                   bcc = {};
               ::cause_t bcc_cause = {
@@ -943,6 +979,33 @@ void release_access_bearers_procedure::handle_itti_msg(
   xgpp_conv::pfcp_cause_to_core_cause(pfcp_cause, gtp_cause);
 
   s5_triggered_pending->gtp_ies.set(gtp_cause);
+
+
+
+
+  for (auto it : ppc->eps_bearers) {
+    pgw_eps_bearer& peb = it.second;
+
+    if ((peb.far_id_dl.first or peb.far_id_ul.first) and peb.released) {
+      //TODO: send to LL-MEC
+      if (pgw_cfg.mosaic_5g.enabled) {
+        struct in_addr remote_controller = { .s_addr = 0 };
+        remote_controller.s_addr = pgw_cfg.mosaic_5g.remote_controller.s_addr;
+        char command[500];
+        snprintf(command, 500, "curl -X DELETE http://%s:%d/bearer/%u",
+                 inet_ntoa(remote_controller),
+                 pgw_cfg.mosaic_5g.remote_controller_port, peb.ebi.ebi);
+
+        std::string command_str(command);
+        Logger::pgwc_app().debug("Send Curl command to LL-MEC Controller: %s",
+                                 command_str.c_str());
+        async_shell_cmd_inst->run_command(TASK_PGWC_APP, false,
+        __FILE__,
+                                          __LINE__, command_str);
+      }
+    }
+  }
+
   // for now we do not need more IEs
   Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
                           s5_triggered_pending->gtp_ies.get_msg_name());

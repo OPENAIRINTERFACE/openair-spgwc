@@ -240,6 +240,33 @@ int pgw_config::load_interface(const Setting &if_cfg, interface_cfg_t &cfg) {
   return RETURNok;
 }
 
+
+//------------------------------------------------------------------------------
+int pgw_config::load_mosaic_5g(const Setting& lib_cfg, mosaic_5g_cfg_t& cfg)
+{
+  cfg.enabled = false;
+  std::string astring = {};
+  if (lib_cfg.lookupValue(PGWC_CONFIG_STRING_REMOTE_CONTROLLER_ENABLED, astring)) {
+    if (boost::iequals(astring, "yes")) {
+      cfg.enabled = true;
+    }
+  }
+
+  std::string address = {};
+  lib_cfg.lookupValue(PGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS, address);
+  util::trim(address);
+  unsigned char buf_in_addr[sizeof(struct in6_addr)];
+  if (inet_pton (AF_INET, address.c_str(), buf_in_addr) == 1) {
+    memcpy (&cfg.remote_controller, buf_in_addr, sizeof (struct in_addr));
+  } else {
+    Logger::pgwc_app().error("In conversion: Bad value " PGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS " = %s in config file", address.c_str());
+    return RETURNerror;
+  }
+
+  lib_cfg.lookupValue(PGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT, cfg.remote_controller_port);
+  return RETURNok;
+}
+
 //------------------------------------------------------------------------------
 int pgw_config::load(const string &config_file) {
   Config cfg;
@@ -541,6 +568,18 @@ int pgw_config::load(const string &config_file) {
     Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
     return RETURNerror;
   }
+
+  try
+  {
+    //const Setting& pgw_cfg = root[PGWC_CONFIG_STRING_PGW_CONFIG];
+    const Setting& mosaic_cfg = pgw_cfg[PGWC_CONFIG_STRING_MOSAIC_5G];
+    load_mosaic_5g(mosaic_cfg, mosaic_5g);
+  }
+  catch(const SettingNotFoundException &nfex)
+  {
+    Logger::sgwc_app().trace("%s : %s", nfex.what(), nfex.getPath());
+  }
+
   return finalize();
 }
 

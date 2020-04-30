@@ -125,6 +125,12 @@
 #define PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS "PGW_APP_SCHED_PARAMS"
 #define PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS "ASYNC_CMD_SCHED_PARAMS"
 
+#define PGWC_CONFIG_STRING_MOSAIC_5G                             "MOSAIC_5G"
+#define PGWC_CONFIG_STRING_REMOTE_CONTROLLER_ENABLED             "REMOTE_CONTROLLER_ENABLED"
+#define PGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS        "REMOTE_CONTROLLER_IPV4_ADDRESS"
+#define PGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT                "REMOTE_CONTROLLER_PORT"
+
+
 #define PGW_MAX_ALLOCATED_PDN_ADDRESSES 1024
 
 namespace pgwc {
@@ -147,6 +153,15 @@ typedef struct itti_cfg_s {
   util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 
+
+typedef struct mosaic_5g_cfg_s {
+  bool            enabled;
+  struct in_addr  remote_controller;
+  //struct in6_addr addr6;
+  unsigned int    remote_controller_port;
+} mosaic_5g_cfg_t;
+
+
 class pgw_config {
  private:
   int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
@@ -154,6 +169,7 @@ class pgw_config {
   int load_thread_sched_params(
       const libconfig::Setting& thread_sched_params_cfg,
       util::thread_sched_params& cfg);
+  int load_mosaic_5g(const libconfig::Setting& if_cfg, mosaic_5g_cfg_t& cfg);
 
  public:
   /* Reader/writer lock for this configuration */
@@ -164,6 +180,7 @@ class pgw_config {
   interface_cfg_t s5s8_cp;
   interface_cfg_t sx;
   itti_cfg_t itti;
+  mosaic_5g_cfg_t mosaic_5g;
 
   struct in_addr default_dnsv4;
   struct in_addr default_dns_secv4;
@@ -214,7 +231,8 @@ class pgw_config {
         instance(0),
         s5s8_cp(),
         sx(),
-        itti() {
+        itti(),
+        mosaic_5g() {
     for (int i = 0; i < PGW_NUM_APN_MAX; i++) {
       apn[i] = {};
     }
