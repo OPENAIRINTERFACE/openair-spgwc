@@ -913,7 +913,7 @@ void pgw_context::handle_itti_msg(
     if (sp) {
       if (not sp->released) {
         release_access_bearers_procedure* proc =
-            new release_access_bearers_procedure(sp);
+            new release_access_bearers_procedure(sp, shared_from_this());
         std::shared_ptr<pgw_procedure> sproc =
             std::shared_ptr<pgw_procedure>(proc);
         insert_procedure(sproc);

@@ -970,7 +970,7 @@ void release_access_bearers_procedure::handle_itti_msg(
 
 
   for (auto it : ppc->eps_bearers) {
-    pgw_eps_bearer& peb = it.second;
+    pgw_eps_bearer &peb = it.second;
 
     if ((peb.far_id_dl.first or peb.far_id_ul.first) and peb.released) {
       //TODO: send to LL-MEC
@@ -978,9 +978,9 @@ void release_access_bearers_procedure::handle_itti_msg(
         struct in_addr remote_controller = { .s_addr = 0 };
         remote_controller.s_addr = pgw_cfg.mosaic_5g.remote_controller.s_addr;
         char command[500];
-        snprintf(command, 500, "curl -X DELETE http://%s:%d/bearer/%u",
-                 inet_ntoa(remote_controller),
-                 pgw_cfg.mosaic_5g.remote_controller_port, peb.ebi.ebi);
+        snprintf(command, 500, "curl -X DELETE http://%s:%d/bearer/imsi_bearer/%" PRIu64 ",%u",
+            inet_ntoa(remote_controller),
+            pgw_cfg.mosaic_5g.remote_controller_port, pc->imsi.to_imsi64(), peb.ebi.ebi);
 
         std::string command_str(command);
         Logger::pgwc_app().debug("Send Curl command to LL-MEC Controller: %s",

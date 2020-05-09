@@ -152,12 +152,21 @@ class modify_bearer_procedure : public pgw_procedure {
 class release_access_bearers_procedure : public pgw_procedure {
  public:
   explicit release_access_bearers_procedure(
+      std::shared_ptr<pgw_pdn_connection>& sppc, std::shared_ptr<pgwc::pgw_context> spc)
+      : pgw_procedure(),
+        ppc(sppc),
+        pc(spc),
+        sx_triggered(),
+        s5_triggered_pending(),
+        s5_trigger() {}
+  explicit release_access_bearers_procedure(
       std::shared_ptr<pgw_pdn_connection>& sppc)
       : pgw_procedure(),
         ppc(sppc),
         sx_triggered(),
         s5_triggered_pending(),
         s5_trigger() {}
+
   int run(std::shared_ptr<itti_s5s8_release_access_bearers_request>& req,
           std::shared_ptr<itti_s5s8_release_access_bearers_response>& resp,
           std::shared_ptr<pgwc::pgw_context> pc);
