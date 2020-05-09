@@ -264,6 +264,9 @@ int pgw_config::load_mosaic_5g(const Setting& lib_cfg, mosaic_5g_cfg_t& cfg)
   }
 
   lib_cfg.lookupValue(PGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT, cfg.remote_controller_port);
+
+  Logger::pgwc_app().debug("load_mosaic_5g, controller ipv4 address %s, port %s", conv::toString(cfg.remote_controller).c_str(),std::to_string(cfg.remote_controller_port).c_str()
+                               );
   return RETURNok;
 }
 

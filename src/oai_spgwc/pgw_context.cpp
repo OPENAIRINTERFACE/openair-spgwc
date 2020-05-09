@@ -867,7 +867,7 @@ void pgw_context::handle_itti_msg(
     sp = apn_pdn.second;
 
     if (sp.get()) {
-      modify_bearer_procedure* proc = new modify_bearer_procedure(sp);
+      modify_bearer_procedure* proc = new modify_bearer_procedure(sp, shared_from_this());
       std::shared_ptr<pgw_procedure> sproc =
           std::shared_ptr<pgw_procedure>(proc);
       insert_procedure(sproc);

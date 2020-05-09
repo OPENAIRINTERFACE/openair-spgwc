@@ -127,6 +127,14 @@ class modify_bearer_procedure : public pgw_procedure {
         sx_triggered(),
         s5_triggered_pending(),
         s5_trigger() {}
+  explicit modify_bearer_procedure(std::shared_ptr<pgw_pdn_connection>& sppc, std::shared_ptr<pgwc::pgw_context> spc)
+      : pgw_procedure(),
+        ppc(sppc),
+        pc(spc),
+        sx_triggered(),
+        s5_triggered_pending(),
+        s5_trigger() {}
+
   int run(std::shared_ptr<itti_s5s8_modify_bearer_request>& req,
           std::shared_ptr<itti_s5s8_modify_bearer_response>& resp,
           std::shared_ptr<pgwc::pgw_context> pc);

@@ -315,7 +315,6 @@ int modify_bearer_procedure::run(
     std::shared_ptr<itti_s5s8_modify_bearer_response>& resp,
     std::shared_ptr<pgwc::pgw_context> pc) {
   bool send_sx = false;
-
   // TODO check if compatible with ongoing procedures if any
   pfcp::node_id_t up_node_id = {};
   if (not pfcp_associations::get_instance().select_up_node(
@@ -730,6 +729,28 @@ void modify_bearer_procedure::handle_itti_msg(
           pgw_eps_bearer b2 = b;
           ppc->add_eps_bearer(b2);
 
+          //For LL-MEC
+          if (pgw_cfg.mosaic_5g.enabled) {
+            char command[500];
+            snprintf(command, 500, "curl -d '{\"eps_bearer_id\":%d, \"imsi\":\"%" PRIu64 "\", \"s1_ul_teid\":\"0x%x\", \"s1_dl_teid\":\"0x%x\", \"ue_ip\":\"%s\", \"enb_ip\":\"%s\"}' -X POST http://%s:%d/bearer",
+                b.ebi.ebi,
+                pc->imsi.to_imsi64(),
+                b.pgw_fteid_s5_s8_up.teid_gre_key,
+                b.sgw_fteid_s5_s8_up.teid_gre_key,
+                conv::toString(ppc->ipv4_address).c_str(),
+                conv::toString(b.sgw_fteid_s5_s8_up.ipv4_address).c_str(),  //inet_ntoa(b.sgw_fteid_s5_s8_up.ipv4_address),
+                conv::toString(pgw_cfg.mosaic_5g.remote_controller).c_str(),
+                pgw_cfg.mosaic_5g.remote_controller_port);
+
+            std::string command_str(command);
+            Logger::pgwc_app().info(
+                "Send Curl command to LL-MEC Controller: %s",
+                command_str.c_str());
+            async_shell_cmd_inst->run_command(TASK_PGWC_APP, false,
+            __FILE__,
+                                              __LINE__, command_str);
+          }
+
           gtpv2c::bearer_context_modified_within_modify_bearer_response bcc =
               {};
           ::cause_t bcc_cause = {
@@ -773,41 +794,6 @@ void modify_bearer_procedure::handle_itti_msg(
               it_to_be_mod->get_s1_u_enb_fteid(b.sgw_fteid_s5_s8_up);
               pgw_eps_bearer b2 = b;
               ppc->add_eps_bearer(b2);
-
-              //TODO: send to LL-MEC
-              if (pgw_cfg.mosaic_5g.enabled) {
-                struct in_addr remote_controller = { .s_addr = 0 };
-                remote_controller.s_addr = pgw_cfg.mosaic_5g.remote_controller
-                    .s_addr;
-                char command[500];
-                snprintf(command, 500, "curl -d '{\"eps_bearer_id\":%u, \"imsi\":\"%" PRIu64 "\", \"s1_ul_teid\":\"0x%x\", \"s1_dl_teid\":\"0x%x\", \"ue_ip\":\"%s\", \"enb_ip\":\"%s\"}' -X POST http://%s:%d/bearer",
-                    b.ebi,
-                    pc->imsi.to_imsi64(),  // ebc->imsi.to_imsi64(),
-                    b.pgw_fteid_s5_s8_up.teid_gre_key,//seb->sgw_fteid_s1u_s12_s4u_s11u.teid_gre_key,
-                    b.sgw_fteid_s5_s8_up.teid_gre_key,//seb->enb_fteid_s1u.teid_gre_key,//
-                    conv::toString(ppc->ipv4_address).c_str(),//paa.get_ip_as_string().c_str(),
-                    b.sgw_fteid_s5_s8_up.ipv4_address,//inet_ntoa(seb->enb_fteid_s1u.ipv4_address),
-                    inet_ntoa(remote_controller),
-                    pgw_cfg.mosaic_5g.remote_controller_port);
-
-                /*std::string command_str = fmt::format("curl -d '{\"eps_bearer_id\":{}, \"imsi\":\"{}\", \"s1_ul_teid\":\"0x{:04x}\", \"s1_dl_teid\":\"0x{:04x}\", \"ue_ip\":\"{}\", \"enb_ip\":\"{}\"}' -X POST http://{}:{}/ue",
-                 ebi.ebi,
-                 ebc->imsi.to_imsi64(),
-                 seb->sgw_fteid_s1u_s12_s4u_s11u.teid_gre_key,
-                 seb->enb_fteid_s1u.teid_gre_key,
-                 paa.get_ip_as_string(),
-                 inet_ntoa(seb->enb_fteid_s1u.ipv4_address),
-                 inet_ntoa(remote_controller),
-                 sgwc_cfg.mosaic_5g.remote_controller_port); */
-                std::string command_str(command);
-                Logger::pgwc_app().debug(
-                    "Send Curl command to LL-MEC Controller: %s",
-                    command_str.c_str());
-                async_shell_cmd_inst->run_command(TASK_PGWC_APP, false,
-                __FILE__,
-                                                  __LINE__, command_str);
-              }
-
               gtpv2c::bearer_context_modified_within_modify_bearer_response
                   bcc = {};
               ::cause_t bcc_cause = {
