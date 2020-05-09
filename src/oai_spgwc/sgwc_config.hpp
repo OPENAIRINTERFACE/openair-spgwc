@@ -63,12 +63,6 @@ namespace sgwc {
 #define SGWC_CONFIG_STRING_THREAD_RD_SCHED_POLICY "SCHED_POLICY"
 #define SGWC_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY "SCHED_PRIORITY"
 
-#define SGWC_CONFIG_STRING_MOSAIC_5G                             "MOSAIC_5G"
-#define SGWC_CONFIG_STRING_REMOTE_CONTROLLER_ENABLED             "REMOTE_CONTROLLER_ENABLED"
-#define SGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS        "REMOTE_CONTROLLER_IPV4_ADDRESS"
-#define SGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT                "REMOTE_CONTROLLER_PORT"
-
-
 #define SPGW_ABORT_ON_ERROR true
 #define SPGW_WARN_ON_ERROR false
 
@@ -91,14 +85,6 @@ typedef struct itti_cfg_s {
   util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 
-typedef struct mosaic_5g_cfg_s {
-  bool            enabled;
-  struct in_addr  remote_controller;
-  //struct in6_addr addr6;
-  unsigned int    remote_controller_port;
-} mosaic_5g_cfg_t;
-
-
 class sgwc_config {
  private:
   int load_thread_sched_params(
@@ -106,7 +92,6 @@ class sgwc_config {
       util::thread_sched_params& cfg);
   int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
   int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
-  int load_mosaic_5g(const libconfig::Setting& if_cfg, mosaic_5g_cfg_t& cfg);
 
  public:
   /* Reader/writer lock for this configuration */
@@ -118,10 +103,9 @@ class sgwc_config {
   interface_cfg_t s5s8_cp;
   // interface_cfg_t sxa;
   itti_cfg_t itti;
-  mosaic_5g_cfg_t mosaic_5g;
 
   sgwc_config()
-      : m_rw_lock(), pid_dir(), instance(0), s11_cp(), s11_up(), s5s8_cp(), mosaic_5g() {
+      : m_rw_lock(), pid_dir(), instance(0), s11_cp(), s11_up(), s5s8_cp() {
     itti.itti_timer_sched_params.sched_priority = 85;
     itti.s11_sched_params.sched_priority = 84;
     itti.s5s8_sched_params.sched_priority = 84;
