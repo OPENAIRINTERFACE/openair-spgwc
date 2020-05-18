@@ -129,6 +129,7 @@
 #define PGWC_CONFIG_STRING_REMOTE_CONTROLLER_ENABLED             "REMOTE_CONTROLLER_ENABLED"
 #define PGWC_CONFIG_STRING_REMOTE_CONTROLLER_IPV4_ADDRESS        "REMOTE_CONTROLLER_IPV4_ADDRESS"
 #define PGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT                "REMOTE_CONTROLLER_PORT"
+#define PGWC_CONFIG_STRING_OVS_IPV4_ADDRESS                      "OVS_IPV4_ADDRESS"
 
 
 #define PGW_MAX_ALLOCATED_PDN_ADDRESSES 1024
@@ -159,6 +160,7 @@ typedef struct mosaic_5g_cfg_s {
   struct in_addr  remote_controller;
   //struct in6_addr addr6;
   unsigned int    remote_controller_port;
+  struct in_addr  ovs_ipv4_addr;
 } mosaic_5g_cfg_t;
 
 

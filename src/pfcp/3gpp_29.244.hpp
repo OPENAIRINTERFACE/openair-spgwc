@@ -8502,6 +8502,7 @@ class pfcp_update_pdr_ie : public pfcp_grouped_ie {
   explicit pfcp_update_pdr_ie(const pfcp::update_pdr& b)
       : pfcp_grouped_ie(PFCP_IE_UPDATE_PDR) {
     tlv.set_length(0);
+
   }
   //--------
   pfcp_update_pdr_ie() : pfcp_grouped_ie(PFCP_IE_UPDATE_PDR) {}

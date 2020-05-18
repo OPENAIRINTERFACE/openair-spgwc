@@ -290,6 +290,10 @@ void session_establishment_procedure::handle_itti_msg(
       if (b.pgw_fteid_s5_s8_up.is_zero()) {
         bcc_cause.cause_value = SYSTEM_FAILURE;
       } else {
+        if (pgw_cfg.mosaic_5g.enabled) {
+          //if use OVS, send OVS addr to eNB instead of SPGWU
+          b.pgw_fteid_s5_s8_up.ipv4_address = pgw_cfg.mosaic_5g.ovs_ipv4_addr;
+        }
         bcc.set(b.pgw_fteid_s5_s8_up, 2);
       }
     }

@@ -265,7 +265,18 @@ int pgw_config::load_mosaic_5g(const Setting& lib_cfg, mosaic_5g_cfg_t& cfg)
 
   lib_cfg.lookupValue(PGWC_CONFIG_STRING_REMOTE_CONTROLLER_PORT, cfg.remote_controller_port);
 
-  Logger::pgwc_app().debug("load_mosaic_5g, controller ipv4 address %s, port %s", conv::toString(cfg.remote_controller).c_str(),std::to_string(cfg.remote_controller_port).c_str()
+  std::string address_ovs = {};
+  lib_cfg.lookupValue(PGWC_CONFIG_STRING_OVS_IPV4_ADDRESS, address_ovs);
+  unsigned char buf_in_addr_ovs[sizeof(struct in6_addr)];
+  util::trim(address_ovs);
+  if (inet_pton (AF_INET, address_ovs.c_str(), buf_in_addr_ovs) == 1) {
+    memcpy (&cfg.ovs_ipv4_addr, buf_in_addr_ovs, sizeof (struct in_addr));
+  } else {
+    Logger::pgwc_app().error("In conversion: Bad value " PGWC_CONFIG_STRING_OVS_IPV4_ADDRESS " = %s in config file", address_ovs.c_str());
+    return RETURNerror;
+  }
+
+  Logger::pgwc_app().debug("load_mosaic_5g, controller ipv4 address %s, port %d, ovs ipv4 address %s", conv::toString(cfg.remote_controller).c_str(), cfg.remote_controller_port, conv::toString(cfg.ovs_ipv4_addr).c_str()
                                );
   return RETURNok;
 }
@@ -715,6 +726,18 @@ void pgw_config::display() {
   Logger::pgwc_app().info("- Helpers:");
   Logger::pgwc_app().info("    Push PCO (DNS+MTU) ........: %s",
                           force_push_pco == 0 ? "false" : "true");
+
+  if (mosaic_5g.enabled) {
+    Logger::pgwc_app().info("- Mosaic-5G Configuration:");
+    Logger::pgwc_app().info("    Controller Ipv4 Address : %s",
+                            conv::toString(mosaic_5g.remote_controller).c_str());
+
+    Logger::pgwc_app().info("    Controller Port ........: %d",
+                            mosaic_5g.remote_controller_port);
+
+    Logger::pgwc_app().info("    OVS Ipv4 Address .......: %s",
+                            conv::toString(mosaic_5g.ovs_ipv4_addr).c_str());
+  }
 }
 
 //------------------------------------------------------------------------------
