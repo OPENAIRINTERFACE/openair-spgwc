@@ -44,7 +44,12 @@ if [ $IS_CONTAINER -eq 0 ]
 then
   SUDO='sudo -S -E'
 else
-  SUDO=''
+  if [ -v FORCE_SUDO ]
+  then
+    SUDO='sudo'
+  else
+    SUDO=''
+  fi
 fi
 ###############################
 ## echo and  family
@@ -78,7 +83,7 @@ echo_success() { cecho "$*" $green        ;}
 echo_info()    { cecho "$*" $blue         ;}
 #-------------------------------------------------------------------------------
 # From https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
-# arg1 is a dotted (or not) version number (ex 4.10.6.56-ubunutu) 
+# arg1 is a dotted (or not) version number (ex 4.10.6.56-ubunutu)
 # arg2 is a dotted (or not) version number (ex 4.10.6.56-ubunutu)
 # return 0 if $1 lower or equal $2, else 1
 version_le() {
@@ -139,8 +144,8 @@ disable_ipv6() {
 # arg1 = version
 # arg2 = req_version
 #
-function version_gt() { 
-  test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"; 
+function version_gt() {
+  test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
 }
 ###################################
 # Compilers

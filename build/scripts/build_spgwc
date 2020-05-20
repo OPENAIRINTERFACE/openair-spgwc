@@ -111,9 +111,6 @@ function main()
         shift;
         ;;
       -j | --jobs)
-        # JNPROC used in build of 3rd party libraries
-        export JNPROC="-j`nproc`"
-        # used in building OAI executable
         make_args="$make_args -j`nproc`"
         shift;
         ;;
@@ -152,10 +149,10 @@ function main()
 
   if [ $var_check_install_min_deps -gt 0 ];then
     disable_ipv6
-    check_install_spgwc_min_deps  $force $debug
-    if [[ $? -ne 0 ]]; then
+    ret=$(check_install_spgwc_min_deps  $force $debug)
+    if [[ $ret -ne 0 ]]; then
         echo_error "Error: SPGW-C minimal deps installation failed"
-        return 1
+        return $ret
     else
         echo_success "SPGW-C minimal deps installation successful"
         echo_warning "SPGW-C not compiled, to compile it, re-run build_spgwc without -i option"
@@ -165,10 +162,10 @@ function main()
 
   if [ $var_check_install_deps -gt 0 ];then
     disable_ipv6
-    check_install_spgwc_deps  $force $debug
-    if [[ $? -ne 0 ]]; then
+    ret=$(check_install_spgwc_deps  $force $debug)
+    if [[ $ret -ne 0 ]]; then
         echo_error "Error: SPGW-C deps installation failed"
-        return 1
+        return $ret
     else
         echo_success "SPGW-C deps installation successful"
         echo_warning "SPGW-C not compiled, to compile it, re-run build_spgwc without -I option"
