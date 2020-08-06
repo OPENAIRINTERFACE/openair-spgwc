@@ -7,7 +7,7 @@
 # * except in compliance with the License.
 # * You may obtain a copy of the License at
 # *
-# *      http://www.openairinterface.org/?page_id=698
+# *	  http://www.openairinterface.org/?page_id=698
 # *
 # * Unless required by applicable law or agreed to in writing, software
 # * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 # * limitations under the License.
 # *-------------------------------------------------------------------------------
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
-# *      contact@openairinterface.org
+# *	  contact@openairinterface.org
 # */
 #---------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ class spgwcConfigGen():
 		self.dns1_ip = '192.168.18.129'
 		self.dns2_ip = '8.8.4.4'
 		self.fromDockerFile = False
+		self.envForEntrypoint = False
 
 	def GenerateSpgwcConfigurer(self):
 		spgwcFile = open('./spgwc-cfg.sh', 'w')
@@ -81,6 +82,22 @@ class spgwcConfigGen():
 		spgwcFile.write('exit 0\n')
 		spgwcFile.close()
 
+	def GenerateSpgwcEnvList(self):
+		spgwcFile = open('./spgwc-env.list', 'w')
+		spgwcFile.write('# Environment Variables used by the OAI-SPGW-C Entrypoint Script\n')
+		spgwcFile.write('INSTANCE=1\n')
+		spgwcFile.write('PID_DIRECTORY=/var/run\n')
+		spgwcFile.write('SGW_INTERFACE_NAME_FOR_S11=' + self.s11c_name + '\n')
+		spgwcFile.write('SGW_INTERFACE_NAME_FOR_S5_S8_CP=lo:s5c\n')
+		spgwcFile.write('SGW_INTERFACE_NAME_FOR_S5_S8_CP_IP=127.0.0.10\n')
+		spgwcFile.write('PGW_INTERFACE_NAME_FOR_S5_S8_CP=lo:p5c\n')
+		spgwcFile.write('PGW_INTERFACE_NAME_FOR_S5_S8_CP_IP=127.0.0.12\n')
+		spgwcFile.write('PGW_INTERFACE_NAME_FOR_SX=' + self.sxc_name + '\n')
+		spgwcFile.write('DEFAULT_APN=' + self.apn + '\n')
+		spgwcFile.write('DEFAULT_DNS_IPV4_ADDRESS=' + self.dns1_ip + '\n')
+		spgwcFile.write('DEFAULT_DNS_SEC_IPV4_ADDRESS=' + self.dns2_ip + '\n')
+		spgwcFile.close()
+
 #-----------------------------------------------------------
 # Usage()
 #-----------------------------------------------------------
@@ -101,12 +118,13 @@ def Usage():
 	print('  --apn=[Access Point Name]')
 	print('  --dns1_ip=[First DNS IP address]')
 	print('  --dns2_ip=[Second DNS IP address]')
+	print('  --envForEntrypoint    [generates a spgwc-env.list interpreted by the entrypoint]')
 
 argvs = sys.argv
 argc = len(argvs)
 cwd = os.getcwd()
 
-mySpgwcCfg =  spgwcConfigGen()
+mySpgwcCfg = spgwcConfigGen()
 
 while len(argvs) > 1:
 	myArgv = argvs.pop(1)
@@ -133,6 +151,8 @@ while len(argvs) > 1:
 		mySpgwcCfg.dns2_ip = matchReg.group(1)
 	elif re.match('^\-\-from_docker_file', myArgv, re.IGNORECASE):
 		mySpgwcCfg.fromDockerFile = True
+	elif re.match('^\-\-env_for_entrypoint', myArgv, re.IGNORECASE):
+		mySpgwcCfg.envForEntrypoint = True
 	else:
 		Usage()
 		sys.exit('Invalid Parameter: ' + myArgv)
@@ -149,7 +169,10 @@ if mySpgwcCfg.kind == 'SPGW-C':
 		Usage()
 		sys.exit('missing SX Interface Name on SPGW-C container')
 	else:
-		mySpgwcCfg.GenerateSpgwcConfigurer()
+		if mySpgwcCfg.envForEntrypoint:
+			mySpgwcCfg.GenerateSpgwcEnvList()
+		else:
+			mySpgwcCfg.GenerateSpgwcConfigurer()
 		sys.exit(0)
 else:
 	Usage()

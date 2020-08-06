@@ -31,37 +31,31 @@
 FROM ubuntu:bionic as oai-spgwc-builder
 
 ARG EURECOM_PROXY
-ARG BUILD_FOR_CI
-ARG CI_SRC_BRANCH
-ARG CI_SRC_COMMIT
-ARG CI_DEST_BRANCH
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
     psmisc \
-    git \
-  && rm -rf /var/lib/apt/lists/*
+    git
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v EURECOM_PROXY ]]; then git config --global http.proxy $EURECOM_PROXY; fi"
 RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
-# In normal case, we build out of the develop branch
-RUN /bin/bash -c "if [[ -v CI_SRC_BRANCH ]]; then git clone https://github.com/OPENAIRINTERFACE/openair-spgwc.git -b $CI_SRC_BRANCH /openair-spgwc; else git clone https://github.com/OPENAIRINTERFACE/openair-spgwc.git -b develop /openair-spgwc; fi"
-# For CI, especially for Pull/Merge Requests, we build out of temp merge
+
+# Copy the workspace as is
 WORKDIR /openair-spgwc
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git config --global user.name \"OAI CI\"; fi"
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git config --global user.email ci@openairinterface.org; fi"
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git checkout -f $CI_SRC_COMMIT; fi"
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git merge --ff origin/$CI_DEST_BRANCH -m \"Temporary merge for CI\"; fi"
+COPY . /openair-spgwc
 
 # Installing and Building SPGW-C
 WORKDIR /openair-spgwc/build/scripts
 RUN ./build_spgwc --install-deps --force
-RUN ./build_spgwc --clean --build-type Release --jobs
-RUN cat /openair-spgwc/build/log/spgwc.txt
+RUN ./build_spgwc --clean --build-type Release --jobs --Verbose
+
+# Getting SHA-ONE for support
+WORKDIR /openair-spgwc
+RUN git log -n1 > version.txt
 
 #---------------------------------------------------------------------
 # TARGET IMAGE
@@ -80,10 +74,10 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DE
     libconfig++9v5 \
   && rm -rf /var/lib/apt/lists/*
 
-
 # Copying executable and generated libraries
 WORKDIR /openair-spgwc/bin
 COPY --from=oai-spgwc-builder /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc
+COPY --from=oai-spgwc-builder /openair-spgwc/scripts/entrypoint.sh .
 
 # Copying template configuration files
 # The configuration folder will be flat
@@ -91,3 +85,10 @@ WORKDIR /openair-spgwc/etc
 COPY --from=oai-spgwc-builder /openair-spgwc/etc/spgw_c.conf .
 
 WORKDIR /openair-spgwc
+COPY --from=oai-spgwc-builder /openair-spgwc/version.txt .
+
+# expose ports
+EXPOSE 2123/udp 8805/udp
+
+CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.conf", "-o"]
+ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]
