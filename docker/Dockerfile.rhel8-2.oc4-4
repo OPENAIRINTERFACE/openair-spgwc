@@ -62,9 +62,6 @@ WORKDIR /openair-spgwc/build/scripts
 RUN ./build_spgwc --install-deps --force
 RUN ./build_spgwc --clean --build-type Release --jobs --Verbose
 
-# for Debug
-RUN ldd /openair-spgwc/build/spgw_c/build/spgwc
-
 #---------------------------------------------------------------------
 # TARGET IMAGE
 #---------------------------------------------------------------------
@@ -91,9 +88,6 @@ COPY --from=oai-spgwc-builder /lib64/libdouble-conversion.so.1 /lib64/
 COPY --from=oai-spgwc-builder /lib64/libconfig++.so.9 /lib64/
 COPY --from=oai-spgwc-builder /lib64/libboost_system.so.1.66.0 /lib64/
 RUN ldconfig
-
-# For debug
-RUN ldd /openair-spgwc/bin/oai_spgwc
 
 # Copying template configuration files
 # The configuration folder will be flat
