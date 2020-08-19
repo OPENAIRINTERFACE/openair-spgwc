@@ -123,6 +123,7 @@ check_supported_distribution() {
     case "$distribution" in
         "ubuntu18.04") return 0 ;;
         "rhel8")       return 0 ;;
+        "rhel8.2")     return 0 ;;
         "centos8")     return 0 ;;
     esac
     return 1

@@ -75,11 +75,7 @@ RUN yum update -y && \
     yum -y install --enablerepo="ubi-8-codeready-builder" \
     psmisc \
     net-tools \
-    glog \
-    double-conversion \
-    libconfig \
     libevent \
-    boost-system \
   && yum clean all -y \
   && rm -rf /var/cache/yum
 
@@ -87,6 +83,14 @@ RUN yum update -y && \
 WORKDIR /openair-spgwc/bin
 COPY --from=oai-spgwc-builder /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc
 COPY --from=oai-spgwc-builder /openair-spgwc/scripts/entrypoint.sh .
+
+# Copying installed libraries from builder
+COPY --from=oai-spgwc-builder /lib64/libgflags.so.2.1 /lib64/
+COPY --from=oai-spgwc-builder /lib64/libglog.so.0 /lib64/
+COPY --from=oai-spgwc-builder /lib64/libdouble-conversion.so.1 /lib64/
+COPY --from=oai-spgwc-builder /lib64/libconfig++.so.9 /lib64/
+COPY --from=oai-spgwc-builder /lib64/libboost_system.so.1.66.0 /lib64/
+RUN ldconfig
 
 # For debug
 RUN ldd /openair-spgwc/bin/oai_spgwc
