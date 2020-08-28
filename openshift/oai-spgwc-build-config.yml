@@ -29,7 +29,7 @@ spec:
     source:
         git:
             uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "dockerfile-improvements-2020-08"
+            ref: "helm3.1-onap-sync-with-cn-split-repos"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:
@@ -49,4 +49,4 @@ spec:
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:ci-tmp"
+            name: "oai-spgwc:onap-test"
