@@ -26,7 +26,4 @@ for c in ${CONFIG_DIR}/*.conf; do
     sed -i "${EXPRESSIONS}" ${c}
 done
 
-ifconfig ${SGW_INTERFACE_NAME_FOR_S5_S8_CP} ${SGW_INTERFACE_NAME_FOR_S5_S8_CP_IP} up
-ifconfig ${PGW_INTERFACE_NAME_FOR_S5_S8_CP} ${PGW_INTERFACE_NAME_FOR_S5_S8_CP_IP} up
-
 exec "$@"
