@@ -337,6 +337,16 @@ pipeline {
           }
         }
       }
+      post {
+        always {
+          script {
+            copyArtifacts(projectName: 'CI-OpenAir-EPC-FED',
+                          filter: 'test_results_oai_epc.html',
+                          selector: lastCompleted())
+            archiveArtifacts artifacts: 'test_results_oai_epc.html'
+          }
+        }
+      }
     }
   }
   post {
