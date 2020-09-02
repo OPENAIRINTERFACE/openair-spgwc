@@ -343,7 +343,6 @@ pipeline {
             copyArtifacts(projectName: 'CI-OpenAir-EPC-FED',
                           filter: 'test_results_oai_epc.html',
                           selector: lastCompleted())
-            archiveArtifacts artifacts: 'test_results_oai_epc.html'
           }
         }
       }
@@ -412,14 +411,24 @@ pipeline {
         // Generating the HTML report
         if (env.ghprbPullId != null) {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${env.ghprbSourceBranch} --git_src_commit=${env.ghprbActualCommit} --git_pull_request=True --git_target_branch=${env.ghprbTargetBranch} --git_target_commit=${GIT_COMMIT}"
-          sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_spgwc.html"
-          sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_spgwc.html"
+          if (fileExists('test_results_oai_spgwc.html')) {
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_spgwc.html"
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_spgwc.html"
+          }
+          if (fileExists('test_results_oai_epc.html')) {
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_epc.html"
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_epc.html"
+          }
         } else {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${GIT_BRANCH} --git_src_commit=${GIT_COMMIT}"
         }
-		sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_spgwc.html"
         if (fileExists('test_results_oai_spgwc.html')) {
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_spgwc.html"
           archiveArtifacts artifacts: 'test_results_oai_spgwc.html'
+        }
+        if (fileExists('test_results_oai_epc.html')) {
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_epc.html"
+          archiveArtifacts artifacts: 'test_results_oai_epc.html'
         }
         // Sending an email to the last committer. Maybe not the Pull Request's author.
         def emailTo = getCommitterEmail()
