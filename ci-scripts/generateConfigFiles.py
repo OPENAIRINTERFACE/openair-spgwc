@@ -24,72 +24,62 @@ import os
 import re
 import sys
 
-def GenerateSpgwcConfigurer(s11c_name, sxc_name):
-	spgwcFile = open('./spgwc-cfg.sh', 'w')
-	spgwcFile.write('#!/bin/bash\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('cd /home\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('ifconfig lo:s5c 127.0.0.15 up\n')
-	spgwcFile.write('echo "ifconfig lo:s5c 127.0.0.15 up --> OK"\n')
-	spgwcFile.write('ifconfig lo:p5c 127.0.0.16 up\n')
-	spgwcFile.write('echo "ifconfig lo:p5c 127.0.0.16 up --> OK"\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('INSTANCE=1\n')
-	spgwcFile.write('PREFIX=\'/usr/local/etc/oai\'\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('MY_APN=\'apn.oai.svc.cluster.local\'\n')
-	spgwcFile.write('MY_PRIMARY_DNS=\'192.168.18.129\'\n')
-	spgwcFile.write('MY_SECONDARY_DNS=\'8.8.4.4\'\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('mkdir -p $PREFIX\n')
-	spgwcFile.write('cp etc/spgw_c.conf  $PREFIX\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('declare -A SPGWC_CONF\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('SPGWC_CONF[@INSTANCE@]=$INSTANCE\n')
-	spgwcFile.write('SPGWC_CONF[@PID_DIRECTORY@]=\'/var/run\'\n')
-	spgwcFile.write('SPGWC_CONF[@SGW_INTERFACE_NAME_FOR_S11@]=\'' + s11c_name + '\'\n')
-	spgwcFile.write('SPGWC_CONF[@SGW_INTERFACE_NAME_FOR_S5_S8_CP@]=\'lo:s5c\'\n')
-	spgwcFile.write('SPGWC_CONF[@PGW_INTERFACE_NAME_FOR_S5_S8_CP@]=\'lo:p5c\'\n')
-	spgwcFile.write('SPGWC_CONF[@PGW_INTERFACE_NAME_FOR_SX@]=\'' + sxc_name + '\'\n')
-	spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_IPV4_ADDRESS@]=$MY_PRIMARY_DNS\n')
-	spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_SEC_IPV4_ADDRESS@]=$MY_SECONDARY_DNS\n')
-	spgwcFile.write('SPGWC_CONF[@DEFAULT_APN@]=$MY_APN\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('for K in "${!SPGWC_CONF[@]}"; do \n')
-	spgwcFile.write('  egrep -lRZ "$K" $PREFIX | xargs -0 -l sed -i -e "s|$K|${SPGWC_CONF[$K]}|g"\n')
-	spgwcFile.write('done\n')
-	spgwcFile.write('\n')
-	spgwcFile.write('exit 0\n')
-	spgwcFile.close()
+class spgwcConfigGen():
+	def __init__(self):
+		self.kind = ''
+		self.s11c_name = ''
+		self.sxc_name = ''
+		self.apn = 'apn.oai.svc.cluster.local'
+		self.dns1_ip = '192.168.18.129'
+		self.dns2_ip = '8.8.4.4'
+		self.fromDockerFile = False
 
-def GenerateSpgwuConfigurer(s1u_name, sxc_name, spgwc0_ip_addr):
-	spgwuFile = open('./spgwu-cfg.sh', 'w')
-	spgwuFile.write('#!/bin/bash\n')
-	spgwuFile.write('\n')
-	spgwuFile.write('cd /home\n')
-	spgwuFile.write('\n')
-	spgwuFile.write('INSTANCE=1\n')
-	spgwuFile.write('PREFIX=\'/usr/local/etc/oai\'\n')
-	spgwuFile.write('mkdir -p $PREFIX\n')
-	spgwuFile.write('cp etc/spgw_u.conf $PREFIX\n')
-	spgwuFile.write('\n')
-	spgwuFile.write('declare -A SPGWU_CONF\n')
-	spgwuFile.write('\n')
-	spgwuFile.write('SPGWU_CONF[@INSTANCE@]=$INSTANCE\n')
-	spgwuFile.write('SPGWU_CONF[@PID_DIRECTORY@]=\'/var/run\'\n')
-	spgwuFile.write('SPGWU_CONF[@SGW_INTERFACE_NAME_FOR_S1U_S12_S4_UP@]=\'' + s1u_name + '\'\n')
-	spgwuFile.write('SPGWU_CONF[@SGW_INTERFACE_NAME_FOR_SX@]=\'' + sxc_name + '\'\n')
-	spgwuFile.write('SPGWU_CONF[@SGW_INTERFACE_NAME_FOR_SGI@]=\'eth0\'\n')
-	spgwuFile.write('SPGWU_CONF[@SPGWC0_IP_ADDRESS@]=\'' + spgwc0_ip_addr + '\'\n')
-	spgwuFile.write('\n')
-	spgwuFile.write('for K in "${!SPGWU_CONF[@]}"; do \n')
-	spgwuFile.write('  egrep -lRZ "$K" $PREFIX | xargs -0 -l sed -i -e "s|$K|${SPGWU_CONF[$K]}|g"\n')
-	spgwuFile.write('done\n')
-	spgwuFile.write('\n')
-	spgwuFile.write('exit 0\n')
-	spgwuFile.close()
+	def GenerateSpgwcConfigurer(self):
+		spgwcFile = open('./spgwc-cfg.sh', 'w')
+		spgwcFile.write('#!/bin/bash\n')
+		spgwcFile.write('\n')
+		if self.fromDockerFile:
+			spgwcFile.write('cd /openair-spgwc\n')
+		else:
+			spgwcFile.write('cd /home\n')
+		spgwcFile.write('\n')
+		spgwcFile.write('ifconfig lo:s5c 127.0.0.15 up\n')
+		spgwcFile.write('echo "ifconfig lo:s5c 127.0.0.15 up --> OK"\n')
+		spgwcFile.write('ifconfig lo:p5c 127.0.0.16 up\n')
+		spgwcFile.write('echo "ifconfig lo:p5c 127.0.0.16 up --> OK"\n')
+		spgwcFile.write('\n')
+		spgwcFile.write('INSTANCE=1\n')
+		if self.fromDockerFile:
+			spgwcFile.write('PREFIX=\'/openair-spgwc/etc\'\n')
+		else:
+			spgwcFile.write('PREFIX=\'/usr/local/etc/oai\'\n')
+		spgwcFile.write('\n')
+		spgwcFile.write('MY_APN=\'' + self.apn + '\'\n')
+		spgwcFile.write('MY_PRIMARY_DNS=\'' + self.dns1_ip + '\'\n')
+		spgwcFile.write('MY_SECONDARY_DNS=\'' + self.dns2_ip + '\'\n')
+		spgwcFile.write('\n')
+		if not self.fromDockerFile:
+			spgwcFile.write('mkdir -p $PREFIX\n')
+			spgwcFile.write('cp etc/spgw_c.conf  $PREFIX\n')
+			spgwcFile.write('\n')
+		spgwcFile.write('declare -A SPGWC_CONF\n')
+		spgwcFile.write('\n')
+		spgwcFile.write('SPGWC_CONF[@INSTANCE@]=$INSTANCE\n')
+		spgwcFile.write('SPGWC_CONF[@PID_DIRECTORY@]=\'/var/run\'\n')
+		spgwcFile.write('SPGWC_CONF[@SGW_INTERFACE_NAME_FOR_S11@]=\'' + self.s11c_name + '\'\n')
+		spgwcFile.write('SPGWC_CONF[@SGW_INTERFACE_NAME_FOR_S5_S8_CP@]=\'lo:s5c\'\n')
+		spgwcFile.write('SPGWC_CONF[@PGW_INTERFACE_NAME_FOR_S5_S8_CP@]=\'lo:p5c\'\n')
+		spgwcFile.write('SPGWC_CONF[@PGW_INTERFACE_NAME_FOR_SX@]=\'' + self.sxc_name + '\'\n')
+		spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_IPV4_ADDRESS@]=$MY_PRIMARY_DNS\n')
+		spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_SEC_IPV4_ADDRESS@]=$MY_SECONDARY_DNS\n')
+		spgwcFile.write('SPGWC_CONF[@DEFAULT_APN@]=$MY_APN\n')
+		spgwcFile.write('\n')
+		spgwcFile.write('for K in "${!SPGWC_CONF[@]}"; do \n')
+		spgwcFile.write('  egrep -lRZ "$K" $PREFIX | xargs -0 -l sed -i -e "s|$K|${SPGWC_CONF[$K]}|g"\n')
+		spgwcFile.write('done\n')
+		spgwcFile.write('\n')
+		spgwcFile.write('exit 0\n')
+		spgwcFile.close()
 
 #-----------------------------------------------------------
 # Usage()
@@ -97,7 +87,7 @@ def GenerateSpgwuConfigurer(s1u_name, sxc_name, spgwc0_ip_addr):
 def Usage():
 	print('----------------------------------------------------------------------------------------------------------------------')
 	print('generateConfigFiles.py')
-	print('   Prepare a bash script to be run in the workspace where either SPGW-C and/or SPGW-U are being built.')
+	print('   Prepare a bash script to be run in the workspace where SPGW-C is being built.')
 	print('   That bash script will copy configuration template files and adapt to your configuration.')
 	print('----------------------------------------------------------------------------------------------------------------------')
 	print('Usage: python3 generateConfigFiles.py [options]')
@@ -106,22 +96,17 @@ def Usage():
 	print('  --kind=SPGW-C')
 	print('  --s11c=[SPGW-C S11 Interface Name]')
 	print('  --sxc=[SPGW-C SX Interface Name]')
-	print('------------------------------------------------------------------------------------------------- SPGW-U Options -----')
-	print('  --kind=SPGW-U')
-	print('  --sxc_ip_addr=[SPGW-C SX IP address]')
-	print('  --sxu=[SPGW-U SX Interface Name]')
-	print('  --s1u=[SPGW-U S1-U Interface Name]')
+	print('  --from_docker_file')
+	print('------------------------------------------------------------------------------------------- SPGW-C Not Mandatory -----')
+	print('  --apn=[Access Point Name]')
+	print('  --dns1_ip=[First DNS IP address]')
+	print('  --dns2_ip=[Second DNS IP address]')
 
 argvs = sys.argv
 argc = len(argvs)
 cwd = os.getcwd()
 
-kind = ''
-s11c = ''
-sxc = ''
-sxu = ''
-spgwc0_ip_addr = ''
-s1u = ''
+mySpgwcCfg =  spgwcConfigGen()
 
 while len(argvs) > 1:
 	myArgv = argvs.pop(1)
@@ -130,51 +115,42 @@ while len(argvs) > 1:
 		sys.exit(0)
 	elif re.match('^\-\-kind=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-kind=(.+)$', myArgv, re.IGNORECASE)
-		kind = matchReg.group(1)
+		mySpgwcCfg.kind = matchReg.group(1)
 	elif re.match('^\-\-s11c=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-s11c=(.+)$', myArgv, re.IGNORECASE)
-		s11c = matchReg.group(1)
+		mySpgwcCfg.s11c_name = matchReg.group(1)
 	elif re.match('^\-\-sxc=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-sxc=(.+)$', myArgv, re.IGNORECASE)
-		sxc = matchReg.group(1)
-	elif re.match('^\-\-sxu=(.+)$', myArgv, re.IGNORECASE):
-		matchReg = re.match('^\-\-sxu=(.+)$', myArgv, re.IGNORECASE)
-		sxu = matchReg.group(1)
-	elif re.match('^\-\-sxc_ip_addr=(.+)$', myArgv, re.IGNORECASE):
-		matchReg = re.match('^\-\-sxc_ip_addr=(.+)$', myArgv, re.IGNORECASE)
-		spgwc0_ip_addr = matchReg.group(1)
-	elif re.match('^\-\-s1u=(.+)$', myArgv, re.IGNORECASE):
-		matchReg = re.match('^\-\-s1u=(.+)$', myArgv, re.IGNORECASE)
-		s1u = matchReg.group(1)
+		mySpgwcCfg.sxc_name = matchReg.group(1)
+	elif re.match('^\-\-apn=(.+)$', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-apn=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.apn = matchReg.group(1)
+	elif re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.dns1_ip = matchReg.group(1)
+	elif re.match('^\-\-dns2_ip=(.+)$', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-dns2_ip=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.dns2_ip = matchReg.group(1)
+	elif re.match('^\-\-from_docker_file', myArgv, re.IGNORECASE):
+		mySpgwcCfg.fromDockerFile = True
 	else:
 		Usage()
 		sys.exit('Invalid Parameter: ' + myArgv)
 
-if kind == '':
+if mySpgwcCfg.kind == '':
 	Usage()
 	sys.exit('missing kind parameter')
 
-if kind == 'SPGW-C':
-	if s11c == '':
+if mySpgwcCfg.kind == 'SPGW-C':
+	if mySpgwcCfg.s11c_name == '':
 		Usage()
 		sys.exit('missing S11 Interface Name on SPGW-C container')
-	elif sxc == '':
+	elif mySpgwcCfg.sxc_name == '':
 		Usage()
 		sys.exit('missing SX Interface Name on SPGW-C container')
 	else:
-		GenerateSpgwcConfigurer(s11c, sxc)
+		mySpgwcCfg.GenerateSpgwcConfigurer()
 		sys.exit(0)
-
-if kind == 'SPGW-U':
-	if sxu == '':
-		Usage()
-		sys.exit('missing SX Interface Name on SPGW-U container')
-	elif s1u == '':
-		Usage()
-		sys.exit('missing S1-U Interface Name on SPGW-U container')
-	elif spgwc0_ip_addr == '':
-		Usage()
-		sys.exit('missing SPGW-C #0 IP address on SX interface')
-	else:
-		GenerateSpgwuConfigurer(s1u, sxu, spgwc0_ip_addr)
-		sys.exit(0)
+else:
+	Usage()
+	sys.exit('invalid kind parameter')
