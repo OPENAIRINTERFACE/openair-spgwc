@@ -17,7 +17,7 @@
 
 # openair-spgwc
 
-Control User Plane Separation of SPGW-C and SPGW-U, SPGW-C implementation is available in this repo.
+In the Control User Plane Separation of SPGW, only the SPGW-C (Control Plane) implementation is available in this repo.
 
 It is distributed under `OAI Public License V1.1`. See [OAI Website for more details](https://www.openairinterface.org/?page_id=698).
 
@@ -25,7 +25,15 @@ The text for `OAI Public License V1.1` is also available under [LICENSE](LICENSE
 
 # Where to start
 
-  The Openair-cn HSS code is written, executed, and tested on UBUNTU server bionic version.
+  The Openair-cn SPGW-C code is written, executed, and tested on UBUNTU server bionic version.
+
+  More details on the deployment options and the supported feature set is available on this [page](docs/FEATURE_SET.md).
+
+# Collaborative work
+
+  This source code is managed through a GITHUB, a collaborative development platform
+
+  Process is explained in [CONTRIBUTING](CONTRIBUTING.md) file.
 
 # Directory structure
 
