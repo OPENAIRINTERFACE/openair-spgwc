@@ -49,4 +49,4 @@ spec:
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:onap-test"
+            name: "oai-spgwc:onap-0.1.0"
