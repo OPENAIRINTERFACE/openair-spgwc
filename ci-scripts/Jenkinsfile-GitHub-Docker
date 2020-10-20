@@ -230,28 +230,14 @@ pipeline {
         stage('Create Docker Networks') {
           steps {
             script {
-              myShCmd('docker network create --attachable --subnet 192.168.28.0/24 --ip-range 192.168.28.0/24 ci-s11', new_host_flag, new_host_user, new_host)
-              myShCmd('docker network create --attachable --subnet 192.168.29.0/24 --ip-range 192.168.29.0/24 ci-sx', new_host_flag, new_host_user, new_host)
-              myShCmd('docker network create --attachable --subnet 192.168.30.0/24 --ip-range 192.168.30.0/24 ci-s1u', new_host_flag, new_host_user, new_host)
+              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=CreateNetworks', new_host_flag, new_host_user, new_host)
             }
           }
         }
         stage('Deploy OAI-SPGW-C') {
           steps {
             script {
-              if (env.ghprbPullId != null) {
-                myShCmd('docker run --privileged --name ci-oai-spgwc -d oai-spgwc:ci-temp /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
-              } else  {
-                myShCmd('docker run --privileged --name ci-oai-spgwc -d oai-spgwc:develop /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
-              }
-              // First connect S11 --> will be eth1
-              myShCmd('docker network connect ci-s11 ci-oai-spgwc',  new_host_flag, new_host_user, new_host)
-              // Then connect SX --> will be eth2
-              myShCmd('docker network connect ci-sx ci-oai-spgwc',  new_host_flag, new_host_user, new_host)
-              sh "python3 ci-scripts/generateConfigFiles.py --kind=SPGW-C --s11c=eth1 --sxc=eth2 --from_docker_file"
-              copyTo2ndServer('spgwc-cfg.sh', new_host_flag, new_host_user, new_host)
-              myShCmd('docker cp ./spgwc-cfg.sh ci-oai-spgwc:/openair-spgwc', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec -it ci-oai-spgwc /bin/bash -c "cd /openair-spgwc && chmod 777 spgwc-cfg.sh && ./spgwc-cfg.sh" >> archives/spgwc_config.log', new_host_flag, new_host_user, new_host)
+              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=DeploySPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
             }
           }
           post {
@@ -273,19 +259,7 @@ pipeline {
         stage('Deploy OAI-SPGWU-TINY') {
           steps {
             script {
-              myShCmd('docker run --privileged --name ci-oai-spgwu -d oai-spgwu-tiny:develop /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
-              // First connect S1-U --> will be eth1
-              myShCmd('docker network connect ci-s1u ci-oai-spgwu',  new_host_flag, new_host_user, new_host)
-              // Then connect SX --> will be eth2
-              myShCmd('docker network connect ci-sx ci-oai-spgwu',  new_host_flag, new_host_user, new_host)
-              // Retrieve IP address on SPGW-C instance.. Reason for the sleep 10 above.. making sure it's done
-              OAI_SPGWC0_IP = myShRetCmd('docker exec -it ci-oai-spgwc /bin/bash -c "ifconfig eth2 | egrep inet" | sed -e "s@^.*inet @@" -e "s@  netmask.*@@"', new_host_flag, new_host_user, new_host)
-              sh "wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwu-tiny/develop/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwuConfigFiles.py"
-              // To be replaced w/ wget from spgwu repo.
-              sh "python3 ci-scripts/generateSpgwuConfigFiles.py --kind=SPGW-U --sxc_ip_addr=${OAI_SPGWC0_IP} --sxu=eth2 --s1u=eth1 --from_docker_file"
-              copyTo2ndServer('spgwu-cfg.sh', new_host_flag, new_host_user, new_host)
-              myShCmd('docker cp ./spgwu-cfg.sh ci-oai-spgwu:/openair-spgwu-tiny', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec -it ci-oai-spgwu /bin/bash -c "cd /openair-spgwu-tiny && chmod 777 spgwu-cfg.sh && ./spgwu-cfg.sh" >> archives/spgwu_config.log', new_host_flag, new_host_user, new_host)
+              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=DeploySPGWU --tag=develop', new_host_flag, new_host_user, new_host)
             }
           }
           post {
@@ -307,15 +281,15 @@ pipeline {
     stage ('Start-Check-Stop OAI cNFs') {
       steps {
         script {
-          myShCmd('docker exec -d ci-oai-spgwc /bin/bash -c "nohup ./bin/oai_spgwc -o -c ./etc/spgw_c.conf > spgwc_check_run.log 2>&1"', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StartSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
           sh "sleep 2"
-          myShCmd('docker exec -d ci-oai-spgwu /bin/bash -c "nohup ./bin/oai_spgwu -o -c ./etc/spgw_u.conf > spgwu_check_run.log 2>&1"', new_host_flag, new_host_user, new_host)
-          sh "sleep 20"
-          myShCmd('docker exec -it ci-oai-spgwc /bin/bash -c "killall oai_spgwc"', new_host_flag, new_host_user, new_host)
-          myShCmd('docker exec -it ci-oai-spgwu /bin/bash -c "killall oai_spgwu"', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StartSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
+          sh "sleep 40"
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StopSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StopSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
           sh "sleep 2"
-          myShCmd('docker cp ci-oai-spgwc:/openair-spgwc/spgwc_check_run.log archives', new_host_flag, new_host_user, new_host)
-          myShCmd('docker cp ci-oai-spgwu:/openair-spgwu-tiny/spgwu_check_run.log archives', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
           copyFrom2ndServer('archives/*_check_run.log', 'archives', new_host_flag, new_host_user, new_host)
           sh "python3 ./ci-scripts/verifySanityCheckDeployment.py --job_name=${JOB_NAME} --job_id=${BUILD_ID}"
         }
@@ -327,8 +301,8 @@ pipeline {
         }
         unsuccessful {
           // If anything wrong occurs, we still try to copy
-          myShCmd('docker cp ci-oai-spgwc:/openair-spgwc/spgwc_check_run.log archives', new_host_flag, new_host_user, new_host)
-          myShCmd('docker cp ci-oai-spgwu:/openair-spgwu-tiny/spgwu_check_run.log archives', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
           copyFrom2ndServer('archives/*_check_run.log', 'archives', new_host_flag, new_host_user, new_host)
           sh "echo 'OAI-SPGW-C CHECK START/STOP: KO' > archives/spgwc_cnf_check_start.log"
           sh "echo 'OAI-SPGW-U CHECK START/STOP: KO' > archives/spgwu_cnf_check_start.log"
@@ -339,9 +313,9 @@ pipeline {
       steps {
         script {
           // Killing all containers
-          myShCmd('docker rm -f ci-oai-spgwc ci-oai-spgwu', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveAllContainers', new_host_flag, new_host_user, new_host)
           // Removing all intermediate networks
-          myShCmd('docker network rm ci-s11 ci-sx ci-s1u', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveNetworks', new_host_flag, new_host_user, new_host)
         }
       }
     }
@@ -360,6 +334,15 @@ pipeline {
           } else {
             echo "Federation Test Job is KO"
             sh "ci-scripts/fail.sh"
+          }
+        }
+      }
+      post {
+        always {
+          script {
+            copyArtifacts(projectName: 'CI-OpenAir-EPC-FED',
+                          filter: 'test_results_oai_epc.html',
+                          selector: lastCompleted())
           }
         }
       }
@@ -401,17 +384,9 @@ pipeline {
     cleanup {
       script {
         // Killing all containers
-        try {
-          myShCmd('docker rm -f ci-oai-spgwc ci-oai-spgwu', new_host_flag, new_host_user, new_host)
-        } catch (Exception e) {
-          echo "No problem: we may not started all containers"
-        }
+        myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveAllContainers', new_host_flag, new_host_user, new_host)
         // Removing the networks
-        try {
-          myShCmd('docker network rm ci-s11 ci-sx ci-s1u', new_host_flag, new_host_user, new_host)
-        } catch (Exception e) {
-          echo "No problem: we may not started all docker networks"
-        }
+        myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveNetworks', new_host_flag, new_host_user, new_host)
         // In case of build failure, we might have temporary containers still running. TBD!
 
         // Removing temporary / intermediate images
@@ -436,14 +411,24 @@ pipeline {
         // Generating the HTML report
         if (env.ghprbPullId != null) {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${env.ghprbSourceBranch} --git_src_commit=${env.ghprbActualCommit} --git_pull_request=True --git_target_branch=${env.ghprbTargetBranch} --git_target_commit=${GIT_COMMIT}"
-          sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_spgwc.html"
-          sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_spgwc.html"
+          if (fileExists('test_results_oai_spgwc.html')) {
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_spgwc.html"
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_spgwc.html"
+          }
+          if (fileExists('test_results_oai_epc.html')) {
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_epc.html"
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_epc.html"
+          }
         } else {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${GIT_BRANCH} --git_src_commit=${GIT_COMMIT}"
         }
-		sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_spgwc.html"
         if (fileExists('test_results_oai_spgwc.html')) {
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_spgwc.html"
           archiveArtifacts artifacts: 'test_results_oai_spgwc.html'
+        }
+        if (fileExists('test_results_oai_epc.html')) {
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_epc.html"
+          archiveArtifacts artifacts: 'test_results_oai_epc.html'
         }
         // Sending an email to the last committer. Maybe not the Pull Request's author.
         def emailTo = getCommitterEmail()

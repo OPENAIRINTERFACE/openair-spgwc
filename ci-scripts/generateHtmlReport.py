@@ -96,69 +96,86 @@ class HtmlReport():
 		self.file.write('  <br>\n')
 
 		# Build Info Summary
-		self.file.write('  <table class="table-bordered" width = "80%" align = "center" border = "1">\n')
-		self.file.write('	 <tr>\n')
-		self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-time"></span> Build Start Time</td>\n')
+		buildSummary = ''
+		buildSummary += '  <table class="table-bordered" width = "80%" align = "center" border = "1">\n'
+		buildSummary += '	 <tr>\n'
+		buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-time"></span> Build Start Time</td>\n'
 		#date_formatted = re.sub('\..*', '', self.created)
-		self.file.write('	   <td>' + self.job_start_time + '</td>\n')
-		self.file.write('	 </tr>\n')
-		self.file.write('	 <tr>\n')
-		self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-wrench"></span> Build Trigger</td>\n')
+		buildSummary += '	   <td>' + self.job_start_time + '</td>\n'
+		buildSummary += '	 </tr>\n'
+		buildSummary += '	 <tr>\n'
+		buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-wrench"></span> Build Trigger</td>\n'
 		if self.git_pull_request:
-			self.file.write('	   <td>Pull Request</td>\n')
+			buildSummary += '	   <td>Pull Request</td>\n'
 		else:
-			self.file.write('	   <td>Push Event</td>\n')
-		self.file.write('	 </tr>\n')
-		self.file.write('	 <tr>\n')
-		self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-cloud-upload"></span> GIT Repository</td>\n')
-		self.file.write('	   <td><a href="' + self.git_url + '">' + self.git_url + '</a></td>\n')
-		self.file.write('	 </tr>\n')
+			buildSummary += '	   <td>Push Event</td>\n'
+		buildSummary += '	 </tr>\n'
+		buildSummary += '	 <tr>\n'
+		buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-cloud-upload"></span> GIT Repository</td>\n'
+		buildSummary += '	   <td><a href="' + self.git_url + '">' + self.git_url + '</a></td>\n'
+		buildSummary += '	 </tr>\n'
 		if self.git_pull_request:
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-link"></span> Pull Request Link</td>\n')
-			self.file.write('	   <td><a href="TEMPLATE_PULL_REQUEST_LINK">TEMPLATE_PULL_REQUEST_LINK</a></td>\n')
-			self.file.write('	 </tr>\n')
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-header"></span> Pull Request Title</td>\n')
-			self.file.write('	   <td>TEMPLATE_PULL_REQUEST_TEMPLATE</td>\n')
-			self.file.write('	 </tr>\n')
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n')
-			self.file.write('	   <td>' + self.git_src_branch + '</td>\n')
-			self.file.write('	 </tr>\n')
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Source Commit ID</td>\n')
-			self.file.write('	   <td>' + self.git_src_commit + '</td>\n')
-			self.file.write('	 </tr>\n')
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-link"></span> Pull Request Link</td>\n'
+			buildSummary += '	   <td><a href="TEMPLATE_PULL_REQUEST_LINK">TEMPLATE_PULL_REQUEST_LINK</a></td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-header"></span> Pull Request Title</td>\n'
+			buildSummary += '	   <td>TEMPLATE_PULL_REQUEST_TEMPLATE</td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-out"></span> Source Branch</td>\n'
+			buildSummary += '	   <td>' + self.git_src_branch + '</td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Source Commit ID</td>\n'
+			buildSummary += '	   <td>' + self.git_src_commit + '</td>\n'
+			buildSummary += '	 </tr>\n'
 			if (self.git_src_commit_msg is not None):
-				self.file.write('	 <tr>\n')
-				self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Source Commit Message</td>\n')
-				self.file.write('	   <td>' + self.git_src_commit_msg + '</td>\n')
-				self.file.write('	 </tr>\n')
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-in"></span> Target Branch</td>\n')
-			self.file.write('	   <td>' + self.git_target_branch + '</td>\n')
-			self.file.write('	 </tr>\n')
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Target Commit ID</td>\n')
-			self.file.write('	   <td>' + self.git_target_commit + '</td>\n')
-			self.file.write('	 </tr>\n')
+				buildSummary += '	 <tr>\n'
+				buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Source Commit Message</td>\n'
+				buildSummary += '	   <td>' + self.git_src_commit_msg + '</td>\n'
+				buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-log-in"></span> Target Branch</td>\n'
+			buildSummary += '	   <td>' + self.git_target_branch + '</td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Target Commit ID</td>\n'
+			buildSummary += '	   <td>' + self.git_target_commit + '</td>\n'
+			buildSummary += '	 </tr>\n'
 		else:
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tree-deciduous"></span> Branch</td>\n')
-			self.file.write('	   <td>' + self.git_src_branch + '</td>\n')
-			self.file.write('	 </tr>\n')
-			self.file.write('	 <tr>\n')
-			self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Commit ID</td>\n')
-			self.file.write('	   <td>' + self.git_src_commit + '</td>\n')
-			self.file.write('	 </tr>\n')
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tree-deciduous"></span> Branch</td>\n'
+			buildSummary += '	   <td>' + self.git_src_branch + '</td>\n'
+			buildSummary += '	 </tr>\n'
+			buildSummary += '	 <tr>\n'
+			buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-tag"></span> Commit ID</td>\n'
+			buildSummary += '	   <td>' + self.git_src_commit + '</td>\n'
+			buildSummary += '	 </tr>\n'
 			if (self.git_src_commit_msg is not None):
-				self.file.write('	 <tr>\n')
-				self.file.write('	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Commit Message</td>\n')
-				self.file.write('	   <td>' + self.git_src_commit_msg + '</td>\n')
-				self.file.write('	 </tr>\n')
-		self.file.write('  </table>\n')
-		self.file.write('  <br>\n')
+				buildSummary += '	 <tr>\n'
+				buildSummary += '	   <td bgcolor="lightcyan" > <span class="glyphicon glyphicon-comment"></span> Commit Message</td>\n'
+				buildSummary += '	   <td>' + self.git_src_commit_msg + '</td>\n'
+				buildSummary += '	 </tr>\n'
+		buildSummary += '  </table>\n'
+		buildSummary += '  <br>\n'
+		self.file.write(buildSummary)
+
+		cwd = os.getcwd()
+		if os.path.isfile(cwd + '/test_results_oai_epc.html'):
+			newEpcReport = open(cwd + '/test_results_oai_epc_new.html', 'w')
+			buildSummaryDone = True
+			with open(cwd + '/test_results_oai_epc.html', 'r') as originalEpcReport:
+				for line in originalEpcReport:
+					result = re.search('DS Tester Summary', line)
+					if (result is not None) and buildSummaryDone:
+						newEpcReport.write(buildSummary)
+						buildSummaryDone = False
+					newEpcReport.write(line)
+				originalEpcReport.close()
+			newEpcReport.close()
+			os.rename(cwd + '/test_results_oai_epc_new.html', cwd + '/test_results_oai_epc.html')
 
 	def generateFooter(self):
 		self.file.write('  <div class="well well-lg">End of Build Report -- Copyright <span class="glyphicon glyphicon-copyright-mark"></span> 2020 <a href="http://www.openairinterface.org/">OpenAirInterface</a>. All Rights Reserved.</div>\n')
