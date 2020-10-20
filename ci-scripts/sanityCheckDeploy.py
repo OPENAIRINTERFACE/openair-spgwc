@@ -72,8 +72,6 @@ class deploySanityCheckTest():
         entrypoint = re.search('entrypoint', str(res))
         if entrypoint is not None:
             # TEMPORARY
-            #subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwc/dockerfile-improvements-2020-08/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwcConfigFiles.py')
-            #subprocess_run_w_echo('python3 ci-scripts/generateSpgwcConfigFiles.py --kind=SPGW-C --s11c=eth0 --sxc=eth1 --from_docker_file --env_for_entrypoint')
             subprocess_run_w_echo('python3 ci-scripts/generateConfigFiles.py --kind=SPGW-C --s11c=eth0 --sxc=eth1 --from_docker_file --env_for_entrypoint')
             # S11 to MME will be on `eth0`
             # SX to SPGWU will be on `eth1`
@@ -109,7 +107,6 @@ class deploySanityCheckTest():
         # check if there is an entrypoint
         entrypoint = re.search('entrypoint', str(res))
         if entrypoint is not None:
-            #subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwu-tiny/dockerfile-improvements-2020-08/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwuConfigFiles.py')
             subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwu-tiny/develop/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwuConfigFiles.py')
             subprocess_run_w_echo('python3 ci-scripts/generateSpgwuConfigFiles.py --kind=SPGW-U --sxc_ip_addr=' + CI_SPGWC_SXN_ADDR + ' --sxu=eth1 --s1u=eth0 --from_docker_file --env_for_entrypoint')
             # S1U to eNB will be on `eth0`

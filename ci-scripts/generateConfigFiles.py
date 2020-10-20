@@ -32,6 +32,7 @@ class spgwcConfigGen():
 		self.apn = 'apn.oai.svc.cluster.local'
 		self.dns1_ip = '192.168.18.129'
 		self.dns2_ip = '8.8.4.4'
+		self.ue_pool_range = '12.1.1.2 - 12.1.1.128'
 		self.fromDockerFile = False
 		self.envForEntrypoint = False
 
@@ -78,12 +79,13 @@ class spgwcConfigGen():
 		spgwcFile.write('# Environment Variables used by the OAI-SPGW-C Entrypoint Script\n')
 		spgwcFile.write('PID_DIRECTORY=/var/run\n')
 		spgwcFile.write('SGW_INTERFACE_NAME_FOR_S11=' + self.s11c_name + '\n')
-		spgwcFile.write('SGW_IP_FOR_S5_S8_CP=127.0.0.10\n')
-		spgwcFile.write('PGW_IP_FOR_S5_S8_CP=127.0.0.12\n')
+		spgwcFile.write('SGW_IP_FOR_S5_S8_CP=127.0.0.11/8\n')
+		spgwcFile.write('PGW_IP_FOR_S5_S8_CP=127.0.0.12/8\n')
 		spgwcFile.write('PGW_INTERFACE_NAME_FOR_SX=' + self.sxc_name + '\n')
 		spgwcFile.write('DEFAULT_APN=' + self.apn + '\n')
 		spgwcFile.write('DEFAULT_DNS_IPV4_ADDRESS=' + self.dns1_ip + '\n')
 		spgwcFile.write('DEFAULT_DNS_SEC_IPV4_ADDRESS=' + self.dns2_ip + '\n')
+		spgwcFile.write('UE_IP_ADDRESS_POOL=' + self.ue_pool_range + '\n')
 		spgwcFile.close()
 
 #-----------------------------------------------------------
