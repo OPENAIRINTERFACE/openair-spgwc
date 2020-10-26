@@ -122,17 +122,13 @@ pipeline {
         stage ('Build SPGW-C Image') {
           steps {
             script {
-              if (env.ghprbPullId != null) {
-                // Building a temporary image
-                myShCmd('docker image prune --force', new_host_flag, new_host_user, new_host)
-                myShCmd('docker build --target oai-spgwc --tag oai-spgwc:ci-temp --file ci-scripts/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" --build-arg BUILD_FOR_CI="True" --build-arg CI_SRC_BRANCH="' + env.ghprbSourceBranch + '" --build-arg CI_SRC_COMMIT="' + env.ghprbActualCommit + '" --build-arg CI_DEST_BRANCH="develop" . > archives/spgwc_docker_image_build.log 2>&1', new_host_flag, new_host_user, new_host)
-              } else {
+              if (env.ghprbPullId == null) {
                 // Currently this pipeline only runs for pushes to `develop` branch
                 // First clean image registry
                 myShCmd('docker image rm oai-spgwc:develop', new_host_flag, new_host_user, new_host)
-                myShCmd('docker image prune --force', new_host_flag, new_host_user, new_host)
-                myShCmd('docker build --target oai-spgwc --tag oai-spgwc:develop --file ci-scripts/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" --build-arg CI_SRC_BRANCH="develop" . > archives/spgwc_docker_image_build.log 2>&1', new_host_flag, new_host_user, new_host)
               }
+              myShCmd('docker image prune --force', new_host_flag, new_host_user, new_host)
+              myShCmd('docker build --target oai-spgwc --tag oai-spgwc:ci-temp --file docker/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" . > archives/spgwc_docker_image_build.log 2>&1', new_host_flag, new_host_user, new_host)
               myShCmd('docker image ls >> archives/spgwc_docker_image_build.log', new_host_flag, new_host_user, new_host)
             }
           }

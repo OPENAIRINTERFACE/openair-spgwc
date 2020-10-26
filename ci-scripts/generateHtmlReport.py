@@ -445,7 +445,7 @@ class HtmlReport():
 		if os.path.isfile(cwd + '/archives/' + logFileName):
 			status = False
 			section_start_pattern = 'build_spgwc --install-deps --force'
-			section_end_pattern = 'build_spgwc --clean --build-type Release --job'
+			section_end_pattern = 'build_spgwc --clean --build-type Release --job --Verbose'
 			section_status = False
 			package_install = False
 			folly_build_start = False
@@ -464,22 +464,22 @@ class HtmlReport():
 						result = re.search('SPGW-C deps installation successful', line)
 						if result is not None:
 							status = True
-						result = re.search('/tmp /openair-spgwc/build/scripts', line)
+						result = re.search('Packages and Libraries installation finished!', line)
 						if result is not None:
 							package_install = True
-						result = re.search('Cloning into \'folly\'', line)
+						result = re.search('Starting to install folly from source', line)
 						if result is not None:
 							folly_build_start = True
 						if folly_build_start:
-							result = re.search('Installing: /usr/local/lib/libfollybenchmark', line)
+							result = re.search('End of folly installation', line)
 							if result is not None:
 								folly_build_start = False
 								folly_build = True
-						result = re.search('Install spdlog from ', line)
+						result = re.search('Starting to install spdlog from source', line)
 						if result is not None:
 							spdlog_build_start = True
 						if spdlog_build_start:
-							result = re.search('/openair-spgwc/build/scripts', line)
+							result = re.search('End of spdlog installation', line)
 							if result is not None:
 								spdlog_build_start = False
 								spdlog_build = True
@@ -531,8 +531,8 @@ class HtmlReport():
 		cwd = os.getcwd()
 		if os.path.isfile(cwd + '/archives/' + logFileName):
 			status = False
-			section_start_pattern = 'build_spgwc --clean --build-type Release --jobs'
-			section_end_pattern = 'cat /openair-spgwc/build/log/spgwc.txt'
+			section_start_pattern = 'build_spgwc --clean --build-type Release --jobs --Verbose'
+			section_end_pattern = 'git log -n1 > version.txt'
 			section_status = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 				for line in logfile:
@@ -574,8 +574,8 @@ class HtmlReport():
 		nb_warnings = 0
 
 		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'cat /openair-spgwc/build/log/spgwc.txt'
-			section_end_pattern = 'FROM ubuntu:bionic as oai-spgwc$'
+			section_start_pattern = 'build_spgwc --clean --build-type Release --jobs --Verbose'
+			section_end_pattern = 'git log -n1 > version.txt'
 			section_status = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 				for line in logfile:
