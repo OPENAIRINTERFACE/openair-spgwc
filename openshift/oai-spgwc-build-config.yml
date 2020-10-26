@@ -29,7 +29,7 @@ spec:
     source:
         git:
             uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "helm3.1-onap-sync-with-cn-split-repos"
+            ref: "develop"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:
