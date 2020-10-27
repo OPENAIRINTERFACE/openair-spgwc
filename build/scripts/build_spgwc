@@ -175,6 +175,19 @@ function main()
     fi
   fi
 
+  # Taking care of the case we build from dockerfile within openair-epc-fed repository
+  if [ -f $OPENAIRCN_DIR/.git ] && [ $IS_CONTAINER -ne 0 ]; then
+    pushd $OPENAIRCN_DIR > /dev/null
+    rm -f .git
+    git init
+    git config --global user.email "dummy@dummy.org"
+    git config --global user.name "dummy"
+    echo "dummy" > dummy.txt
+    git add dummy.txt
+    git commit -m "dummy"
+    popd > /dev/null
+  fi
+
   cmake_args="$cmake_args  -DBUILD_SHARED_LIBS=OFF"
 
   ##############################################################################
