@@ -23,6 +23,7 @@
 import os
 import re
 import sys
+import ipaddress
 
 class spgwcConfigGen():
 	def __init__(self):
@@ -30,11 +31,13 @@ class spgwcConfigGen():
 		self.s11c_name = ''
 		self.sxc_name = ''
 		self.apn = 'apn.oai.svc.cluster.local'
-		self.dns1_ip = '192.168.18.129'
-		self.dns2_ip = '8.8.4.4'
-		self.ue_pool_range = '12.1.1.2 - 12.1.1.128'
+		self.dns1_ip = ipaddress.ip_address('192.168.18.129')
+		self.dns2_ip = ipaddress.ip_address('8.8.4.4')
+		self.uePoolRange = ipaddress.ip_network('12.1.1.0/24')
+		self.ue_pool_range = '12.1.1.2 - 12.1.1.254'
 		self.fromDockerFile = False
 		self.envForEntrypoint = False
+		self.pushProtocolOption = 'no'
 
 	def GenerateSpgwcConfigurer(self):
 		spgwcFile = open('./spgwc-cfg.sh', 'w')
@@ -51,8 +54,8 @@ class spgwcConfigGen():
 			spgwcFile.write('PREFIX=\'/usr/local/etc/oai\'\n')
 		spgwcFile.write('\n')
 		spgwcFile.write('MY_APN=\'' + self.apn + '\'\n')
-		spgwcFile.write('MY_PRIMARY_DNS=\'' + self.dns1_ip + '\'\n')
-		spgwcFile.write('MY_SECONDARY_DNS=\'' + self.dns2_ip + '\'\n')
+		spgwcFile.write('MY_PRIMARY_DNS=\'' + str(self.dns1_ip) + '\'\n')
+		spgwcFile.write('MY_SECONDARY_DNS=\'' + str(self.dns2_ip) + '\'\n')
 		spgwcFile.write('\n')
 		if not self.fromDockerFile:
 			spgwcFile.write('mkdir -p $PREFIX\n')
@@ -69,6 +72,7 @@ class spgwcConfigGen():
 		spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_SEC_IPV4_ADDRESS@]=$MY_SECONDARY_DNS\n')
 		spgwcFile.write('SPGWC_CONF[@DEFAULT_APN@]=$MY_APN\n')
 		spgwcFile.write('SPGWC_CONF[@UE_IP_ADDRESS_POOL@]=\'' + self.ue_pool_range + '\'\n')
+		spgwcFile.write('SPGWC_CONF[@PUSH_PROTOCOL_OPTION@]=\'' + self.pushProtocolOption + '\'\n')
 		spgwcFile.write('\n')
 		spgwcFile.write('for K in "${!SPGWC_CONF[@]}"; do \n')
 		spgwcFile.write('  egrep -lRZ "$K" $PREFIX | xargs -0 -l sed -i -e "s|$K|${SPGWC_CONF[$K]}|g"\n')
@@ -86,9 +90,10 @@ class spgwcConfigGen():
 		spgwcFile.write('PGW_IP_FOR_S5_S8_CP=127.0.0.12/8\n')
 		spgwcFile.write('PGW_INTERFACE_NAME_FOR_SX=' + self.sxc_name + '\n')
 		spgwcFile.write('DEFAULT_APN=' + self.apn + '\n')
-		spgwcFile.write('DEFAULT_DNS_IPV4_ADDRESS=' + self.dns1_ip + '\n')
-		spgwcFile.write('DEFAULT_DNS_SEC_IPV4_ADDRESS=' + self.dns2_ip + '\n')
+		spgwcFile.write('DEFAULT_DNS_IPV4_ADDRESS=' + str(self.dns1_ip) + '\n')
+		spgwcFile.write('DEFAULT_DNS_SEC_IPV4_ADDRESS=' + str(self.dns2_ip) + '\n')
 		spgwcFile.write('UE_IP_ADDRESS_POOL=' + self.ue_pool_range + '\n')
+		spgwcFile.write('PUSH_PROTOCOL_OPTION=' + self.pushProtocolOption + '\n')
 		spgwcFile.close()
 
 #-----------------------------------------------------------
@@ -111,13 +116,16 @@ def Usage():
 	print('  --apn=[Access Point Name]')
 	print('  --dns1_ip=[First DNS IP address]')
 	print('  --dns2_ip=[Second DNS IP address]')
-	print('  --envForEntrypoint    [generates a spgwc-env.list interpreted by the entrypoint]')
+	print('  --network_ue_ip=[UE IP pool range in CICDR format, for example 12.1.1.0/24. The attached UE will be allocated an IP address in that range.]')
+	print('  --push_protocol_option=[yes or no, no is default]')
+	print('  --env_for_entrypoint    [generates a spgwc-env.list interpreted by the entrypoint]')
 
 argvs = sys.argv
 argc = len(argvs)
 cwd = os.getcwd()
 
 mySpgwcCfg = spgwcConfigGen()
+uePoolRangedChanged = False
 
 while len(argvs) > 1:
 	myArgv = argvs.pop(1)
@@ -138,14 +146,23 @@ while len(argvs) > 1:
 		mySpgwcCfg.apn = matchReg.group(1)
 	elif re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE)
-		mySpgwcCfg.dns1_ip = matchReg.group(1)
+		mySpgwcCfg.dns1_ip = ipaddress.ip_address(matchReg.group(1))
 	elif re.match('^\-\-dns2_ip=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-dns2_ip=(.+)$', myArgv, re.IGNORECASE)
-		mySpgwcCfg.dns2_ip = matchReg.group(1)
+		mySpgwcCfg.dns2_ip = ipaddress.ip_address(matchReg.group(1))
 	elif re.match('^\-\-from_docker_file', myArgv, re.IGNORECASE):
 		mySpgwcCfg.fromDockerFile = True
 	elif re.match('^\-\-env_for_entrypoint', myArgv, re.IGNORECASE):
 		mySpgwcCfg.envForEntrypoint = True
+	elif re.match('^\-\-network_ue_ip', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-network_ue_ip=(.+)$', myArgv, re.IGNORECASE)
+		mySpgwcCfg.uePoolRange = ipaddress.ip_network(matchReg.group(1))
+		uePoolRangedChanged = True
+	elif re.match('^\-\-push_protocol_option', myArgv, re.IGNORECASE):
+		matchReg = re.match('^\-\-push_protocol_option=(.+)$', myArgv, re.IGNORECASE)
+		pushProtOption = matchReg.group(1)
+		if pushProtOption == 'yes' or pushProtOption == 'Yes' or pushProtOption == 'YES':
+			mySpgwcCfg.pushProtocolOption = 'yes'
 	else:
 		Usage()
 		sys.exit('Invalid Parameter: ' + myArgv)
@@ -155,6 +172,11 @@ if mySpgwcCfg.kind == '':
 	sys.exit('missing kind parameter')
 
 if mySpgwcCfg.kind == 'SPGW-C':
+	if uePoolRangedChanged:
+		initAddr = mySpgwcCfg.uePoolRange.network_address
+		endAddr  = initAddr + mySpgwcCfg.uePoolRange.num_addresses - 1
+		initAddr += 2
+		mySpgwcCfg.ue_pool_range = str(initAddr) + ' - ' + str(endAddr)
 	if mySpgwcCfg.s11c_name == '':
 		Usage()
 		sys.exit('missing S11 Interface Name on SPGW-C container')

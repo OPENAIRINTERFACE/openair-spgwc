@@ -3,6 +3,7 @@
 set -euo pipefail
 
 CONFIG_DIR="/openair-spgwc/etc"
+PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
 
 for c in ${CONFIG_DIR}/*.conf; do
     # grep variable names (format: ${VAR}) from template to be rendered
