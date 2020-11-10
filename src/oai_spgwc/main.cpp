@@ -121,7 +121,8 @@ int main(int argc, char **argv) {
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
-  string pid_file_name = get_exe_absolute_path("/var/run", pgw_cfg.instance);
+  string pid_dir =  pgw_cfg.pid_dir.empty() ? "/var/run" :  pgw_cfg.pid_dir.c_str() ;
+  string pid_file_name = get_exe_absolute_path(pid_dir, pgw_cfg.instance);
   if (!is_pid_file_lock_success(pid_file_name.c_str())) {
     Logger::pgwc_app().error("Lock PID file %s failed\n",
                              pid_file_name.c_str());
