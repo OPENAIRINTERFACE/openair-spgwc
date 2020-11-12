@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -55,7 +55,7 @@
 
 #define PGW_CONFIG_STRING_PGW_MASQUERADE_SGI "PGW_MASQUERADE_SGI"
 #define PGW_CONFIG_STRING_UE_TCP_MSS_CLAMPING "UE_TCP_MSS_CLAMPING"
-#define PGW_CONFIG_STRING_NAS_FORCE_PUSH_PCO \
+#define PGW_CONFIG_STRING_NAS_FORCE_PUSH_PCO                                   \
   "FORCE_PUSH_PROTOCOL_CONFIGURATION_OPTIONS"
 
 #define PGW_CONFIG_STRING_IP_ADDRESS_POOL "IP_ADDRESS_POOL"
@@ -70,10 +70,10 @@
 #define PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER "-"
 #define PGW_CONFIG_STRING_IPV6_ADDRESS_PREFIX_DELIMITER "/"
 #define PGW_CONFIG_STRING_DEFAULT_DNS_IPV4_ADDRESS "DEFAULT_DNS_IPV4_ADDRESS"
-#define PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV4_ADDRESS \
+#define PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV4_ADDRESS                         \
   "DEFAULT_DNS_SEC_IPV4_ADDRESS"
 #define PGW_CONFIG_STRING_DEFAULT_DNS_IPV6_ADDRESS "DEFAULT_DNS_IPV6_ADDRESS"
-#define PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV6_ADDRESS \
+#define PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV6_ADDRESS                         \
   "DEFAULT_DNS_SEC_IPV6_ADDRESS"
 #define PGW_CONFIG_STRING_UE_MTU "UE_MTU"
 #define PGW_CONFIG_STRING_GTPV1U_REALIZATION "GTPV1U_REALIZATION"
@@ -92,9 +92,9 @@
 #define PGW_CONFIG_STRING_PCEF "PCEF"
 #define PGW_CONFIG_STRING_PCEF_ENABLED "PCEF_ENABLED"
 #define PGW_CONFIG_STRING_TCP_ECN_ENABLED "TCP_ECN_ENABLED"
-#define PGW_CONFIG_STRING_AUTOMATIC_PUSH_DEDICATED_BEARER_PCC_RULE \
+#define PGW_CONFIG_STRING_AUTOMATIC_PUSH_DEDICATED_BEARER_PCC_RULE             \
   "AUTOMATIC_PUSH_DEDICATED_BEARER_PCC_RULE"
-#define PGW_CONFIG_STRING_DEFAULT_BEARER_STATIC_PCC_RULE \
+#define PGW_CONFIG_STRING_DEFAULT_BEARER_STATIC_PCC_RULE                       \
   "DEFAULT_BEARER_STATIC_PCC_RULE"
 #define PGW_CONFIG_STRING_PUSH_STATIC_PCC_RULES "PUSH_STATIC_PCC_RULES"
 #define PGW_CONFIG_STRING_APN_AMBR_UL "APN_AMBR_UL"
@@ -218,36 +218,36 @@ class pgw_config {
     for (int i = 0; i < PGW_NUM_APN_MAX; i++) {
       apn[i] = {};
     }
-    default_dnsv4.s_addr = INADDR_ANY;
+    default_dnsv4.s_addr     = INADDR_ANY;
     default_dns_secv4.s_addr = INADDR_ANY;
-    default_dnsv6 = in6addr_any;
-    default_dns_secv6 = in6addr_any;
+    default_dnsv6            = in6addr_any;
+    default_dns_secv6        = in6addr_any;
 
-    num_ue_pool = 0;
+    num_ue_pool   = 0;
     num_paa6_pool = 0;
     for (int i = 0; i < PGW_NUM_UE_POOL_MAX; i++) {
-      ue_pool_range_low[i] = {};
-      ue_pool_range_high[i] = {};
-      ue_pool_network[i] = {};
-      ue_pool_netmask[i] = {};
-      paa_pool6_prefix[i] = {};
+      ue_pool_range_low[i]    = {};
+      ue_pool_range_high[i]   = {};
+      ue_pool_network[i]      = {};
+      ue_pool_netmask[i]      = {};
+      paa_pool6_prefix[i]     = {};
       paa_pool6_prefix_len[i] = {};
-      ue_pool_excluded[i] = {};
+      ue_pool_excluded[i]     = {};
     }
     force_push_pco = true;
-    ue_mtu = 1500;
+    ue_mtu         = 1500;
 
     itti.itti_timer_sched_params.sched_priority = 85;
-    itti.sx_sched_params.sched_priority = 84;
-    itti.s5s8_sched_params.sched_priority = 84;
-    itti.pgw_app_sched_params.sched_priority = 84;
-    itti.async_cmd_sched_params.sched_priority = 84;
+    itti.sx_sched_params.sched_priority         = 84;
+    itti.s5s8_sched_params.sched_priority       = 84;
+    itti.pgw_app_sched_params.sched_priority    = 84;
+    itti.async_cmd_sched_params.sched_priority  = 84;
 
     s5s8_cp.thread_rd_sched_params.sched_priority = 90;
-    s5s8_cp.port = gtpv2c::default_port;
+    s5s8_cp.port                                  = gtpv2c::default_port;
 
     sx.thread_rd_sched_params.sched_priority = 90;
-    sx.port = pfcp::default_port;
+    sx.port                                  = pfcp::default_port;
   };
   ~pgw_config();
   void lock() { m_rw_lock.lock(); };
@@ -255,8 +255,8 @@ class pgw_config {
   int load(const std::string& config_file);
   int finalize();
   void display();
-  bool is_dotted_apn_handled(const std::string& apn,
-                             const pdn_type_t& pdn_type);
+  bool is_dotted_apn_handled(
+      const std::string& apn, const pdn_type_t& pdn_type);
   int get_pfcp_node_id(pfcp::node_id_t& node_id);
   int get_pfcp_fseid(pfcp::fseid_t& fseid);
 };

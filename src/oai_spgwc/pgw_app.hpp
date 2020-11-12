@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -79,8 +79,8 @@ class pgw_app {
   bool is_imsi64_2_pgw_context(const imsi64_t& imsi64) const;
   std::shared_ptr<pgw_context> imsi64_2_pgw_context(
       const imsi64_t& imsi64) const;
-  void set_imsi64_2_pgw_context(const imsi64_t& imsi64,
-                                std::shared_ptr<pgw_context> pc);
+  void set_imsi64_2_pgw_context(
+      const imsi64_t& imsi64, std::shared_ptr<pgw_context> pc);
 
   int pco_push_protocol_or_container_id(
       protocol_configuration_options_t& pco,
@@ -101,10 +101,9 @@ class pgw_app {
   pgw_app(pgw_app const&) = delete;
   void operator=(pgw_app const&) = delete;
 
-  void send_create_session_response_cause(const uint64_t gtpc_tx_id,
-                                          const teid_t teid,
-                                          const endpoint& r_endpoint,
-                                          const cause_t& cause) const;
+  void send_create_session_response_cause(
+      const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint,
+      const cause_t& cause) const;
   void send_delete_session_response_cause_request_accepted(
       const uint64_t gtpc_tx_id, const teid_t teid,
       const endpoint& r_endpoint) const;
@@ -121,19 +120,19 @@ class pgw_app {
       const uint64_t gtpc_tx_id, const teid_t teid,
       const endpoint& r_endpoint) const;
 
-  fteid_t build_s5s8_cp_fteid(const struct in_addr ipv4_address,
-                              const teid_t teid);
+  fteid_t build_s5s8_cp_fteid(
+      const struct in_addr ipv4_address, const teid_t teid);
   fteid_t generate_s5s8_cp_fteid(const struct in_addr ipv4_address);
   void free_s5s8_cp_fteid(const fteid_t& fteid);
-  void set_s5s8cpgw_fteid_2_pgw_context(fteid_t& rs5s8_fteid,
-                                        std::shared_ptr<pgw_context> spc);
+  void set_s5s8cpgw_fteid_2_pgw_context(
+      fteid_t& rs5s8_fteid, std::shared_ptr<pgw_context> spc);
   std::shared_ptr<pgw_context> s5s8cpgw_fteid_2_pgw_context(
       fteid_t& ls5s8_fteid);
 
-  void set_seid_2_pgw_context(const seid_t& seid,
-                              std::shared_ptr<pgw_context>& pc);
-  bool seid_2_pgw_context(const seid_t& seid,
-                          std::shared_ptr<pgw_context>& pc) const;
+  void set_seid_2_pgw_context(
+      const seid_t& seid, std::shared_ptr<pgw_context>& pc);
+  bool seid_2_pgw_context(
+      const seid_t& seid, std::shared_ptr<pgw_context>& pc) const;
 
   void delete_pgw_context(std::shared_ptr<pgw_context> spc);
 
@@ -147,9 +146,10 @@ class pgw_app {
       std::vector<struct in_addr>::iterator& it_out_of_nw);
   int static_paa_get_pool_id(const struct in_addr& ue_addr);
 
-  int process_pco_request(const protocol_configuration_options_t& pco_req,
-                          protocol_configuration_options_t& pco_resp,
-                          protocol_configuration_options_ids_t& pco_ids);
+  int process_pco_request(
+      const protocol_configuration_options_t& pco_req,
+      protocol_configuration_options_t& pco_resp,
+      protocol_configuration_options_ids_t& pco_ids);
 
   void handle_itti_msg(std::shared_ptr<itti_s5s8_create_session_request> m);
   void handle_itti_msg(std::shared_ptr<itti_s5s8_delete_session_request> m);

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,7 +34,7 @@
 
 class stream_serializable {
  public:
-  virtual void dump_to(std::ostream& os) = 0;
+  virtual void dump_to(std::ostream& os)   = 0;
   virtual void load_from(std::istream& is) = 0;
   // virtual ~serializable() = 0;
 };

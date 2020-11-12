@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -36,26 +36,27 @@
 
 class itti_s11_msg : public itti_msg {
  public:
-  itti_s11_msg(const itti_msg_type_t msg_type, const task_id_t origin,
-               const task_id_t destination)
+  itti_s11_msg(
+      const itti_msg_type_t msg_type, const task_id_t origin,
+      const task_id_t destination)
       : itti_msg(msg_type, origin, destination) {
     l_endpoint = {};
     r_endpoint = {};
-    teid = UNASSIGNED_TEID;
-    l_teid = UNASSIGNED_TEID;
+    teid       = UNASSIGNED_TEID;
+    l_teid     = UNASSIGNED_TEID;
     gtpc_tx_id = 0;
   }
   itti_s11_msg(const itti_s11_msg& i) : itti_msg(i) {
     l_endpoint = i.l_endpoint;
     r_endpoint = i.r_endpoint;
-    teid = i.teid;
-    l_teid = i.l_teid;
+    teid       = i.teid;
+    l_teid     = i.l_teid;
     gtpc_tx_id = i.gtpc_tx_id;
   }
-  itti_s11_msg(const itti_s11_msg& i, const task_id_t orig,
-               const task_id_t dest)
+  itti_s11_msg(
+      const itti_s11_msg& i, const task_id_t orig, const task_id_t dest)
       : itti_s11_msg(i) {
-    origin = orig;
+    origin      = orig;
     destination = dest;
   }
 
@@ -68,8 +69,8 @@ class itti_s11_msg : public itti_msg {
 
 class itti_s11_remote_peer_not_responding : public itti_s11_msg {
  public:
-  itti_s11_remote_peer_not_responding(const task_id_t orig,
-                                      const task_id_t dest)
+  itti_s11_remote_peer_not_responding(
+      const task_id_t orig, const task_id_t dest)
       : itti_s11_msg(S11_REMOTE_PEER_NOT_RESPONDING, orig, dest) {}
   itti_s11_remote_peer_not_responding(
       const itti_s11_remote_peer_not_responding& i)
@@ -84,15 +85,16 @@ class itti_s11_remote_peer_not_responding : public itti_s11_msg {
 //-----------------------------------------------------------------------------
 class itti_s11_create_session_request : public itti_s11_msg {
  public:
-  itti_s11_create_session_request(const task_id_t origin,
-                                  const task_id_t destination)
+  itti_s11_create_session_request(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_CREATE_SESSION_REQUEST, origin, destination) {}
   itti_s11_create_session_request(const itti_s11_create_session_request& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_create_session_request(const itti_s11_create_session_request& i,
-                                  const task_id_t orig, const task_id_t dest)
+  itti_s11_create_session_request(
+      const itti_s11_create_session_request& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -117,15 +119,16 @@ class itti_s11_create_session_request : public itti_s11_msg {
  */
 class itti_s11_create_session_response : public itti_s11_msg {
  public:
-  itti_s11_create_session_response(const task_id_t origin,
-                                   const task_id_t destination)
+  itti_s11_create_session_response(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_CREATE_SESSION_RESPONSE, origin, destination) {}
   itti_s11_create_session_response(const itti_s11_create_session_response& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_create_session_response(const itti_s11_create_session_response& i,
-                                   const task_id_t orig, const task_id_t dest)
+  itti_s11_create_session_response(
+      const itti_s11_create_session_response& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -153,15 +156,16 @@ class itti_s11_create_session_response : public itti_s11_msg {
  */
 class itti_s11_create_bearer_request : public itti_s11_msg {
  public:
-  itti_s11_create_bearer_request(const task_id_t origin,
-                                 const task_id_t destination)
+  itti_s11_create_bearer_request(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_CREATE_BEARER_REQUEST, origin, destination) {}
   itti_s11_create_bearer_request(const itti_s11_create_bearer_request& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_create_bearer_request(const itti_s11_create_bearer_request& i,
-                                 const task_id_t orig, const task_id_t dest)
+  itti_s11_create_bearer_request(
+      const itti_s11_create_bearer_request& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -202,15 +206,16 @@ class itti_s11_create_bearer_request : public itti_s11_msg {
  */
 class itti_s11_create_bearer_response : public itti_s11_msg {
  public:
-  itti_s11_create_bearer_response(const task_id_t origin,
-                                  const task_id_t destination)
+  itti_s11_create_bearer_response(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_CREATE_BEARER_RESPONSE, origin, destination) {}
   itti_s11_create_bearer_response(const itti_s11_create_bearer_response& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_create_bearer_response(const itti_s11_create_bearer_response& i,
-                                  const task_id_t orig, const task_id_t dest)
+  itti_s11_create_bearer_response(
+      const itti_s11_create_bearer_response& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -236,15 +241,16 @@ class itti_s11_create_bearer_response : public itti_s11_msg {
  */
 class itti_s11_modify_bearer_request : public itti_s11_msg {
  public:
-  itti_s11_modify_bearer_request(const task_id_t origin,
-                                 const task_id_t destination)
+  itti_s11_modify_bearer_request(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_MODIFY_BEARER_REQUEST, origin, destination) {}
   itti_s11_modify_bearer_request(const itti_s11_modify_bearer_request& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_modify_bearer_request(const itti_s11_modify_bearer_request& i,
-                                 const task_id_t orig, const task_id_t dest)
+  itti_s11_modify_bearer_request(
+      const itti_s11_modify_bearer_request& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -270,15 +276,16 @@ class itti_s11_modify_bearer_request : public itti_s11_msg {
  */
 class itti_s11_modify_bearer_response : public itti_s11_msg {
  public:
-  itti_s11_modify_bearer_response(const task_id_t origin,
-                                  const task_id_t destination)
+  itti_s11_modify_bearer_response(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_MODIFY_BEARER_RESPONSE, origin, destination) {}
   itti_s11_modify_bearer_response(const itti_s11_modify_bearer_response& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_modify_bearer_response(const itti_s11_modify_bearer_response& i,
-                                  const task_id_t orig, const task_id_t dest)
+  itti_s11_modify_bearer_response(
+      const itti_s11_modify_bearer_response& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -292,15 +299,16 @@ class itti_s11_modify_bearer_response : public itti_s11_msg {
 //-----------------------------------------------------------------------------
 class itti_s11_delete_session_request : public itti_s11_msg {
  public:
-  itti_s11_delete_session_request(const task_id_t origin,
-                                  const task_id_t destination)
+  itti_s11_delete_session_request(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_DELETE_SESSION_REQUEST, origin, destination) {}
   itti_s11_delete_session_request(const itti_s11_delete_session_request& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_delete_session_request(const itti_s11_delete_session_request& i,
-                                  const task_id_t orig, const task_id_t dest)
+  itti_s11_delete_session_request(
+      const itti_s11_delete_session_request& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -327,15 +335,16 @@ class itti_s11_delete_session_request : public itti_s11_msg {
  */
 class itti_s11_delete_session_response : public itti_s11_msg {
  public:
-  itti_s11_delete_session_response(const task_id_t origin,
-                                   const task_id_t destination)
+  itti_s11_delete_session_response(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_DELETE_SESSION_RESPONSE, origin, destination) {}
   itti_s11_delete_session_response(const itti_s11_delete_session_response& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_delete_session_response(const itti_s11_delete_session_response& i,
-                                   const task_id_t orig, const task_id_t dest)
+  itti_s11_delete_session_response(
+      const itti_s11_delete_session_response& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -360,8 +369,8 @@ class itti_s11_delete_session_response : public itti_s11_msg {
  */
 class itti_s11_release_access_bearers_request : public itti_s11_msg {
  public:
-  itti_s11_release_access_bearers_request(const task_id_t origin,
-                                          const task_id_t destination)
+  itti_s11_release_access_bearers_request(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_RELEASE_ACCESS_BEARERS_REQUEST, origin, destination) {}
   itti_s11_release_access_bearers_request(
       const itti_s11_release_access_bearers_request& i)
@@ -400,8 +409,8 @@ class itti_s11_release_access_bearers_request : public itti_s11_msg {
  */
 class itti_s11_release_access_bearers_response : public itti_s11_msg {
  public:
-  itti_s11_release_access_bearers_response(const task_id_t origin,
-                                           const task_id_t destination)
+  itti_s11_release_access_bearers_response(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_RELEASE_ACCESS_BEARERS_RESPONSE, origin, destination) {
   }
   itti_s11_release_access_bearers_response(
@@ -436,15 +445,16 @@ class itti_s11_release_access_bearers_response : public itti_s11_msg {
  */
 class itti_s11_delete_bearer_command : public itti_s11_msg {
  public:
-  itti_s11_delete_bearer_command(const task_id_t origin,
-                                 const task_id_t destination)
+  itti_s11_delete_bearer_command(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_DELETE_BEARER_COMMAND, origin, destination) {}
   itti_s11_delete_bearer_command(const itti_s11_delete_bearer_command& i)
       : itti_s11_msg(i) {
     gtp_ies = i.gtp_ies;
   }
-  itti_s11_delete_bearer_command(const itti_s11_delete_bearer_command& i,
-                                 const task_id_t orig, const task_id_t dest)
+  itti_s11_delete_bearer_command(
+      const itti_s11_delete_bearer_command& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s11_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -464,8 +474,8 @@ class itti_s11_delete_bearer_command : public itti_s11_msg {
  */
 class itti_s11_downlink_data_notification : public itti_s11_msg {
  public:
-  itti_s11_downlink_data_notification(const task_id_t origin,
-                                      const task_id_t destination)
+  itti_s11_downlink_data_notification(
+      const task_id_t origin, const task_id_t destination)
       : itti_s11_msg(S11_DOWNLINK_DATA_NOTIFICATION, origin, destination) {}
   itti_s11_downlink_data_notification(
       const itti_s11_downlink_data_notification& i)
@@ -500,10 +510,10 @@ class itti_s11_downlink_data_notification : public itti_s11_msg {
  */
 class itti_s11_downlink_data_notification_acknowledge : public itti_s11_msg {
  public:
-  itti_s11_downlink_data_notification_acknowledge(const task_id_t origin,
-                                                  const task_id_t destination)
-      : itti_s11_msg(S11_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE, origin,
-                     destination) {}
+  itti_s11_downlink_data_notification_acknowledge(
+      const task_id_t origin, const task_id_t destination)
+      : itti_s11_msg(
+            S11_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE, origin, destination) {}
   itti_s11_downlink_data_notification_acknowledge(
       const itti_s11_downlink_data_notification_acknowledge& i)
       : itti_s11_msg(i) {
@@ -532,8 +542,9 @@ class itti_s11_downlink_data_notification_failure_indication
  public:
   itti_s11_downlink_data_notification_failure_indication(
       const task_id_t origin, const task_id_t destination)
-      : itti_s11_msg(S11_DOWNLINK_DATA_NOTIFICATION_FAILURE_INDICATION, origin,
-                     destination) {}
+      : itti_s11_msg(
+            S11_DOWNLINK_DATA_NOTIFICATION_FAILURE_INDICATION, origin,
+            destination) {}
   itti_s11_downlink_data_notification_failure_indication(
       const itti_s11_downlink_data_notification_failure_indication& i)
       : itti_s11_msg(i) {

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -54,7 +54,7 @@ void pgwc_sxab_task(void* args_p) {
 
   do {
     std::shared_ptr<itti_msg> shared_msg = itti_inst->receive_msg(task_id);
-    auto* msg = shared_msg.get();
+    auto* msg                            = shared_msg.get();
     switch (msg->msg_type) {
       case SXAB_HEARTBEAT_REQUEST:
         if (itti_sxab_heartbeat_request* m =
@@ -197,23 +197,24 @@ void pgwc_sxab_task(void* args_p) {
 
 //------------------------------------------------------------------------------
 pgwc_sxab::pgwc_sxab()
-    : pfcp_l4_stack(string(inet_ntoa(pgw_cfg.sx.addr4)), pgw_cfg.sx.port,
-                    pgw_cfg.sx.thread_rd_sched_params) {
+    : pfcp_l4_stack(
+          string(inet_ntoa(pgw_cfg.sx.addr4)), pgw_cfg.sx.port,
+          pgw_cfg.sx.thread_rd_sched_params) {
   Logger::pgwc_sx().startup("Starting...");
   // TODO  refine this, look at RFC5905
-  std::tm tm_epoch = {0};          // Feb 8th, 2036
-  tm_epoch.tm_year = 2036 - 1900;  // years count from 1900
-  tm_epoch.tm_mon = 2 - 1;         // months count from January=0
-  tm_epoch.tm_mday = 8;            // days count from 1
+  std::tm tm_epoch       = {0};          // Feb 8th, 2036
+  tm_epoch.tm_year       = 2036 - 1900;  // years count from 1900
+  tm_epoch.tm_mon        = 2 - 1;        // months count from January=0
+  tm_epoch.tm_mday       = 8;            // days count from 1
   std::time_t time_epoch = std::mktime(&tm_epoch);
   std::chrono::time_point<std::chrono::system_clock> now =
       std::chrono::system_clock::now();
-  std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+  std::time_t now_c    = std::chrono::system_clock::to_time_t(now);
   std::time_t ellapsed = now_c - time_epoch;
-  recovery_time_stamp = ellapsed;
+  recovery_time_stamp  = ellapsed;
 
   // TODO may load this from config
-  cp_function_features = {};
+  cp_function_features      = {};
   cp_function_features.ovrl = 0;
   cp_function_features.load = 0;
 
@@ -225,10 +226,11 @@ pgwc_sxab::pgwc_sxab()
 }
 
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg,
-                                        const endpoint& remote_endpoint) {
-  Logger::pgwc_sx().trace("handle_receive_pfcp_msg msg type %d length %d",
-                          msg.get_message_type(), msg.get_message_length());
+void pgwc_sxab::handle_receive_pfcp_msg(
+    pfcp_msg& msg, const endpoint& remote_endpoint) {
+  Logger::pgwc_sx().trace(
+      "handle_receive_pfcp_msg msg type %d length %d", msg.get_message_type(),
+      msg.get_message_length());
   switch (msg.get_message_type()) {
     case PFCP_ASSOCIATION_SETUP_REQUEST:
       handle_receive_association_setup_request(msg, remote_endpoint);
@@ -280,8 +282,8 @@ void pgwc_sxab::handle_receive_pfcp_msg(pfcp_msg& msg,
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_heartbeat_request(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                               = true;
+  uint64_t trxn_id                         = 0;
   pfcp_heartbeat_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
@@ -300,8 +302,8 @@ void pgwc_sxab::handle_receive_heartbeat_request(
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_heartbeat_response(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                                = true;
+  uint64_t trxn_id                          = 0;
   pfcp_heartbeat_response msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
@@ -321,8 +323,8 @@ void pgwc_sxab::handle_receive_heartbeat_response(
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_association_setup_request(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                                       = true;
+  uint64_t trxn_id                                 = 0;
   pfcp_association_setup_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
@@ -357,14 +359,14 @@ void pgwc_sxab::handle_receive_association_setup_request(
 
     // always yes (for the time being)
     itti_sxab_association_setup_response a(TASK_SPGWU_SX, TASK_SPGWU_SX);
-    a.trxn_id = trxn_id;
+    a.trxn_id           = trxn_id;
     pfcp::cause_t cause = {.cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
     a.pfcp_ies.set(cause);
     pfcp::node_id_t node_id = {};
     if (pgw_cfg.get_pfcp_node_id(node_id) == RETURNok) {
       a.pfcp_ies.set(node_id);
       pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                           (uint32_t)recovery_time_stamp};
+                                           (uint32_t) recovery_time_stamp};
       a.pfcp_ies.set(r);
       a.pfcp_ies.set(cp_function_features);
       if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
@@ -396,20 +398,20 @@ void pgwc_sxab::handle_receive_association_setup_request(
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_session_establishment_response(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                                            = true;
+  uint64_t trxn_id                                      = 0;
   pfcp_session_establishment_response msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
   handle_receive_message_cb(msg, remote_endpoint, TASK_PGWC_SX, error, trxn_id);
   if (!error) {
     itti_sxab_session_establishment_response* itti_msg =
-        new itti_sxab_session_establishment_response(TASK_PGWC_SX,
-                                                     TASK_PGWC_APP);
-    itti_msg->pfcp_ies = msg_ies_container;
+        new itti_sxab_session_establishment_response(
+            TASK_PGWC_SX, TASK_PGWC_APP);
+    itti_msg->pfcp_ies   = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
-    itti_msg->trxn_id = trxn_id;
-    itti_msg->seid = msg.get_seid();
+    itti_msg->trxn_id    = trxn_id;
+    itti_msg->seid       = msg.get_seid();
     std::shared_ptr<itti_sxab_session_establishment_response> i =
         std::shared_ptr<itti_sxab_session_establishment_response>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -424,20 +426,20 @@ void pgwc_sxab::handle_receive_session_establishment_response(
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_session_modification_response(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                                           = true;
+  uint64_t trxn_id                                     = 0;
   pfcp_session_modification_response msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
   handle_receive_message_cb(msg, remote_endpoint, TASK_PGWC_SX, error, trxn_id);
   if (!error) {
     itti_sxab_session_modification_response* itti_msg =
-        new itti_sxab_session_modification_response(TASK_PGWC_SX,
-                                                    TASK_PGWC_APP);
-    itti_msg->pfcp_ies = msg_ies_container;
+        new itti_sxab_session_modification_response(
+            TASK_PGWC_SX, TASK_PGWC_APP);
+    itti_msg->pfcp_ies   = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
-    itti_msg->trxn_id = trxn_id;
-    itti_msg->seid = msg.get_seid();
+    itti_msg->trxn_id    = trxn_id;
+    itti_msg->seid       = msg.get_seid();
     std::shared_ptr<itti_sxab_session_modification_response> i =
         std::shared_ptr<itti_sxab_session_modification_response>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -452,8 +454,8 @@ void pgwc_sxab::handle_receive_session_modification_response(
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_session_deletion_response(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                                       = true;
+  uint64_t trxn_id                                 = 0;
   pfcp_session_deletion_response msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
@@ -461,10 +463,10 @@ void pgwc_sxab::handle_receive_session_deletion_response(
   if (!error) {
     itti_sxab_session_deletion_response* itti_msg =
         new itti_sxab_session_deletion_response(TASK_PGWC_SX, TASK_PGWC_APP);
-    itti_msg->pfcp_ies = msg_ies_container;
+    itti_msg->pfcp_ies   = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
-    itti_msg->trxn_id = trxn_id;
-    itti_msg->seid = msg.get_seid();
+    itti_msg->trxn_id    = trxn_id;
+    itti_msg->seid       = msg.get_seid();
     std::shared_ptr<itti_sxab_session_deletion_response> i =
         std::shared_ptr<itti_sxab_session_deletion_response>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -479,8 +481,8 @@ void pgwc_sxab::handle_receive_session_deletion_response(
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_session_report_request(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t trxn_id = 0;
+  bool error                                    = true;
+  uint64_t trxn_id                              = 0;
   pfcp_session_report_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
@@ -488,10 +490,10 @@ void pgwc_sxab::handle_receive_session_report_request(
   if (!error) {
     itti_sxab_session_report_request* itti_msg =
         new itti_sxab_session_report_request(TASK_PGWC_SX, TASK_PGWC_APP);
-    itti_msg->pfcp_ies = msg_ies_container;
+    itti_msg->pfcp_ies   = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
-    itti_msg->trxn_id = trxn_id;
-    itti_msg->seid = msg.get_seid();
+    itti_msg->trxn_id    = trxn_id;
+    itti_msg->seid       = msg.get_seid();
     std::shared_ptr<itti_sxab_session_report_request> i =
         std::shared_ptr<itti_sxab_session_report_request>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -515,8 +517,8 @@ void pgwc_sxab::send_sx_msg(itti_sxab_session_report_response& i) {
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
   pfcp::pfcp_heartbeat_request h = {};
-  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                       (uint32_t)recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
+                                       (uint32_t) recovery_time_stamp};
   h.set(r);
 
   pfcp::node_id_t& node_id = a->node_id;
@@ -534,11 +536,11 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::send_heartbeat_response(const endpoint& r_endpoint,
-                                        const uint64_t trxn_id) {
+void pgwc_sxab::send_heartbeat_response(
+    const endpoint& r_endpoint, const uint64_t trxn_id) {
   pfcp::pfcp_heartbeat_response h = {};
-  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                       (uint32_t)recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r   = {.recovery_time_stamp =
+                                       (uint32_t) recovery_time_stamp};
   h.set(r);
   send_response(r_endpoint, h, trxn_id);
 }
@@ -555,14 +557,14 @@ void pgwc_sxab::send_sx_msg(itti_sxab_session_deletion_request& i) {
   send_request(i.r_endpoint, i.seid, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::handle_receive(char* recv_buffer,
-                               const std::size_t bytes_transferred,
-                               const endpoint& remote_endpoint) {
+void pgwc_sxab::handle_receive(
+    char* recv_buffer, const std::size_t bytes_transferred,
+    const endpoint& remote_endpoint) {
   Logger::pgwc_sx().info("handle_receive(%d bytes)", bytes_transferred);
   // std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;
   std::istringstream iss(std::istringstream::binary);
   iss.rdbuf()->pubsetbuf(recv_buffer, bytes_transferred);
-  pfcp_msg msg = {};
+  pfcp_msg msg    = {};
   msg.remote_port = remote_endpoint.port();
   try {
     msg.load_from(iss);

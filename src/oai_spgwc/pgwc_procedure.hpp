@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -104,9 +104,10 @@ class session_establishment_procedure : public pgw_procedure {
         s5_triggered_pending(),
         s5_trigger() {}
 
-  int run(std::shared_ptr<itti_s5s8_create_session_request>& req,
-          std::shared_ptr<itti_s5s8_create_session_response>& resp,
-          std::shared_ptr<pgwc::pgw_context> pc);
+  int run(
+      std::shared_ptr<itti_s5s8_create_session_request>& req,
+      std::shared_ptr<itti_s5s8_create_session_response>& resp,
+      std::shared_ptr<pgwc::pgw_context> pc);
   void handle_itti_msg(itti_sxab_session_establishment_response& resp);
 
   //~session_establishment_procedure() {}
@@ -127,9 +128,10 @@ class modify_bearer_procedure : public pgw_procedure {
         sx_triggered(),
         s5_triggered_pending(),
         s5_trigger() {}
-  int run(std::shared_ptr<itti_s5s8_modify_bearer_request>& req,
-          std::shared_ptr<itti_s5s8_modify_bearer_response>& resp,
-          std::shared_ptr<pgwc::pgw_context> pc);
+  int run(
+      std::shared_ptr<itti_s5s8_modify_bearer_request>& req,
+      std::shared_ptr<itti_s5s8_modify_bearer_response>& resp,
+      std::shared_ptr<pgwc::pgw_context> pc);
   void handle_itti_msg(itti_sxab_session_modification_response& resp);
 
   //~modify_bearer_procedure() {}
@@ -150,9 +152,10 @@ class release_access_bearers_procedure : public pgw_procedure {
         sx_triggered(),
         s5_triggered_pending(),
         s5_trigger() {}
-  int run(std::shared_ptr<itti_s5s8_release_access_bearers_request>& req,
-          std::shared_ptr<itti_s5s8_release_access_bearers_response>& resp,
-          std::shared_ptr<pgwc::pgw_context> pc);
+  int run(
+      std::shared_ptr<itti_s5s8_release_access_bearers_request>& req,
+      std::shared_ptr<itti_s5s8_release_access_bearers_response>& resp,
+      std::shared_ptr<pgwc::pgw_context> pc);
   void handle_itti_msg(itti_sxab_session_modification_response& resp);
 
   //~release_access_bearers_procedure() {}
@@ -167,8 +170,9 @@ class release_access_bearers_procedure : public pgw_procedure {
 //------------------------------------------------------------------------------
 class delete_session_procedure : public pgw_procedure {
  public:
-  explicit delete_session_procedure(std::shared_ptr<pgw_context> spc,
-                                    std::shared_ptr<pgw_pdn_connection>& sppc)
+  explicit delete_session_procedure(
+      std::shared_ptr<pgw_context> spc,
+      std::shared_ptr<pgw_pdn_connection>& sppc)
       : pgw_procedure(),
         ppc(sppc),
         pc(spc),
@@ -176,9 +180,10 @@ class delete_session_procedure : public pgw_procedure {
         s5_triggered_pending(),
         s5_trigger() {}
 
-  int run(std::shared_ptr<itti_s5s8_delete_session_request>& req,
-          std::shared_ptr<itti_s5s8_delete_session_response>& resp,
-          std::shared_ptr<pgwc::pgw_context> pc);
+  int run(
+      std::shared_ptr<itti_s5s8_delete_session_request>& req,
+      std::shared_ptr<itti_s5s8_delete_session_response>& resp,
+      std::shared_ptr<pgwc::pgw_context> pc);
   void handle_itti_msg(itti_sxab_session_deletion_response& resp);
 
   //~delete_session_procedure() {}
@@ -200,8 +205,9 @@ class downlink_data_report_procedure : public pgw_procedure {
         sx_trigger(req),
         s5_triggered(),
         ebi() {}
-  int run(std::shared_ptr<pgwc::pgw_context> context,
-          std::shared_ptr<pgwc::pgw_pdn_connection> pdn, const ebi_t& e);
+  int run(
+      std::shared_ptr<pgwc::pgw_context> context,
+      std::shared_ptr<pgwc::pgw_pdn_connection> pdn, const ebi_t& e);
   void handle_itti_msg(itti_s5s8_downlink_data_notification_acknowledge& resp);
   void notify_failure_to_peer(const pfcp::cause_t& cause);
 
