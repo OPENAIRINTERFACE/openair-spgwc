@@ -79,3 +79,9 @@ RUN cp /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc \
     && cp /openair-spgwc/scripts/entrypoint.sh .
 
 WORKDIR /openair-spgwc
+
+# expose ports
+EXPOSE 2123/udp 8805/udp
+
+CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.conf", "-o"]
+ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]
