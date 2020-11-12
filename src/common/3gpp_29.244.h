@@ -47,7 +47,7 @@ struct pfcp_exception : public std::exception {
   }
 
   pfcp_exception(int acause) throw() {
-    cause = acause;
+    cause  = acause;
     phrase = fmt::format("PFCP Exception cause {}", cause);
   }
   const char* what() const throw() { return phrase.c_str(); }
@@ -59,10 +59,9 @@ struct pfcp_exception : public std::exception {
 
 struct pfcp_msg_bad_length_exception : public pfcp_exception {
  public:
-  pfcp_msg_bad_length_exception(const uint8_t msg_type, const uint16_t hdr_size,
-                                const uint16_t ie_size,
-                                const uint16_t check_ie_size, const char* file,
-                                const int line) throw() {
+  pfcp_msg_bad_length_exception(
+      const uint8_t msg_type, const uint16_t hdr_size, const uint16_t ie_size,
+      const uint16_t check_ie_size, const char* file, const int line) throw() {
     phrase = fmt::format(
         "PFCP msg {} Bad Length hdr.length {}/ sum ie {} / check sum ie {} "
         "Exception {}:{}",
@@ -76,12 +75,12 @@ struct pfcp_msg_bad_length_exception : public pfcp_exception {
 
 struct pfcp_msg_unimplemented_ie_exception : public pfcp_exception {
  public:
-  pfcp_msg_unimplemented_ie_exception(const uint8_t msg_type,
-                                      const uint16_t ie_type,
-                                      const uint8_t instance = 0) throw() {
-    phrase =
-        fmt::format("PFCP msg {} Unimplemented {} IE Instance {} Exception",
-                    msg_type, ie_type, instance);
+  pfcp_msg_unimplemented_ie_exception(
+      const uint8_t msg_type, const uint16_t ie_type,
+      const uint8_t instance = 0) throw() {
+    phrase = fmt::format(
+        "PFCP msg {} Unimplemented {} IE Instance {} Exception", msg_type,
+        ie_type, instance);
   }
   pfcp_msg_unimplemented_ie_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -91,10 +90,12 @@ struct pfcp_msg_unimplemented_ie_exception : public pfcp_exception {
 
 struct pfcp_msg_illegal_ie_exception : public pfcp_exception {
  public:
-  pfcp_msg_illegal_ie_exception(const uint8_t msg_type, const uint16_t ie_type,
-                                const char* file, const int line) throw() {
-    phrase = fmt::format("PFCP msg {} Illegal IE {} Exception {}:{}", msg_type,
-                         ie_type, file, line);
+  pfcp_msg_illegal_ie_exception(
+      const uint8_t msg_type, const uint16_t ie_type, const char* file,
+      const int line) throw() {
+    phrase = fmt::format(
+        "PFCP msg {} Illegal IE {} Exception {}:{}", msg_type, ie_type, file,
+        line);
   }
   pfcp_msg_illegal_ie_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -130,11 +131,13 @@ struct pfcp_tlv_exception : public pfcp_ie_exception {
 
 struct pfcp_tlv_bad_length_exception : public pfcp_tlv_exception {
  public:
-  pfcp_tlv_bad_length_exception(uint16_t ie_type, uint16_t ie_length,
-                                const char* file, const int line) throw()
+  pfcp_tlv_bad_length_exception(
+      uint16_t ie_type, uint16_t ie_length, const char* file,
+      const int line) throw()
       : pfcp_tlv_exception(ie_type) {
-    phrase = fmt::format("PFCP IE TLV {} Bad Length {} Exception {}:{}",
-                         ie_type, ie_length, file, line);
+    phrase = fmt::format(
+        "PFCP IE TLV {} Bad Length {} Exception {}:{}", ie_type, ie_length,
+        file, line);
   }
   virtual ~pfcp_tlv_bad_length_exception() throw() {}
 };
@@ -338,22 +341,22 @@ namespace pfcp {
 // 8.2.1 Cause
 enum cause_value_e {
   /* Request / Initial message */
-  CAUSE_VALUE_RESERVED = 0,
-  CAUSE_VALUE_REQUEST_ACCEPTED = 1,
-  CAUSE_VALUE_REQUEST_REJECTED = 64,
-  CAUSE_VALUE_SESSION_CONTEXT_NOT_FOUND = 65,
-  CAUSE_VALUE_MANDATORY_IE_MISSING = 66,
-  CAUSE_VALUE_CONDITIONAL_IE_MISSING = 67,
-  CAUSE_VALUE_INVALID_LENGTH = 68,
-  CAUSE_VALUE_MANDATORY_IE_INCORRECT = 69,
-  CAUSE_VALUE_INVALID_FORWARDING_POLICY = 70,
-  CAUSE_VALUE_INVALID_FTEID_ALLOCATION_OPTION = 71,
-  CAUSE_VALUE_NO_ESTABLISHED_PFCP_ASSOCIATION = 72,
+  CAUSE_VALUE_RESERVED                           = 0,
+  CAUSE_VALUE_REQUEST_ACCEPTED                   = 1,
+  CAUSE_VALUE_REQUEST_REJECTED                   = 64,
+  CAUSE_VALUE_SESSION_CONTEXT_NOT_FOUND          = 65,
+  CAUSE_VALUE_MANDATORY_IE_MISSING               = 66,
+  CAUSE_VALUE_CONDITIONAL_IE_MISSING             = 67,
+  CAUSE_VALUE_INVALID_LENGTH                     = 68,
+  CAUSE_VALUE_MANDATORY_IE_INCORRECT             = 69,
+  CAUSE_VALUE_INVALID_FORWARDING_POLICY          = 70,
+  CAUSE_VALUE_INVALID_FTEID_ALLOCATION_OPTION    = 71,
+  CAUSE_VALUE_NO_ESTABLISHED_PFCP_ASSOCIATION    = 72,
   CAUSE_VALUE_RULE_CREATION_MODIFICATION_FAILURE = 73,
-  CAUSE_VALUE_PFCP_ENTITY_IN_CONGESTION = 74,
-  CAUSE_VALUE_NO_RESOURCES_AVAILABLE = 75,
-  CAUSE_VALUE_SERVICE_NOT_SUPPORTED = 76,
-  CAUSE_VALUE_SYSTEM_FAILURE = 77
+  CAUSE_VALUE_PFCP_ENTITY_IN_CONGESTION          = 74,
+  CAUSE_VALUE_NO_RESOURCES_AVAILABLE             = 75,
+  CAUSE_VALUE_SERVICE_NOT_SUPPORTED              = 76,
+  CAUSE_VALUE_SYSTEM_FAILURE                     = 77
 };
 
 typedef struct cause_s {
@@ -444,7 +447,7 @@ typedef struct application_id_s {
 //  8.2.7 Gate Status
 enum gate_status_e {
   /* Request / Initial message */
-  OPEN = 0,
+  OPEN   = 0,
   CLOSED = 1
 };
 typedef struct gate_status_s {
@@ -576,8 +579,8 @@ typedef struct redirect_information_s {
 enum redirect_address_type_e {
   IPV4_ADDRESS = 0,
   IPV6_ADDRESS = 1,
-  URL = 2,
-  SIP_URI = 3
+  URL          = 2,
+  SIP_URI      = 3
 };
 
 //-------------------------------------
@@ -610,11 +613,11 @@ typedef struct forwarding_policy_s {
 // 8.2.24 Destination Interface
 enum destination_interface_value_e {
   /* Request / Initial message */
-  INTERFACE_VALUE_ACCESS = 0,
-  INTERFACE_VALUE_CORE = 1,
+  INTERFACE_VALUE_ACCESS         = 0,
+  INTERFACE_VALUE_CORE           = 1,
   INTERFACE_VALUE_SGI_LAN_N6_LAN = 2,
-  INTERFACE_VALUE_CP_FUNCTION = 3,
-  INTERFACE_VALUE_LI_FUNCTION = 4
+  INTERFACE_VALUE_CP_FUNCTION    = 3,
+  INTERFACE_VALUE_LI_FUNCTION    = 4
 };
 
 typedef struct destination_interface_s {
@@ -676,12 +679,12 @@ struct up_function_features_s {
     heeu = i.heeu;
     treu = i.treu;
 
-    empu = i.empu;
-    pdiu = i.pdiu;
-    udbc = i.udbc;
+    empu  = i.empu;
+    pdiu  = i.pdiu;
+    udbc  = i.udbc;
     quoac = i.quoac;
     trace = i.trace;
-    frrt = i.frrt;
+    frrt  = i.frrt;
     spare = i.spare;
   }
 };
@@ -819,19 +822,19 @@ typedef struct fseid_s {
     } else if (this->v4)
       return true;
     if (i.v6 == this->v6) {
-      uint64_t i64 = ((uint64_t)i.ipv6_address.s6_addr32[0] << 32) |
-                     ((uint64_t)i.ipv6_address.s6_addr32[1]);
-      uint64_t this64 = ((uint64_t)this->ipv6_address.s6_addr32[0] << 32) |
-                        ((uint64_t)this->ipv6_address.s6_addr32[1]);
+      uint64_t i64 = ((uint64_t) i.ipv6_address.s6_addr32[0] << 32) |
+                     ((uint64_t) i.ipv6_address.s6_addr32[1]);
+      uint64_t this64 = ((uint64_t) this->ipv6_address.s6_addr32[0] << 32) |
+                        ((uint64_t) this->ipv6_address.s6_addr32[1]);
 
       if (i64 < this64)
         return true;
       else if (i64 > this64)
         return false;
-      i64 = ((uint64_t)i.ipv6_address.s6_addr32[2] << 32) |
-            ((uint64_t)i.ipv6_address.s6_addr32[3]);
-      this64 = ((uint64_t)this->ipv6_address.s6_addr32[2] << 32) |
-               ((uint64_t)this->ipv6_address.s6_addr32[3]);
+      i64 = ((uint64_t) i.ipv6_address.s6_addr32[2] << 32) |
+            ((uint64_t) i.ipv6_address.s6_addr32[3]);
+      this64 = ((uint64_t) this->ipv6_address.s6_addr32[2] << 32) |
+               ((uint64_t) this->ipv6_address.s6_addr32[3]);
       if (i64 < this64)
         return true;
       else if (i64 > this64)
@@ -848,7 +851,7 @@ enum node_id_type_value_e {
   /* Request / Initial message */
   NODE_ID_TYPE_IPV4_ADDRESS = 0,
   NODE_ID_TYPE_IPV6_ADDRESS = 1,
-  NODE_ID_TYPE_FQDN = 2,
+  NODE_ID_TYPE_FQDN         = 2,
 };
 
 struct node_id_s {
@@ -1029,8 +1032,8 @@ typedef struct linked_urr_id_s {
 enum outer_header_creation_description_value_e {
   OUTER_HEADER_CREATION_GTPU_UDP_IPV4 = 0x0100,
   OUTER_HEADER_CREATION_GTPU_UDP_IPV6 = 0x0200,
-  OUTER_HEADER_CREATION_UDP_IPV4 = 0x0400,
-  OUTER_HEADER_CREATION_UDP_IPV6 = 0x0800
+  OUTER_HEADER_CREATION_UDP_IPV4      = 0x0400,
+  OUTER_HEADER_CREATION_UDP_IPV6      = 0x0800
 };
 
 typedef struct outer_header_creation_s {
@@ -1082,9 +1085,9 @@ typedef struct application_instance_id_s {
 //-------------------------------------
 // 8.2.61 Flow Information
 enum flow_direction_value_e {
-  UNSPECIFIED = 0,
-  DOWNLINK = 1,
-  UPLINK = 2,
+  UNSPECIFIED   = 0,
+  DOWNLINK      = 1,
+  UPLINK        = 2,
   BIDIRECTIONAL = 3
 };
 
@@ -1258,10 +1261,10 @@ typedef struct graceful_release_period_s {
 // 8.2.79 PDN Type
 enum pdn_type_value_e {
   /* Request / Initial message */
-  IPV4 = 1,
-  IPV6 = 2,
-  IPV4V6 = 3,
-  NON_IP = 4,
+  IPV4     = 1,
+  IPV6     = 2,
+  IPV4V6   = 3,
+  NON_IP   = 4,
   ETHERNET = 5
 };
 
@@ -1974,7 +1977,7 @@ typedef struct framed_ipv6_route_s {
 
 namespace std {
 
-template <>
+template<>
 struct hash<pfcp::fseid_t> {
   std::size_t operator()(const pfcp::fseid_t& k) const {
     using std::hash;
@@ -1993,7 +1996,7 @@ struct hash<pfcp::fseid_t> {
   }
 };
 
-template <>
+template<>
 class hash<pfcp::node_id_t> {
  public:
   size_t operator()(const pfcp::node_id_t& k) const {

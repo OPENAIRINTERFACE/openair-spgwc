@@ -47,7 +47,7 @@ struct gtpu_exception : public std::exception {
   }
 
   gtpu_exception(int acause) throw() {
-    cause = acause;
+    cause  = acause;
     phrase = fmt::format("GTPV1-U Exception cause {}", cause);
   }
   const char* what() const throw() { return phrase.c_str(); }
@@ -59,10 +59,10 @@ struct gtpu_exception : public std::exception {
 
 struct gtpu_msg_bad_length_exception : public gtpu_exception {
  public:
-  gtpu_msg_bad_length_exception(const uint8_t msg_type,
-                                const uint16_t msg_size) throw() {
-    phrase = fmt::format("GTPV1-U msg {} Bad Length {} Exception", msg_type,
-                         msg_size);
+  gtpu_msg_bad_length_exception(
+      const uint8_t msg_type, const uint16_t msg_size) throw() {
+    phrase = fmt::format(
+        "GTPV1-U msg {} Bad Length {} Exception", msg_type, msg_size);
   }
   gtpu_msg_bad_length_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -72,12 +72,12 @@ struct gtpu_msg_bad_length_exception : public gtpu_exception {
 
 struct gtpu_msg_unimplemented_ie_exception : public gtpu_exception {
  public:
-  gtpu_msg_unimplemented_ie_exception(const uint8_t msg_type,
-                                      const uint8_t ie_type,
-                                      const uint8_t instance = 0) throw() {
-    phrase =
-        fmt::format("GTPV1-U msg {} Unimplemented {} IE Instance {} Exception",
-                    msg_type, ie_type, instance);
+  gtpu_msg_unimplemented_ie_exception(
+      const uint8_t msg_type, const uint8_t ie_type,
+      const uint8_t instance = 0) throw() {
+    phrase = fmt::format(
+        "GTPV1-U msg {} Unimplemented {} IE Instance {} Exception", msg_type,
+        ie_type, instance);
   }
   gtpu_msg_unimplemented_ie_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -87,8 +87,8 @@ struct gtpu_msg_unimplemented_ie_exception : public gtpu_exception {
 
 struct gtpu_msg_illegal_ie_exception : public gtpu_exception {
  public:
-  gtpu_msg_illegal_ie_exception(const uint8_t msg_type,
-                                const uint8_t ie_type) throw() {
+  gtpu_msg_illegal_ie_exception(
+      const uint8_t msg_type, const uint8_t ie_type) throw() {
     phrase =
         fmt::format("GTPV1-U msg {} Illegal {} Exception", msg_type, ie_type);
   }

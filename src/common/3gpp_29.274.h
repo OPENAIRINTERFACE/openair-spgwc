@@ -49,7 +49,7 @@ struct gtpc_exception : public std::exception {
   }
 
   gtpc_exception(int acause) throw() {
-    cause = acause;
+    cause  = acause;
     phrase = fmt::format("GTPV2-C Exception cause {}", cause);
   }
   const char* what() const throw() { return phrase.c_str(); }
@@ -61,10 +61,10 @@ struct gtpc_exception : public std::exception {
 
 struct gtpc_msg_bad_length_exception : public gtpc_exception {
  public:
-  gtpc_msg_bad_length_exception(const uint8_t msg_type,
-                                const uint16_t msg_size) throw() {
-    phrase = fmt::format("GTPV2-C msg {} Bad Length {} Exception", msg_type,
-                         msg_size);
+  gtpc_msg_bad_length_exception(
+      const uint8_t msg_type, const uint16_t msg_size) throw() {
+    phrase = fmt::format(
+        "GTPV2-C msg {} Bad Length {} Exception", msg_type, msg_size);
   }
   gtpc_msg_bad_length_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -74,12 +74,12 @@ struct gtpc_msg_bad_length_exception : public gtpc_exception {
 
 struct gtpc_msg_unimplemented_ie_exception : public gtpc_exception {
  public:
-  gtpc_msg_unimplemented_ie_exception(const uint8_t msg_type,
-                                      const uint8_t ie_type,
-                                      const uint8_t instance = 0) throw() {
-    phrase =
-        fmt::format("GTPV2-C msg {} Unimplemented {} IE Instance {} Exception",
-                    msg_type, ie_type, instance);
+  gtpc_msg_unimplemented_ie_exception(
+      const uint8_t msg_type, const uint8_t ie_type,
+      const uint8_t instance = 0) throw() {
+    phrase = fmt::format(
+        "GTPV2-C msg {} Unimplemented {} IE Instance {} Exception", msg_type,
+        ie_type, instance);
   }
   gtpc_msg_unimplemented_ie_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -89,10 +89,12 @@ struct gtpc_msg_unimplemented_ie_exception : public gtpc_exception {
 
 struct gtpc_msg_illegal_ie_exception : public gtpc_exception {
  public:
-  gtpc_msg_illegal_ie_exception(const uint8_t msg_type, const uint8_t ie_type,
-                                const char* file, const int line) throw() {
-    phrase = fmt::format("GTPV2-C msg {} Illegal IE {} Exception {}:{}",
-                         msg_type, ie_type, file, line);
+  gtpc_msg_illegal_ie_exception(
+      const uint8_t msg_type, const uint8_t ie_type, const char* file,
+      const int line) throw() {
+    phrase = fmt::format(
+        "GTPV2-C msg {} Illegal IE {} Exception {}:{}", msg_type, ie_type, file,
+        line);
   }
   gtpc_msg_illegal_ie_exception(std::string& aphrase) throw() {
     phrase = aphrase;
@@ -112,12 +114,12 @@ struct gtpc_ie_exception : public gtpc_exception {
 struct gtpc_missing_ie_exception : public gtpc_exception {
  public:
   gtpc_missing_ie_exception(uint8_t gtpc_msg, uint8_t ie_type) throw() {
-    phrase = fmt::format("GTPV2-C msg {} missing IE {} Exception", gtpc_msg,
-                         ie_type);
+    phrase = fmt::format(
+        "GTPV2-C msg {} missing IE {} Exception", gtpc_msg, ie_type);
   }
   gtpc_missing_ie_exception(const char* gtpc_msg, const char* ie_type) throw() {
-    phrase = fmt::format("GTPV2-C msg {} missing IE {} Exception", gtpc_msg,
-                         ie_type);
+    phrase = fmt::format(
+        "GTPV2-C msg {} missing IE {} Exception", gtpc_msg, ie_type);
   }
   gtpc_missing_ie_exception(std::string& aphrase) throw() { phrase = aphrase; }
   virtual ~gtpc_missing_ie_exception() throw() {}
@@ -153,8 +155,8 @@ struct gtpc_tlv_bad_instance_exception : public gtpc_tlv_exception {
  public:
   gtpc_tlv_bad_instance_exception(uint8_t ie_type, uint8_t ie_instance) throw()
       : gtpc_tlv_exception(ie_type) {
-    phrase = fmt::format("GTPV2-C IE TLV {} Bad Instance {} Exception", ie_type,
-                         ie_instance);
+    phrase = fmt::format(
+        "GTPV2-C IE TLV {} Bad Instance {} Exception", ie_type, ie_instance);
   }
   virtual ~gtpc_tlv_bad_instance_exception() throw() {}
 };
@@ -423,8 +425,8 @@ struct imsi_s {
 
   std::string toString() const {
     std::string s = {};
-    int l_i = 0;
-    int l_j = 0;
+    int l_i       = 0;
+    int l_j       = 0;
     while (l_i < IMSI_BCD8_SIZE) {
       if ((u1.b[l_i] & 0xf) > 9) break;
       s.append(std::to_string(u1.b[l_i] & 0xf));
@@ -443,7 +445,7 @@ struct imsi_s {
     for (int i = 0; i < IMSI_BCD8_SIZE; i++) {
       uint8_t d1 = u1.b[i];
       uint8_t d2 = (d1 & 0xf0) >> 4;
-      d1 = d1 & 0x0f;
+      d1         = d1 & 0x0f;
       if (10 > d1) {
         imsi64 = imsi64 * 10 + d1;
         if (10 > d2) {
@@ -460,10 +462,10 @@ struct imsi_s {
 
   imsi_s& operator++()  // prefix ++
   {
-    int l_i = IMSI_BCD8_SIZE - 1;
+    int l_i       = IMSI_BCD8_SIZE - 1;
     uint8_t carry = 1;
     while (l_i > 5) {
-      uint8_t b = u1.b[l_i];
+      uint8_t b  = u1.b[l_i];
       uint8_t d0 = b & 0x0f;
       uint8_t d1 = b & 0xf0;
       if (d0 <= 9) {
@@ -472,7 +474,7 @@ struct imsi_s {
           u1.b[l_i] = d0 | d1;
           return (*this);
         } else {
-          d0 = 0;
+          d0        = 0;
           u1.b[l_i] = d0 | d1;
         }
       }
@@ -482,7 +484,7 @@ struct imsi_s {
           u1.b[l_i] = d0 | d1;
           return (*this);
         } else {
-          d1 = 0;
+          d1        = 0;
           u1.b[l_i] = d0 | d1;
         }
       }
@@ -497,90 +499,90 @@ typedef struct imsi_s imsi_t;
 // 8.4 Cause
 enum cause_value_e {
   /* Request / Initial message */
-  LOCAL_DETACH = 2,
-  COMPLETE_DETACH = 3,
+  LOCAL_DETACH                = 2,
+  COMPLETE_DETACH             = 3,
   RAT_CHANGE_3GPP_TO_NON_3GPP = 4,  ///< RAT changed from 3GPP to Non-3GPP
-  ISR_DEACTIVATION = 5,
+  ISR_DEACTIVATION            = 5,
   ERROR_IND_FROM_RNC_ENB_SGSN = 6,
-  IMSI_DETACH_ONLY = 7,
-  REACTIVATION_REQUESTED = 8,
+  IMSI_DETACH_ONLY            = 7,
+  REACTIVATION_REQUESTED      = 8,
   PDN_RECONNECTION_TO_THIS_APN_DISALLOWED = 9,
-  ACCESS_CHANGED_FROM_NON_3GPP_TO_3GPP = 10,
+  ACCESS_CHANGED_FROM_NON_3GPP_TO_3GPP    = 10,
   PDN_CONNECTION_INACTIVITY_TIMER_EXPIRES = 11,
-  PGW_NOT_RESPONDING = 12,
-  NETWORK_FAILURE = 13,
-  QOS_PARAMETER_MISMATCH = 14,
+  PGW_NOT_RESPONDING                      = 12,
+  NETWORK_FAILURE                         = 13,
+  QOS_PARAMETER_MISMATCH                  = 14,
 
   /* Acceptance in a Response/Triggered message */
-  REQUEST_ACCEPTED = 16,
+  REQUEST_ACCEPTED           = 16,
   REQUEST_ACCEPTED_PARTIALLY = 17,
   NEW_PDN_TYPE_DUE_TO_NETWORK_PREFERENCE =
       18,  ///< New PDN type due to network preference
   NEW_PDN_TYPE_DUE_TO_SINGLE_ADDRESS_BEARER_ONLY =
       19,  ///< New PDN type due to single address bearer only
   /* Rejection in a Response triggered message. */
-  CONTEXT_NOT_FOUND = 64,
-  INVALID_MESSAGE_FORMAT = 65,
-  VERSION_NOT_SUPPORTED_BY_NEXT_PEER = 66,
-  INVALID_LENGTH = 67,
-  SERVICE_NOT_SUPPORTED = 68,
-  MANDATORY_IE_INCORRECT = 69,
-  MANDATORY_IE_MISSING = 70,
-  SYSTEM_FAILURE = 72,
-  NO_RESOURCES_AVAILABLE = 73,
-  SEMANTIC_ERROR_IN_THE_TFT_OPERATION = 74,
-  SYNTACTIC_ERROR_IN_THE_TFT_OPERATION = 75,
-  SEMANTIC_ERRORS_IN_PACKET_FILTER = 76,
-  SYNTACTIC_ERRORS_IN_PACKET_FILTER = 77,
-  MISSING_OR_UNKNOWN_APN = 78,
-  GRE_KEY_NOT_FOUND = 80,
-  RELOCATION_FAILURE = 81,
-  DENIED_IN_RAT = 82,
-  PREFERRED_PDN_TYPE_NOT_SUPPORTED = 83,
-  ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED = 84,
-  UE_CONTEXT_WITHOUT_TFT_ALREADY_ACTIVATED = 85,
-  PROTOCOL_TYPE_NOT_SUPPORTED = 86,
-  UE_NOT_RESPONDING = 87,
-  UE_REFUSES = 88,
-  SERVICE_DENIED = 89,
-  UNABLE_TO_PAGE_UE = 90,
-  NO_MEMORY_AVAILABLE = 91,
-  USER_AUTHENTICATION_FAILED = 92,
-  APN_ACCESS_DENIED_NO_SUBSCRIPTION = 93,
-  REQUEST_REJECTED = 94,
-  P_TMSI_SIGNATURE_MISMATCH = 95,
-  IMSI_IMEI_NOT_KNOWN = 96,
-  SEMANTIC_ERROR_IN_THE_TAD_OPERATION = 97,
-  SYNTACTIC_ERROR_IN_THE_TAD_OPERATION = 98,
-  REMOTE_PEER_NOT_RESPONDING = 100,
-  COLLISION_WITH_NETWORK_INITIATED_REQUEST = 101,
-  UNABLE_TO_PAGE_UE_DUE_TO_SUSPENSION = 102,
-  CONDITIONAL_IE_MISSING = 103,
+  CONTEXT_NOT_FOUND                                                      = 64,
+  INVALID_MESSAGE_FORMAT                                                 = 65,
+  VERSION_NOT_SUPPORTED_BY_NEXT_PEER                                     = 66,
+  INVALID_LENGTH                                                         = 67,
+  SERVICE_NOT_SUPPORTED                                                  = 68,
+  MANDATORY_IE_INCORRECT                                                 = 69,
+  MANDATORY_IE_MISSING                                                   = 70,
+  SYSTEM_FAILURE                                                         = 72,
+  NO_RESOURCES_AVAILABLE                                                 = 73,
+  SEMANTIC_ERROR_IN_THE_TFT_OPERATION                                    = 74,
+  SYNTACTIC_ERROR_IN_THE_TFT_OPERATION                                   = 75,
+  SEMANTIC_ERRORS_IN_PACKET_FILTER                                       = 76,
+  SYNTACTIC_ERRORS_IN_PACKET_FILTER                                      = 77,
+  MISSING_OR_UNKNOWN_APN                                                 = 78,
+  GRE_KEY_NOT_FOUND                                                      = 80,
+  RELOCATION_FAILURE                                                     = 81,
+  DENIED_IN_RAT                                                          = 82,
+  PREFERRED_PDN_TYPE_NOT_SUPPORTED                                       = 83,
+  ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED                                     = 84,
+  UE_CONTEXT_WITHOUT_TFT_ALREADY_ACTIVATED                               = 85,
+  PROTOCOL_TYPE_NOT_SUPPORTED                                            = 86,
+  UE_NOT_RESPONDING                                                      = 87,
+  UE_REFUSES                                                             = 88,
+  SERVICE_DENIED                                                         = 89,
+  UNABLE_TO_PAGE_UE                                                      = 90,
+  NO_MEMORY_AVAILABLE                                                    = 91,
+  USER_AUTHENTICATION_FAILED                                             = 92,
+  APN_ACCESS_DENIED_NO_SUBSCRIPTION                                      = 93,
+  REQUEST_REJECTED                                                       = 94,
+  P_TMSI_SIGNATURE_MISMATCH                                              = 95,
+  IMSI_IMEI_NOT_KNOWN                                                    = 96,
+  SEMANTIC_ERROR_IN_THE_TAD_OPERATION                                    = 97,
+  SYNTACTIC_ERROR_IN_THE_TAD_OPERATION                                   = 98,
+  REMOTE_PEER_NOT_RESPONDING                                             = 100,
+  COLLISION_WITH_NETWORK_INITIATED_REQUEST                               = 101,
+  UNABLE_TO_PAGE_UE_DUE_TO_SUSPENSION                                    = 102,
+  CONDITIONAL_IE_MISSING                                                 = 103,
   APN_RESTRICTION_TYPE_INCOMPATIBLE_WITH_CURRENTLY_ACTIVE_PDN_CONNECTION = 104,
   INVALID_OVERALL_LENGTH_OF_THE_TRIGGERED_RESPONSE_MESSAGE_AND_A_PIGGYBACKED_INITIAL_MESSAGE =
       105,
-  DATA_FORWARDING_NOT_SUPPORTED = 106,
-  INVALID_REPLY_FROM_REMOTE_PEER = 107,
-  FALLBACK_TO_GTPV1 = 108,
-  INVALID_PEER = 109,
+  DATA_FORWARDING_NOT_SUPPORTED                            = 106,
+  INVALID_REPLY_FROM_REMOTE_PEER                           = 107,
+  FALLBACK_TO_GTPV1                                        = 108,
+  INVALID_PEER                                             = 109,
   TEMPORARILY_REJECTED_DUE_TO_TAU_HO_PROCEDURE_IN_PROGRESS = 110,
-  MODIFICATIONS_NOT_LIMITED_TO_S1_U_BEARERS = 111,
-  REQUEST_REJECTED_FOR_PMIPv6_REASON = 112,
-  APN_CONGESTION = 113,
-  BEARER_HANDLING_NOT_SUPPORTED = 114,
-  UE_ALREADY_RE_ATTACHED = 115,
-  MULTIPLE_PDN_CONNECTIONS_FOR_A_GIVEN_APN_NOT_ALLOWED = 116,
-  TARGET_ACCESS_RESTRICTED_FOR_THE_SUBSCRIBER = 117,
-  MME_SGSN_REFUSES_DUE_TO_VPLMN_POLICY = 119,
-  GTP_C_ENTITY_CONGESTION = 120,
-  LATE_OVERLAPPING_REQUEST = 121,
-  TIMED_OUT_REQUEST = 122,
-  UE_IS_TEMPORARILY_NOT_REACHABLE_DUE_TO_POWER_SAVING = 123,
-  RELOCATION_FAILURE_DUE_TO_NAS_MESSAGE_REDIRECTION = 124,
-  UE_NOT_AUTHORISED_BY_OCS_OR_EXTERNAL_AAA_SERVER = 125,
-  MULTIPLE_ACCESSES_TO_A_PDN_CONNECTION_NOT_ALLOWED = 126,
-  REQUEST_REJECTED_DUE_TO_UE_CAPABILITY = 127,
-  S1_U_PATH_FAILURE = 128
+  MODIFICATIONS_NOT_LIMITED_TO_S1_U_BEARERS                = 111,
+  REQUEST_REJECTED_FOR_PMIPv6_REASON                       = 112,
+  APN_CONGESTION                                           = 113,
+  BEARER_HANDLING_NOT_SUPPORTED                            = 114,
+  UE_ALREADY_RE_ATTACHED                                   = 115,
+  MULTIPLE_PDN_CONNECTIONS_FOR_A_GIVEN_APN_NOT_ALLOWED     = 116,
+  TARGET_ACCESS_RESTRICTED_FOR_THE_SUBSCRIBER              = 117,
+  MME_SGSN_REFUSES_DUE_TO_VPLMN_POLICY                     = 119,
+  GTP_C_ENTITY_CONGESTION                                  = 120,
+  LATE_OVERLAPPING_REQUEST                                 = 121,
+  TIMED_OUT_REQUEST                                        = 122,
+  UE_IS_TEMPORARILY_NOT_REACHABLE_DUE_TO_POWER_SAVING      = 123,
+  RELOCATION_FAILURE_DUE_TO_NAS_MESSAGE_REDIRECTION        = 124,
+  UE_NOT_AUTHORISED_BY_OCS_OR_EXTERNAL_AAA_SERVER          = 125,
+  MULTIPLE_ACCESSES_TO_A_PDN_CONNECTION_NOT_ALLOWED        = 126,
+  REQUEST_REJECTED_DUE_TO_UE_CAPABILITY                    = 127,
+  S1_U_PATH_FAILURE                                        = 128
 };
 
 typedef struct cause_s {
@@ -611,13 +613,13 @@ typedef struct ambr_s {
 } ambr_t;
 //------------------------------------------------------------------------------
 // 8.8 EPS Bearer ID (EBI)
-#define EPS_BEARER_IDENTITY_UNASSIGNED (uint8_t)0
-#define EPS_BEARER_IDENTITY_RESERVED1 (uint8_t)1
-#define EPS_BEARER_IDENTITY_RESERVED2 (uint8_t)2
-#define EPS_BEARER_IDENTITY_RESERVED3 (uint8_t)3
-#define EPS_BEARER_IDENTITY_RESERVED4 (uint8_t)4
-#define EPS_BEARER_IDENTITY_FIRST (uint8_t)5
-#define EPS_BEARER_IDENTITY_LAST (uint8_t)15
+#define EPS_BEARER_IDENTITY_UNASSIGNED (uint8_t) 0
+#define EPS_BEARER_IDENTITY_RESERVED1 (uint8_t) 1
+#define EPS_BEARER_IDENTITY_RESERVED2 (uint8_t) 2
+#define EPS_BEARER_IDENTITY_RESERVED3 (uint8_t) 3
+#define EPS_BEARER_IDENTITY_RESERVED4 (uint8_t) 4
+#define EPS_BEARER_IDENTITY_FIRST (uint8_t) 5
+#define EPS_BEARER_IDENTITY_LAST (uint8_t) 15
 
 typedef struct ebi_s {
   uint8_t ebi;
@@ -679,8 +681,8 @@ struct mei_s {
 
   std::string toString() const {
     std::string s = {};
-    int l_i = 0;
-    int l_j = 0;
+    int l_i       = 0;
+    int l_j       = 0;
     while (l_i < MEI_MAX_LENGTH / 2) {
       if ((u1.b[l_i] & 0xf) > 9) break;
       s.append(std::to_string(u1.b[l_i] & 0xf));
@@ -699,7 +701,7 @@ struct mei_s {
         MEI_MAX_LENGTH / 2 - 1 - 1;  // depends if imei or imei_sv -1 again
     uint8_t carry = 1;
     while (l_i) {
-      uint8_t b = u1.b[l_i];
+      uint8_t b  = u1.b[l_i];
       uint8_t d0 = b & 0x0f;
       uint8_t d1 = b & 0xf0;
       if (d0 <= 9) {
@@ -708,7 +710,7 @@ struct mei_s {
           u1.b[l_i] = d0 | d1;
           return (*this);
         } else {
-          d0 = 0;
+          d0        = 0;
           u1.b[l_i] = d0 | d1;
         }
       }
@@ -718,7 +720,7 @@ struct mei_s {
           u1.b[l_i] = d0 | d1;
           return (*this);
         } else {
-          d1 = 0;
+          d1        = 0;
           u1.b[l_i] = d0 | d1;
         }
       }
@@ -763,8 +765,8 @@ struct msisdn_s {
 
   std::string toString() const {
     std::string s = {};
-    int l_i = 0;
-    int l_j = 0;
+    int l_i       = 0;
+    int l_j       = 0;
     while (l_i < sizeof(u1.b)) {
       if ((u1.b[l_i] & 0xf) > 9) break;
       s.append(std::to_string(u1.b[l_i] & 0xf));
@@ -780,10 +782,10 @@ struct msisdn_s {
   // Should be refined see spec
   msisdn_s& operator++()  // prefix ++
   {
-    int l_i = sizeof(u1.b) - 1;
+    int l_i       = sizeof(u1.b) - 1;
     uint8_t carry = 1;
     while (l_i > 5) {
-      uint8_t b = u1.b[l_i];
+      uint8_t b  = u1.b[l_i];
       uint8_t d0 = b & 0x0f;
       uint8_t d1 = b & 0xf0;
       if (d0 <= 9) {
@@ -792,7 +794,7 @@ struct msisdn_s {
           u1.b[l_i] = d0 | d1;
           return (*this);
         } else {
-          d0 = 0;
+          d0        = 0;
           u1.b[l_i] = d0 | d1;
         }
       }
@@ -802,7 +804,7 @@ struct msisdn_s {
           u1.b[l_i] = d0 | d1;
           return (*this);
         } else {
-          d1 = 0;
+          d1        = 0;
           u1.b[l_i] = d0 | d1;
         }
       }
@@ -885,8 +887,8 @@ typedef struct indication_s {
 //-------------------------------------
 // 8.34 PDN Type
 enum pdn_type_e {
-  PDN_TYPE_E_IPV4 = 1,
-  PDN_TYPE_E_IPV6 = 2,
+  PDN_TYPE_E_IPV4   = 1,
+  PDN_TYPE_E_IPV6   = 2,
   PDN_TYPE_E_IPV4V6 = 3,
   PDN_TYPE_E_NON_IP = 4,
 };
@@ -963,8 +965,9 @@ typedef struct bearer_qos_s {
   uint64_t guaranted_bit_rate_for_downlink;
 
   bool operator==(const struct bearer_qos_s& q) const {
-    return ((q.label_qci == label_qci) && (q.pl == pl) && (q.pvi == pvi) &&
-            (q.pci == pci));
+    return (
+        (q.label_qci == label_qci) && (q.pl == pl) && (q.pvi == pvi) &&
+        (q.pci == pci));
   }
   //------------------------------------------------------------------------------
   std::string toString() const {
@@ -994,17 +997,17 @@ typedef struct flow_qos_s {
 //-------------------------------------
 // 8.17 RAT Type
 enum rat_type_e {
-  RAT_TYPE_E_RESERVED = 0,
-  RAT_TYPE_E_UTRAN = 1,
-  RAT_TYPE_E_GERAN = 2,
-  RAT_TYPE_E_WLAN = 3,
-  RAT_TYPE_E_GAN = 4,
-  RAT_TYPE_E_HSPA_EVOLUTION = 5,
+  RAT_TYPE_E_RESERVED         = 0,
+  RAT_TYPE_E_UTRAN            = 1,
+  RAT_TYPE_E_GERAN            = 2,
+  RAT_TYPE_E_WLAN             = 3,
+  RAT_TYPE_E_GAN              = 4,
+  RAT_TYPE_E_HSPA_EVOLUTION   = 5,
   RAT_TYPE_E_EUTRAN_WB_EUTRAN = 6,
-  RAT_TYPE_E_VIRTUAL = 7,
-  RAT_TYPE_E_EUTRAN_NB_IOT = 8,
-  RAT_TYPE_E_LTE_M = 9,
-  RAT_TYPE_E_NR = 10,
+  RAT_TYPE_E_VIRTUAL          = 7,
+  RAT_TYPE_E_EUTRAN_NB_IOT    = 8,
+  RAT_TYPE_E_LTE_M            = 9,
+  RAT_TYPE_E_NR               = 10,
 };
 struct rat_type_s {
   uint8_t rat_type;
@@ -1119,7 +1122,7 @@ typedef struct gtpc2c_ecgi_field_s {
 
   //------------------------------------------------------------------------------
   std::string toString() const {
-    std::string s = {};
+    std::string s    = {};
     std::string mccs = conv::mccToString(mcc_digit_1, mcc_digit_2, mcc_digit_3);
     std::string mncs = conv::mncToString(mnc_digit_1, mnc_digit_2, mnc_digit_3);
     s.append("mcc=").append(mccs).append(", MNC=").append(mncs);
@@ -1203,48 +1206,48 @@ typedef user_location_information_t uli_t;
 
 /* WARNING: not complete... */
 enum interface_type_e {
-  INTERFACE_TYPE_MIN = 0,
-  S1_U_ENODEB_GTP_U = INTERFACE_TYPE_MIN,
-  S1_U_SGW_GTP_U = 1,
-  S12_RNC_GTP_U = 2,
-  S12_SGW_GTP_U = 3,
-  S5_S8_SGW_GTP_U = 4,
-  S5_S8_PGW_GTP_U = 5,
-  S5_S8_SGW_GTP_C = 6,
-  S5_S8_PGW_GTP_C = 7,
-  S5_S8_SGW_PMIPv6 = 8,
-  S5_S8_PGW_PMIPv6 = 9,
-  S11_MME_GTP_C = 10,
-  S11_S4_SGW_GTP_C = 11,
-  S10_MME_GTP_C = 12,
-  S3_MME_GTP_C = 13,
-  S3_SGSN_GTP_C = 14,
-  S4_SGSN_GTP_U = 15,
-  S4_SGW_GTP_U = 16,
-  S4_SGSN_GTP_C = 17,
-  S16_SGSN_GTP_C = 18,
-  ENODEB_GTP_U_DL_DATA_FORWARDING = 19,
-  ENODEB_GTP_U_UL_DATA_FORWARDING = 20,
-  RNC_GTP_U_DATA_FORWARDING = 21,
-  SGSN_GTP_U_DATA_FORWARDING = 22,
+  INTERFACE_TYPE_MIN               = 0,
+  S1_U_ENODEB_GTP_U                = INTERFACE_TYPE_MIN,
+  S1_U_SGW_GTP_U                   = 1,
+  S12_RNC_GTP_U                    = 2,
+  S12_SGW_GTP_U                    = 3,
+  S5_S8_SGW_GTP_U                  = 4,
+  S5_S8_PGW_GTP_U                  = 5,
+  S5_S8_SGW_GTP_C                  = 6,
+  S5_S8_PGW_GTP_C                  = 7,
+  S5_S8_SGW_PMIPv6                 = 8,
+  S5_S8_PGW_PMIPv6                 = 9,
+  S11_MME_GTP_C                    = 10,
+  S11_S4_SGW_GTP_C                 = 11,
+  S10_MME_GTP_C                    = 12,
+  S3_MME_GTP_C                     = 13,
+  S3_SGSN_GTP_C                    = 14,
+  S4_SGSN_GTP_U                    = 15,
+  S4_SGW_GTP_U                     = 16,
+  S4_SGSN_GTP_C                    = 17,
+  S16_SGSN_GTP_C                   = 18,
+  ENODEB_GTP_U_DL_DATA_FORWARDING  = 19,
+  ENODEB_GTP_U_UL_DATA_FORWARDING  = 20,
+  RNC_GTP_U_DATA_FORWARDING        = 21,
+  SGSN_GTP_U_DATA_FORWARDING       = 22,
   SGW_UPF_GTP_U_DL_DATA_FORWARDING = 23,
-  SM_MBMS_GW_GTP_C = 24,
-  SN_MBMS_GW_GTP_C = 25,
-  SM_MME_GTP_C = 26,
-  SN_SGSN_GTP_C = 27,
-  SGW_GTP_U_UL_DATA_FORWARDING = 28,
-  SN_SGSN_GTP_U = 29,
-  S2B_EPDG_GTP_C = 30,
-  S2B_U_EPDG_GTP_U = 31,
-  S2B_PGW_GTP_C = 32,
-  S2B_U_PGW_GTP_U = 33,
-  S2A_TWAN_GTP_U = 34,
-  S2A_TWAN_GTP_C = 35,
-  S2A_PGW_GTP_C = 36,
-  S2A_PGW_GTP_U = 37,
-  S11_MME_GTP_U = 38,
-  S11_SGW_GTP_U = 39,
-  INTERFACE_TYPE_MAX = S11_SGW_GTP_U
+  SM_MBMS_GW_GTP_C                 = 24,
+  SN_MBMS_GW_GTP_C                 = 25,
+  SM_MME_GTP_C                     = 26,
+  SN_SGSN_GTP_C                    = 27,
+  SGW_GTP_U_UL_DATA_FORWARDING     = 28,
+  SN_SGSN_GTP_U                    = 29,
+  S2B_EPDG_GTP_C                   = 30,
+  S2B_U_EPDG_GTP_U                 = 31,
+  S2B_PGW_GTP_C                    = 32,
+  S2B_U_PGW_GTP_U                  = 33,
+  S2A_TWAN_GTP_U                   = 34,
+  S2A_TWAN_GTP_C                   = 35,
+  S2A_PGW_GTP_C                    = 36,
+  S2A_PGW_GTP_U                    = 37,
+  S11_MME_GTP_U                    = 38,
+  S11_SGW_GTP_U                    = 39,
+  INTERFACE_TYPE_MAX               = S11_SGW_GTP_U
 };
 
 struct interface_type_s {
@@ -1300,7 +1303,7 @@ struct fully_qualified_tunnel_endpoint_identifier_s {
   //------------------------------------------------------------------------------
   std::string toString() const {
     std::string s = {};
-    interface_type_t iface_type((interface_type_e)interface_type);
+    interface_type_t iface_type((interface_type_e) interface_type);
     if ((v4) || (v6)) {
       s.append("Interface type=").append(iface_type.toString());
       s.append(", TEID=").append(std::to_string(teid_gre_key));
@@ -1470,14 +1473,14 @@ typedef struct plmn_id_s {
 //-------------------------------------
 // 8.51 Target Identification
 enum target_type_e {
-  TARGET_TYPE_E_RNC_ID = 0,
-  TARGET_TYPE_E_MACRO_ENODEB_ID = 1,
-  TARGET_TYPE_E_CELL_IDENTIFIER = 2,
-  TARGET_TYPE_E_HOME_ENODEB_ID = 3,
+  TARGET_TYPE_E_RNC_ID                   = 0,
+  TARGET_TYPE_E_MACRO_ENODEB_ID          = 1,
+  TARGET_TYPE_E_CELL_IDENTIFIER          = 2,
+  TARGET_TYPE_E_HOME_ENODEB_ID           = 3,
   TARGET_TYPE_E_EXTENDED_MACRO_ENODEB_ID = 4,
-  TARGET_TYPE_E_GNODEB_ID = 5,
-  TARGET_TYPE_E_MACRO_NG_ENODEB_ID = 6,
-  TARGET_TYPE_E_EXTENDED_NG_ENODEB_ID = 7,
+  TARGET_TYPE_E_GNODEB_ID                = 5,
+  TARGET_TYPE_E_MACRO_NG_ENODEB_ID       = 6,
+  TARGET_TYPE_E_EXTENDED_NG_ENODEB_ID    = 7,
 };
 
 typedef struct target_id_for_type_rnc_id_s {
@@ -1615,9 +1618,9 @@ typedef access_point_name_restriction_t apn_restriction_t;
 // 8.58 Selection Mode
 enum selection_mode_e {
   SELECTION_MODE_E_MS_OR_NETWORK_PROVIDED_APN_SUBSCRIPTION_VERIFIED = 0,
-  SELECTION_MODE_E_MS_PROVIDED_APN_SUBSCRIPTION_NOT_VERIFIED = 1,
-  SELECTION_MODE_E_NETWORK_PROVIDED_APN_SUBSCRIPTION_NOT_VERIFIED = 2,
-  SELECTION_MODE_E_FOR_FUTURE_USE = 3,
+  SELECTION_MODE_E_MS_PROVIDED_APN_SUBSCRIPTION_NOT_VERIFIED        = 1,
+  SELECTION_MODE_E_NETWORK_PROVIDED_APN_SUBSCRIPTION_NOT_VERIFIED   = 2,
+  SELECTION_MODE_E_FOR_FUTURE_USE                                   = 3,
 };
 typedef struct selection_mode_s {
   uint8_t spare1 : 6;
@@ -1761,7 +1764,7 @@ typedef struct local_distinguished_name_s {
 //-------------------------------------
 // 8.83 Node Features
 enum support_features_e {
-  SUPPORT_FEATURES_E_PRN = 1,
+  SUPPORT_FEATURES_E_PRN  = 1,
   SUPPORT_FEATURES_E_MABR = 2,
   SUPPORT_FEATURES_E_NTSR = 4,
   SUPPORT_FEATURES_E_CIOT = 8,
@@ -1780,11 +1783,11 @@ typedef struct node_features_s {
 //-------------------------------------
 // 8.85 Throttling
 enum throttling_unit_e {
-  THROTTLING_UNIT_E_SECONDS_2 = 0,
-  THROTTLING_UNIT_E_MINUTES_1 = 1,
-  THROTTLING_UNIT_E_MINUTES_10 = 2,
-  THROTTLING_UNIT_E_HOURS_1 = 3,
-  THROTTLING_UNIT_E_HOURS_10 = 4,
+  THROTTLING_UNIT_E_SECONDS_2   = 0,
+  THROTTLING_UNIT_E_MINUTES_1   = 1,
+  THROTTLING_UNIT_E_MINUTES_10  = 2,
+  THROTTLING_UNIT_E_HOURS_1     = 3,
+  THROTTLING_UNIT_E_HOURS_10    = 4,
   THROTTLING_UNIT_E_DEACTIVATED = 7,
 };
 
@@ -1808,11 +1811,11 @@ typedef allocation_retention_priority_t arp_t;
 //-------------------------------------
 // 8.87 EPC Timer
 enum timer_unit_e {
-  TIMER_UNIT_E_SECONDS_2 = 0,
-  TIMER_UNIT_E_MINUTES_1 = 1,
-  TIMER_UNIT_E_MINUTES_10 = 2,
-  TIMER_UNIT_E_HOURS_1 = 3,
-  TIMER_UNIT_E_HOURS_10 = 4,
+  TIMER_UNIT_E_SECONDS_2   = 0,
+  TIMER_UNIT_E_MINUTES_1   = 1,
+  TIMER_UNIT_E_MINUTES_10  = 2,
+  TIMER_UNIT_E_HOURS_1     = 3,
+  TIMER_UNIT_E_HOURS_10    = 4,
   TIMER_UNIT_E_DEACTIVATED = 7,
 };
 
@@ -1878,10 +1881,10 @@ typedef struct change_to_report_flags_s {
 //-------------------------------------
 // 8.99 Action Indication
 enum indication_e {
-  INDICATION_E_NO_ACTION = 0,
+  INDICATION_E_NO_ACTION    = 0,
   INDICATION_E_DEACTIVATION = 1,
-  INDICATION_E_PAGING = 2,
-  INDICATION_E_PAGING_STOP = 3,
+  INDICATION_E_PAGING       = 2,
+  INDICATION_E_PAGING_STOP  = 3,
 };
 typedef struct action_indication_ie_t {
   uint8_t spare1 : 5;
@@ -1923,18 +1926,18 @@ typedef struct uli_timestamp_s {
 //-------------------------------------
 // 8.103 RAN/NAS Cause
 enum protocol_type_e {
-  PROTOCOL_TYPE_E_S1AP = 0,
-  PROTOCOL_TYPE_E_EMM = 1,
-  PROTOCOL_TYPE_E_ESM = 2,
+  PROTOCOL_TYPE_E_S1AP     = 0,
+  PROTOCOL_TYPE_E_EMM      = 1,
+  PROTOCOL_TYPE_E_ESM      = 2,
   PROTOCOL_TYPE_E_DIAMETER = 3,
-  PROTOCOL_TYPE_E_IKEV2 = 4,
+  PROTOCOL_TYPE_E_IKEV2    = 4,
 };
 enum ran_nas_cause_type_e {
   RAN_NAS_CAUSE_TYPE_E_RADIO_NETWORK_LAYER = 0,
-  RAN_NAS_CAUSE_TYPE_E_TRANSPORT_LAYER = 1,
-  RAN_NAS_CAUSE_TYPE_E_NAS = 2,
-  RAN_NAS_CAUSE_TYPE_E_PROTOCOL = 3,
-  RAN_NAS_CAUSE_TYPE_E_MISCELLANEOUS = 4,
+  RAN_NAS_CAUSE_TYPE_E_TRANSPORT_LAYER     = 1,
+  RAN_NAS_CAUSE_TYPE_E_NAS                 = 2,
+  RAN_NAS_CAUSE_TYPE_E_PROTOCOL            = 3,
+  RAN_NAS_CAUSE_TYPE_E_MISCELLANEOUS       = 4,
 };
 typedef struct ran_nas_cause_s {
   uint8_t protocol_type : 4;
@@ -2147,7 +2150,7 @@ typedef struct maximum_packet_loss_rate_s {
 
 namespace std {
 
-template <>
+template<>
 class hash<fteid_t> {
  public:
   size_t operator()(const fteid_t& k) const {
