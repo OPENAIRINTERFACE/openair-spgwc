@@ -30,7 +30,7 @@
 #---------------------------------------------------------------------
 FROM centos:8 as oai-spgwc-builder
 
-ARG EURECOM_PROXY
+ARG HTTP_PROXY
 ARG BUILD_FOR_CI
 ARG CI_SRC_BRANCH
 ARG CI_SRC_COMMIT
@@ -56,7 +56,7 @@ RUN yum update -y \
   && rm -rf /var/cache/yum
 
 # Some GIT configuration command quite useful
-RUN /bin/bash -c "if [[ -v EURECOM_PROXY ]]; then git config --global http.proxy $EURECOM_PROXY; fi"
+RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
 RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 # In normal case, we build out of the develop branch
