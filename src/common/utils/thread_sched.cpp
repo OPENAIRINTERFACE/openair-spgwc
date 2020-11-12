@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,15 +28,15 @@
 #include "thread_sched.hpp"
 
 //------------------------------------------------------------------------------
-void util::thread_sched_params::apply(const int task_id,
-                                      _Logger& logger) const {
+void util::thread_sched_params::apply(
+    const int task_id, _Logger& logger) const {
   if (cpu_id >= 0) {
     cpu_set_t cpuset;
     CPU_SET(cpu_id, &cpuset);
-    if (int rc = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t),
-                                        &cpuset)) {
-      logger.warn("Could not set affinity to ITTI task %d, err=%d", task_id,
-                  rc);
+    if (int rc = pthread_setaffinity_np(
+            pthread_self(), sizeof(cpu_set_t), &cpuset)) {
+      logger.warn(
+          "Could not set affinity to ITTI task %d, err=%d", task_id, rc);
     }
   }
 
@@ -44,7 +44,7 @@ void util::thread_sched_params::apply(const int task_id,
   memset(&sparam, 0, sizeof(sparam));
   sparam.sched_priority = sched_priority;
   if (int rc = pthread_setschedparam(pthread_self(), sched_policy, &sparam)) {
-    logger.warn("Could not set schedparam to ITTI task %d, err=%d", task_id,
-                rc);
+    logger.warn(
+        "Could not set schedparam to ITTI task %d, err=%d", task_id, rc);
   }
 }

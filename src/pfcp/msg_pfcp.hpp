@@ -92,12 +92,12 @@ class pfcp_ies_container {
 
   //  PFCP_IE_CREATE_PDR
   virtual bool get(pfcp::create_pdr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_PDR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::create_pdr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_PDR, __FILE__, __LINE__);
   }
   // PFCP_IE_PDI
   virtual bool get(pfcp::pdi& v) const {
@@ -108,84 +108,84 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_CREATE_FAR
   virtual bool get(pfcp::create_far& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_FAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_FAR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::create_far& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_FAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_FAR, __FILE__, __LINE__);
   }
   //  PFCP_IE_FORWARDING_PARAMETERS
   virtual bool get(pfcp::forwarding_parameters& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FORWARDING_PARAMETERS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FORWARDING_PARAMETERS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::forwarding_parameters& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FORWARDING_PARAMETERS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FORWARDING_PARAMETERS, __FILE__, __LINE__);
   }
   //  PFCP_IE_DUPLICATING_PARAMETERS
   virtual bool get(pfcp::duplicating_parameters& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DUPLICATING_PARAMETERS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DUPLICATING_PARAMETERS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::duplicating_parameters& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DUPLICATING_PARAMETERS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DUPLICATING_PARAMETERS, __FILE__, __LINE__);
   }
   //  PFCP_IE_CREATE_URR
   virtual bool get(pfcp::create_urr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_URR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::create_urr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_URR, __FILE__, __LINE__);
   }
   //  PFCP_IE_CREATE_QER
   virtual bool get(pfcp::create_qer& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_QER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_QER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::create_qer& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_QER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_QER, __FILE__, __LINE__);
   }
   //  PFCP_IE_CREATED_PDR
   virtual bool get(pfcp::created_pdr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATED_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATED_PDR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::created_pdr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATED_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATED_PDR, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_PDR
   virtual bool get(pfcp::update_pdr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_PDR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::update_pdr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_PDR, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_FAR
   virtual bool get(pfcp::update_far& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_FAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_FAR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::update_far& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_FAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_FAR, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_FORWARDING_PARAMETERS
   virtual bool get(pfcp::update_forwarding_parameters& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_FORWARDING_PARAMETERS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_FORWARDING_PARAMETERS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::update_forwarding_parameters& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_FORWARDING_PARAMETERS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_FORWARDING_PARAMETERS, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_BAR_
   virtual bool get(
@@ -214,57 +214,57 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_UPDATE_URR
   virtual bool get(pfcp::update_urr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_URR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::update_urr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_URR, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_QER
   virtual bool get(pfcp::update_qer& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_QER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_QER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::update_qer& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_QER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_QER, __FILE__, __LINE__);
   }
   //  PFCP_IE_REMOVE_PDR
   virtual bool get(pfcp::remove_pdr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_PDR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remove_pdr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_PDR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_PDR, __FILE__, __LINE__);
   }
   //  PFCP_IE_REMOVE_FAR
   virtual bool get(pfcp::remove_far& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_FAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_FAR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remove_far& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_FAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_FAR, __FILE__, __LINE__);
   }
   //  PFCP_IE_REMOVE_URR
   virtual bool get(pfcp::remove_urr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_URR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remove_urr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_URR, __FILE__, __LINE__);
   }
   //  PFCP_IE_REMOVE_QER
   virtual bool get(pfcp::remove_qer& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_QER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_QER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remove_qer& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_QER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_QER, __FILE__, __LINE__);
   }
   //  PFCP_IE_CAUSE
   virtual bool get(pfcp::cause_t& v) const {
@@ -275,12 +275,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_SOURCE_INTERFACE
   virtual bool get(pfcp::source_interface_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SOURCE_INTERFACE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SOURCE_INTERFACE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::source_interface_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SOURCE_INTERFACE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SOURCE_INTERFACE, __FILE__, __LINE__);
   }
   //  PFCP_IE_F_TEID
   virtual bool get(pfcp::fteid_t& v) const {
@@ -291,39 +291,39 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_NETWORK_INSTANCE
   virtual bool get(pfcp::network_instance_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_NETWORK_INSTANCE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_NETWORK_INSTANCE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::network_instance_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_NETWORK_INSTANCE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_NETWORK_INSTANCE, __FILE__, __LINE__);
   }
   //  PFCP_IE_SDF_FILTER
   virtual bool get(pfcp::sdf_filter_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SDF_FILTER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SDF_FILTER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::sdf_filter_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SDF_FILTER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SDF_FILTER, __FILE__, __LINE__);
   }
   //  PFCP_IE_APPLICATION_ID
   virtual bool get(pfcp::application_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLICATION_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLICATION_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::application_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLICATION_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLICATION_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_GATE_STATUS
   virtual bool get(pfcp::gate_status_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_GATE_STATUS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_GATE_STATUS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::gate_status_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_GATE_STATUS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_GATE_STATUS, __FILE__, __LINE__);
   }
   //  PFCP_IE_MBR
   virtual bool get(pfcp::mbr_t& v) const {
@@ -341,156 +341,156 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_QER_CORRELATION_ID
   virtual bool get(pfcp::qer_correlation_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QER_CORRELATION_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QER_CORRELATION_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::qer_correlation_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QER_CORRELATION_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QER_CORRELATION_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_PRECEDENCE
   virtual bool get(pfcp::precedence_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PRECEDENCE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PRECEDENCE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::precedence_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PRECEDENCE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PRECEDENCE, __FILE__, __LINE__);
   }
   //  PFCP_IE_TRANSPORT_LEVEL_MARKING
   virtual bool get(pfcp::transport_level_marking_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TRANSPORT_LEVEL_MARKING,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TRANSPORT_LEVEL_MARKING, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::transport_level_marking_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TRANSPORT_LEVEL_MARKING,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TRANSPORT_LEVEL_MARKING, __FILE__, __LINE__);
   }
   //  PFCP_IE_VOLUME_THRESHOLD
   virtual bool get(pfcp::volume_threshold_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_VOLUME_THRESHOLD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_VOLUME_THRESHOLD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::volume_threshold_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_VOLUME_THRESHOLD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_VOLUME_THRESHOLD, __FILE__, __LINE__);
   }
   //  PFCP_IE_TIME_THRESHOLD
   virtual bool get(pfcp::time_threshold_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_THRESHOLD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_THRESHOLD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::time_threshold_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_THRESHOLD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_THRESHOLD, __FILE__, __LINE__);
   }
   //  PFCP_IE_MONITORING_TIME
   virtual bool get(pfcp::monitoring_time_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MONITORING_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MONITORING_TIME, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::monitoring_time_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MONITORING_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MONITORING_TIME, __FILE__, __LINE__);
   }
   //  PFCP_IE_SUBSEQUENT_VOLUME_THRESHOLD
   virtual bool get(pfcp::subsequent_volume_threshold_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_VOLUME_THRESHOLD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_VOLUME_THRESHOLD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::subsequent_volume_threshold_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_VOLUME_THRESHOLD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_VOLUME_THRESHOLD, __FILE__, __LINE__);
   }
   //  PFCP_IE_SUBSEQUENT_TIME_THRESHOLD
   virtual bool get(pfcp::subsequent_time_threshold_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_TIME_THRESHOLD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_TIME_THRESHOLD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::subsequent_time_threshold_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_TIME_THRESHOLD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_TIME_THRESHOLD, __FILE__, __LINE__);
   }
   //  PFCP_IE_INACTIVITY_DETECTION_TIME
   virtual bool get(pfcp::inactivity_detection_time_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_INACTIVITY_DETECTION_TIME,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_INACTIVITY_DETECTION_TIME, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::inactivity_detection_time_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_INACTIVITY_DETECTION_TIME,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_INACTIVITY_DETECTION_TIME, __FILE__, __LINE__);
   }
   //  PFCP_IE_REPORTING_TRIGGERS
   virtual bool get(pfcp::reporting_triggers_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REPORTING_TRIGGERS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REPORTING_TRIGGERS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::reporting_triggers_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REPORTING_TRIGGERS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REPORTING_TRIGGERS, __FILE__, __LINE__);
   }
   //  PFCP_IE_REDIRECT_INFORMATION
   virtual bool get(pfcp::redirect_information_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REDIRECT_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REDIRECT_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::redirect_information_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REDIRECT_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REDIRECT_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_REPORT_TYPE
   virtual bool get(pfcp::report_type_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REPORT_TYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REPORT_TYPE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::report_type_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REPORT_TYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REPORT_TYPE, __FILE__, __LINE__);
   }
   //  PFCP_IE_OFFENDING_IE
   virtual bool get(pfcp::offending_ie_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OFFENDING_IE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OFFENDING_IE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::offending_ie_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OFFENDING_IE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OFFENDING_IE, __FILE__, __LINE__);
   }
   //  PFCP_IE_FORWARDING_POLICY
   virtual bool get(pfcp::forwarding_policy_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FORWARDING_POLICY, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FORWARDING_POLICY, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::forwarding_policy_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FORWARDING_POLICY, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FORWARDING_POLICY, __FILE__, __LINE__);
   }
   //  PFCP_IE_DESTINATION_INTERFACE
   virtual bool get(pfcp::destination_interface_t v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DESTINATION_INTERFACE,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DESTINATION_INTERFACE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::destination_interface_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DESTINATION_INTERFACE,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DESTINATION_INTERFACE, __FILE__, __LINE__);
   }
   // PFCP_IE_UP_FUNCTION_FEATURES
   virtual bool get(pfcp::up_function_features_s& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UP_FUNCTION_FEATURES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UP_FUNCTION_FEATURES, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::up_function_features_s& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UP_FUNCTION_FEATURES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UP_FUNCTION_FEATURES, __FILE__, __LINE__);
   }
   //  PFCP_IE_APPLY_ACTION
   virtual bool get(pfcp::apply_action_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLY_ACTION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLY_ACTION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::apply_action_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLY_ACTION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLY_ACTION, __FILE__, __LINE__);
   }
   //  PFCP_IE_DOWNLINK_DATA_SERVICE_INFORMATION
   virtual bool get(pfcp::downlink_data_service_information_t& v) const {
@@ -512,12 +512,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_DL_BUFFERING_DURATION
   virtual bool get(pfcp::dl_buffering_duration_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DL_BUFFERING_DURATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DL_BUFFERING_DURATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::dl_buffering_duration_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DL_BUFFERING_DURATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DL_BUFFERING_DURATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_DL_BUFFERING_SUGGESTED_PACKET_COUNT
   virtual bool get(pfcp::dl_buffering_suggested_packet_count_t& v) const {
@@ -530,39 +530,39 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_PFCPSMREQ_FLAGS
   virtual bool get(pfcp::pfcpsmreq_flags_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PFCPSMREQ_FLAGS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PFCPSMREQ_FLAGS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::pfcpsmreq_flags_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PFCPSMREQ_FLAGS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PFCPSMREQ_FLAGS, __FILE__, __LINE__);
   }
   //  PFCP_IE_PFCPSRRSP_FLAGS
   virtual bool get(pfcp::pfcpsrrsp_flags_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PFCPSRRSP_FLAGS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PFCPSRRSP_FLAGS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::pfcpsrrsp_flags_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PFCPSRRSP_FLAGS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PFCPSRRSP_FLAGS, __FILE__, __LINE__);
   }
   //  PFCP_IE_LOAD_CONTROL_INFORMATION
   virtual bool get(pfcp::load_control_information& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_LOAD_CONTROL_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_LOAD_CONTROL_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::load_control_information& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_LOAD_CONTROL_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_LOAD_CONTROL_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_SEQUENCE_NUMBER
   virtual bool get(pfcp::sequence_number_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SEQUENCE_NUMBER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SEQUENCE_NUMBER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::sequence_number_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SEQUENCE_NUMBER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SEQUENCE_NUMBER, __FILE__, __LINE__);
   }
   //  PFCP_IE_METRIC
   virtual bool get(pfcp::metric_t& v) const {
@@ -573,12 +573,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_OVERLOAD_CONTROL_INFORMATION
   virtual bool get(pfcp::overload_control_information& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OVERLOAD_CONTROL_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OVERLOAD_CONTROL_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::overload_control_information& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OVERLOAD_CONTROL_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OVERLOAD_CONTROL_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_TIMER
   virtual bool get(pfcp::timer_t& v) const {
@@ -589,12 +589,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_PACKET_DETECTION_RULE_ID
   virtual bool get(pfcp::pdr_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PACKET_DETECTION_RULE_ID,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PACKET_DETECTION_RULE_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::pdr_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PACKET_DETECTION_RULE_ID,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PACKET_DETECTION_RULE_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_F_SEID
   virtual bool get(pfcp::fseid_t& v) const {
@@ -605,12 +605,12 @@ class pfcp_ies_container {
   }
   // PFCP_IE_APPLICATION_IDS_PFDS
   virtual bool get(pfcp::application_ids_pfds& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLICATION_IDS_PFDS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLICATION_IDS_PFDS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::application_ids_pfds& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLICATION_IDS_PFDS,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLICATION_IDS_PFDS, __FILE__, __LINE__);
   }
   //  PFCP_IE_PFD
   virtual bool get(pfcp::pfd& v) const {
@@ -628,39 +628,39 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_PFD_CONTENTS
   virtual bool get(pfcp::pfd_contents_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PFD_CONTENTS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PFD_CONTENTS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::pfd_contents_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PFD_CONTENTS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PFD_CONTENTS, __FILE__, __LINE__);
   }
   //  PFCP_IE_MEASUREMENT_METHOD
   virtual bool get(pfcp::measurement_method_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MEASUREMENT_METHOD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MEASUREMENT_METHOD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::measurement_method_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MEASUREMENT_METHOD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MEASUREMENT_METHOD, __FILE__, __LINE__);
   }
   //  PFCP_IE_USAGE_REPORT_TRIGGER
   virtual bool get(pfcp::usage_report_trigger_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_USAGE_REPORT_TRIGGER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_USAGE_REPORT_TRIGGER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::usage_report_trigger_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_USAGE_REPORT_TRIGGER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_USAGE_REPORT_TRIGGER, __FILE__, __LINE__);
   }
   //  PFCP_IE_MEASUREMENT_PERIOD
   virtual bool get(pfcp::measurement_period_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MEASUREMENT_PERIOD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MEASUREMENT_PERIOD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::measurement_period_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MEASUREMENT_PERIOD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MEASUREMENT_PERIOD, __FILE__, __LINE__);
   }
   //  PFCP_IE_FQ_CSID
   virtual bool get(fq_csid_t& v) const {
@@ -671,21 +671,21 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_VOLUME_MEASUREMENT
   virtual bool get(pfcp::volume_measurement_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_VOLUME_MEASUREMENT, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_VOLUME_MEASUREMENT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::volume_measurement_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_VOLUME_MEASUREMENT, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_VOLUME_MEASUREMENT, __FILE__, __LINE__);
   }
   //  PFCP_IE_DURATION_MEASUREMENT
   virtual bool get(pfcp::duration_measurement_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DURATION_MEASUREMENT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DURATION_MEASUREMENT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::duration_measurement_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DURATION_MEASUREMENT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DURATION_MEASUREMENT, __FILE__, __LINE__);
   }
   //  PFCP_IE_APPLICATION_DETECTION_INFORMATION
   virtual bool get(pfcp::application_detection_information& v) const {
@@ -698,84 +698,84 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_TIME_OF_FIRST_PACKET
   virtual bool get(pfcp::time_of_first_packet_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_OF_FIRST_PACKET,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_OF_FIRST_PACKET, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::time_of_first_packet_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_OF_FIRST_PACKET,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_OF_FIRST_PACKET, __FILE__, __LINE__);
   }
   //  PFCP_IE_TIME_OF_LAST_PACKET
   virtual bool get(pfcp::time_of_last_packet_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_OF_LAST_PACKET,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_OF_LAST_PACKET, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::time_of_last_packet_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_OF_LAST_PACKET,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_OF_LAST_PACKET, __FILE__, __LINE__);
   }
   //  PFCP_IE_QUOTA_HOLDING_TIME
   virtual bool get(pfcp::quota_holding_time_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QUOTA_HOLDING_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QUOTA_HOLDING_TIME, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::quota_holding_time_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QUOTA_HOLDING_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QUOTA_HOLDING_TIME, __FILE__, __LINE__);
   }
   //  PFCP_IE_DROPPED_DL_TRAFFIC_THRESHOLD
   virtual bool get(pfcp::dropped_dl_traffic_threshold_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DROPPED_DL_TRAFFIC_THRESHOLD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DROPPED_DL_TRAFFIC_THRESHOLD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::dropped_dl_traffic_threshold_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DROPPED_DL_TRAFFIC_THRESHOLD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DROPPED_DL_TRAFFIC_THRESHOLD, __FILE__, __LINE__);
   }
   //  PFCP_IE_VOLUME_QUOTA
   virtual bool get(pfcp::volume_quota_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_VOLUME_QUOTA, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_VOLUME_QUOTA, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::volume_quota_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_VOLUME_QUOTA, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_VOLUME_QUOTA, __FILE__, __LINE__);
   }
   //  PFCP_IE_TIME_QUOTA
   virtual bool get(pfcp::time_quota_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_QUOTA, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_QUOTA, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::time_quota_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_QUOTA, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_QUOTA, __FILE__, __LINE__);
   }
   //  PFCP_IE_START_TIME
   virtual bool get(pfcp::start_time_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_START_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_START_TIME, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::start_time_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_START_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_START_TIME, __FILE__, __LINE__);
   }
   //  PFCP_IE_END_TIME
   virtual bool get(pfcp::end_time_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_END_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_END_TIME, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::end_time_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_END_TIME, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_END_TIME, __FILE__, __LINE__);
   }
   //  PFCP_IE_QUERY_URR
   virtual bool get(pfcp::query_urr& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QUERY_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QUERY_URR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::query_urr& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QUERY_URR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QUERY_URR, __FILE__, __LINE__);
   }
   //  PFCP_IE_USAGE_REPORT_WITHIN_SESSION_MODIFICATION_RESPONSE
   virtual bool get(
@@ -825,39 +825,39 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_LINKED_URR_ID
   virtual bool get(pfcp::linked_urr_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_LINKED_URR_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_LINKED_URR_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::linked_urr_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_LINKED_URR_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_LINKED_URR_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_DOWNLINK_DATA_REPORT
   virtual bool get(pfcp::downlink_data_report& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DOWNLINK_DATA_REPORT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DOWNLINK_DATA_REPORT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::downlink_data_report& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DOWNLINK_DATA_REPORT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DOWNLINK_DATA_REPORT, __FILE__, __LINE__);
   }
   //  PFCP_IE_OUTER_HEADER_CREATION
   virtual bool get(pfcp::outer_header_creation_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OUTER_HEADER_CREATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OUTER_HEADER_CREATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::outer_header_creation_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OUTER_HEADER_CREATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OUTER_HEADER_CREATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_CREATE_BAR
   virtual bool get(pfcp::create_bar& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_BAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_BAR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::create_bar& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_BAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_BAR, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_BAR_SESSION_MODIFICATION_REQUEST
   // TODO virtual bool get(pfcp::update_bar_session_modification_request_t& v)
@@ -869,12 +869,12 @@ class pfcp_ies_container {
   // PFCP_IE_UPDATE_BAR_SESSION_MODIFICATION_REQUEST, __FILE__, __LINE__);}
   //  PFCP_IE_REMOVE_BAR
   virtual bool get(pfcp::remove_bar& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_BAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_BAR, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remove_bar& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_BAR, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_BAR, __FILE__, __LINE__);
   }
   //  PFCP_IE_BAR_ID
   virtual bool get(pfcp::bar_id_t& v) const {
@@ -885,120 +885,120 @@ class pfcp_ies_container {
   }
   // PFCP_IE_CP_FUNCTION_FEATURES
   virtual bool get(pfcp::cp_function_features_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CP_FUNCTION_FEATURES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CP_FUNCTION_FEATURES, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::cp_function_features_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CP_FUNCTION_FEATURES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CP_FUNCTION_FEATURES, __FILE__, __LINE__);
   }
   //  PFCP_IE_USAGE_INFORMATION
   virtual bool get(pfcp::usage_information_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_USAGE_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_USAGE_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::usage_information_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_USAGE_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_USAGE_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_APPLICATION_INSTANCE_ID
   virtual bool get(pfcp::application_instance_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLICATION_INSTANCE_ID,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLICATION_INSTANCE_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::application_instance_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_APPLICATION_INSTANCE_ID,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_APPLICATION_INSTANCE_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_FLOW_INFORMATION
   virtual bool get(pfcp::flow_information_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FLOW_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FLOW_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::flow_information_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FLOW_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FLOW_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_UE_IP_ADDRESS
   virtual bool get(pfcp::ue_ip_address_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UE_IP_ADDRESS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UE_IP_ADDRESS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ue_ip_address_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UE_IP_ADDRESS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UE_IP_ADDRESS, __FILE__, __LINE__);
   }
   //  PFCP_IE_PACKET_RATE
   virtual bool get(pfcp::packet_rate_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PACKET_RATE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PACKET_RATE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::packet_rate_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PACKET_RATE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PACKET_RATE, __FILE__, __LINE__);
   }
   //  PFCP_IE_OUTER_HEADER_REMOVAL
   virtual bool get(pfcp::outer_header_removal_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OUTER_HEADER_REMOVAL,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OUTER_HEADER_REMOVAL, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::outer_header_removal_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OUTER_HEADER_REMOVAL,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OUTER_HEADER_REMOVAL, __FILE__, __LINE__);
   }
   // PFCP_IE_RECOVERY_TIME_STAMP
   virtual bool get(pfcp::recovery_time_stamp_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_RECOVERY_TIME_STAMP,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_RECOVERY_TIME_STAMP, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::recovery_time_stamp_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_RECOVERY_TIME_STAMP,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_RECOVERY_TIME_STAMP, __FILE__, __LINE__);
   }
   //  PFCP_IE_DL_FLOW_LEVEL_MARKING
   virtual bool get(pfcp::dl_flow_level_marking_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DL_FLOW_LEVEL_MARKING,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DL_FLOW_LEVEL_MARKING, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::dl_flow_level_marking_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DL_FLOW_LEVEL_MARKING,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DL_FLOW_LEVEL_MARKING, __FILE__, __LINE__);
   }
   //  PFCP_IE_HEADER_ENRICHMENT
   virtual bool get(pfcp::header_enrichment_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_HEADER_ENRICHMENT, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_HEADER_ENRICHMENT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::header_enrichment_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_HEADER_ENRICHMENT, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_HEADER_ENRICHMENT, __FILE__, __LINE__);
   }
   //  PFCP_IE_ERROR_INDICATION_REPORT
   virtual bool get(pfcp::error_indication_report& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ERROR_INDICATION_REPORT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ERROR_INDICATION_REPORT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::error_indication_report& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ERROR_INDICATION_REPORT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ERROR_INDICATION_REPORT, __FILE__, __LINE__);
   }
   //  PFCP_IE_MEASUREMENT_INFORMATION
   virtual bool get(pfcp::measurement_information_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MEASUREMENT_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MEASUREMENT_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::measurement_information_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MEASUREMENT_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MEASUREMENT_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_NODE_REPORT_TYPE
   virtual bool get(pfcp::node_report_type_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_NODE_REPORT_TYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_NODE_REPORT_TYPE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::node_report_type_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_NODE_REPORT_TYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_NODE_REPORT_TYPE, __FILE__, __LINE__);
   }
   //  PFCP_IE_USER_PLANE_PATH_FAILURE_REPORT
   virtual bool get(pfcp::user_plane_path_failure_report& v) const {
@@ -1011,12 +1011,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_REMOTE_GTP_U_PEER
   virtual bool get(pfcp::remote_gtp_u_peer_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOTE_GTP_U_PEER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOTE_GTP_U_PEER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remote_gtp_u_peer_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOTE_GTP_U_PEER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOTE_GTP_U_PEER, __FILE__, __LINE__);
   }
   //  PFCP_IE_UR_SEQN
   virtual bool get(pfcp::ur_seqn_t& v) const {
@@ -1036,21 +1036,21 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_ACTIVATE_PREDEFINED_RULES
   virtual bool get(pfcp::activate_predefined_rules_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ACTIVATE_PREDEFINED_RULES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ACTIVATE_PREDEFINED_RULES, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::activate_predefined_rules_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ACTIVATE_PREDEFINED_RULES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ACTIVATE_PREDEFINED_RULES, __FILE__, __LINE__);
   }
   //  PFCP_IE_DEACTIVATE_PREDEFINED_RULES
   virtual bool get(pfcp::deactivate_predefined_rules_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DEACTIVATE_PREDEFINED_RULES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DEACTIVATE_PREDEFINED_RULES, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::deactivate_predefined_rules_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_DEACTIVATE_PREDEFINED_RULES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_DEACTIVATE_PREDEFINED_RULES, __FILE__, __LINE__);
   }
   //  PFCP_IE_FAR_ID
   virtual bool get(pfcp::far_id_t& v) const {
@@ -1068,12 +1068,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_OCI_FLAGS
   virtual bool get(pfcp::oci_flags_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OCI_FLAGS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OCI_FLAGS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::oci_flags_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_OCI_FLAGS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_OCI_FLAGS, __FILE__, __LINE__);
   }
   // PFCP_IE_PFCP_ASSOCIATION_RELEASE_REQUEST
   virtual bool get(pfcp::pfcp_association_release_request_t& v) const {
@@ -1086,39 +1086,39 @@ class pfcp_ies_container {
   }
   // PFCP_IE_GRACEFUL_RELEASE_PERIOD
   virtual bool get(pfcp::graceful_release_period_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_GRACEFUL_RELEASE_PERIOD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_GRACEFUL_RELEASE_PERIOD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::graceful_release_period_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_GRACEFUL_RELEASE_PERIOD,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_GRACEFUL_RELEASE_PERIOD, __FILE__, __LINE__);
   }
   //  PFCP_IE_PDN_TYPE
   virtual bool get(pfcp::pdn_type_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PDN_TYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PDN_TYPE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::pdn_type_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PDN_TYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PDN_TYPE, __FILE__, __LINE__);
   }
   //  PFCP_IE_FAILED_RULE_ID
   virtual bool get(pfcp::failed_rule_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FAILED_RULE_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FAILED_RULE_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::failed_rule_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FAILED_RULE_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FAILED_RULE_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_TIME_QUOTA_MECHANISM
   virtual bool get(pfcp::time_quota_mechanism_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_QUOTA_MECHANISM,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_QUOTA_MECHANISM, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::time_quota_mechanism_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TIME_QUOTA_MECHANISM,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TIME_QUOTA_MECHANISM, __FILE__, __LINE__);
   }
   // PFCP_IE_USER_PLANE_IP_RESOURCE_INFORMATION
   virtual bool get(pfcp::user_plane_ip_resource_information_t& v) const {
@@ -1131,57 +1131,57 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_USER_PLANE_INACTIVITY_TIMER
   virtual bool get(pfcp::user_plane_inactivity_timer_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_USER_PLANE_INACTIVITY_TIMER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_USER_PLANE_INACTIVITY_TIMER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::user_plane_inactivity_timer_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_USER_PLANE_INACTIVITY_TIMER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_USER_PLANE_INACTIVITY_TIMER, __FILE__, __LINE__);
   }
   //  PFCP_IE_AGGREGATED_URRS
   virtual bool get(pfcp::aggregated_urrs& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_AGGREGATED_URRS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_AGGREGATED_URRS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::aggregated_urrs& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_AGGREGATED_URRS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_AGGREGATED_URRS, __FILE__, __LINE__);
   }
   //  PFCP_IE_MULTIPLIER
   virtual bool get(pfcp::multiplier_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MULTIPLIER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MULTIPLIER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::multiplier_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MULTIPLIER, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MULTIPLIER, __FILE__, __LINE__);
   }
   //  PFCP_IE_AGGREGATED_URR_ID
   virtual bool get(pfcp::aggregated_urr_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_AGGREGATED_URR_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_AGGREGATED_URR_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::aggregated_urr_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_AGGREGATED_URR_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_AGGREGATED_URR_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_SUBSEQUENT_VOLUME_QUOTA
   virtual bool get(pfcp::subsequent_volume_quota_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_VOLUME_QUOTA,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_VOLUME_QUOTA, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::subsequent_volume_quota_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_VOLUME_QUOTA,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_VOLUME_QUOTA, __FILE__, __LINE__);
   }
   //  PFCP_IE_SUBSEQUENT_TIME_QUOTA
   virtual bool get(pfcp::subsequent_time_quota_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_TIME_QUOTA,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_TIME_QUOTA, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::subsequent_time_quota_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_SUBSEQUENT_TIME_QUOTA,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_SUBSEQUENT_TIME_QUOTA, __FILE__, __LINE__);
   }
   //  PFCP_IE_RQI
   virtual bool get(pfcp::rqi_t& v) const {
@@ -1199,12 +1199,12 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_QUERY_URR_REFERENCE
   virtual bool get(pfcp::query_urr_reference_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QUERY_URR_REFERENCE,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QUERY_URR_REFERENCE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::query_urr_reference_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_QUERY_URR_REFERENCE,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_QUERY_URR_REFERENCE, __FILE__, __LINE__);
   }
   //  PFCP_IE_ADDITIONAL_USAGE_REPORTS_INFORMATION
   virtual bool get(pfcp::additional_usage_reports_information_t& v) const {
@@ -1217,66 +1217,66 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_CREATE_TRAFFIC_ENDPOINT
   virtual bool get(pfcp::create_traffic_endpoint& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::create_traffic_endpoint& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATE_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATE_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   //  PFCP_IE_CREATED_TRAFFIC_ENDPOINT
   virtual bool get(pfcp::created_traffic_endpoint& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATED_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATED_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::created_traffic_endpoint& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_CREATED_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_CREATED_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   //  PFCP_IE_UPDATE_TRAFFIC_ENDPOINT
   virtual bool get(pfcp::update_traffic_endpoint& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::update_traffic_endpoint& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_UPDATE_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_UPDATE_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   //  PFCP_IE_REMOVE_TRAFFIC_ENDPOINT
   virtual bool get(pfcp::remove_traffic_endpoint& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::remove_traffic_endpoint& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_REMOVE_TRAFFIC_ENDPOINT,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_REMOVE_TRAFFIC_ENDPOINT, __FILE__, __LINE__);
   }
   //  PFCP_IE_TRAFFIC_ENDPOINT_ID
   virtual bool get(pfcp::traffic_endpoint_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TRAFFIC_ENDPOINT_ID,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TRAFFIC_ENDPOINT_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::traffic_endpoint_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TRAFFIC_ENDPOINT_ID,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TRAFFIC_ENDPOINT_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_ETHERNET_PACKET_FILTER
   virtual bool get(pfcp::ethernet_packet_filter& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_PACKET_FILTER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_PACKET_FILTER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ethernet_packet_filter& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_PACKET_FILTER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_PACKET_FILTER, __FILE__, __LINE__);
   }
   //  PFCP_IE_MAC_ADDRESS
   virtual bool get(pfcp::mac_address_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MAC_ADDRESS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MAC_ADDRESS, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::mac_address_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MAC_ADDRESS, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MAC_ADDRESS, __FILE__, __LINE__);
   }
   //  PFCP_IE_C_TAG
   virtual bool get(pfcp::c_tag_t& v) const {
@@ -1294,39 +1294,39 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_ETHERTYPE
   virtual bool get(pfcp::ethertype_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERTYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERTYPE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ethertype_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERTYPE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERTYPE, __FILE__, __LINE__);
   }
   //  PFCP_IE_PROXYING
   virtual bool get(pfcp::proxying_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PROXYING, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PROXYING, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::proxying_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_PROXYING, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_PROXYING, __FILE__, __LINE__);
   }
   //  PFCP_IE_ETHERNET_FILTER_ID
   virtual bool get(pfcp::ethernet_filter_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_FILTER_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_FILTER_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ethernet_filter_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_FILTER_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_FILTER_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_ETHERNET_FILTER_PROPERTIES
   virtual bool get(pfcp::ethernet_filter_properties_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_FILTER_PROPERTIES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_FILTER_PROPERTIES, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ethernet_filter_properties_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_FILTER_PROPERTIES,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_FILTER_PROPERTIES, __FILE__, __LINE__);
   }
   //  PFCP_IE_SUGGESTED_BUFFERING_PACKETS_COUNT
   virtual bool get(pfcp::suggested_buffering_packets_count_t& v) const {
@@ -1355,120 +1355,120 @@ class pfcp_ies_container {
   }
   //  PFCP_IE_ETHERNET_TRAFFIC_INFORMATION
   virtual bool get(pfcp::ethernet_traffic_information& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_TRAFFIC_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_TRAFFIC_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ethernet_traffic_information& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_TRAFFIC_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_TRAFFIC_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_MAC_ADDRESSES_DETECTED
   virtual bool get(pfcp::mac_addresses_detected_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MAC_ADDRESSES_DETECTED,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MAC_ADDRESSES_DETECTED, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::mac_addresses_detected_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MAC_ADDRESSES_DETECTED,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MAC_ADDRESSES_DETECTED, __FILE__, __LINE__);
   }
   //  PFCP_IE_MAC_ADDRESSES_REMOVED
   virtual bool get(pfcp::mac_addresses_removed_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MAC_ADDRESSES_REMOVED,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MAC_ADDRESSES_REMOVED, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::mac_addresses_removed_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_MAC_ADDRESSES_REMOVED,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_MAC_ADDRESSES_REMOVED, __FILE__, __LINE__);
   }
   //  PFCP_IE_ETHERNET_INACTIVITY_TIMER
   virtual bool get(pfcp::ethernet_inactivity_timer_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_INACTIVITY_TIMER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_INACTIVITY_TIMER, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::ethernet_inactivity_timer_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ETHERNET_INACTIVITY_TIMER,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ETHERNET_INACTIVITY_TIMER, __FILE__, __LINE__);
   }
   //  PFCP_IE_ADDITIONAL_MONITORING_TIME
   virtual bool get(pfcp::additional_monitoring_time& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ADDITIONAL_MONITORING_TIME,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ADDITIONAL_MONITORING_TIME, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::additional_monitoring_time& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_ADDITIONAL_MONITORING_TIME,
-                                        __FILE__, __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_ADDITIONAL_MONITORING_TIME, __FILE__, __LINE__);
   }
   //  PFCP_IE_EVENT_INFORMATION
   virtual bool get(pfcp::event_information& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::event_information& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_EVENT_REPORTING
   virtual bool get(pfcp::event_reporting& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_REPORTING, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_REPORTING, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::event_reporting& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_REPORTING, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_REPORTING, __FILE__, __LINE__);
   }
   //  PFCP_IE_EVENT_ID
   virtual bool get(pfcp::event_id_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_ID, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::event_id_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_ID, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_ID, __FILE__, __LINE__);
   }
   //  PFCP_IE_EVENT_THRESHOLD
   virtual bool get(pfcp::event_threshold_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_THRESHOLD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_THRESHOLD, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::event_threshold_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_EVENT_THRESHOLD, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_EVENT_THRESHOLD, __FILE__, __LINE__);
   }
   //  PFCP_IE_TRACE_INFORMATION
   virtual bool get(pfcp::trace_information_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TRACE_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TRACE_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::trace_information_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_TRACE_INFORMATION, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_TRACE_INFORMATION, __FILE__, __LINE__);
   }
   //  PFCP_IE_FRAMED_ROUTE
   virtual bool get(pfcp::framed_route_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FRAMED_ROUTE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FRAMED_ROUTE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::framed_route_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FRAMED_ROUTE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FRAMED_ROUTE, __FILE__, __LINE__);
   }
   //  PFCP_IE_FRAMED_ROUTING
   virtual bool get(pfcp::framed_routing_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FRAMED_ROUTING, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FRAMED_ROUTING, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::framed_routing_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FRAMED_ROUTING, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FRAMED_ROUTING, __FILE__, __LINE__);
   }
   //  PFCP_IE_FRAMED_IPV6_ROUTE
   virtual bool get(pfcp::framed_ipv6_route_t& v) const {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FRAMED_IPV6_ROUTE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FRAMED_IPV6_ROUTE, __FILE__, __LINE__);
   }
   virtual void set(const pfcp::framed_ipv6_route_t& v) {
-    throw pfcp_msg_illegal_ie_exception(0, PFCP_IE_FRAMED_IPV6_ROUTE, __FILE__,
-                                        __LINE__);
+    throw pfcp_msg_illegal_ie_exception(
+        0, PFCP_IE_FRAMED_IPV6_ROUTE, __FILE__, __LINE__);
   }
 
   virtual ~pfcp_ies_container(){};
@@ -1489,7 +1489,7 @@ class pfd : public pfcp::pfcp_ies_container {
 
   // virtual ~pfd() {};
   void set(const pfcp::pfd_contents_t& v) {
-    pfd_contents.first = true;
+    pfd_contents.first  = true;
     pfd_contents.second = v;
   }
 
@@ -1516,11 +1516,11 @@ class application_ids_pfds : public pfcp::pfcp_ies_container {
 
   // virtual ~application_ids_pfds() {};
   void set(const pfcp::application_id_t& v) {
-    application_id.first = true;
+    application_id.first  = true;
     application_id.second = v;
   }
   void set(const std::vector<pfcp::pfd>& v) {
-    pfds.first = true;
+    pfds.first  = true;
     pfds.second = v;
   }
 
@@ -1553,7 +1553,7 @@ class user_plane_path_failure_report : public pfcp::pfcp_ies_container {
 
   // virtual ~user_plane_path_failure_report() {};
   void set(const pfcp::remote_gtp_u_peer_t& v) {
-    remote_gtp_u_peer.first = true;
+    remote_gtp_u_peer.first  = true;
     remote_gtp_u_peer.second = v;
   }
 
@@ -1600,31 +1600,31 @@ class ethernet_packet_filter : public pfcp::pfcp_ies_container {
 
   // virtual ~ethernet_packet_filter() {};
   void set(const pfcp::ethernet_filter_id_t& v) {
-    ethernet_filter_id.first = true;
+    ethernet_filter_id.first  = true;
     ethernet_filter_id.second = v;
   }
   void set(const pfcp::ethernet_filter_properties_t& v) {
-    ethernet_filter_properties.first = true;
+    ethernet_filter_properties.first  = true;
     ethernet_filter_properties.second = v;
   }
   void set(const pfcp::mac_address_t& v) {
-    mac_address.first = true;
+    mac_address.first  = true;
     mac_address.second = v;
   }
   void set(const pfcp::ethertype_t& v) {
-    ethertype.first = true;
+    ethertype.first  = true;
     ethertype.second = v;
   }
   void set(const pfcp::c_tag_t& v) {
-    c_tag.first = true;
+    c_tag.first  = true;
     c_tag.second = v;
   }
   void set(const pfcp::s_tag_t& v) {
-    s_tag.first = true;
+    s_tag.first  = true;
     s_tag.second = v;
   }
   void set(const pfcp::sdf_filter_t& v) {
-    sdf_filter.first = true;
+    sdf_filter.first  = true;
     sdf_filter.second = v;
   }
 
@@ -1726,51 +1726,51 @@ class pdi : public pfcp::pfcp_ies_container {
 
   // virtual ~pdi() {};
   void set(const pfcp::source_interface_t& v) {
-    source_interface.first = true;
+    source_interface.first  = true;
     source_interface.second = v;
   }
   void set(const pfcp::fteid_t& v) {
-    local_fteid.first = true;
+    local_fteid.first  = true;
     local_fteid.second = v;
   }
   void set(const pfcp::network_instance_t& v) {
-    network_instance.first = true;
+    network_instance.first  = true;
     network_instance.second = v;
   }
   void set(const pfcp::ue_ip_address_t& v) {
-    ue_ip_address.first = true;
+    ue_ip_address.first  = true;
     ue_ip_address.second = v;
   }
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    traffic_endpoint_id.first = true;
+    traffic_endpoint_id.first  = true;
     traffic_endpoint_id.second = v;
   }
   void set(const pfcp::sdf_filter_t& v) {
-    sdf_filter.first = true;
+    sdf_filter.first  = true;
     sdf_filter.second = v;
   }
   void set(const pfcp::application_id_t& v) {
-    application_id.first = true;
+    application_id.first  = true;
     application_id.second = v;
   }
   void set(const pfcp::ethernet_packet_filter& v) {
-    ethernet_packet_filter.first = true;
+    ethernet_packet_filter.first  = true;
     ethernet_packet_filter.second = v;
   }
   void set(const pfcp::qfi_t& v) {
-    qfi.first = true;
+    qfi.first  = true;
     qfi.second = v;
   }
   void set(const pfcp::framed_route_t& v) {
-    framed_route.first = true;
+    framed_route.first  = true;
     framed_route.second = v;
   }
   void set(const pfcp::framed_routing_t& v) {
-    framed_routing.first = true;
+    framed_routing.first  = true;
     framed_routing.second = v;
   }
   void set(const pfcp::framed_ipv6_route_t& v) {
-    framed_ipv6_route.first = true;
+    framed_ipv6_route.first  = true;
     framed_ipv6_route.second = v;
   }
 
@@ -1895,35 +1895,35 @@ class create_pdr : public pfcp::pfcp_ies_container {
 
   // virtual ~create_pdr() {};
   void set(const pfcp::pdr_id_t& v) {
-    pdr_id.first = true;
+    pdr_id.first  = true;
     pdr_id.second = v;
   }
   void set(const pfcp::precedence_t& v) {
-    precedence.first = true;
+    precedence.first  = true;
     precedence.second = v;
   }
   void set(const pfcp::pdi& v) {
-    pdi.first = true;
+    pdi.first  = true;
     pdi.second = v;
   }
   void set(const pfcp::outer_header_removal_t& v) {
-    outer_header_removal.first = true;
+    outer_header_removal.first  = true;
     outer_header_removal.second = v;
   }
   void set(const pfcp::far_id_t& v) {
-    far_id.first = true;
+    far_id.first  = true;
     far_id.second = v;
   }
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::qer_id_t& v) {
-    qer_id.first = true;
+    qer_id.first  = true;
     qer_id.second = v;
   }
   void set(const pfcp::activate_predefined_rules_t& v) {
-    activate_predefined_rules.first = true;
+    activate_predefined_rules.first  = true;
     activate_predefined_rules.second = v;
   }
 
@@ -2020,35 +2020,35 @@ class update_forwarding_parameters : public pfcp::pfcp_ies_container {
 
   // virtual ~update_forwarding_parameters() {};
   void set(const pfcp::destination_interface_t& v) {
-    destination_interface.first = true;
+    destination_interface.first  = true;
     destination_interface.second = v;
   }
   void set(const pfcp::network_instance_t& v) {
-    network_instance.first = true;
+    network_instance.first  = true;
     network_instance.second = v;
   }
   void set(const pfcp::outer_header_creation_t& v) {
-    outer_header_creation.first = true;
+    outer_header_creation.first  = true;
     outer_header_creation.second = v;
   }
   void set(const pfcp::transport_level_marking_t& v) {
-    transport_level_marking.first = true;
+    transport_level_marking.first  = true;
     transport_level_marking.second = v;
   }
   void set(const pfcp::forwarding_policy_t& v) {
-    forwarding_policy.first = true;
+    forwarding_policy.first  = true;
     forwarding_policy.second = v;
   }
   void set(const pfcp::header_enrichment_t& v) {
-    header_enrichment.first = true;
+    header_enrichment.first  = true;
     header_enrichment.second = v;
   }
   void set(const pfcp::pfcpsmreq_flags_t& v) {
-    pfcpsmreq_flags.first = true;
+    pfcpsmreq_flags.first  = true;
     pfcpsmreq_flags.second = v;
   }
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    linked_traffic_endpoint_id.first = true;
+    linked_traffic_endpoint_id.first  = true;
     linked_traffic_endpoint_id.second = v;
   }
 
@@ -2160,39 +2160,39 @@ class forwarding_parameters : public pfcp::pfcp_ies_container {
 
   // virtual ~forwarding_parameters() {};
   void set(const pfcp::destination_interface_t& v) {
-    destination_interface.first = true;
+    destination_interface.first  = true;
     destination_interface.second = v;
   }
   void set(const pfcp::network_instance_t& v) {
-    network_instance.first = true;
+    network_instance.first  = true;
     network_instance.second = v;
   }
   void set(const pfcp::redirect_information_t& v) {
-    redirect_information.first = true;
+    redirect_information.first  = true;
     redirect_information.second = v;
   }
   void set(const pfcp::outer_header_creation_t& v) {
-    outer_header_creation.first = true;
+    outer_header_creation.first  = true;
     outer_header_creation.second = v;
   }
   void set(const pfcp::transport_level_marking_t& v) {
-    transport_level_marking.first = true;
+    transport_level_marking.first  = true;
     transport_level_marking.second = v;
   }
   void set(const pfcp::forwarding_policy_t& v) {
-    forwarding_policy.first = true;
+    forwarding_policy.first  = true;
     forwarding_policy.second = v;
   }
   void set(const pfcp::header_enrichment_t& v) {
-    header_enrichment.first = true;
+    header_enrichment.first  = true;
     header_enrichment.second = v;
   }
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    linked_traffic_endpoint_id.first = true;
+    linked_traffic_endpoint_id.first  = true;
     linked_traffic_endpoint_id.second = v;
   }
   void set(const pfcp::proxying_t& v) {
-    proxying.first = true;
+    proxying.first  = true;
     proxying.second = v;
   }
 
@@ -2284,19 +2284,19 @@ class update_duplicating_parameters : public pfcp::pfcp_ies_container {
 
   // virtual ~update_duplicating_parameters() {};
   void set(const pfcp::destination_interface_t& v) {
-    destination_interface.first = true;
+    destination_interface.first  = true;
     destination_interface.second = v;
   }
   void set(const pfcp::outer_header_creation_t& v) {
-    outer_header_creation.first = true;
+    outer_header_creation.first  = true;
     outer_header_creation.second = v;
   }
   void set(const pfcp::transport_level_marking_t& v) {
-    transport_level_marking.first = true;
+    transport_level_marking.first  = true;
     transport_level_marking.second = v;
   }
   void set(const pfcp::forwarding_policy_t& v) {
-    forwarding_policy.first = true;
+    forwarding_policy.first  = true;
     forwarding_policy.second = v;
   }
 
@@ -2360,19 +2360,19 @@ class duplicating_parameters : public pfcp::pfcp_ies_container {
   }
   // virtual ~duplicating_parameters() {};
   void set(const pfcp::destination_interface_t& v) {
-    destination_interface.first = true;
+    destination_interface.first  = true;
     destination_interface.second = v;
   }
   void set(const pfcp::outer_header_creation_t& v) {
-    outer_header_creation.first = true;
+    outer_header_creation.first  = true;
     outer_header_creation.second = v;
   }
   void set(const pfcp::transport_level_marking_t& v) {
-    transport_level_marking.first = true;
+    transport_level_marking.first  = true;
     transport_level_marking.second = v;
   }
   void set(const pfcp::forwarding_policy_t& v) {
-    forwarding_policy.first = true;
+    forwarding_policy.first  = true;
     forwarding_policy.second = v;
   }
 
@@ -2432,23 +2432,23 @@ class create_far : public pfcp::pfcp_ies_container {
 
   // virtual ~create_far() {};
   void set(const pfcp::far_id_t& v) {
-    far_id.first = true;
+    far_id.first  = true;
     far_id.second = v;
   }
   void set(const pfcp::apply_action_t& v) {
-    apply_action.first = true;
+    apply_action.first  = true;
     apply_action.second = v;
   }
   void set(const pfcp::forwarding_parameters& v) {
-    forwarding_parameters.first = true;
+    forwarding_parameters.first  = true;
     forwarding_parameters.second = v;
   }
   void set(const pfcp::duplicating_parameters& v) {
-    duplicating_parameters.first = true;
+    duplicating_parameters.first  = true;
     duplicating_parameters.second = v;
   }
   void set(const pfcp::bar_id_t& v) {
-    bar_id.first = true;
+    bar_id.first  = true;
     bar_id.second = v;
   }
 
@@ -2503,11 +2503,11 @@ class aggregated_urrs : public pfcp::pfcp_ies_container {
 
   // virtual ~aggregated_urrs() {};
   void set(const pfcp::aggregated_urr_id_t& v) {
-    aggregated_urr_id.first = true;
+    aggregated_urr_id.first  = true;
     aggregated_urr_id.second = v;
   }
   void set(const pfcp::multiplier_t& v) {
-    multiplier.first = true;
+    multiplier.first  = true;
     multiplier.second = v;
   }
 
@@ -2554,23 +2554,23 @@ class additional_monitoring_time : public pfcp::pfcp_ies_container {
 
   // virtual ~additional_monitoring_time() {};
   void set(const pfcp::monitoring_time_t& v) {
-    monitoring_time.first = true;
+    monitoring_time.first  = true;
     monitoring_time.second = v;
   }
   void set(const pfcp::subsequent_volume_threshold_t& v) {
-    subsequent_volume_threshold.first = true;
+    subsequent_volume_threshold.first  = true;
     subsequent_volume_threshold.second = v;
   }
   void set(const pfcp::subsequent_time_threshold_t& v) {
-    subsequent_time_threshold.first = true;
+    subsequent_time_threshold.first  = true;
     subsequent_time_threshold.second = v;
   }
   void set(const pfcp::subsequent_volume_quota_t& v) {
-    subsequent_volume_quota.first = true;
+    subsequent_volume_quota.first  = true;
     subsequent_volume_quota.second = v;
   }
   void set(const pfcp::subsequent_time_quota_t& v) {
-    subsequent_time_quota.first = true;
+    subsequent_time_quota.first  = true;
     subsequent_time_quota.second = v;
   }
 
@@ -2625,11 +2625,11 @@ class event_information : public pfcp::pfcp_ies_container {
 
   // virtual ~event_information() {};
   void set(const pfcp::event_id_t& v) {
-    event_id.first = true;
+    event_id.first  = true;
     event_id.second = v;
   }
   void set(const pfcp::event_threshold_t& v) {
-    event_threshold.first = true;
+    event_threshold.first  = true;
     event_threshold.second = v;
   }
 
@@ -2734,99 +2734,99 @@ class create_urr : public pfcp::pfcp_ies_container {
 
   // virtual ~create_urr() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::measurement_method_t& v) {
-    measurement_method.first = true;
+    measurement_method.first  = true;
     measurement_method.second = v;
   }
   void set(const pfcp::reporting_triggers_t& v) {
-    reporting_triggers.first = true;
+    reporting_triggers.first  = true;
     reporting_triggers.second = v;
   }
   void set(const pfcp::measurement_period_t& v) {
-    measurement_period.first = true;
+    measurement_period.first  = true;
     measurement_period.second = v;
   }
   void set(const pfcp::volume_threshold_t& v) {
-    volume_threshold.first = true;
+    volume_threshold.first  = true;
     volume_threshold.second = v;
   }
   void set(const pfcp::volume_quota_t& v) {
-    volume_quota.first = true;
+    volume_quota.first  = true;
     volume_quota.second = v;
   }
   void set(const pfcp::time_threshold_t& v) {
-    time_threshold.first = true;
+    time_threshold.first  = true;
     time_threshold.second = v;
   }
   void set(const pfcp::time_quota_t& v) {
-    time_quota.first = true;
+    time_quota.first  = true;
     time_quota.second = v;
   }
   void set(const pfcp::quota_holding_time_t& v) {
-    quota_holding_time.first = true;
+    quota_holding_time.first  = true;
     quota_holding_time.second = v;
   }
   void set(const pfcp::dropped_dl_traffic_threshold_t& v) {
-    dropped_dl_traffic_threshold.first = true;
+    dropped_dl_traffic_threshold.first  = true;
     dropped_dl_traffic_threshold.second = v;
   }
   void set(const pfcp::monitoring_time_t& v) {
-    monitoring_time.first = true;
+    monitoring_time.first  = true;
     monitoring_time.second = v;
   }
   void set(const pfcp::event_information& v) {
-    event_information.first = true;
+    event_information.first  = true;
     event_information.second = v;
   }
   void set(const pfcp::subsequent_volume_threshold_t& v) {
-    subsequent_volume_threshold.first = true;
+    subsequent_volume_threshold.first  = true;
     subsequent_volume_threshold.second = v;
   }
   void set(const pfcp::subsequent_time_threshold_t& v) {
-    subsequent_time_threshold.first = true;
+    subsequent_time_threshold.first  = true;
     subsequent_time_threshold.second = v;
   }
   void set(const pfcp::subsequent_volume_quota_t& v) {
-    subsequent_volume_quota.first = true;
+    subsequent_volume_quota.first  = true;
     subsequent_volume_quota.second = v;
   }
   void set(const pfcp::subsequent_time_quota_t& v) {
-    subsequent_time_quota.first = true;
+    subsequent_time_quota.first  = true;
     subsequent_time_quota.second = v;
   }
   void set(const pfcp::inactivity_detection_time_t& v) {
-    inactivity_detection_time.first = true;
+    inactivity_detection_time.first  = true;
     inactivity_detection_time.second = v;
   }
   void set(const pfcp::linked_urr_id_t& v) {
-    linked_urr_id.first = true;
+    linked_urr_id.first  = true;
     linked_urr_id.second = v;
   }
   void set(const pfcp::measurement_information_t& v) {
-    measurement_information.first = true;
+    measurement_information.first  = true;
     measurement_information.second = v;
   }
   void set(const pfcp::time_quota_mechanism_t& v) {
-    time_quota_mechanism.first = true;
+    time_quota_mechanism.first  = true;
     time_quota_mechanism.second = v;
   }
   void set(const pfcp::aggregated_urrs& v) {
-    aggregated_urrs.first = true;
+    aggregated_urrs.first  = true;
     aggregated_urrs.second = v;
   }
   void set(const pfcp::far_id_t& v) {
-    far_id_for_quota_action.first = true;
+    far_id_for_quota_action.first  = true;
     far_id_for_quota_action.second = v;
   }
   void set(const pfcp::ethernet_inactivity_timer_t& v) {
-    ethernet_inactivity_timer.first = true;
+    ethernet_inactivity_timer.first  = true;
     ethernet_inactivity_timer.second = v;
   }
   void set(const pfcp::additional_monitoring_time& v) {
-    additional_monitoring_time.first = true;
+    additional_monitoring_time.first  = true;
     additional_monitoring_time.second = v;
   }
 
@@ -3038,39 +3038,39 @@ class create_qer : public pfcp::pfcp_ies_container {
 
   // virtual ~create_qer() {};
   void set(const pfcp::qer_id_t& v) {
-    qer_id.first = true;
+    qer_id.first  = true;
     qer_id.second = v;
   }
   void set(const pfcp::qer_correlation_id_t& v) {
-    qer_correlation_id.first = true;
+    qer_correlation_id.first  = true;
     qer_correlation_id.second = v;
   }
   void set(const pfcp::gate_status_t& v) {
-    gate_status.first = true;
+    gate_status.first  = true;
     gate_status.second = v;
   }
   void set(const pfcp::mbr_t& v) {
-    maximum_bitrate.first = true;
+    maximum_bitrate.first  = true;
     maximum_bitrate.second = v;
   }
   void set(const pfcp::gbr_t& v) {
-    guaranteed_bitrate.first = true;
+    guaranteed_bitrate.first  = true;
     guaranteed_bitrate.second = v;
   }
   void set(const pfcp::packet_rate_t& v) {
-    packet_rate.first = true;
+    packet_rate.first  = true;
     packet_rate.second = v;
   }
   void set(const pfcp::dl_flow_level_marking_t& v) {
-    dl_flow_level_marking.first = true;
+    dl_flow_level_marking.first  = true;
     dl_flow_level_marking.second = v;
   }
   void set(const pfcp::qfi_t& v) {
-    qos_flow_identifier.first = true;
+    qos_flow_identifier.first  = true;
     qos_flow_identifier.second = v;
   }
   void set(const pfcp::rqi_t& v) {
-    reflective_qos.first = true;
+    reflective_qos.first  = true;
     reflective_qos.second = v;
   }
 
@@ -3162,15 +3162,15 @@ class create_bar : public pfcp::pfcp_ies_container {
 
   // virtual ~create_bar() {};
   void set(const pfcp::bar_id_t& v) {
-    bar_id.first = true;
+    bar_id.first  = true;
     bar_id.second = v;
   }
   void set(const pfcp::downlink_data_notification_delay_t& v) {
-    downlink_data_notification_delay.first = true;
+    downlink_data_notification_delay.first  = true;
     downlink_data_notification_delay.second = v;
   }
   void set(const pfcp::suggested_buffering_packets_count_t& v) {
-    suggested_buffering_packets_count.first = true;
+    suggested_buffering_packets_count.first  = true;
     suggested_buffering_packets_count.second = v;
   }
 
@@ -3234,35 +3234,35 @@ class create_traffic_endpoint : public pfcp::pfcp_ies_container {
 
   // virtual ~create_traffic_endpoint() {};
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    traffic_endpoint_id.first = true;
+    traffic_endpoint_id.first  = true;
     traffic_endpoint_id.second = v;
   }
   void set(const pfcp::fteid_t& v) {
-    local_fteid.first = true;
+    local_fteid.first  = true;
     local_fteid.second = v;
   }
   void set(const pfcp::network_instance_t& v) {
-    network_instance.first = true;
+    network_instance.first  = true;
     network_instance.second = v;
   }
   void set(const pfcp::ue_ip_address_t& v) {
-    ue_ip_address.first = true;
+    ue_ip_address.first  = true;
     ue_ip_address.second = v;
   }
   void set(const pfcp::ethernet_pdu_session_information_t& v) {
-    ethernet_pdu_session_information.first = true;
+    ethernet_pdu_session_information.first  = true;
     ethernet_pdu_session_information.second = v;
   }
   void set(const pfcp::framed_route_t& v) {
-    framed_route.first = true;
+    framed_route.first  = true;
     framed_route.second = v;
   }
   void set(const pfcp::framed_routing_t& v) {
-    framed_routing.first = true;
+    framed_routing.first  = true;
     framed_routing.second = v;
   }
   void set(const pfcp::framed_ipv6_route_t& v) {
-    framed_ipv6_route.first = true;
+    framed_ipv6_route.first  = true;
     framed_ipv6_route.second = v;
   }
 
@@ -3334,17 +3334,17 @@ class created_pdr : public pfcp::pfcp_ies_container {
   created_pdr() : pdr_id(), local_fteid() {}
 
   created_pdr(const created_pdr& c) {
-    pdr_id = c.pdr_id;
+    pdr_id      = c.pdr_id;
     local_fteid = c.local_fteid;
   }
 
   // virtual ~created_pdr() {};
   void set(const pfcp::pdr_id_t& v) {
-    pdr_id.first = true;
+    pdr_id.first  = true;
     pdr_id.second = v;
   }
   void set(const pfcp::fteid_t& v) {
-    local_fteid.first = true;
+    local_fteid.first  = true;
     local_fteid.second = v;
   }
 
@@ -3376,16 +3376,16 @@ class load_control_information : public pfcp::pfcp_ies_container {
 
   load_control_information(const load_control_information& l) {
     load_control_sequence_number = l.load_control_sequence_number;
-    load_metric = l.load_metric;
+    load_metric                  = l.load_metric;
   }
 
   // virtual ~load_control_information() {};
   void set(const pfcp::sequence_number_t& v) {
-    load_control_sequence_number.first = true;
+    load_control_sequence_number.first  = true;
     load_control_sequence_number.second = v;
   }
   void set(const pfcp::metric_t& v) {
-    load_metric.first = true;
+    load_metric.first  = true;
     load_metric.second = v;
   }
 
@@ -3422,27 +3422,27 @@ class overload_control_information : public pfcp::pfcp_ies_container {
         overload_control_information_flags() {}
 
   overload_control_information(const overload_control_information& o) {
-    overload_control_sequence_number = o.overload_control_sequence_number;
-    overload_reduction_metric = o.overload_reduction_metric;
-    period_of_validity = o.period_of_validity;
+    overload_control_sequence_number   = o.overload_control_sequence_number;
+    overload_reduction_metric          = o.overload_reduction_metric;
+    period_of_validity                 = o.period_of_validity;
     overload_control_information_flags = o.overload_control_information_flags;
   }
 
   // virtual ~overload_control_information() {};
   void set(const pfcp::sequence_number_t& v) {
-    overload_control_sequence_number.first = true;
+    overload_control_sequence_number.first  = true;
     overload_control_sequence_number.second = v;
   }
   void set(const pfcp::metric_t& v) {
-    overload_reduction_metric.first = true;
+    overload_reduction_metric.first  = true;
     overload_reduction_metric.second = v;
   }
   void set(const pfcp::timer_t& v) {
-    period_of_validity.first = true;
+    period_of_validity.first  = true;
     period_of_validity.second = v;
   }
   void set(const pfcp::oci_flags_t& v) {
-    overload_control_information_flags.first = true;
+    overload_control_information_flags.first  = true;
     overload_control_information_flags.second = v;
   }
 
@@ -3515,27 +3515,27 @@ class update_pdr : public pfcp::pfcp_ies_container {
   // virtual ~update_pdr() {};
   void set(const pfcp::pdr_id_t& v) { pdr_id = v; }
   void set(const pfcp::outer_header_removal_t& v) {
-    outer_header_removal.first = true;
+    outer_header_removal.first  = true;
     outer_header_removal.second = v;
   }
   void set(const pfcp::precedence_t& v) {
-    precedence.first = true;
+    precedence.first  = true;
     precedence.second = v;
   }
   void set(const pfcp::pdi& v) {
-    pdi.first = true;
+    pdi.first  = true;
     pdi.second = v;
   }
   void set(const pfcp::far_id_t& v) {
-    far_id.first = true;
+    far_id.first  = true;
     far_id.second = v;
   }
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::qer_id_t& v) {
-    qer_id.first = true;
+    qer_id.first  = true;
     qer_id.second = v;
   }
   void set(const pfcp::activate_predefined_rules_t& v) {
@@ -3622,19 +3622,19 @@ class update_far : public pfcp::pfcp_ies_container {
   // virtual ~update_far() {};
   void set(const pfcp::far_id_t& v) { far_id = v; }
   void set(const pfcp::apply_action_t& v) {
-    apply_action.first = true;
+    apply_action.first  = true;
     apply_action.second = v;
   }
   void set(const pfcp::update_forwarding_parameters& v) {
-    update_forwarding_parameters.first = true;
+    update_forwarding_parameters.first  = true;
     update_forwarding_parameters.second = v;
   }
   void set(const pfcp::update_duplicating_parameters& v) {
-    update_duplicating_parameters.first = true;
+    update_duplicating_parameters.first  = true;
     update_duplicating_parameters.second = v;
   }
   void set(const pfcp::bar_id_t& v) {
-    bar_id.first = true;
+    bar_id.first  = true;
     bar_id.second = v;
   }
 
@@ -3757,99 +3757,99 @@ class update_urr : public pfcp::pfcp_ies_container {
 
   // virtual ~update_urr() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::measurement_method_t& v) {
-    measurement_method.first = true;
+    measurement_method.first  = true;
     measurement_method.second = v;
   }
   void set(const pfcp::reporting_triggers_t& v) {
-    reporting_triggers.first = true;
+    reporting_triggers.first  = true;
     reporting_triggers.second = v;
   }
   void set(const pfcp::measurement_period_t& v) {
-    measurement_period.first = true;
+    measurement_period.first  = true;
     measurement_period.second = v;
   }
   void set(const pfcp::volume_threshold_t& v) {
-    volume_threshold.first = true;
+    volume_threshold.first  = true;
     volume_threshold.second = v;
   }
   void set(const pfcp::volume_quota_t& v) {
-    volume_quota.first = true;
+    volume_quota.first  = true;
     volume_quota.second = v;
   }
   void set(const pfcp::time_threshold_t& v) {
-    time_threshold.first = true;
+    time_threshold.first  = true;
     time_threshold.second = v;
   }
   void set(const pfcp::time_quota_t& v) {
-    time_quota.first = true;
+    time_quota.first  = true;
     time_quota.second = v;
   }
   void set(const pfcp::quota_holding_time_t& v) {
-    quota_holding_time.first = true;
+    quota_holding_time.first  = true;
     quota_holding_time.second = v;
   }
   void set(const pfcp::dropped_dl_traffic_threshold_t& v) {
-    dropped_dl_traffic_threshold.first = true;
+    dropped_dl_traffic_threshold.first  = true;
     dropped_dl_traffic_threshold.second = v;
   }
   void set(const pfcp::monitoring_time_t& v) {
-    monitoring_time.first = true;
+    monitoring_time.first  = true;
     monitoring_time.second = v;
   }
   void set(const pfcp::event_information& v) {
-    event_information.first = true;
+    event_information.first  = true;
     event_information.second = v;
   }
   void set(const pfcp::subsequent_volume_threshold_t& v) {
-    subsequent_volume_threshold.first = true;
+    subsequent_volume_threshold.first  = true;
     subsequent_volume_threshold.second = v;
   }
   void set(const pfcp::subsequent_time_threshold_t& v) {
-    subsequent_time_threshold.first = true;
+    subsequent_time_threshold.first  = true;
     subsequent_time_threshold.second = v;
   }
   void set(const pfcp::subsequent_volume_quota_t& v) {
-    subsequent_volume_quota.first = true;
+    subsequent_volume_quota.first  = true;
     subsequent_volume_quota.second = v;
   }
   void set(const pfcp::subsequent_time_quota_t& v) {
-    subsequent_time_quota.first = true;
+    subsequent_time_quota.first  = true;
     subsequent_time_quota.second = v;
   }
   void set(const pfcp::inactivity_detection_time_t& v) {
-    inactivity_detection_time.first = true;
+    inactivity_detection_time.first  = true;
     inactivity_detection_time.second = v;
   }
   void set(const pfcp::linked_urr_id_t& v) {
-    linked_urr_id.first = true;
+    linked_urr_id.first  = true;
     linked_urr_id.second = v;
   }
   void set(const pfcp::measurement_information_t& v) {
-    measurement_information.first = true;
+    measurement_information.first  = true;
     measurement_information.second = v;
   }
   void set(const pfcp::time_quota_mechanism_t& v) {
-    time_quota_mechanism.first = true;
+    time_quota_mechanism.first  = true;
     time_quota_mechanism.second = v;
   }
   void set(const pfcp::aggregated_urrs& v) {
-    aggregated_urrs.first = true;
+    aggregated_urrs.first  = true;
     aggregated_urrs.second = v;
   }
   void set(const pfcp::far_id_t& v) {
-    far_id_for_quota_action.first = true;
+    far_id_for_quota_action.first  = true;
     far_id_for_quota_action.second = v;
   }
   void set(const pfcp::ethernet_inactivity_timer_t& v) {
-    ethernet_inactivity_timer.first = true;
+    ethernet_inactivity_timer.first  = true;
     ethernet_inactivity_timer.second = v;
   }
   void set(const pfcp::additional_monitoring_time& v) {
-    additional_monitoring_time.first = true;
+    additional_monitoring_time.first  = true;
     additional_monitoring_time.second = v;
   }
 
@@ -4049,52 +4049,52 @@ class update_qer : public pfcp::pfcp_ies_container {
         reflective_qos() {}
 
   update_qer(const update_qer& u) {
-    qer_id = u.qer_id;
-    qer_correlation_id = u.qer_correlation_id;
-    gate_status = u.gate_status;
-    maximum_bitrate = u.maximum_bitrate;
-    guaranteed_bitrate = u.guaranteed_bitrate;
-    packet_rate = u.packet_rate;
+    qer_id                = u.qer_id;
+    qer_correlation_id    = u.qer_correlation_id;
+    gate_status           = u.gate_status;
+    maximum_bitrate       = u.maximum_bitrate;
+    guaranteed_bitrate    = u.guaranteed_bitrate;
+    packet_rate           = u.packet_rate;
     dl_flow_level_marking = u.dl_flow_level_marking;
-    qos_flow_identifier = u.qos_flow_identifier;
-    reflective_qos = u.reflective_qos;
+    qos_flow_identifier   = u.qos_flow_identifier;
+    reflective_qos        = u.reflective_qos;
   }
 
   // virtual ~update_qer() {};
   void set(const pfcp::qer_id_t& v) {
-    qer_id.first = true;
+    qer_id.first  = true;
     qer_id.second = v;
   }
   void set(const pfcp::qer_correlation_id_t& v) {
-    qer_correlation_id.first = true;
+    qer_correlation_id.first  = true;
     qer_correlation_id.second = v;
   }
   void set(const pfcp::gate_status_t& v) {
-    gate_status.first = true;
+    gate_status.first  = true;
     gate_status.second = v;
   }
   void set(const pfcp::mbr_t& v) {
-    maximum_bitrate.first = true;
+    maximum_bitrate.first  = true;
     maximum_bitrate.second = v;
   }
   void set(const pfcp::gbr_t& v) {
-    guaranteed_bitrate.first = true;
+    guaranteed_bitrate.first  = true;
     guaranteed_bitrate.second = v;
   }
   void set(const pfcp::packet_rate_t& v) {
-    packet_rate.first = true;
+    packet_rate.first  = true;
     packet_rate.second = v;
   }
   void set(const pfcp::dl_flow_level_marking_t& v) {
-    dl_flow_level_marking.first = true;
+    dl_flow_level_marking.first  = true;
     dl_flow_level_marking.second = v;
   }
   void set(const pfcp::qfi_t& v) {
-    qos_flow_identifier.first = true;
+    qos_flow_identifier.first  = true;
     qos_flow_identifier.second = v;
   }
   void set(const pfcp::rqi_t& v) {
-    reflective_qos.first = true;
+    reflective_qos.first  = true;
     reflective_qos.second = v;
   }
 
@@ -4175,7 +4175,7 @@ class remove_pdr : public pfcp::pfcp_ies_container {
 
   // virtual ~remove_pdr() {};
   void set(const pfcp::pdr_id_t& v) {
-    pdr_id.first = true;
+    pdr_id.first  = true;
     pdr_id.second = v;
   }
 
@@ -4200,7 +4200,7 @@ class remove_far : public pfcp::pfcp_ies_container {
 
   // virtual ~remove_far() {};
   void set(const pfcp::far_id_t& v) {
-    far_id.first = true;
+    far_id.first  = true;
     far_id.second = v;
   }
 
@@ -4225,7 +4225,7 @@ class remove_urr : public pfcp::pfcp_ies_container {
 
   // virtual ~remove_urr() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
 
@@ -4250,7 +4250,7 @@ class remove_qer : public pfcp::pfcp_ies_container {
 
   // virtual ~remove_qer() {};
   void set(const pfcp::qer_id_t& v) {
-    qer_id.first = true;
+    qer_id.first  = true;
     qer_id.second = v;
   }
 
@@ -4275,7 +4275,7 @@ class query_urr : public pfcp::pfcp_ies_container {
 
   // virtual ~query_urr() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
 
@@ -4306,22 +4306,22 @@ class update_bar_within_pfcp_session_modification_request
 
   update_bar_within_pfcp_session_modification_request(
       const update_bar_within_pfcp_session_modification_request& u) {
-    bar_id = u.bar_id;
-    downlink_data_notification_delay = u.downlink_data_notification_delay;
+    bar_id                            = u.bar_id;
+    downlink_data_notification_delay  = u.downlink_data_notification_delay;
     suggested_buffering_packets_count = u.suggested_buffering_packets_count;
   }
 
   // virtual ~update_bar_within_pfcp() {};
   void set(const pfcp::bar_id_t& v) {
-    bar_id.first = true;
+    bar_id.first  = true;
     bar_id.second = v;
   }
   void set(const pfcp::downlink_data_notification_delay_t& v) {
-    downlink_data_notification_delay.first = true;
+    downlink_data_notification_delay.first  = true;
     downlink_data_notification_delay.second = v;
   }
   void set(const pfcp::suggested_buffering_packets_count_t& v) {
-    suggested_buffering_packets_count.first = true;
+    suggested_buffering_packets_count.first  = true;
     suggested_buffering_packets_count.second = v;
   }
 
@@ -4360,7 +4360,7 @@ class remove_bar : public pfcp::pfcp_ies_container {
 
   // virtual ~remove_bar() {};
   void set(const pfcp::bar_id_t& v) {
-    bar_id.first = true;
+    bar_id.first  = true;
     bar_id.second = v;
   }
 
@@ -4389,11 +4389,11 @@ class created_traffic_endpoint : public pfcp::pfcp_ies_container {
 
   // virtual ~created_traffic_endpoint() {};
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    traffic_endpoint_id.first = true;
+    traffic_endpoint_id.first  = true;
     traffic_endpoint_id.second = v;
   }
   void set(const pfcp::fteid_t& v) {
-    local_fteid.first = true;
+    local_fteid.first  = true;
     local_fteid.second = v;
   }
 
@@ -4446,31 +4446,31 @@ class update_traffic_endpoint : public pfcp::pfcp_ies_container {
 
   // virtual ~update_traffic_endpoint() {};
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    traffic_endpoint_id.first = true;
+    traffic_endpoint_id.first  = true;
     traffic_endpoint_id.second = v;
   }
   void set(const pfcp::fteid_t& v) {
-    local_fteid.first = true;
+    local_fteid.first  = true;
     local_fteid.second = v;
   }
   void set(const pfcp::network_instance_t& v) {
-    network_instance.first = true;
+    network_instance.first  = true;
     network_instance.second = v;
   }
   void set(const pfcp::ue_ip_address_t& v) {
-    ue_ip_address.first = true;
+    ue_ip_address.first  = true;
     ue_ip_address.second = v;
   }
   void set(const pfcp::framed_route_t& v) {
-    framed_route.first = true;
+    framed_route.first  = true;
     framed_route.second = v;
   }
   void set(const pfcp::framed_routing_t& v) {
-    framed_routing.first = true;
+    framed_routing.first  = true;
     framed_routing.second = v;
   }
   void set(const pfcp::framed_ipv6_route_t& v) {
-    framed_ipv6_route.first = true;
+    framed_ipv6_route.first  = true;
     framed_ipv6_route.second = v;
   }
 
@@ -4539,7 +4539,7 @@ class remove_traffic_endpoint : public pfcp::pfcp_ies_container {
 
   // virtual ~remove_traffic_endpoint() {};
   void set(const pfcp::traffic_endpoint_id_t& v) {
-    traffic_endpoint_id.first = true;
+    traffic_endpoint_id.first  = true;
     traffic_endpoint_id.second = v;
   }
 
@@ -4574,11 +4574,11 @@ class ethernet_traffic_information : public pfcp::pfcp_ies_container {
 
   // virtual ~ethernet_traffic_information() {};
   void set(const pfcp::mac_addresses_detected_t& v) {
-    mac_addresses_detected.first = true;
+    mac_addresses_detected.first  = true;
     mac_addresses_detected.second = v;
   }
   void set(const pfcp::mac_addresses_removed_t& v) {
-    mac_addresses_removed.first = true;
+    mac_addresses_removed.first  = true;
     mac_addresses_removed.second = v;
   }
 
@@ -4648,51 +4648,51 @@ class usage_report_within_pfcp_session_modification_response
 
   // virtual ~usage_report_within_pfcp_session_modification_response() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::ur_seqn_t& v) {
-    ur_seqn.first = true;
+    ur_seqn.first  = true;
     ur_seqn.second = v;
   }
   void set(const pfcp::usage_report_trigger_t& v) {
-    usage_report_trigger.first = true;
+    usage_report_trigger.first  = true;
     usage_report_trigger.second = v;
   }
   void set(const pfcp::start_time_t& v) {
-    start_time.first = true;
+    start_time.first  = true;
     start_time.second = v;
   }
   void set(const pfcp::end_time_t& v) {
-    end_time.first = true;
+    end_time.first  = true;
     end_time.second = v;
   }
   void set(const pfcp::volume_measurement_t& v) {
-    volume_measurement.first = true;
+    volume_measurement.first  = true;
     volume_measurement.second = v;
   }
   void set(const pfcp::duration_measurement_t& v) {
-    duration_measurement.first = true;
+    duration_measurement.first  = true;
     duration_measurement.second = v;
   }
   void set(const pfcp::time_of_first_packet_t& v) {
-    time_of_first_packet.first = true;
+    time_of_first_packet.first  = true;
     time_of_first_packet.second = v;
   }
   void set(const pfcp::time_of_last_packet_t& v) {
-    time_of_last_packet.first = true;
+    time_of_last_packet.first  = true;
     time_of_last_packet.second = v;
   }
   void set(const pfcp::usage_information_t& v) {
-    usage_information.first = true;
+    usage_information.first  = true;
     usage_information.second = v;
   }
   void set(const pfcp::query_urr_reference_t& v) {
-    query_urr_reference.first = true;
+    query_urr_reference.first  = true;
     query_urr_reference.second = v;
   }
   void set(const pfcp::ethernet_traffic_information& v) {
-    ethernet_traffic_information.first = true;
+    ethernet_traffic_information.first  = true;
     ethernet_traffic_information.second = v;
   }
 
@@ -4829,47 +4829,47 @@ class usage_report_within_pfcp_session_deletion_response
 
   // virtual ~usage_report_within_pfcp_session_deletion_response() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::ur_seqn_t& v) {
-    ur_seqn.first = true;
+    ur_seqn.first  = true;
     ur_seqn.second = v;
   }
   void set(const pfcp::usage_report_trigger_t& v) {
-    usage_report_trigger.first = true;
+    usage_report_trigger.first  = true;
     usage_report_trigger.second = v;
   }
   void set(const pfcp::start_time_t& v) {
-    start_time.first = true;
+    start_time.first  = true;
     start_time.second = v;
   }
   void set(const pfcp::end_time_t& v) {
-    end_time.first = true;
+    end_time.first  = true;
     end_time.second = v;
   }
   void set(const pfcp::volume_measurement_t& v) {
-    volume_measurement.first = true;
+    volume_measurement.first  = true;
     volume_measurement.second = v;
   }
   void set(const pfcp::duration_measurement_t& v) {
-    duration_measurement.first = true;
+    duration_measurement.first  = true;
     duration_measurement.second = v;
   }
   void set(const pfcp::time_of_first_packet_t& v) {
-    time_of_first_packet.first = true;
+    time_of_first_packet.first  = true;
     time_of_first_packet.second = v;
   }
   void set(const pfcp::time_of_last_packet_t& v) {
-    time_of_last_packet.first = true;
+    time_of_last_packet.first  = true;
     time_of_last_packet.second = v;
   }
   void set(const pfcp::usage_information_t& v) {
-    usage_information.first = true;
+    usage_information.first  = true;
     usage_information.second = v;
   }
   void set(const pfcp::ethernet_traffic_information& v) {
-    ethernet_traffic_information.first = true;
+    ethernet_traffic_information.first  = true;
     ethernet_traffic_information.second = v;
   }
 
@@ -4969,11 +4969,11 @@ class downlink_data_report : public pfcp::pfcp_ies_container {
 
   // virtual ~downlink_data_report() {};
   void set(const pfcp::pdr_id_t& v) {
-    pdr_id.first = true;
+    pdr_id.first  = true;
     pdr_id.second = v;
   }
   void set(const pfcp::downlink_data_service_information_t& v) {
-    downlink_data_service_information.first = true;
+    downlink_data_service_information.first  = true;
     downlink_data_service_information.second = v;
   }
 
@@ -5011,15 +5011,15 @@ class application_detection_information : public pfcp::pfcp_ies_container {
 
   // virtual ~application_detection_information() {};
   void set(const pfcp::application_id_t& v) {
-    application_id.first = true;
+    application_id.first  = true;
     application_id.second = v;
   }
   void set(const pfcp::application_instance_id_t& v) {
-    application_instance_id.first = true;
+    application_instance_id.first  = true;
     application_instance_id.second = v;
   }
   void set(const pfcp::flow_information_t& v) {
-    flow_information.first = true;
+    flow_information.first  = true;
     flow_information.second = v;
   }
 
@@ -5058,7 +5058,7 @@ class event_reporting : public pfcp::pfcp_ies_container {
 
   // virtual ~event_reporting() {};
   void set(const pfcp::event_id_t& v) {
-    event_id.first = true;
+    event_id.first  = true;
     event_id.second = v;
   }
 
@@ -5134,67 +5134,67 @@ class usage_report_within_pfcp_session_report_request
 
   // virtual ~usage_report_within_pfcp_session_report_request() {};
   void set(const pfcp::urr_id_t& v) {
-    urr_id.first = true;
+    urr_id.first  = true;
     urr_id.second = v;
   }
   void set(const pfcp::ur_seqn_t& v) {
-    ur_seqn.first = true;
+    ur_seqn.first  = true;
     ur_seqn.second = v;
   }
   void set(const pfcp::usage_report_trigger_t& v) {
-    usage_report_trigger.first = true;
+    usage_report_trigger.first  = true;
     usage_report_trigger.second = v;
   }
   void set(const pfcp::start_time_t& v) {
-    start_time.first = true;
+    start_time.first  = true;
     start_time.second = v;
   }
   void set(const pfcp::end_time_t& v) {
-    end_time.first = true;
+    end_time.first  = true;
     end_time.second = v;
   }
   void set(const pfcp::volume_measurement_t& v) {
-    volume_measurement.first = true;
+    volume_measurement.first  = true;
     volume_measurement.second = v;
   }
   void set(const pfcp::duration_measurement_t& v) {
-    duration_measurement.first = true;
+    duration_measurement.first  = true;
     duration_measurement.second = v;
   }
   void set(const pfcp::application_detection_information& v) {
-    application_detection_information.first = true;
+    application_detection_information.first  = true;
     application_detection_information.second = v;
   }
   void set(const pfcp::ue_ip_address_t& v) {
-    ue_ip_address.first = true;
+    ue_ip_address.first  = true;
     ue_ip_address.second = v;
   }
   void set(const pfcp::network_instance_t& v) {
-    network_instance.first = true;
+    network_instance.first  = true;
     network_instance.second = v;
   }
   void set(const pfcp::time_of_first_packet_t& v) {
-    time_of_first_packet.first = true;
+    time_of_first_packet.first  = true;
     time_of_first_packet.second = v;
   }
   void set(const pfcp::time_of_last_packet_t& v) {
-    time_of_last_packet.first = true;
+    time_of_last_packet.first  = true;
     time_of_last_packet.second = v;
   }
   void set(const pfcp::usage_information_t& v) {
-    usage_information.first = true;
+    usage_information.first  = true;
     usage_information.second = v;
   }
   void set(const pfcp::query_urr_reference_t& v) {
-    query_urr_reference.first = true;
+    query_urr_reference.first  = true;
     query_urr_reference.second = v;
   }
   void set(const pfcp::event_reporting& v) {
-    event_reporting.first = true;
+    event_reporting.first  = true;
     event_reporting.second = v;
   }
   void set(const pfcp::ethernet_traffic_information& v) {
-    ethernet_traffic_information.first = true;
+    ethernet_traffic_information.first  = true;
     ethernet_traffic_information.second = v;
   }
 
@@ -5326,7 +5326,7 @@ class error_indication_report : public pfcp::pfcp_ies_container {
 
   // virtual ~error_indication_report() {};
   void set(const pfcp::fteid_t& v) {
-    remote_fteid.first = true;
+    remote_fteid.first  = true;
     remote_fteid.second = v;
   }
 
@@ -5372,23 +5372,23 @@ class update_bar_within_pfcp_session_report_response
 
   // virtual ~update_bar_within_pfcp_session_report_response() {};
   void set(const pfcp::bar_id_t& v) {
-    bar_id.first = true;
+    bar_id.first  = true;
     bar_id.second = v;
   }
   void set(const pfcp::downlink_data_notification_delay_t& v) {
-    downlink_data_notification_delay.first = true;
+    downlink_data_notification_delay.first  = true;
     downlink_data_notification_delay.second = v;
   }
   void set(const pfcp::dl_buffering_duration_t& v) {
-    dl_buffering_duration.first = true;
+    dl_buffering_duration.first  = true;
     dl_buffering_duration.second = v;
   }
   void set(const pfcp::dl_buffering_suggested_packet_count_t& v) {
-    dl_buffering_buffering_suggested_packet_count.first = true;
+    dl_buffering_buffering_suggested_packet_count.first  = true;
     dl_buffering_buffering_suggested_packet_count.second = v;
   }
   void set(const pfcp::suggested_buffering_packets_count_t& v) {
-    suggested_buffering_packets_count.first = true;
+    suggested_buffering_packets_count.first  = true;
     suggested_buffering_packets_count.second = v;
   }
 
@@ -5455,7 +5455,7 @@ class pfcp_heartbeat_request : public pfcp_ies_container {
     return false;
   }
   void set(const pfcp::recovery_time_stamp_t& v) {
-    recovery_time_stamp.first = true;
+    recovery_time_stamp.first  = true;
     recovery_time_stamp.second = v;
   }
 };
@@ -5484,7 +5484,7 @@ class pfcp_heartbeat_response : public pfcp_ies_container {
     return false;
   }
   void set(const pfcp::recovery_time_stamp_t& v) {
-    recovery_time_stamp.first = true;
+    recovery_time_stamp.first  = true;
     recovery_time_stamp.second = v;
   }
 };
@@ -5511,7 +5511,7 @@ class pfcp_pfd_management_request : public pfcp_ies_container {
     return false;
   }
   void set(const pfcp::application_ids_pfds& v) {
-    application_ids_pfds.first = true;
+    application_ids_pfds.first  = true;
     application_ids_pfds.second = v;
   }
 };
@@ -5527,7 +5527,7 @@ class pfcp_pfd_management_response : public pfcp_ies_container {
   pfcp_pfd_management_response() : cause(), offending_ie() {}
 
   pfcp_pfd_management_response(const pfcp_pfd_management_response& i) {
-    cause = i.cause;
+    cause        = i.cause;
     offending_ie = i.offending_ie;
   }
   const char* get_msg_name() const { return "PFCP_PFD_MANAGEMENT_RESPONSE"; };
@@ -5548,11 +5548,11 @@ class pfcp_pfd_management_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
 };
@@ -5577,10 +5577,10 @@ class pfcp_association_setup_request : public pfcp_ies_container {
         user_plane_ip_resource_information() {}
 
   pfcp_association_setup_request(const pfcp_association_setup_request& i) {
-    node_id = i.node_id;
-    recovery_time_stamp = i.recovery_time_stamp;
-    up_function_features = i.up_function_features;
-    cp_function_features = i.cp_function_features;
+    node_id                            = i.node_id;
+    recovery_time_stamp                = i.recovery_time_stamp;
+    up_function_features               = i.up_function_features;
+    cp_function_features               = i.cp_function_features;
     user_plane_ip_resource_information = i.user_plane_ip_resource_information;
   }
   const char* get_msg_name() const { return "PFCP_ASSOCIATION_SETUP_REQUEST"; };
@@ -5622,23 +5622,23 @@ class pfcp_association_setup_request : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::recovery_time_stamp_t& v) {
-    recovery_time_stamp.first = true;
+    recovery_time_stamp.first  = true;
     recovery_time_stamp.second = v;
   }
   void set(const pfcp::up_function_features_s& v) {
-    up_function_features.first = true;
+    up_function_features.first  = true;
     up_function_features.second = v;
   }
   void set(const pfcp::cp_function_features_t& v) {
-    cp_function_features.first = true;
+    cp_function_features.first  = true;
     cp_function_features.second = v;
   }
   void set(const pfcp::user_plane_ip_resource_information_t& v) {
-    user_plane_ip_resource_information.first = true;
+    user_plane_ip_resource_information.first  = true;
     user_plane_ip_resource_information.second = v;
   }
 };
@@ -5665,11 +5665,11 @@ class pfcp_association_setup_response : public pfcp_ies_container {
         user_plane_ip_resource_information() {}
 
   pfcp_association_setup_response(const pfcp_association_setup_response& i) {
-    node_id = i.node_id;
-    cause = i.cause;
-    recovery_time_stamp = i.recovery_time_stamp;
-    up_function_features = i.up_function_features;
-    cp_function_features = i.cp_function_features;
+    node_id                            = i.node_id;
+    cause                              = i.cause;
+    recovery_time_stamp                = i.recovery_time_stamp;
+    up_function_features               = i.up_function_features;
+    cp_function_features               = i.cp_function_features;
     user_plane_ip_resource_information = i.user_plane_ip_resource_information;
   }
   const char* get_msg_name() const {
@@ -5720,27 +5720,27 @@ class pfcp_association_setup_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::recovery_time_stamp_t& v) {
-    recovery_time_stamp.first = true;
+    recovery_time_stamp.first  = true;
     recovery_time_stamp.second = v;
   }
   void set(const pfcp::up_function_features_s& v) {
-    up_function_features.first = true;
+    up_function_features.first  = true;
     up_function_features.second = v;
   }
   void set(const pfcp::cp_function_features_t& v) {
-    cp_function_features.first = true;
+    cp_function_features.first  = true;
     cp_function_features.second = v;
   }
   void set(const pfcp::user_plane_ip_resource_information_t& v) {
-    user_plane_ip_resource_information.first = true;
+    user_plane_ip_resource_information.first  = true;
     user_plane_ip_resource_information.second = v;
   }
 };
@@ -5768,11 +5768,11 @@ class pfcp_association_update_request : public pfcp_ies_container {
         user_plane_ip_resource_information() {}
 
   pfcp_association_update_request(const pfcp_association_update_request& i) {
-    node_id = i.node_id;
-    up_function_features = i.up_function_features;
-    cp_function_features = i.cp_function_features;
-    pfcp_association_release_request = i.pfcp_association_release_request;
-    graceful_release_period = i.graceful_release_period;
+    node_id                            = i.node_id;
+    up_function_features               = i.up_function_features;
+    cp_function_features               = i.cp_function_features;
+    pfcp_association_release_request   = i.pfcp_association_release_request;
+    graceful_release_period            = i.graceful_release_period;
     user_plane_ip_resource_information = i.user_plane_ip_resource_information;
   }
   const char* get_msg_name() const {
@@ -5823,27 +5823,27 @@ class pfcp_association_update_request : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::up_function_features_s& v) {
-    up_function_features.first = true;
+    up_function_features.first  = true;
     up_function_features.second = v;
   }
   void set(const pfcp::cp_function_features_t& v) {
-    cp_function_features.first = true;
+    cp_function_features.first  = true;
     cp_function_features.second = v;
   }
   void set(const pfcp::pfcp_association_release_request_t& v) {
-    pfcp_association_release_request.first = true;
+    pfcp_association_release_request.first  = true;
     pfcp_association_release_request.second = v;
   }
   void set(const pfcp::graceful_release_period_t& v) {
-    graceful_release_period.first = true;
+    graceful_release_period.first  = true;
     graceful_release_period.second = v;
   }
   void set(const pfcp::user_plane_ip_resource_information_t& v) {
-    user_plane_ip_resource_information.first = true;
+    user_plane_ip_resource_information.first  = true;
     user_plane_ip_resource_information.second = v;
   }
 };
@@ -5862,8 +5862,8 @@ class pfcp_association_update_response : public pfcp_ies_container {
       : node_id(), cause(), up_function_features(), cp_function_features() {}
 
   pfcp_association_update_response(const pfcp_association_update_response& i) {
-    node_id = i.node_id;
-    cause = i.cause;
+    node_id              = i.node_id;
+    cause                = i.cause;
     up_function_features = i.up_function_features;
     cp_function_features = i.cp_function_features;
   }
@@ -5901,19 +5901,19 @@ class pfcp_association_update_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::up_function_features_s& v) {
-    up_function_features.first = true;
+    up_function_features.first  = true;
     up_function_features.second = v;
   }
   void set(const pfcp::cp_function_features_t& v) {
-    cp_function_features.first = true;
+    cp_function_features.first  = true;
     cp_function_features.second = v;
   }
 };
@@ -5942,7 +5942,7 @@ class pfcp_association_release_request : public pfcp_ies_container {
     return false;
   }
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
 };
@@ -5960,7 +5960,7 @@ class pfcp_association_release_response : public pfcp_ies_container {
   pfcp_association_release_response(
       const pfcp_association_release_response& i) {
     node_id = i.node_id;
-    cause = i.cause;
+    cause   = i.cause;
   }
   const char* get_msg_name() const {
     return "PFCP_ASSOCIATION_RELEASE_RESPONSE";
@@ -5982,11 +5982,11 @@ class pfcp_association_release_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
 };
@@ -6018,8 +6018,8 @@ class pfcp_node_report_request : public pfcp_ies_container {
       : node_id(), node_report_type(), user_plane_path_failure_report() {}
 
   pfcp_node_report_request(const pfcp_node_report_request& i) {
-    node_id = i.node_id;
-    node_report_type = i.node_report_type;
+    node_id                        = i.node_id;
+    node_report_type               = i.node_report_type;
     user_plane_path_failure_report = i.user_plane_path_failure_report;
   }
   const char* get_msg_name() const { return "PFCP_NODE_REPORT_REQUEST"; };
@@ -6047,15 +6047,15 @@ class pfcp_node_report_request : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::node_report_type_t& v) {
-    node_report_type.first = true;
+    node_report_type.first  = true;
     node_report_type.second = v;
   }
   void set(const pfcp::user_plane_path_failure_report& v) {
-    user_plane_path_failure_report.first = true;
+    user_plane_path_failure_report.first  = true;
     user_plane_path_failure_report.second = v;
   }
 };
@@ -6072,8 +6072,8 @@ class pfcp_node_report_response : public pfcp_ies_container {
   pfcp_node_report_response() : node_id(), cause(), offending_ie() {}
 
   pfcp_node_report_response(const pfcp_node_report_response& i) {
-    node_id = i.node_id;
-    cause = i.cause;
+    node_id      = i.node_id;
+    cause        = i.cause;
     offending_ie = i.offending_ie;
   }
   const char* get_msg_name() const { return "PFCP_NODE_REPORT_RESPONSE"; };
@@ -6101,15 +6101,15 @@ class pfcp_node_report_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
 };
@@ -6139,14 +6139,14 @@ class pfcp_session_set_deletion_request : public pfcp_ies_container {
 
   pfcp_session_set_deletion_request(
       const pfcp_session_set_deletion_request& i) {
-    node_id = i.node_id;
+    node_id       = i.node_id;
     sgw_c_fq_csid = i.sgw_c_fq_csid;
     pgw_c_fq_csid = i.pgw_c_fq_csid;
     sgw_u_fq_csid = i.sgw_u_fq_csid;
     pgw_u_fq_csid = i.pgw_u_fq_csid;
-    twan_fq_csid = i.twan_fq_csid;
-    epdg_fq_csid = i.epdg_fq_csid;
-    mme_fq_csid = i.mme_fq_csid;
+    twan_fq_csid  = i.twan_fq_csid;
+    epdg_fq_csid  = i.epdg_fq_csid;
+    mme_fq_csid   = i.mme_fq_csid;
   }
   const char* get_msg_name() const {
     return "PFCP_SESSION_SET_DELETION_REQUEST";
@@ -6210,35 +6210,35 @@ class pfcp_session_set_deletion_request : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set_sgw_c_fq_csid(const fq_csid_t& v) {
-    sgw_c_fq_csid.first = true;
+    sgw_c_fq_csid.first  = true;
     sgw_c_fq_csid.second = v;
   }
   void set_pgw_c_fq_csid(const fq_csid_t& v) {
-    pgw_c_fq_csid.first = true;
+    pgw_c_fq_csid.first  = true;
     pgw_c_fq_csid.second = v;
   }
   void set_sgw_u_fq_csid(const fq_csid_t& v) {
-    sgw_u_fq_csid.first = true;
+    sgw_u_fq_csid.first  = true;
     sgw_u_fq_csid.second = v;
   }
   void set_pgw_u_fq_csid(const fq_csid_t& v) {
-    pgw_u_fq_csid.first = true;
+    pgw_u_fq_csid.first  = true;
     pgw_u_fq_csid.second = v;
   }
   void set_twan_fq_csid(const fq_csid_t& v) {
-    twan_fq_csid.first = true;
+    twan_fq_csid.first  = true;
     twan_fq_csid.second = v;
   }
   void set_epdg_fq_csid(const fq_csid_t& v) {
-    epdg_fq_csid.first = true;
+    epdg_fq_csid.first  = true;
     epdg_fq_csid.second = v;
   }
   void set_mme_fq_csid(const fq_csid_t& v) {
-    mme_fq_csid.first = true;
+    mme_fq_csid.first  = true;
     mme_fq_csid.second = v;
   }
 };
@@ -6255,8 +6255,8 @@ class pfcp_session_set_deletion_response : public pfcp_ies_container {
 
   pfcp_session_set_deletion_response(
       const pfcp_session_set_deletion_response& i) {
-    node_id = i.node_id;
-    cause = i.cause;
+    node_id      = i.node_id;
+    cause        = i.cause;
     offending_ie = i.offending_ie;
   }
   const char* get_msg_name() const {
@@ -6286,15 +6286,15 @@ class pfcp_session_set_deletion_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
 };
@@ -6344,23 +6344,23 @@ class pfcp_session_establishment_request : public pfcp_ies_container {
 
   pfcp_session_establishment_request(
       const pfcp_session_establishment_request& i) {
-    node_id = i.node_id;
-    cp_fseid = i.cp_fseid;
-    create_pdrs = i.create_pdrs;
-    create_fars = i.create_fars;
-    create_urrs = i.create_urrs;
-    create_qers = i.create_qers;
-    create_bar = i.create_bar;
-    create_traffic_endpoint = i.create_traffic_endpoint;
-    pdn_type = i.pdn_type;
-    sgw_c_fq_csid = i.sgw_c_fq_csid;
-    mme_fq_csid = i.mme_fq_csid;
-    pgw_c_fq_csid = i.pgw_c_fq_csid;
-    epdg_fq_csid = i.epdg_fq_csid;
-    twan_fq_csid = i.twan_fq_csid;
+    node_id                     = i.node_id;
+    cp_fseid                    = i.cp_fseid;
+    create_pdrs                 = i.create_pdrs;
+    create_fars                 = i.create_fars;
+    create_urrs                 = i.create_urrs;
+    create_qers                 = i.create_qers;
+    create_bar                  = i.create_bar;
+    create_traffic_endpoint     = i.create_traffic_endpoint;
+    pdn_type                    = i.pdn_type;
+    sgw_c_fq_csid               = i.sgw_c_fq_csid;
+    mme_fq_csid                 = i.mme_fq_csid;
+    pgw_c_fq_csid               = i.pgw_c_fq_csid;
+    epdg_fq_csid                = i.epdg_fq_csid;
+    twan_fq_csid                = i.twan_fq_csid;
     user_plane_inactivity_timer = i.user_plane_inactivity_timer;
-    user_id = i.user_id;
-    trace_information = i.trace_information;
+    user_id                     = i.user_id;
+    trace_information           = i.trace_information;
   }
   const char* get_msg_name() const {
     return "PFCP_SESSION_ESTABLISHMENT_REQUEST";
@@ -6455,11 +6455,11 @@ class pfcp_session_establishment_request : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::fseid_t& v) {
-    cp_fseid.first = true;
+    cp_fseid.first  = true;
     cp_fseid.second = v;
   }
   void set(const pfcp::create_pdr& v) { create_pdrs.push_back(v); }
@@ -6467,39 +6467,39 @@ class pfcp_session_establishment_request : public pfcp_ies_container {
   void set(const pfcp::create_urr& v) { create_urrs.push_back(v); }
   void set(const pfcp::create_qer& v) { create_qers.push_back(v); }
   void set(const pfcp::create_bar& v) {
-    create_bar.first = true;
+    create_bar.first  = true;
     create_bar.second = v;
   }
   void set_sgw_c_fq_csid(const fq_csid_t& v) {
-    sgw_c_fq_csid.first = true;
+    sgw_c_fq_csid.first  = true;
     sgw_c_fq_csid.second = v;
   }
   void set_mme_fq_csid(const fq_csid_t& v) {
-    mme_fq_csid.first = true;
+    mme_fq_csid.first  = true;
     mme_fq_csid.second = v;
   }
   void set_pgw_c_fq_csid(const fq_csid_t& v) {
-    pgw_c_fq_csid.first = true;
+    pgw_c_fq_csid.first  = true;
     pgw_c_fq_csid.second = v;
   }
   void set_epdg_fq_csid(const fq_csid_t& v) {
-    epdg_fq_csid.first = true;
+    epdg_fq_csid.first  = true;
     epdg_fq_csid.second = v;
   }
   void set_twan_fq_csid(const fq_csid_t& v) {
-    twan_fq_csid.first = true;
+    twan_fq_csid.first  = true;
     twan_fq_csid.second = v;
   }
   void set(const pfcp::user_plane_inactivity_timer_t& v) {
-    user_plane_inactivity_timer.first = true;
+    user_plane_inactivity_timer.first  = true;
     user_plane_inactivity_timer.second = v;
   }
   void set(const pfcp::user_id_t& v) {
-    user_id.first = true;
+    user_id.first  = true;
     user_id.second = v;
   }
   void set(const pfcp::trace_information_t& v) {
-    trace_information.first = true;
+    trace_information.first  = true;
     trace_information.second = v;
   }
 };
@@ -6536,17 +6536,17 @@ class pfcp_session_establishment_response : public pfcp_ies_container {
 
   pfcp_session_establishment_response(
       const pfcp_session_establishment_response& i) {
-    node_id = i.node_id;
-    cause = i.cause;
-    offending_ie = i.offending_ie;
-    up_fseid = i.up_fseid;
-    created_pdrs = i.created_pdrs;
-    load_control_information = i.load_control_information;
+    node_id                      = i.node_id;
+    cause                        = i.cause;
+    offending_ie                 = i.offending_ie;
+    up_fseid                     = i.up_fseid;
+    created_pdrs                 = i.created_pdrs;
+    load_control_information     = i.load_control_information;
     overload_control_information = i.overload_control_information;
-    sgw_u_fq_csid = i.sgw_u_fq_csid;
-    pgw_u_fq_csid = i.pgw_u_fq_csid;
-    failed_rule_id = i.failed_rule_id;
-    created_traffic_endpoint = i.created_traffic_endpoint;
+    sgw_u_fq_csid                = i.sgw_u_fq_csid;
+    pgw_u_fq_csid                = i.pgw_u_fq_csid;
+    failed_rule_id               = i.failed_rule_id;
+    created_traffic_endpoint     = i.created_traffic_endpoint;
   }
   const char* get_msg_name() const {
     return "PFCP_SESSION_ESTABLISHMENT_RESPONSE";
@@ -6624,44 +6624,44 @@ class pfcp_session_establishment_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::node_id_t& v) {
-    node_id.first = true;
+    node_id.first  = true;
     node_id.second = v;
   }
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
   void set(const pfcp::fseid_t& v) {
-    up_fseid.first = true;
+    up_fseid.first  = true;
     up_fseid.second = v;
   }
   void set(const pfcp::created_pdr& v) { created_pdrs.push_back(v); }
   void set(const pfcp::load_control_information& v) {
-    load_control_information.first = true;
+    load_control_information.first  = true;
     load_control_information.second = v;
   }
   void set(const pfcp::overload_control_information& v) {
-    overload_control_information.first = true;
+    overload_control_information.first  = true;
     overload_control_information.second = v;
   }
   void set_sgw_u_fq_csid(const fq_csid_t& v) {
-    sgw_u_fq_csid.first = true;
+    sgw_u_fq_csid.first  = true;
     sgw_u_fq_csid.second = v;
   }
   void set_pgw_u_fq_csid(const fq_csid_t& v) {
-    pgw_u_fq_csid.first = true;
+    pgw_u_fq_csid.first  = true;
     pgw_u_fq_csid.second = v;
   }
   void set(const pfcp::failed_rule_id_t& v) {
-    failed_rule_id.first = true;
+    failed_rule_id.first  = true;
     failed_rule_id.second = v;
   }
   void set(const pfcp::created_traffic_endpoint& v) {
-    created_traffic_endpoint.first = true;
+    created_traffic_endpoint.first  = true;
     created_traffic_endpoint.second = v;
   }
 };
@@ -6889,7 +6889,7 @@ class pfcp_session_modification_request : public pfcp_ies_container {
     return false;
   }
   void set(const pfcp::fseid_t& v) {
-    cp_fseid.first = true;
+    cp_fseid.first  = true;
     cp_fseid.second = v;
   }
   void set(const pfcp::remove_pdr& v) { remove_pdrs.push_back(v); }
@@ -6897,11 +6897,11 @@ class pfcp_session_modification_request : public pfcp_ies_container {
   void set(const pfcp::remove_urr& v) { remove_urrs.push_back(v); }
   void set(const pfcp::remove_qer& v) { remove_qers.push_back(v); }
   void set(const pfcp::remove_bar& v) {
-    remove_bar.first = true;
+    remove_bar.first  = true;
     remove_bar.second = v;
   }
   void set(const pfcp::remove_traffic_endpoint& v) {
-    remove_traffic_endpoint.first = true;
+    remove_traffic_endpoint.first  = true;
     remove_traffic_endpoint.second = v;
   }
   void set(const pfcp::create_pdr& v) { create_pdrs.push_back(v); }
@@ -6909,11 +6909,11 @@ class pfcp_session_modification_request : public pfcp_ies_container {
   void set(const pfcp::create_urr& v) { create_urrs.push_back(v); }
   void set(const pfcp::create_qer& v) { create_qers.push_back(v); }
   void set(const pfcp::create_bar& v) {
-    create_bar.first = true;
+    create_bar.first  = true;
     create_bar.second = v;
   }
   void set(const pfcp::create_traffic_endpoint& v) {
-    create_traffic_endpoint.first = true;
+    create_traffic_endpoint.first  = true;
     create_traffic_endpoint.second = v;
   }
   void set(const pfcp::update_pdr& v) { update_pdrs.push_back(v); }
@@ -6921,47 +6921,47 @@ class pfcp_session_modification_request : public pfcp_ies_container {
   void set(const pfcp::update_urr& v) { update_urrs.push_back(v); }
   void set(const pfcp::update_qer& v) { update_qers.push_back(v); }
   void set(const pfcp::update_bar_within_pfcp_session_modification_request& v) {
-    update_bar.first = true;
+    update_bar.first  = true;
     update_bar.second = v;
   }
   void set(const pfcp::update_traffic_endpoint& v) {
-    update_traffic_endpoint.first = true;
+    update_traffic_endpoint.first  = true;
     update_traffic_endpoint.second = v;
   }
   void set(const pfcp::pfcpsmreq_flags_t& v) {
-    pfcpsmreq_flags.first = true;
+    pfcpsmreq_flags.first  = true;
     pfcpsmreq_flags.second = v;
   }
   void set_pgw_c_fq_csid(const fq_csid_t& v) {
-    pgw_c_fq_csid.first = true;
+    pgw_c_fq_csid.first  = true;
     pgw_c_fq_csid.second = v;
   }
   void set_sgw_c_fq_csid(const fq_csid_t& v) {
-    sgw_c_fq_csid.first = true;
+    sgw_c_fq_csid.first  = true;
     sgw_c_fq_csid.second = v;
   }
   void set_mme_fq_csid(const fq_csid_t& v) {
-    mme_fq_csid.first = true;
+    mme_fq_csid.first  = true;
     mme_fq_csid.second = v;
   }
   void set_epdg_fq_csid(const fq_csid_t& v) {
-    epdg_fq_csid.first = true;
+    epdg_fq_csid.first  = true;
     epdg_fq_csid.second = v;
   }
   void set_twan_fq_csid(const fq_csid_t& v) {
-    twan_fq_csid.first = true;
+    twan_fq_csid.first  = true;
     twan_fq_csid.second = v;
   }
   void set(const pfcp::user_plane_inactivity_timer_t& v) {
-    user_plane_inactivity_timer.first = true;
+    user_plane_inactivity_timer.first  = true;
     user_plane_inactivity_timer.second = v;
   }
   void set(const pfcp::query_urr_reference_t& v) {
-    query_urr_reference.first = true;
+    query_urr_reference.first  = true;
     query_urr_reference.second = v;
   }
   void set(const pfcp::trace_information_t& v) {
-    trace_information.first = true;
+    trace_information.first  = true;
     trace_information.second = v;
   }
 };
@@ -7070,37 +7070,37 @@ class pfcp_session_modification_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
   void set(const pfcp::created_pdr& v) { created_pdrs.push_back(v); }
   void set(const pfcp::load_control_information& v) {
-    load_control_information.first = true;
+    load_control_information.first  = true;
     load_control_information.second = v;
   }
   void set(const pfcp::overload_control_information& v) {
-    overload_control_information.first = true;
+    overload_control_information.first  = true;
     overload_control_information.second = v;
   }
   void set(
       const pfcp::usage_report_within_pfcp_session_modification_response& v) {
-    usage_report.first = true;
+    usage_report.first  = true;
     usage_report.second = v;
   }
   void set(const pfcp::failed_rule_id_t& v) {
-    failed_rule_id.first = true;
+    failed_rule_id.first  = true;
     failed_rule_id.second = v;
   }
   void set(const pfcp::additional_usage_reports_information_t& v) {
-    additional_usage_reports_information.first = true;
+    additional_usage_reports_information.first  = true;
     additional_usage_reports_information.second = v;
   }
   void set(const pfcp::created_traffic_endpoint& v) {
-    created_traffic_endpoint.first = true;
+    created_traffic_endpoint.first  = true;
     created_traffic_endpoint.second = v;
   }
 };
@@ -7145,11 +7145,11 @@ class pfcp_session_deletion_response : public pfcp_ies_container {
   }
 
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
 };
@@ -7241,31 +7241,31 @@ class pfcp_session_report_request : public pfcp_ies_container {
   }
 
   void set(const pfcp::report_type_t& v) {
-    report_type.first = true;
+    report_type.first  = true;
     report_type.second = v;
   }
   void set(const pfcp::downlink_data_report& v) {
-    downlink_data_report.first = true;
+    downlink_data_report.first  = true;
     downlink_data_report.second = v;
   }
   void set(const pfcp::usage_report_within_pfcp_session_report_request& v) {
-    usage_report.first = true;
+    usage_report.first  = true;
     usage_report.second = v;
   }
   void set(const pfcp::error_indication_report& v) {
-    error_indication_report.first = true;
+    error_indication_report.first  = true;
     error_indication_report.second = v;
   }
   void set(const pfcp::load_control_information& v) {
-    load_control_information.first = true;
+    load_control_information.first  = true;
     load_control_information.second = v;
   }
   void set(const pfcp::overload_control_information& v) {
-    overload_control_information.first = true;
+    overload_control_information.first  = true;
     overload_control_information.second = v;
   }
   void set(const pfcp::additional_usage_reports_information_t& v) {
-    additional_usage_reports_information.first = true;
+    additional_usage_reports_information.first  = true;
     additional_usage_reports_information.second = v;
   }
 };
@@ -7316,15 +7316,15 @@ class pfcp_session_report_response : public pfcp_ies_container {
   // sxsrrsp_flags.second;return true;}return false;}
 
   void set(const pfcp::cause_t& v) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const pfcp::offending_ie_t& v) {
-    offending_ie.first = true;
+    offending_ie.first  = true;
     offending_ie.second = v;
   }
   void set(const pfcp::update_bar_within_pfcp_session_report_response& v) {
-    update_bar.first = true;
+    update_bar.first  = true;
     update_bar.second = v;
   }
   // void set(const pfcp::sxsrrsp_flags_t& v) {sxsrrsp_flags.first = true;

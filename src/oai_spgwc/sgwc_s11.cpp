@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,10 +44,10 @@ extern sgw_s11* sgw_s11_inst;
 
 void sgw_s11_task(void*);
 
-static std::string string_to_hex(const char* const input,
-                                 const std::size_t bytes_transferred) {
+static std::string string_to_hex(
+    const char* const input, const std::size_t bytes_transferred) {
   static const char* const lut = "0123456789ABCDEF";
-  size_t len = bytes_transferred;
+  size_t len                   = bytes_transferred;
 
   std::string output;
   output.reserve(2 * len);
@@ -67,7 +67,7 @@ void sgw_s11_task(void* args_p) {
 
   do {
     std::shared_ptr<itti_msg> shared_msg = itti_inst->receive_msg(task_id);
-    auto* msg = shared_msg.get();
+    auto* msg                            = shared_msg.get();
     switch (msg->msg_type) {
       case S11_CREATE_SESSION_RESPONSE:
         if (itti_s11_create_session_response* m =
@@ -130,9 +130,9 @@ void sgw_s11_task(void* args_p) {
 
 //------------------------------------------------------------------------------
 sgw_s11::sgw_s11()
-    : gtpv2c_stack(string(inet_ntoa(sgwc_cfg.s11_cp.addr4)),
-                   sgwc_cfg.s11_cp.port,
-                   sgwc_cfg.s11_cp.thread_rd_sched_params) {
+    : gtpv2c_stack(
+          string(inet_ntoa(sgwc_cfg.s11_cp.addr4)), sgwc_cfg.s11_cp.port,
+          sgwc_cfg.s11_cp.thread_rd_sched_params) {
   Logger::sgwc_s11().startup("Starting...");
   if (itti_inst->create_task(TASK_SGWC_S11, sgw_s11_task, nullptr)) {
     Logger::sgwc_s11().error("Cannot create task TASK_SGWC_S11");
@@ -159,26 +159,26 @@ void sgw_s11::send_msg(itti_s11_release_access_bearers_response& i) {
 }
 //------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_downlink_data_notification& i) {
-  send_initial_message(i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_SGWC_S11,
-                       i.gtpc_tx_id);
+  send_initial_message(
+      i.r_endpoint, i.teid, i.l_teid, i.gtp_ies, TASK_SGWC_S11, i.gtpc_tx_id);
 }
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_create_session_request(
     gtpv2c_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+  bool error                                      = true;
+  uint64_t gtpc_tx_id                             = 0;
   gtpv2c_create_session_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     itti_s11_create_session_request* itti_msg =
         new itti_s11_create_session_request(TASK_SGWC_S11, TASK_SGWC_APP);
-    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->gtp_ies    = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
     itti_msg->gtpc_tx_id = gtpc_tx_id;
-    itti_msg->teid = msg.get_teid();
+    itti_msg->teid       = msg.get_teid();
     std::shared_ptr<itti_s11_create_session_request> i =
         std::shared_ptr<itti_s11_create_session_request>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -193,20 +193,20 @@ void sgw_s11::handle_receive_create_session_request(
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_delete_session_request(
     gtpv2c_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+  bool error                                      = true;
+  uint64_t gtpc_tx_id                             = 0;
   gtpv2c_delete_session_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     itti_s11_delete_session_request* itti_msg =
         new itti_s11_delete_session_request(TASK_SGWC_S11, TASK_SGWC_APP);
-    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->gtp_ies    = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
     itti_msg->gtpc_tx_id = gtpc_tx_id;
-    itti_msg->teid = msg.get_teid();
+    itti_msg->teid       = msg.get_teid();
     std::shared_ptr<itti_s11_delete_session_request> i =
         std::shared_ptr<itti_s11_delete_session_request>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -221,20 +221,20 @@ void sgw_s11::handle_receive_delete_session_request(
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_modify_bearer_request(
     gtpv2c_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+  bool error                                     = true;
+  uint64_t gtpc_tx_id                            = 0;
   gtpv2c_modify_bearer_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     itti_s11_modify_bearer_request* itti_msg =
         new itti_s11_modify_bearer_request(TASK_SGWC_S11, TASK_SGWC_APP);
-    itti_msg->gtp_ies = msg_ies_container;
+    itti_msg->gtp_ies    = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
     itti_msg->gtpc_tx_id = gtpc_tx_id;
-    itti_msg->teid = msg.get_teid();
+    itti_msg->teid       = msg.get_teid();
     std::shared_ptr<itti_s11_modify_bearer_request> i =
         std::shared_ptr<itti_s11_modify_bearer_request>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -249,21 +249,21 @@ void sgw_s11::handle_receive_modify_bearer_request(
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_release_access_bearers_request(
     gtpv2c_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+  bool error                                              = true;
+  uint64_t gtpc_tx_id                                     = 0;
   gtpv2c_release_access_bearers_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     itti_s11_release_access_bearers_request* itti_msg =
-        new itti_s11_release_access_bearers_request(TASK_SGWC_S11,
-                                                    TASK_SGWC_APP);
-    itti_msg->gtp_ies = msg_ies_container;
+        new itti_s11_release_access_bearers_request(
+            TASK_SGWC_S11, TASK_SGWC_APP);
+    itti_msg->gtp_ies    = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
     itti_msg->gtpc_tx_id = gtpc_tx_id;
-    itti_msg->teid = msg.get_teid();
+    itti_msg->teid       = msg.get_teid();
     std::shared_ptr<itti_s11_release_access_bearers_request> i =
         std::shared_ptr<itti_s11_release_access_bearers_request>(itti_msg);
     int ret = itti_inst->send_msg(i);
@@ -278,21 +278,21 @@ void sgw_s11::handle_receive_release_access_bearers_request(
 //------------------------------------------------------------------------------
 void sgw_s11::handle_receive_downlink_data_notification_acknowledge(
     gtpv2c_msg& msg, const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+  bool error                                                      = true;
+  uint64_t gtpc_tx_id                                             = 0;
   gtpv2c_downlink_data_notification_acknowledge msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     itti_s11_downlink_data_notification_acknowledge* itti_msg =
-        new itti_s11_downlink_data_notification_acknowledge(TASK_SGWC_S11,
-                                                            TASK_SGWC_APP);
-    itti_msg->gtp_ies = msg_ies_container;
+        new itti_s11_downlink_data_notification_acknowledge(
+            TASK_SGWC_S11, TASK_SGWC_APP);
+    itti_msg->gtp_ies    = msg_ies_container;
     itti_msg->r_endpoint = remote_endpoint;
     itti_msg->gtpc_tx_id = gtpc_tx_id;
-    itti_msg->teid = msg.get_teid();
+    itti_msg->teid       = msg.get_teid();
     std::shared_ptr<itti_s11_downlink_data_notification_acknowledge> i =
         std::shared_ptr<itti_s11_downlink_data_notification_acknowledge>(
             itti_msg);
@@ -307,15 +307,15 @@ void sgw_s11::handle_receive_downlink_data_notification_acknowledge(
 }
 
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_echo_request(gtpv2c_msg& msg,
-                                          const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+void sgw_s11::handle_receive_echo_request(
+    gtpv2c_msg& msg, const endpoint& remote_endpoint) {
+  bool error                            = true;
+  uint64_t gtpc_tx_id                   = 0;
   gtpv2c_echo_request msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     if (not msg_ies_container.recovery_restart_counter.first) {
       // Should be detected by lower layers
@@ -329,15 +329,15 @@ void sgw_s11::handle_receive_echo_request(gtpv2c_msg& msg,
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_echo_response(gtpv2c_msg& msg,
-                                           const endpoint& remote_endpoint) {
-  bool error = true;
-  uint64_t gtpc_tx_id = 0;
+void sgw_s11::handle_receive_echo_response(
+    gtpv2c_msg& msg, const endpoint& remote_endpoint) {
+  bool error                             = true;
+  uint64_t gtpc_tx_id                    = 0;
   gtpv2c_echo_response msg_ies_container = {};
   msg.to_core_type(msg_ies_container);
 
-  handle_receive_message_cb(msg, remote_endpoint, TASK_SGWC_S11, error,
-                            gtpc_tx_id);
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SGWC_S11, error, gtpc_tx_id);
   if (!error) {
     if (not msg_ies_container.recovery_restart_counter.first) {
       // Should be detected by lower layers
@@ -351,17 +351,17 @@ void sgw_s11::handle_receive_echo_response(gtpv2c_msg& msg,
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::send_echo_response(const endpoint& r_endpoint,
-                                 const uint64_t trxn_id) {
+void sgw_s11::send_echo_response(
+    const endpoint& r_endpoint, const uint64_t trxn_id) {
   gtpv2c_echo_response h = {};
-  recovery_t r = {.restart_counter = 0};
+  recovery_t r           = {.restart_counter = 0};
   h.set(r);
   send_triggered_message(r_endpoint, h, trxn_id);
 }
 
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg,
-                                        const endpoint& remote_endpoint) {
+void sgw_s11::handle_receive_gtpv2c_msg(
+    gtpv2c_msg& msg, const endpoint& remote_endpoint) {
   // Logger::sgwc_s11().trace( "handle_receive_gtpv2c_msg msg type %d length
   // %d", msg.get_message_type(), msg.get_message_length());
   switch (msg.get_message_type()) {
@@ -378,8 +378,8 @@ void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg,
       handle_receive_release_access_bearers_request(msg, remote_endpoint);
     } break;
     case GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE: {
-      handle_receive_downlink_data_notification_acknowledge(msg,
-                                                            remote_endpoint);
+      handle_receive_downlink_data_notification_acknowledge(
+          msg, remote_endpoint);
     } break;
     case GTP_ECHO_REQUEST: {
       handle_receive_echo_request(msg, remote_endpoint);
@@ -465,19 +465,19 @@ void sgw_s11::handle_receive_gtpv2c_msg(gtpv2c_msg& msg,
     case GTP_MBMS_SESSION_STOP_RESPONSE:
       break;
     default:
-      Logger::sgwc_s11().error("handle_receive_gtpv2c_msg msg length %d",
-                               msg.get_message_length());
+      Logger::sgwc_s11().error(
+          "handle_receive_gtpv2c_msg msg length %d", msg.get_message_length());
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::handle_receive(char* recv_buffer,
-                             const std::size_t bytes_transferred,
-                             const endpoint& remote_endpoint) {
+void sgw_s11::handle_receive(
+    char* recv_buffer, const std::size_t bytes_transferred,
+    const endpoint& remote_endpoint) {
   // Logger::sgwc_s11().info( "handle_receive(%d bytes)", bytes_transferred);
   // std::cout << string_to_hex(recv_buffer, bytes_transferred) << std::endl;
   std::istringstream iss(std::istringstream::binary);
   iss.rdbuf()->pubsetbuf(recv_buffer, bytes_transferred);
-  gtpv2c_msg msg = {};
+  gtpv2c_msg msg  = {};
   msg.remote_port = remote_endpoint.port();
   try {
     msg.load_from(iss);
@@ -487,16 +487,16 @@ void sgw_s11::handle_receive(char* recv_buffer,
   }
 }
 //------------------------------------------------------------------------------
-void sgw_s11::notify_ul_error(const endpoint& r_endpoint, const teid_t l_teid,
-                              const cause_value_e cause,
-                              const uint64_t gtpc_tx_id) {
+void sgw_s11::notify_ul_error(
+    const endpoint& r_endpoint, const teid_t l_teid, const cause_value_e cause,
+    const uint64_t gtpc_tx_id) {
   switch (cause) {
     case cause_value_e::REMOTE_PEER_NOT_RESPONDING: {
       itti_s11_remote_peer_not_responding* itti_msg =
           new itti_s11_remote_peer_not_responding(TASK_SGWC_S11, TASK_SGWC_APP);
       itti_msg->r_endpoint = r_endpoint;
       itti_msg->gtpc_tx_id = gtpc_tx_id;
-      itti_msg->teid = l_teid;
+      itti_msg->teid       = l_teid;
       std::shared_ptr<itti_s11_remote_peer_not_responding> i =
           std::shared_ptr<itti_s11_remote_peer_not_responding>(itti_msg);
       int ret = itti_inst->send_msg(i);

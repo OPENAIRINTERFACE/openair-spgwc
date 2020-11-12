@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,16 +38,16 @@ void xgpp_conv::paa_to_pfcp_ue_ip_address(
     const paa_t& paa, pfcp::ue_ip_address_t& ue_ip_address) {
   switch (paa.pdn_type.pdn_type) {
     case PDN_TYPE_E_IPV4:
-      ue_ip_address.v4 = 1;
+      ue_ip_address.v4           = 1;
       ue_ip_address.ipv4_address = paa.ipv4_address;
       break;
     case PDN_TYPE_E_IPV6:
-      ue_ip_address.v6 = 1;
+      ue_ip_address.v6           = 1;
       ue_ip_address.ipv6_address = paa.ipv6_address;
       break;
     case PDN_TYPE_E_IPV4V6:
-      ue_ip_address.v4 = 1;
-      ue_ip_address.v6 = 1;
+      ue_ip_address.v4           = 1;
+      ue_ip_address.v6           = 1;
       ue_ip_address.ipv4_address = paa.ipv4_address;
       ue_ip_address.ipv6_address = paa.ipv6_address;
       break;
@@ -61,16 +61,16 @@ void xgpp_conv::pdn_ip_to_pfcp_ue_ip_address(
     const struct in6_addr ipv6_address, pfcp::ue_ip_address_t& ue_ip_address) {
   switch (pdn_type.pdn_type) {
     case PDN_TYPE_E_IPV4:
-      ue_ip_address.v4 = 1;
+      ue_ip_address.v4           = 1;
       ue_ip_address.ipv4_address = ipv4_address;
       break;
     case PDN_TYPE_E_IPV6:
-      ue_ip_address.v6 = 1;
+      ue_ip_address.v6           = 1;
       ue_ip_address.ipv6_address = ipv6_address;
       break;
     case PDN_TYPE_E_IPV4V6:
-      ue_ip_address.v4 = 1;
-      ue_ip_address.v6 = 1;
+      ue_ip_address.v4           = 1;
+      ue_ip_address.v6           = 1;
       ue_ip_address.ipv4_address = ipv4_address;
       ue_ip_address.ipv6_address = ipv6_address;
       break;
@@ -79,25 +79,25 @@ void xgpp_conv::pdn_ip_to_pfcp_ue_ip_address(
   }
 }
 //------------------------------------------------------------------------------
-void xgpp_conv::pfcp_to_core_fteid(const pfcp::fteid_t& pfteid,
-                                   fteid_t& fteid) {
-  fteid.v4 = pfteid.v4;
-  fteid.v6 = pfteid.v6;
+void xgpp_conv::pfcp_to_core_fteid(
+    const pfcp::fteid_t& pfteid, fteid_t& fteid) {
+  fteid.v4                  = pfteid.v4;
+  fteid.v6                  = pfteid.v6;
   fteid.ipv4_address.s_addr = pfteid.ipv4_address.s_addr;
-  fteid.ipv6_address = pfteid.ipv6_address;
-  fteid.teid_gre_key = pfteid.teid;
+  fteid.ipv6_address        = pfteid.ipv6_address;
+  fteid.teid_gre_key        = pfteid.teid;
 }
 //------------------------------------------------------------------------------
-void xgpp_conv::pfcp_from_core_fteid(pfcp::fteid_t& pfteid,
-                                     const fteid_t& fteid) {
-  pfteid.chid = 0;
-  pfteid.ch = 0;
-  pfteid.choose_id = 0;
-  pfteid.v4 = fteid.v4;
-  pfteid.v6 = fteid.v6;
+void xgpp_conv::pfcp_from_core_fteid(
+    pfcp::fteid_t& pfteid, const fteid_t& fteid) {
+  pfteid.chid                = 0;
+  pfteid.ch                  = 0;
+  pfteid.choose_id           = 0;
+  pfteid.v4                  = fteid.v4;
+  pfteid.v6                  = fteid.v6;
   pfteid.ipv4_address.s_addr = fteid.ipv4_address.s_addr;
-  pfteid.ipv6_address = fteid.ipv6_address;
-  pfteid.teid = fteid.teid_gre_key;
+  pfteid.ipv6_address        = fteid.ipv6_address;
+  pfteid.teid                = fteid.teid_gre_key;
 }
 //------------------------------------------------------------------------------
 void xgpp_conv::pfcp_cause_to_core_cause(const pfcp::cause_t& pc, cause_t& c) {
@@ -138,14 +138,14 @@ bool xgpp_conv::endpoint_to_gtp_u_peer_address(
       const struct sockaddr_in* const sin =
           reinterpret_cast<const sockaddr_in* const>(&ep.addr_storage);
       peer_address.ipv4_address.s_addr = sin->sin_addr.s_addr;
-      peer_address.is_v4 = true;
+      peer_address.is_v4               = true;
       return true;
     } break;
     case AF_INET6: {
       const struct sockaddr_in6* const sin6 =
           reinterpret_cast<const sockaddr_in6* const>(&ep.addr_storage);
       peer_address.ipv6_address = sin6->sin6_addr;
-      peer_address.is_v4 = false;
+      peer_address.is_v4        = false;
       return true;
     } break;
     default:

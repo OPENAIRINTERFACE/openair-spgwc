@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,7 +33,7 @@
 
 using namespace gtpv2c;
 
-const char *interface_type2char[40] = {"S1_U_ENODEB_GTP_U",
+const char* interface_type2char[40] = {"S1_U_ENODEB_GTP_U",
                                        "S1_U_SGW_GTP_U",
                                        "S12_RNC_GTP_U",
                                        "S12_SGW_GTP_U",
@@ -75,106 +75,106 @@ const char *interface_type2char[40] = {"S1_U_ENODEB_GTP_U",
                                        "S11_SGW_GTP_U"};
 
 //------------------------------------------------------------------------------
-gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
+gtpv2c_ie* gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream& is) {
   gtpv2c_tlv tlv;
   tlv.load_from(is);
   if (tlv.length) {
     switch (tlv.type) {
       case GTP_IE_IMSI: {
-        gtpv2c_imsi_ie *ie = new gtpv2c_imsi_ie(tlv);
+        gtpv2c_imsi_ie* ie = new gtpv2c_imsi_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_CAUSE: {
-        gtpv2c_cause_ie *ie = new gtpv2c_cause_ie(tlv);
+        gtpv2c_cause_ie* ie = new gtpv2c_cause_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_RECOVERY_RESTART_COUNTER: {
-        gtpv2c_recovery_ie *ie = new gtpv2c_recovery_ie(tlv);
+        gtpv2c_recovery_ie* ie = new gtpv2c_recovery_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_ACCESS_POINT_NAME: {
-        gtpv2c_access_point_name_ie *ie = new gtpv2c_access_point_name_ie(tlv);
+        gtpv2c_access_point_name_ie* ie = new gtpv2c_access_point_name_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE: {
-        gtpv2c_aggregate_maximum_bit_rate_ie *ie =
+        gtpv2c_aggregate_maximum_bit_rate_ie* ie =
             new gtpv2c_aggregate_maximum_bit_rate_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_EPS_BEARER_ID: {
-        gtpv2c_eps_bearer_id_ie *ie = new gtpv2c_eps_bearer_id_ie(tlv);
+        gtpv2c_eps_bearer_id_ie* ie = new gtpv2c_eps_bearer_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_IP_ADDRESS: {
-        gtpv2c_ip_address_ie *ie = new gtpv2c_ip_address_ie(tlv);
+        gtpv2c_ip_address_ie* ie = new gtpv2c_ip_address_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_MOBILE_EQUIPMENT_IDENTITY: {
-        gtpv2c_mei_ie *ie = new gtpv2c_mei_ie(tlv);
+        gtpv2c_mei_ie* ie = new gtpv2c_mei_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_MSISDN: {
-        gtpv2c_msisdn_ie *ie = new gtpv2c_msisdn_ie(tlv);
+        gtpv2c_msisdn_ie* ie = new gtpv2c_msisdn_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_INDICATION: {
-        gtpv2c_indication_ie *ie = new gtpv2c_indication_ie(tlv);
+        gtpv2c_indication_ie* ie = new gtpv2c_indication_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_PROTOCOL_CONFIGURATION_OPTIONS: {
-        gtpv2c_pco_ie *ie = new gtpv2c_pco_ie(tlv);
+        gtpv2c_pco_ie* ie = new gtpv2c_pco_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_PDN_ADDRESS_ALLOCATION: {
-        gtpv2c_paa_ie *ie = new gtpv2c_paa_ie(tlv);
+        gtpv2c_paa_ie* ie = new gtpv2c_paa_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_BEARER_QUALITY_OF_SERVICE: {
-        gtpv2c_bearer_qos_ie *ie = new gtpv2c_bearer_qos_ie(tlv);
+        gtpv2c_bearer_qos_ie* ie = new gtpv2c_bearer_qos_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_FLOW_QUALITY_OF_SERVICE: {
-        gtpv2c_flow_qos_ie *ie = new gtpv2c_flow_qos_ie(tlv);
+        gtpv2c_flow_qos_ie* ie = new gtpv2c_flow_qos_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_RAT_TYPE: {
-        gtpv2c_rat_type_ie *ie = new gtpv2c_rat_type_ie(tlv);
+        gtpv2c_rat_type_ie* ie = new gtpv2c_rat_type_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_SERVING_NETWORK: {
-        gtpv2c_serving_network_ie *ie = new gtpv2c_serving_network_ie(tlv);
+        gtpv2c_serving_network_ie* ie = new gtpv2c_serving_network_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_EPS_BEARER_LEVEL_TRAFFIC_FLOW_TEMPLATE: {
-        gtpv2c_bearer_tft_ie *ie = new gtpv2c_bearer_tft_ie(tlv);
+        gtpv2c_bearer_tft_ie* ie = new gtpv2c_bearer_tft_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       // case GTP_IE_TRAFFIC_AGGREGATE_DESCRIPTION:
       case GTP_IE_USER_LOCATION_INFORMATION: {
-        gtpv2c_user_location_information_ie *ie =
+        gtpv2c_user_location_information_ie* ie =
             new gtpv2c_user_location_information_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_FULLY_QUALIFIED_TUNNEL_ENDPOINT_IDENTIFIER: {
-        gtpv2c_fully_qualified_teid_ie *ie =
+        gtpv2c_fully_qualified_teid_ie* ie =
             new gtpv2c_fully_qualified_teid_ie(tlv);
         ie->load_from(is);
         return ie;
@@ -184,29 +184,29 @@ gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
       // case GTP_IE_S103_PDN_DATA_FORWARDING_INFO:
       // case GTP_IE_S1U_DATA_FORWARDING_INFO:
       case GTP_IE_DELAY_VALUE: {
-        gtpv2c_delay_value_ie *ie = new gtpv2c_delay_value_ie(tlv);
+        gtpv2c_delay_value_ie* ie = new gtpv2c_delay_value_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_BEARER_CONTEXT: {
-        gtpv2c_bearer_context_ie *ie = new gtpv2c_bearer_context_ie(tlv);
+        gtpv2c_bearer_context_ie* ie = new gtpv2c_bearer_context_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_CHARGING_ID: {
-        gtpv2c_charging_id_ie *ie = new gtpv2c_charging_id_ie(tlv);
+        gtpv2c_charging_id_ie* ie = new gtpv2c_charging_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       // case GTP_IE_CHARGING_CHARACTERISTICS:
       // case GTP_IE_TRACE_INFORMATION:
       case GTP_IE_BEARER_FLAGS: {
-        gtpv2c_bearer_flags_ie *ie = new gtpv2c_bearer_flags_ie(tlv);
+        gtpv2c_bearer_flags_ie* ie = new gtpv2c_bearer_flags_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case GTP_IE_PDN_TYPE: {
-        gtpv2c_pdn_type_ie *ie = new gtpv2c_pdn_type_ie(tlv);
+        gtpv2c_pdn_type_ie* ie = new gtpv2c_pdn_type_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -223,7 +223,7 @@ gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
       // case GTP_IE_P_TMSI_SIGNATURE:
       // case GTP_IE_HOP_COUNTER:
       case GTP_IE_UE_TIME_ZONE: {
-        gtpv2c_ue_time_zone_ie *ie = new gtpv2c_ue_time_zone_ie(tlv);
+        gtpv2c_ue_time_zone_ie* ie = new gtpv2c_ue_time_zone_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -239,27 +239,27 @@ gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
       // case GTP_IE_SOURCE_RNC_PDCP_CONTEXT_INFO:
       // case GTP_IE_PORT_NUMBER:
       case GTP_IE_APN_RESTRICTION: {
-        gtpv2c_apn_restriction_ie *ie = new gtpv2c_apn_restriction_ie(tlv);
+        gtpv2c_apn_restriction_ie* ie = new gtpv2c_apn_restriction_ie(tlv);
         ie->load_from(is);
         return ie;
       }
 
       case GTP_IE_SELECTION_MODE: {
-        gtpv2c_selection_mode_ie *ie = new gtpv2c_selection_mode_ie(tlv);
+        gtpv2c_selection_mode_ie* ie = new gtpv2c_selection_mode_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       // case GTP_IE_SOURCE_IDENTIFICATION:
       // case GTP_IE_CHANGE_REPORTING_ACTION:
       case GTP_IE_FQ_CSID: {
-        gtpv2c_fq_csid_ie *ie = new gtpv2c_fq_csid_ie(tlv);
+        gtpv2c_fq_csid_ie* ie = new gtpv2c_fq_csid_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       // case GTP_IE_CHANNEL_NEEDED:
       // case GTP_IE_EMLPP_PRIORITY:
       case GTP_IE_NODE_TYPE: {
-        gtpv2c_node_type_ie *ie = new gtpv2c_node_type_ie(tlv);
+        gtpv2c_node_type_ie* ie = new gtpv2c_node_type_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -280,7 +280,7 @@ gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
       // case GTP_IE_DETACH_TYPE:
       // case GTP_IE_LOCAL_DISTINGUISHED_NAME:
       case GTP_IE_NODE_FEATURES: {
-        gtpv2c_node_features_ie *ie = new gtpv2c_node_features_ie(tlv);
+        gtpv2c_node_features_ie* ie = new gtpv2c_node_features_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -324,7 +324,7 @@ gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
       // case GTP_IE_REMOTE_USER_ID:
       // case GTP_IE_REMOTE_UE_IP_INFORMATION:
       case GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION: {
-        gtpv2c_ciot_optimizations_support_indication_ie *ie =
+        gtpv2c_ciot_optimizations_support_indication_ie* ie =
             new gtpv2c_ciot_optimizations_support_indication_ie(tlv);
         ie->load_from(is);
         return ie;
@@ -341,18 +341,19 @@ gtpv2c_ie *gtpv2c_ie::new_gtpv2c_ie_from_stream(std::istream &is) {
       // case GTP_IE_WLAN_OFFLOADABILITY_INDICATION:
       // case GTP_IE_MAXIMUM_PACKET_LOSS:
       default:
-        Logger::gtpv2_c().error("Unknown GTP IE type %d (length %d)",
-                                tlv.get_type(), tlv.get_length());
+        Logger::gtpv2_c().error(
+            "Unknown GTP IE type %d (length %d)", tlv.get_type(),
+            tlv.get_length());
         return nullptr;
     }
   } else {
-    Logger::gtpv2_c().error("GTP IE type %d length %d", tlv.get_type(),
-                            tlv.get_length());
+    Logger::gtpv2_c().error(
+        "GTP IE type %d length %d", tlv.get_type(), tlv.get_length());
     return nullptr;
   }
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_CREATE_SESSION_REQUEST);
@@ -451,7 +452,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
       GTPV2C_CREATE_SESSION_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_CREATED) {
     if (gtp_ies.bearer_contexts_to_be_created.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_to_be_created) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         if (i.ie_presence_mask &
             GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_EPS_BEARER_ID) {
           std::shared_ptr<gtpv2c_eps_bearer_id_ie> sie(
@@ -532,7 +533,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
       GTPV2C_CREATE_SESSION_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_REMOVED) {
     if (gtp_ies.bearer_contexts_to_be_removed.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_to_be_removed) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         gie->tlv.set_instance(1);
         if (i.ie_presence_mask &
             GTPV2C_BEARER_CONTEXT_TO_BE_REMOVED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_EPS_BEARER_ID) {
@@ -554,7 +555,8 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
 
   // if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TRACE_INFORMATION) {} if
-  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_RECOVERY) {}
+  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_RECOVERY)
+  // {}
   if (gtp_ies.ie_presence_mask &
       GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_FQ_CSID) {
     std::shared_ptr<gtpv2c_fq_csid_ie> sie(
@@ -590,12 +592,13 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
   // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_LDN) {}
   // if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_LDN) {} if
-  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_LDN) {}
-  // if (gtp_ies.ie_presence_mask &
+  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_LDN)
+  // {} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SIGNALLING_PRIORITY_INDICATION) {} if
   // (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS) {} if
-  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_UDP_PORT)
+  // (gtp_ies.ie_presence_mask &
+  // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_UDP_PORT)
   // {} if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APCO)
   // {} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_HENB_LOCAL_IP_ADDRESS) {} if
@@ -637,10 +640,12 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SERVING_PLMN_RATE_CONTROL) {} if
   // (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MO_EXCEPTION_DATA_COUNTER) {} if
-  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_TCP_PORT)
+  // (gtp_ies.ie_presence_mask &
+  // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_TCP_PORT)
   // {} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MAPPED_UE_USAGE_TYPE) {} if
-  // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ULI_FOR_SGW)
+  // (gtp_ies.ie_presence_mask &
+  // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ULI_FOR_SGW)
   // {} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_U_NODE_NAME) {} if
   // (gtp_ies.ie_presence_mask &
@@ -648,7 +653,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_request &gtp_ies)
 }
 
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_CREATE_SESSION_RESPONSE);
@@ -658,8 +663,8 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
         new gtpv2c_cause_ie(gtp_ies.cause.second));
     add_ie(sie);
   } else
-    throw gtpc_missing_ie_exception("GTP_CREATE_SESSION_RESPONSE",
-                                    "GTP_IE_CAUSE");
+    throw gtpc_missing_ie_exception(
+        "GTP_CREATE_SESSION_RESPONSE", "GTP_IE_CAUSE");
   // if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_CHANGE_REPORTING_ACTION)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
@@ -706,7 +711,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
   if (gtp_ies.bearer_contexts_created.first) {
     if (gtp_ies.bearer_contexts_created.second.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_created.second) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         if (i.ie_presence_mask &
             GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_EPS_BEARER_ID) {
           std::shared_ptr<gtpv2c_eps_bearer_id_ie> sie(
@@ -778,7 +783,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
   if (gtp_ies.bearer_contexts_marked_for_removal.first) {
     if (gtp_ies.bearer_contexts_marked_for_removal.second.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_marked_for_removal.second) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         gie->tlv.set_instance(1);
         if (i.ie_presence_mask &
             GTPV2C_BEARER_CONTEXT_MARKED_FOR_REMOVAL_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_EPS_BEARER_ID) {
@@ -797,8 +802,8 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
     }
   }
   // if (gtp_ies.ie_presence_mask &
-  // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_RECOVERY) {std::shared_ptr<xxx> sie(new
-  // xxx(gtp_ies.xxx)); add_ie(sie);} if (gtp_ies.ie_presence_mask &
+  // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_RECOVERY) {std::shared_ptr<xxx>
+  // sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_CHARGING_GATEWAY_NAME)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
   // (gtp_ies.ie_presence_mask &
@@ -821,10 +826,10 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_PGW_LDN) {std::shared_ptr<xxx> sie(new
   // xxx(gtp_ies.xxx)); add_ie(sie);} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_PGW_BACK_OFF_TIME)
-  // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.pgw_back_off_time)); add_ie(sie);}
-  // if (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_APCO)
-  // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
-  // (gtp_ies.ie_presence_mask &
+  // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.pgw_back_off_time));
+  // add_ie(sie);} if (gtp_ies.ie_presence_mask &
+  // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_APCO) {std::shared_ptr<xxx> sie(new
+  // xxx(gtp_ies.xxx)); add_ie(sie);} if (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_TRUSTED_WLAN_IPV4_PARAMETERS)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
   if (gtp_ies.indication_flags.first) {
@@ -851,8 +856,9 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
   // (gtp_ies.ie_presence_mask &
-  // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_NBIFOM_CONTAINER) {std::shared_ptr<xxx>
-  // sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if (gtp_ies.ie_presence_mask &
+  // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_NBIFOM_CONTAINER)
+  // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
+  // (gtp_ies.ie_presence_mask &
   // GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_PDN_CONNECTION_CHARGING_ID)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
   // (gtp_ies.ie_presence_mask & GTPV2C_CREATE_SESSION_RESPONSE_PR_IE_EPCO)
@@ -863,7 +869,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_create_session_response &gtp_ies)
 }
 
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_request &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_request& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_DELETE_SESSION_REQUEST);
@@ -942,8 +948,9 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_request &gtp_ies)
   // (gtp_ies.ie_presence_mask &
   // GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if
-  // (gtp_ies.ie_presence_mask & GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_UDP_PORT)
-  // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
+  // (gtp_ies.ie_presence_mask &
+  // GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_UDP_PORT) {std::shared_ptr<xxx>
+  // sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
   if (gtp_ies.ie_presence_mask & GTPV2C_DELETE_SESSION_REQUEST_PR_IE_EPCO) {
     std::shared_ptr<gtpv2c_epco_ie> sie(new gtpv2c_epco_ie(gtp_ies.epco));
     add_ie(sie);
@@ -951,11 +958,11 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_request &gtp_ies)
   // if (gtp_ies.ie_presence_mask &
   // GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_TCP_PORT) {std::shared_ptr<xxx>
   // sie(new xxx(gtp_ies.xxx)); add_ie(sie);} if (gtp_ies.ie_presence_mask &
-  // GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PRIVATE_EXTENSION) {std::shared_ptr<xxx>
-  // sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
+  // GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PRIVATE_EXTENSION)
+  // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_response &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_response& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_DELETE_SESSION_RESPONSE);
@@ -964,8 +971,8 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_response &gtp_ies)
     add_ie(sie);
   }
   // if (gtp_ies.ie_presence_mask &
-  // GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_RECOVERY) {std::shared_ptr<xxx> sie(new
-  // xxx(gtp_ies.xxx)); add_ie(sie);}
+  // GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_RECOVERY) {std::shared_ptr<xxx>
+  // sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
   if (gtp_ies.ie_presence_mask & GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PCO) {
     std::shared_ptr<gtpv2c_pco_ie> sie(new gtpv2c_pco_ie(gtp_ies.pco));
     add_ie(sie);
@@ -1000,7 +1007,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_delete_session_response &gtp_ies)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_request &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_request& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_MODIFY_BEARER_REQUEST);
@@ -1051,7 +1058,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_request &gtp_ies)
       GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_MODIFIED) {
     if (gtp_ies.bearer_contexts_to_be_modified.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_to_be_modified) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
 
         if (i.ie_presence_mask &
             GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_EPS_BEARER_ID) {
@@ -1102,7 +1109,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_request &gtp_ies)
       GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_REMOVED) {
     if (gtp_ies.bearer_contexts_to_be_removed.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_to_be_removed) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         gie->tlv.set_instance(1);
         if (i.ie_presence_mask &
             GTPV2C_BEARER_CONTEXT_TO_BE_REMOVED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_EPS_BEARER_ID) {
@@ -1187,7 +1194,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_request &gtp_ies)
   // sie(new xxx(gtp_ies.xxx)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_response &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_response& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_MODIFY_BEARER_RESPONSE);
@@ -1254,7 +1261,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_response &gtp_ies)
   if (gtp_ies.bearer_contexts_modified.first) {
     if (gtp_ies.bearer_contexts_modified.second.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_modified.second) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         if (i.eps_bearer_id.first) {
           std::shared_ptr<gtpv2c_eps_bearer_id_ie> sie(
               new gtpv2c_eps_bearer_id_ie(i.eps_bearer_id.second));
@@ -1312,7 +1319,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_response &gtp_ies)
   if (gtp_ies.bearer_contexts_marked_for_removal.first) {
     if (gtp_ies.bearer_contexts_marked_for_removal.second.size() > 0) {
       for (auto i : gtp_ies.bearer_contexts_marked_for_removal.second) {
-        gtpv2c_grouped_ie *gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
+        gtpv2c_grouped_ie* gie = new gtpv2c_grouped_ie(GTP_IE_BEARER_CONTEXT);
         gie->tlv.set_instance(1);
         if (i.eps_bearer_id.first) {
           std::shared_ptr<gtpv2c_eps_bearer_id_ie> sie(
@@ -1331,7 +1338,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_modify_bearer_response &gtp_ies)
   }
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_request &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_request& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_RELEASE_ACCESS_BEARERS_REQUEST);
@@ -1353,7 +1360,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_request &gtp_ies)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_response &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_response& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_RELEASE_ACCESS_BEARERS_RESPONSE);
@@ -1375,7 +1382,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_release_access_bearers_response &gtp_ies)
   // {std::shared_ptr<xxx> sie(new xxx(gtp_ies.uci.second)); add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_downlink_data_notification &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_downlink_data_notification& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_DOWNLINK_DATA_NOTIFICATION);
@@ -1412,7 +1419,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_downlink_data_notification &gtp_ies)
 }
 //------------------------------------------------------------------------------
 gtpv2c_msg::gtpv2c_msg(
-    const gtpv2c_downlink_data_notification_acknowledge &gtp_ies)
+    const gtpv2c_downlink_data_notification_acknowledge& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE);
@@ -1428,7 +1435,7 @@ gtpv2c_msg::gtpv2c_msg(
 }
 
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_request &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_request& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_ECHO_REQUEST);
@@ -1444,7 +1451,7 @@ gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_request &gtp_ies)
   }
 }
 //------------------------------------------------------------------------------
-gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_response &gtp_ies)
+gtpv2c_msg::gtpv2c_msg(const gtpv2c_echo_response& gtp_ies)
     : gtpv2c_msg_header() {
   ies = {};
   set_message_type(GTP_ECHO_RESPONSE);

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -48,17 +48,17 @@ class pgw_eps_bearer {
   pgw_eps_bearer() { clear(); }
 
   void clear() {
-    ebi.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
-    tft = {};
+    ebi.ebi            = EPS_BEARER_IDENTITY_UNASSIGNED;
+    tft                = {};
     sgw_fteid_s5_s8_up = {};
     pgw_fteid_s5_s8_up = {};
-    eps_bearer_qos = {};
-    pdr_id_ul = {};
-    pdr_id_dl = {};
-    precedence = {};
-    far_id_ul = {};
-    far_id_dl = {};
-    released = false;
+    eps_bearer_qos     = {};
+    pdr_id_ul          = {};
+    pdr_id_dl          = {};
+    precedence         = {};
+    far_id_ul          = {};
+    far_id_dl          = {};
+    released           = false;
   }
 
   void deallocate_ressources();
@@ -108,16 +108,16 @@ class pgw_pdn_connection
   pgw_pdn_connection() : eps_bearers() { clear(); }
 
   void clear() {
-    ipv4 = false;
-    ipv6 = false;
+    ipv4                = false;
+    ipv6                = false;
     ipv4_address.s_addr = INADDR_ANY;
-    ipv6_address = in6addr_any;
-    pdn_type = {};
-    sgw_fteid_s5_s8_cp = {};
-    pgw_fteid_s5_s8_cp = {};
-    default_bearer.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
-    seid = 0;
-    up_fseid = {};
+    ipv6_address        = in6addr_any;
+    pdn_type            = {};
+    sgw_fteid_s5_s8_cp  = {};
+    pgw_fteid_s5_s8_cp  = {};
+    default_bearer.ebi  = EPS_BEARER_IDENTITY_UNASSIGNED;
+    seid                = 0;
+    up_fseid            = {};
     eps_bearers.clear();
     released = false;
   }
@@ -274,12 +274,12 @@ class apn_context {
   apn_context(apn_context& b) = delete;
 
   void insert_pdn_connection(std::shared_ptr<pgw_pdn_connection>& sp);
-  bool find_pdn_connection(const teid_t xgw_s5s8c_teid,
-                           const bool is_local_teid,
-                           std::shared_ptr<pgw_pdn_connection>& pdn);
-  bool find_pdn_connection(const pfcp::pdr_id_t& pdr_id,
-                           std::shared_ptr<pgw_pdn_connection>& pdn,
-                           ebi_t& ebi);
+  bool find_pdn_connection(
+      const teid_t xgw_s5s8c_teid, const bool is_local_teid,
+      std::shared_ptr<pgw_pdn_connection>& pdn);
+  bool find_pdn_connection(
+      const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn,
+      ebi_t& ebi);
   void delete_pdn_connection(
       std::shared_ptr<pgw_pdn_connection>& pdn_connection);
   int get_num_pdn_connections() const { return pdn_connections.size(); };
@@ -311,8 +311,8 @@ class apn_context {
 
 class pgw_context;
 
-typedef std::pair<std::shared_ptr<apn_context>,
-                  std::shared_ptr<pgw_pdn_connection>>
+typedef std::pair<
+    std::shared_ptr<apn_context>, std::shared_ptr<pgw_pdn_connection>>
     pdn_duo_t;
 
 class pgw_context : public std::enable_shared_from_this<pgw_context> {
@@ -329,28 +329,31 @@ class pgw_context : public std::enable_shared_from_this<pgw_context> {
 
   // void create_procedure(itti_s5s8_create_session_request& csreq);
   void insert_procedure(std::shared_ptr<pgw_procedure>& sproc);
-  bool find_procedure(const uint64_t& trxn_id,
-                      std::shared_ptr<pgw_procedure>& proc);
+  bool find_procedure(
+      const uint64_t& trxn_id, std::shared_ptr<pgw_procedure>& proc);
   void remove_procedure(pgw_procedure* proc);
 
 #define IS_FIND_PDN_WITH_LOCAL_TEID true
 #define IS_FIND_PDN_WITH_PEER_TEID false
 
-  bool find_pdn_connection(const std::string& apn, const teid_t xgw_s5s8c_teid,
-                           const bool is_local_teid, pdn_duo_t& pdn_connection);
-  bool find_pdn_connection(const teid_t xgw_s5s8c_teid,
-                           const bool is_local_teid, pdn_duo_t& pdn_connection);
-  bool find_pdn_connection(const pfcp::pdr_id_t& pdr_id,
-                           std::shared_ptr<pgw_pdn_connection>& pdn,
-                           ebi_t& ebi);
+  bool find_pdn_connection(
+      const std::string& apn, const teid_t xgw_s5s8c_teid,
+      const bool is_local_teid, pdn_duo_t& pdn_connection);
+  bool find_pdn_connection(
+      const teid_t xgw_s5s8c_teid, const bool is_local_teid,
+      pdn_duo_t& pdn_connection);
+  bool find_pdn_connection(
+      const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn,
+      ebi_t& ebi);
   void insert_apn(std::shared_ptr<apn_context>& sa);
-  bool find_apn_context(const std::string& apn,
-                        std::shared_ptr<apn_context>& apn_context);
+  bool find_apn_context(
+      const std::string& apn, std::shared_ptr<apn_context>& apn_context);
   int get_num_apn_contexts() { return apns.size(); };
 
   void delete_apn_context(std::shared_ptr<apn_context>& sa);
-  void delete_pdn_connection(std::shared_ptr<apn_context>& sa,
-                             std::shared_ptr<pgw_pdn_connection>& sp);
+  void delete_pdn_connection(
+      std::shared_ptr<apn_context>& sa,
+      std::shared_ptr<pgw_pdn_connection>& sp);
 
   void handle_itti_msg(
       std::shared_ptr<itti_s5s8_create_session_request> s5_trigger);

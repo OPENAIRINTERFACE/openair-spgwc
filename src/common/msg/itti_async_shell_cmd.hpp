@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,9 +33,10 @@
 
 class itti_async_shell_cmd : public itti_msg {
  public:
-  itti_async_shell_cmd(const task_id_t origin, const task_id_t destination,
-                       const std::string& system_cmd, bool is_abort_on_error,
-                       const char* src_file, const int src_line)
+  itti_async_shell_cmd(
+      const task_id_t origin, const task_id_t destination,
+      const std::string& system_cmd, bool is_abort_on_error,
+      const char* src_file, const int src_line)
       : itti_msg(ASYNC_SHELL_CMD, origin, destination),
         system_command(system_cmd),
         is_abort_on_error(is_abort_on_error),

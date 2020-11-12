@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -82,31 +82,31 @@ void sgw_eps_bearer_context::erase_pdn_connection(
     std::shared_ptr<sgw_pdn_connection> spc) {
   kpdn_t k = std::make_pair<std::string, uint8_t>(
       std::string(spc.get()->apn_in_use),
-      (uint8_t)spc.get()->pdn_type.pdn_type);
+      (uint8_t) spc.get()->pdn_type.pdn_type);
   std::size_t size = pdn_connections.erase(k);
-  Logger::sgwc_app().trace("erase_pdn_connection(%s,%d) %d erased",
-                           spc.get()->apn_in_use.c_str(),
-                           spc.get()->pdn_type.pdn_type, size);
+  Logger::sgwc_app().trace(
+      "erase_pdn_connection(%s,%d) %d erased", spc.get()->apn_in_use.c_str(),
+      spc.get()->pdn_type.pdn_type, size);
 }
 
 //------------------------------------------------------------------------------
 shared_ptr<sgw_pdn_connection> sgw_eps_bearer_context::insert_pdn_connection(
     sgw_pdn_connection* p) {
-  kpdn_t k(p->apn_in_use, (uint8_t)p->pdn_type.pdn_type);
+  kpdn_t k(p->apn_in_use, (uint8_t) p->pdn_type.pdn_type);
   shared_ptr<sgw_pdn_connection> s = shared_ptr<sgw_pdn_connection>(p);
   std::pair<std::map<kpdn_t, shared_ptr<sgw_pdn_connection>>::iterator, bool>
       ret;
   ret = pdn_connections.insert(
       std::pair<kpdn_t, shared_ptr<sgw_pdn_connection>>(k, s));
   if (ret.second == false) {
-    Logger::sgwc_app().error("insert_pdn_connection(%s,%d) failed",
-                             ret.first->first.first.c_str(),
-                             (int)ret.first->first.second);
+    Logger::sgwc_app().error(
+        "insert_pdn_connection(%s,%d) failed", ret.first->first.first.c_str(),
+        (int) ret.first->first.second);
   } else {
-    Logger::sgwc_app().trace("insert_pdn_connection(%s,%d) succeed key(%s,%d)",
-                             ret.first->first.first.c_str(),
-                             (int)ret.first->first.second, k.first.c_str(),
-                             (int)k.second);
+    Logger::sgwc_app().trace(
+        "insert_pdn_connection(%s,%d) succeed key(%s,%d)",
+        ret.first->first.first.c_str(), (int) ret.first->first.second,
+        k.first.c_str(), (int) k.second);
   }
   return s;
 }
@@ -286,11 +286,11 @@ shared_ptr<sebc_procedure> sgw_eps_bearer_context::find_procedure(
 }
 //------------------------------------------------------------------------------
 void sgw_eps_bearer_context::remove_procedure(sebc_procedure* proc) {
-  auto found =
-      std::find_if(pending_procedures.begin(), pending_procedures.end(),
-                   [proc](std::shared_ptr<sebc_procedure> const& i) {
-                     return i.get() == proc;
-                   });
+  auto found = std::find_if(
+      pending_procedures.begin(), pending_procedures.end(),
+      [proc](std::shared_ptr<sebc_procedure> const& i) {
+        return i.get() == proc;
+      });
   if (found != pending_procedures.end()) {
     pending_procedures.erase(found);
   }
@@ -318,7 +318,7 @@ void sgw_eps_bearer_context::handle_itti_msg(
     sgwc_app_inst->set_s11sgw_teid_2_sgw_eps_bearer_context(
         sgw_fteid_s11_s4_cp.teid_gre_key, shared_from_this());
     mme_fteid_s11 = csreq.gtp_ies.sender_fteid_for_cp;
-    imsi = csreq.gtp_ies.imsi;
+    imsi          = csreq.gtp_ies.imsi;
   } else {
     if (not(mme_fteid_s11 == csreq.gtp_ies.sender_fteid_for_cp)) {
       Logger::sgwc_app().debug(

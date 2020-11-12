@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -43,7 +43,9 @@ extern pgwc::pgw_app* pgw_app_inst;
 extern pgwc::pgw_config pgw_cfg;
 
 //------------------------------------------------------------------------------
-void pgw_eps_bearer::release_access_bearer() { released = true; }
+void pgw_eps_bearer::release_access_bearer() {
+  released = true;
+}
 //------------------------------------------------------------------------------
 std::string pgw_eps_bearer::toString() const {
   std::string s = {};
@@ -91,18 +93,18 @@ void pgw_eps_bearer::deallocate_ressources() {
 void pgw_pdn_connection::set(const paa_t& paa) {
   switch (paa.pdn_type.pdn_type) {
     case PDN_TYPE_E_IPV4:
-      ipv4 = true;
-      ipv6 = false;
+      ipv4         = true;
+      ipv6         = false;
       ipv4_address = paa.ipv4_address;
       break;
     case PDN_TYPE_E_IPV6:
-      ipv4 = false;
-      ipv6 = true;
+      ipv4         = false;
+      ipv6         = true;
       ipv6_address = paa.ipv6_address;
       break;
     case PDN_TYPE_E_IPV4V6:
-      ipv4 = true;
-      ipv6 = true;
+      ipv4         = true;
+      ipv6         = true;
       ipv4_address = paa.ipv4_address;
       ipv6_address = paa.ipv6_address;
       break;
@@ -123,8 +125,8 @@ void pgw_pdn_connection::add_eps_bearer(pgw_eps_bearer& bearer) {
     eps_bearers.erase(bearer.ebi.ebi);
     eps_bearers.insert(
         std::pair<uint8_t, pgw_eps_bearer>(bearer.ebi.ebi, bearer));
-    Logger::pgwc_app().trace("pgw_pdn_connection::add_eps_bearer(%d) success",
-                             bearer.ebi.ebi);
+    Logger::pgwc_app().trace(
+        "pgw_pdn_connection::add_eps_bearer(%d) success", bearer.ebi.ebi);
   } else {
     Logger::pgwc_app().error(
         "pgw_pdn_connection::add_eps_bearer(%d) failed, invalid EBI",
@@ -138,8 +140,8 @@ pgw_eps_bearer& pgw_pdn_connection::get_eps_bearer(const ebi_t& ebi) {
 }
 
 //------------------------------------------------------------------------------
-bool pgw_pdn_connection::find_eps_bearer(const pfcp::pdr_id_t& pdr_id,
-                                         pgw_eps_bearer& bearer) {
+bool pgw_pdn_connection::find_eps_bearer(
+    const pfcp::pdr_id_t& pdr_id, pgw_eps_bearer& bearer) {
   for (std::map<uint8_t, pgw_eps_bearer>::iterator it = eps_bearers.begin();
        it != eps_bearers.end(); ++it) {
     if ((it->second.pdr_id_ul == pdr_id) || (it->second.pdr_id_dl == pdr_id)) {
@@ -150,8 +152,8 @@ bool pgw_pdn_connection::find_eps_bearer(const pfcp::pdr_id_t& pdr_id,
   return false;
 }
 //------------------------------------------------------------------------------
-bool pgw_pdn_connection::has_eps_bearer(const pfcp::pdr_id_t& pdr_id,
-                                        ebi_t& ebi) {
+bool pgw_pdn_connection::has_eps_bearer(
+    const pfcp::pdr_id_t& pdr_id, ebi_t& ebi) {
   for (std::map<uint8_t, pgw_eps_bearer>::iterator it = eps_bearers.begin();
        it != eps_bearers.end(); ++it) {
     if ((it->second.pdr_id_ul == pdr_id) || (it->second.pdr_id_dl == pdr_id)) {
@@ -190,7 +192,8 @@ void pgw_pdn_connection::deallocate_ressources(const std::string& apn) {
 //------------------------------------------------------------------------------
 void pgw_pdn_connection::generate_seid() {
   // DO it simple now:
-  seid = pgw_fteid_s5_s8_cp.teid_gre_key | (((uint64_t)pgw_cfg.instance) << 32);
+  seid =
+      pgw_fteid_s5_s8_cp.teid_gre_key | (((uint64_t) pgw_cfg.instance) << 32);
 }
 //------------------------------------------------------------------------------
 // TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a
@@ -279,9 +282,9 @@ bool apn_context::find_pdn_connection(
 }
 
 //------------------------------------------------------------------------------
-bool apn_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id,
-                                      std::shared_ptr<pgw_pdn_connection>& pdn,
-                                      ebi_t& ebi) {
+bool apn_context::find_pdn_connection(
+    const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn,
+    ebi_t& ebi) {
   std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto pit : pdn_connections) {
     if (pit->has_eps_bearer(pdr_id, ebi)) {
@@ -319,7 +322,7 @@ void apn_context::deallocate_ressources() {
     (*it)->deallocate_ressources(apn_in_use);
   }
   pdn_connections.clear();
-  in_use = false;
+  in_use   = false;
   apn_ambr = {0};
 }
 //------------------------------------------------------------------------------
@@ -341,9 +344,9 @@ std::string apn_context::toString() const {
 }
 
 //------------------------------------------------------------------------------
-bool pgw_context::find_pdn_connection(const teid_t xgw_s5s8c_teid,
-                                      const bool is_local_teid,
-                                      pdn_duo_t& pdn_connection) {
+bool pgw_context::find_pdn_connection(
+    const teid_t xgw_s5s8c_teid, const bool is_local_teid,
+    pdn_duo_t& pdn_connection) {
   std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto ait : apns) {
     std::shared_ptr<pgw_pdn_connection> sp;
@@ -356,9 +359,9 @@ bool pgw_context::find_pdn_connection(const teid_t xgw_s5s8c_teid,
 }
 
 //------------------------------------------------------------------------------
-bool pgw_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id,
-                                      std::shared_ptr<pgw_pdn_connection>& pdn,
-                                      ebi_t& ebi) {
+bool pgw_context::find_pdn_connection(
+    const pfcp::pdr_id_t& pdr_id, std::shared_ptr<pgw_pdn_connection>& pdn,
+    ebi_t& ebi) {
   std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto ait : apns) {
     std::shared_ptr<pgw_pdn_connection> sp;
@@ -371,10 +374,9 @@ bool pgw_context::find_pdn_connection(const pfcp::pdr_id_t& pdr_id,
 }
 
 //------------------------------------------------------------------------------
-bool pgw_context::find_pdn_connection(const std::string& apn,
-                                      const teid_t xgw_s5s8c_teid,
-                                      const bool is_local_teid,
-                                      pdn_duo_t& pdn_connection) {
+bool pgw_context::find_pdn_connection(
+    const std::string& apn, const teid_t xgw_s5s8c_teid,
+    const bool is_local_teid, pdn_duo_t& pdn_connection) {
   pdn_connection = {};
   std::unique_lock<std::recursive_mutex> lock(m_context);
   std::shared_ptr<apn_context> sa;
@@ -421,8 +423,8 @@ void pgw_context::insert_apn(std::shared_ptr<apn_context>& sa) {
   apns.push_back(sa);
 }
 //------------------------------------------------------------------------------
-bool pgw_context::find_apn_context(const std::string& apn,
-                                   std::shared_ptr<apn_context>& apn_context) {
+bool pgw_context::find_apn_context(
+    const std::string& apn, std::shared_ptr<apn_context>& apn_context) {
   std::unique_lock<std::recursive_mutex> lock(m_context);
   for (auto it : apns) {
     if (0 == apn.compare(it->apn_in_use)) {
@@ -438,14 +440,14 @@ void pgw_context::insert_procedure(std::shared_ptr<pgw_procedure>& sproc) {
   pending_procedures.push_back(sproc);
 }
 //------------------------------------------------------------------------------
-bool pgw_context::find_procedure(const uint64_t& trxn_id,
-                                 std::shared_ptr<pgw_procedure>& proc) {
+bool pgw_context::find_procedure(
+    const uint64_t& trxn_id, std::shared_ptr<pgw_procedure>& proc) {
   std::unique_lock<std::recursive_mutex> lock(m_context);
-  auto found =
-      std::find_if(pending_procedures.begin(), pending_procedures.end(),
-                   [trxn_id](std::shared_ptr<pgw_procedure> const& i) -> bool {
-                     return i->trxn_id == trxn_id;
-                   });
+  auto found = std::find_if(
+      pending_procedures.begin(), pending_procedures.end(),
+      [trxn_id](std::shared_ptr<pgw_procedure> const& i) -> bool {
+        return i->trxn_id == trxn_id;
+      });
   if (found != pending_procedures.end()) {
     proc = *found;
     return true;
@@ -455,11 +457,11 @@ bool pgw_context::find_procedure(const uint64_t& trxn_id,
 //------------------------------------------------------------------------------
 void pgw_context::remove_procedure(pgw_procedure* proc) {
   std::unique_lock<std::recursive_mutex> lock(m_context);
-  auto found =
-      std::find_if(pending_procedures.begin(), pending_procedures.end(),
-                   [proc](std::shared_ptr<pgw_procedure> const& i) {
-                     return i.get() == proc;
-                   });
+  auto found = std::find_if(
+      pending_procedures.begin(), pending_procedures.end(),
+      [proc](std::shared_ptr<pgw_procedure> const& i) {
+        return i.get() == proc;
+      });
   if (found != pending_procedures.end()) {
     pending_procedures.erase(found);
   }
@@ -471,10 +473,10 @@ void pgw_context::handle_itti_msg(
   itti_s5s8_create_session_request* csreq = s5_trigger.get();
   // If PCEF integrated in PGW, TODO create a procedure
   pdn_duo_t apn_pdn;
-  bool found_pdn =
-      find_pdn_connection(csreq->gtp_ies.apn.access_point_name, csreq->teid,
-                          IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
-  std::shared_ptr<apn_context> sa = apn_pdn.first;
+  bool found_pdn = find_pdn_connection(
+      csreq->gtp_ies.apn.access_point_name, csreq->teid,
+      IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
+  std::shared_ptr<apn_context> sa        = apn_pdn.first;
   std::shared_ptr<pgw_pdn_connection> sp = apn_pdn.second;
 
   // The itti_s5s8_create_session_response will be built completly after PFCP
@@ -496,8 +498,8 @@ void pgw_context::handle_itti_msg(
 
   if (nullptr == sa.get()) {
     apn_context* a = new (apn_context);
-    a->in_use = true;
-    a->apn_in_use = csreq->gtp_ies.apn.access_point_name;
+    a->in_use      = true;
+    a->apn_in_use  = csreq->gtp_ies.apn.access_point_name;
     if (csreq->gtp_ies.ie_presence_mask &
         GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_AMBR) {
       a->apn_ambr = csreq->gtp_ies.ambr;
@@ -521,8 +523,8 @@ void pgw_context::handle_itti_msg(
     p->sgw_fteid_s5_s8_cp = csreq->gtp_ies.sender_fteid_for_cp;
     p->pgw_fteid_s5_s8_cp =
         pgw_app_inst->generate_s5s8_cp_fteid(pgw_cfg.s5s8_cp.addr4);
-    pgw_app_inst->set_s5s8cpgw_fteid_2_pgw_context(p->pgw_fteid_s5_s8_cp,
-                                                   shared_from_this());
+    pgw_app_inst->set_s5s8cpgw_fteid_2_pgw_context(
+        p->pgw_fteid_s5_s8_cp, shared_from_this());
     sp = std::shared_ptr<pgw_pdn_connection>(p);
     sa->insert_pdn_connection(sp);
     // Ignore bearer context to be removed
@@ -571,7 +573,7 @@ void pgw_context::handle_itti_msg(
   // PAA
   //------
   bool set_paa = false;
-  paa_t paa = {};
+  paa_t paa    = {};
   //  if (cause.cause_value == REQUEST_ACCEPTED) {
   //    paa.pdn_type = sp->pdn_type;
   //    bool paa_res = csreq->gtp_ies.get(paa);
@@ -590,13 +592,13 @@ void pgw_context::handle_itti_msg(
   //------
   // PCO
   //------
-  protocol_configuration_options_t pco_resp = {};
+  protocol_configuration_options_t pco_resp    = {};
   protocol_configuration_options_ids_t pco_ids = {
-      .pi_ipcp = 0,
-      .ci_dns_server_ipv4_address_request = 0,
+      .pi_ipcp                                     = 0,
+      .ci_dns_server_ipv4_address_request          = 0,
       .ci_ip_address_allocation_via_nas_signalling = 0,
-      .ci_ipv4_address_allocation_via_dhcpv4 = 0,
-      .ci_ipv4_link_mtu_request = 0};
+      .ci_ipv4_address_allocation_via_dhcpv4       = 0,
+      .ci_ipv4_link_mtu_request                    = 0};
 
   pgw_app_inst->process_pco_request(csreq->gtp_ies.pco, pco_resp, pco_ids);
   switch (sp->pdn_type.pdn_type) {
@@ -630,7 +632,7 @@ void pgw_context::handle_itti_msg(
             set_paa = true;
           } else {
             cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
-            cause.pce = 1;
+            cause.pce         = 1;
           }
           // Static IP address allocation
         } else if ((paa_res) && (paa.is_ip_assigned())) {
@@ -651,7 +653,7 @@ void pgw_context::handle_itti_msg(
           set_paa = true;
         } else {
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
-          cause.pce = 1;
+          cause.pce         = 1;
         }
         // Static IP address allocation
       } else if ((paa_res) && (paa.is_ip_assigned())) {
@@ -668,7 +670,7 @@ void pgw_context::handle_itti_msg(
           set_paa = true;
         } else {
           cause.cause_value = ALL_DYNAMIC_ADDRESSES_ARE_OCCUPIED;
-          cause.pce = 1;
+          cause.pce         = 1;
         }
       } else if ((paa_res) && (paa.is_ip_assigned())) {
         set_paa = true;
@@ -677,13 +679,13 @@ void pgw_context::handle_itti_msg(
 
     case PDN_TYPE_E_NON_IP:
       cause.cause_value = PREFERRED_PDN_TYPE_NOT_SUPPORTED;
-      cause.pce = 1;
+      cause.pce         = 1;
       break;
 
     default:
       Logger::pgwc_app().error("Unknown PDN type %d", sp->pdn_type.pdn_type);
       cause.cause_value = PREFERRED_PDN_TYPE_NOT_SUPPORTED;
-      cause.pce = 1;
+      cause.pce         = 1;
       break;
   }
 
@@ -691,7 +693,7 @@ void pgw_context::handle_itti_msg(
   // GTPV2C-Stack
   //------
   s5s8->gtpc_tx_id = csreq->gtpc_tx_id;
-  s5s8->teid = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
+  s5s8->teid       = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
   s5s8->r_endpoint = csreq->r_endpoint;
 
   //------
@@ -737,8 +739,8 @@ void pgw_context::handle_itti_msg(
       switch (sp->pdn_type.pdn_type) {
         case PDN_TYPE_E_IPV4:
         case PDN_TYPE_E_IPV4V6:
-          paa_dynamic::get_instance().release_paa(sa->apn_in_use,
-                                                  free_paa.ipv4_address);
+          paa_dynamic::get_instance().release_paa(
+              sa->apn_in_use, free_paa.ipv4_address);
           break;
 
         case PDN_TYPE_E_IPV6:
@@ -749,15 +751,16 @@ void pgw_context::handle_itti_msg(
     }
     for (auto it : csreq->gtp_ies.bearer_contexts_to_be_created) {
       gtpv2c::bearer_context_created_within_create_session_response bcc = {};
-      cause_t bcc_cause = {
+      cause_t bcc_cause                                                 = {
           .cause_value = NO_RESOURCES_AVAILABLE, .pce = 0, .bce = 0, .cs = 0};
       bcc.set(it.eps_bearer_id);
       bcc.set(bcc_cause);
       s5s8->gtp_ies.add_bearer_context_created(bcc);
     }
 
-    Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                            s5_triggered_pending->get_msg_name());
+    Logger::pgwc_app().info(
+        "Sending ITTI message %s to task TASK_PGWC_S5S8",
+        s5_triggered_pending->get_msg_name());
     int ret = itti_inst->send_msg(s5_triggered_pending);
     if (RETURNok != ret) {
       Logger::pgwc_app().error(
@@ -770,17 +773,17 @@ void pgw_context::handle_itti_msg(
 void pgw_context::handle_itti_msg(
     std::shared_ptr<itti_s5s8_delete_session_request> s5_trigger) {
   itti_s5s8_delete_session_request* dsreq = s5_trigger.get();
-  fteid_t sender_fteid = {};
-  bool sender_fteid_present = dsreq->gtp_ies.get(sender_fteid);
+  fteid_t sender_fteid                    = {};
+  bool sender_fteid_present               = dsreq->gtp_ies.get(sender_fteid);
 
-  pdn_duo_t apn_pdn = {};
-  std::shared_ptr<apn_context> sa = {};
+  pdn_duo_t apn_pdn                      = {};
+  std::shared_ptr<apn_context> sa        = {};
   std::shared_ptr<pgw_pdn_connection> sp = {};
 
   bool found = false;
   if (sender_fteid_present) {
-    found = find_pdn_connection(sender_fteid.teid_gre_key,
-                                IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
+    found = find_pdn_connection(
+        sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
   } else {
     found =
         find_pdn_connection(dsreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
@@ -804,7 +807,7 @@ void pgw_context::handle_itti_msg(
       // GTPV2C-Stack
       //------
       s5s8->gtpc_tx_id = s5_trigger->gtpc_tx_id;
-      s5s8->teid = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
+      s5s8->teid       = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
       s5s8->r_endpoint = s5_trigger->r_endpoint;
 
       if (proc->run(s5_trigger, s5_triggered_pending, shared_from_this())) {
@@ -847,17 +850,17 @@ void pgw_context::handle_itti_msg(
   std::cout << toString() << std::endl;
 
   itti_s5s8_modify_bearer_request* mbreq = s5_trigger.get();
-  fteid_t sender_fteid = {};
-  bool sender_fteid_present = mbreq->gtp_ies.get(sender_fteid);
+  fteid_t sender_fteid                   = {};
+  bool sender_fteid_present              = mbreq->gtp_ies.get(sender_fteid);
 
-  pdn_duo_t apn_pdn = {};
-  std::shared_ptr<apn_context> sa = {};
+  pdn_duo_t apn_pdn                      = {};
+  std::shared_ptr<apn_context> sa        = {};
   std::shared_ptr<pgw_pdn_connection> sp = {};
 
   bool found = false;
   if (sender_fteid_present) {
-    found = find_pdn_connection(sender_fteid.teid_gre_key,
-                                IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
+    found = find_pdn_connection(
+        sender_fteid.teid_gre_key, IS_FIND_PDN_WITH_PEER_TEID, apn_pdn);
   } else {
     found =
         find_pdn_connection(mbreq->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
@@ -880,7 +883,7 @@ void pgw_context::handle_itti_msg(
       // GTPV2C-Stack
       //------
       s5s8->gtpc_tx_id = s5_trigger->gtpc_tx_id;
-      s5s8->teid = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
+      s5s8->teid       = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
       s5s8->r_endpoint = s5_trigger->r_endpoint;
 
       if (proc->run(s5_trigger, s5_triggered_pending, shared_from_this())) {
@@ -900,12 +903,12 @@ void pgw_context::handle_itti_msg(
 //------------------------------------------------------------------------------
 void pgw_context::handle_itti_msg(
     std::shared_ptr<itti_s5s8_release_access_bearers_request> s5_trigger) {
-  pdn_duo_t apn_pdn = {};
-  std::shared_ptr<apn_context> sa = {};
+  pdn_duo_t apn_pdn                      = {};
+  std::shared_ptr<apn_context> sa        = {};
   std::shared_ptr<pgw_pdn_connection> sp = {};
 
-  bool found = find_pdn_connection(s5_trigger->teid,
-                                   IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
+  bool found = find_pdn_connection(
+      s5_trigger->teid, IS_FIND_PDN_WITH_LOCAL_TEID, apn_pdn);
   if (found) {
     sa = apn_pdn.first;
     sp = apn_pdn.second;
@@ -919,8 +922,8 @@ void pgw_context::handle_itti_msg(
         insert_procedure(sproc);
 
         itti_s5s8_release_access_bearers_response* s5s8 =
-            new itti_s5s8_release_access_bearers_response(TASK_PGWC_APP,
-                                                          TASK_PGWC_S5S8);
+            new itti_s5s8_release_access_bearers_response(
+                TASK_PGWC_APP, TASK_PGWC_S5S8);
         std::shared_ptr<itti_s5s8_release_access_bearers_response>
             s5_triggered_pending =
                 std::shared_ptr<itti_s5s8_release_access_bearers_response>(
@@ -929,7 +932,7 @@ void pgw_context::handle_itti_msg(
         // GTPV2C-Stack
         //------
         s5s8->gtpc_tx_id = s5_trigger->gtpc_tx_id;
-        s5s8->teid = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
+        s5s8->teid       = sp->sgw_fteid_s5_s8_cp.teid_gre_key;
         s5s8->r_endpoint = s5_trigger->r_endpoint;
 
         if (proc->run(s5_trigger, s5_triggered_pending, shared_from_this())) {
