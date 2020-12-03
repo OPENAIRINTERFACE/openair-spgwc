@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,8 +35,8 @@ itti_msg::itti_msg()
   msg_num = itti_inst->increment_message_number();
 };
 
-itti_msg::itti_msg(const itti_msg_type_t msg_type, task_id_t origin,
-                   task_id_t destination)
+itti_msg::itti_msg(
+    const itti_msg_type_t msg_type, task_id_t origin, task_id_t destination)
     : msg_type(msg_type), origin(origin), destination(destination) {
   msg_num = itti_inst->increment_message_number();
 };
@@ -47,4 +47,6 @@ itti_msg::itti_msg(const itti_msg& i)
       origin(i.origin),
       destination(i.destination){};
 
-const char* itti_msg::get_msg_name() { return "UNINITIALIZED"; }
+const char* itti_msg::get_msg_name() {
+  return "UNINITIALIZED";
+}

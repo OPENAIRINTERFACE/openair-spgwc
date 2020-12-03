@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,37 +42,37 @@ namespace sgwc {
 class sgw_eps_bearer {
  public:
   sgw_eps_bearer() : ebi() {
-    tft = {};
-    pgw_fteid_s5_s8_up = {};
-    sgw_fteid_s5_s8_up = {};
+    tft                        = {};
+    pgw_fteid_s5_s8_up         = {};
+    sgw_fteid_s5_s8_up         = {};
     sgw_fteid_s1u_s12_s4u_s11u = {};
-    sgw_fteid_s11u = {};
-    mme_fteid_s11u = {};
-    enb_fteid_s1u = {};
-    eps_bearer_qos = {};
+    sgw_fteid_s11u             = {};
+    mme_fteid_s11u             = {};
+    enb_fteid_s1u              = {};
+    eps_bearer_qos             = {};
   }
 
   sgw_eps_bearer(const sgw_eps_bearer& b) : ebi(b.ebi) {
-    tft = b.tft;
-    pgw_fteid_s5_s8_up = b.pgw_fteid_s5_s8_up;
-    sgw_fteid_s5_s8_up = b.sgw_fteid_s5_s8_up;
+    tft                        = b.tft;
+    pgw_fteid_s5_s8_up         = b.pgw_fteid_s5_s8_up;
+    sgw_fteid_s5_s8_up         = b.sgw_fteid_s5_s8_up;
     sgw_fteid_s1u_s12_s4u_s11u = b.sgw_fteid_s1u_s12_s4u_s11u;
-    sgw_fteid_s11u = b.sgw_fteid_s11u;
-    mme_fteid_s11u = b.mme_fteid_s11u;
-    enb_fteid_s1u = b.enb_fteid_s1u;
-    eps_bearer_qos = b.eps_bearer_qos;
+    sgw_fteid_s11u             = b.sgw_fteid_s11u;
+    mme_fteid_s11u             = b.mme_fteid_s11u;
+    enb_fteid_s1u              = b.enb_fteid_s1u;
+    eps_bearer_qos             = b.eps_bearer_qos;
   }
 
   void clear() {
-    ebi.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
-    tft = {};
-    pgw_fteid_s5_s8_up = {};
-    sgw_fteid_s5_s8_up = {};
+    ebi.ebi                    = EPS_BEARER_IDENTITY_UNASSIGNED;
+    tft                        = {};
+    pgw_fteid_s5_s8_up         = {};
+    sgw_fteid_s5_s8_up         = {};
     sgw_fteid_s1u_s12_s4u_s11u = {};
-    sgw_fteid_s11u = {};
-    mme_fteid_s11u = {};
-    enb_fteid_s1u = {};
-    eps_bearer_qos = {};
+    sgw_fteid_s11u             = {};
+    mme_fteid_s11u             = {};
+    enb_fteid_s1u              = {};
+    eps_bearer_qos             = {};
   }
 
   bool update(
@@ -93,17 +93,16 @@ class sgw_eps_bearer {
               // EPS bearer for one UE accessing via E-UTRAN.
   traffic_flow_template_t tft;  // Traffic Flow Template
   // ip_address_t            pgw_address_in_use_up;       // The IP address of
-  // the P-GW currently used for sending user plane traffic. (For GTP-based S5/S8
-  // only). teid_t                        pgw_teid_s5_s8_up;           // P-GW
-  // Tunnel Endpoint Identifier for the S5/S8 interface for the user plane. (For
-  // GTP-based S5/S8 only).
-  // replaced by
+  // the P-GW currently used for sending user plane traffic. (For GTP-based
+  // S5/S8 only). teid_t                        pgw_teid_s5_s8_up;           //
+  // P-GW Tunnel Endpoint Identifier for the S5/S8 interface for the user plane.
+  // (For GTP-based S5/S8 only). replaced by
   fteid_t pgw_fteid_s5_s8_up;  // P-GW FTEID for the S5/S8 interface for the
                                // user plane. (For GTP-based S5/S8 only).
   // ip_address_t            s_gw_ip_address_s5_s8_up;        // S-GW IP address
-  // for user plane data received from PDN GW. (For GTP-based S5/S8 only). teid_t
-  // s_gw_teid_s5_s8_up;              // S-GW Tunnel Endpoint Identifier for the
-  // S5/S8 interface for the user plane. (For GTP-based S5/S8 only).
+  // for user plane data received from PDN GW. (For GTP-based S5/S8 only).
+  // teid_t s_gw_teid_s5_s8_up;              // S-GW Tunnel Endpoint Identifier
+  // for the S5/S8 interface for the user plane. (For GTP-based S5/S8 only).
   // replaced by
   fteid_t sgw_fteid_s5_s8_up;  // S-GW FTEID for the S5/S8 interface for the
                                // user plane. (For GTP-based S5/S8 only).
@@ -128,9 +127,9 @@ class sgw_eps_bearer {
   // for the S11-u interface (used by the MME). if S11-u is separated from S1-u.
   // The S11-u interface is used for Control Plane CIoT EPS Optimisation. teid_t
   // sgw_teid_s11u;                   // S-GW Tunnel Endpoint Identifier for the
-  // S11-u interface (used by the MME) if S11-u is separated from S1-u. The S11-u
-  // interface is used for Control Plane CIoT EPS Optimisation.
-  // replaced by
+  // S11-u interface (used by the MME) if S11-u is separated from S1-u. The
+  // S11-u interface is used for Control Plane CIoT EPS Optimisation. replaced
+  // by
   fteid_t sgw_fteid_s11u;
 
   // ip_address_t            mme_ip_address_s11u;             // MME IP address
@@ -275,8 +274,9 @@ class sgw_eps_bearer_context
   void create_procedure(itti_s11_modify_bearer_request&);
   void create_procedure(itti_s11_delete_session_request&);
   void create_procedure(itti_s11_release_access_bearers_request&);
-  void create_procedure(itti_s5s8_downlink_data_notification&,
-                        std::shared_ptr<sgw_pdn_connection> spc);
+  void create_procedure(
+      itti_s5s8_downlink_data_notification&,
+      std::shared_ptr<sgw_pdn_connection> spc);
 
   void insert_procedure(sebc_procedure* proc);
   std::shared_ptr<sebc_procedure> find_procedure(const uint64_t& gtpc_tx_id);
@@ -284,10 +284,11 @@ class sgw_eps_bearer_context
 
   std::shared_ptr<sgw_pdn_connection> insert_pdn_connection(
       sgw_pdn_connection* p);
-  bool find_pdn_connection(const std::string& apn, const pdn_type_t pdn_type,
-                           std::shared_ptr<sgw_pdn_connection>& sp);
-  bool find_pdn_connection(const ebi_t& ebi,
-                           std::shared_ptr<sgw_pdn_connection>& sp);
+  bool find_pdn_connection(
+      const std::string& apn, const pdn_type_t pdn_type,
+      std::shared_ptr<sgw_pdn_connection>& sp);
+  bool find_pdn_connection(
+      const ebi_t& ebi, std::shared_ptr<sgw_pdn_connection>& sp);
   void delete_pdn_connection(std::shared_ptr<sgw_pdn_connection> spc);
   int get_num_pdn_connections() { return pdn_connections.size(); };
 
@@ -297,18 +298,24 @@ class sgw_eps_bearer_context
   void handle_itti_msg(itti_s11_release_access_bearers_request& m);
   void handle_itti_msg(itti_s11_delete_session_request& m);
   void handle_itti_msg(itti_s11_downlink_data_notification_acknowledge& m);
-  void handle_itti_msg(itti_s5s8_create_session_response& m,
-                       std::shared_ptr<sgw_pdn_connection> spc);
-  void handle_itti_msg(itti_s5s8_delete_session_response& m,
-                       std::shared_ptr<sgw_pdn_connection> spc);
-  void handle_itti_msg(itti_s5s8_modify_bearer_response& m,
-                       std::shared_ptr<sgw_pdn_connection> spc);
-  void handle_itti_msg(itti_s5s8_release_access_bearers_response& m,
-                       std::shared_ptr<sgw_pdn_connection> spc);
-  void handle_itti_msg(itti_s5s8_downlink_data_notification& m,
-                       std::shared_ptr<sgw_pdn_connection> spc);
-  void handle_itti_msg(itti_s5s8_remote_peer_not_responding& resp,
-                       std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg(
+      itti_s5s8_create_session_response& m,
+      std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg(
+      itti_s5s8_delete_session_response& m,
+      std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg(
+      itti_s5s8_modify_bearer_response& m,
+      std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg(
+      itti_s5s8_release_access_bearers_response& m,
+      std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg(
+      itti_s5s8_downlink_data_notification& m,
+      std::shared_ptr<sgw_pdn_connection> spc);
+  void handle_itti_msg(
+      itti_s5s8_remote_peer_not_responding& resp,
+      std::shared_ptr<sgw_pdn_connection> spc);
 
   std::string toString() const;
 
@@ -328,9 +335,8 @@ class sgw_eps_bearer_context
   // TS 36.306 [82].
 
   // teid_t               mme_teid_s11;                 // MME Tunnel Endpoint
-  // Identifier for the S11 interface ip_address_t         mme_ip_address_s11; //
-  // MME IP address the S11 interface.
-  // replaced by
+  // Identifier for the S11 interface ip_address_t         mme_ip_address_s11;
+  // // MME IP address the S11 interface. replaced by
   fteid_t mme_fteid_s11;
 
   // teid_t               sgw_teid_s11_s4_cp;           // S-GW Tunnel Endpoint
@@ -342,9 +348,8 @@ class sgw_eps_bearer_context
 
   // ip_address_t         sgsn_ip_address_for_S4_cp;    // S-GW IP address for
   // the S11 interface and the S4 Interface (control plane). teid_t
-  // sgsn_teid_s4_cp;              // S-GW Tunnel Endpoint Identifier for the S11
-  // Interface and the S4 Interface (control plane)
-  // replaced by
+  // sgsn_teid_s4_cp;              // S-GW Tunnel Endpoint Identifier for the
+  // S11 Interface and the S4 Interface (control plane) replaced by
   fteid_t sgsn_fteid_s4_cp;
 
   // NOT NEEDED Trace reference                        // Identifies a record or

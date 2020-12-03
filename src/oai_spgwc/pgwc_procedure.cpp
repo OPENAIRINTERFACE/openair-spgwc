@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -90,20 +90,20 @@ int session_establishment_procedure::run(
   if (not pfcp_associations::get_instance().select_up_node(
           up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
     // TODO
-    ::cause_t cause = {};
-    cause.pce = 1;
+    ::cause_t cause   = {};
+    cause.pce         = 1;
     cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
     resp->gtp_ies.set(cause);
     return RETURNerror;
   }
 
   //-------------------
-  s5_trigger = req;
+  s5_trigger           = req;
   s5_triggered_pending = resp;
   ppc->generate_seid();
   itti_sxab_session_establishment_request* sx_ser =
       new itti_sxab_session_establishment_request(TASK_PGWC_APP, TASK_PGWC_SX);
-  sx_ser->seid = 0;
+  sx_ser->seid    = 0;
   sx_ser->trxn_id = this->trxn_id;
   // sx_ser->l_endpoint =
   // boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(0xC0A8A064),
@@ -134,9 +134,9 @@ int session_establishment_procedure::run(
     //-------------------
     // IE create_far
     //-------------------
-    pfcp::create_far create_far = {};
-    pfcp::far_id_t far_id = {};
-    pfcp::apply_action_t apply_action = {};
+    pfcp::create_far create_far                       = {};
+    pfcp::far_id_t far_id                             = {};
+    pfcp::apply_action_t apply_action                 = {};
     pfcp::forwarding_parameters forwarding_parameters = {};
     //    pfcp::duplicating_parameters      duplicating_parameters = {};
     //    pfcp::bar_id_t                    bar_id = {};
@@ -165,10 +165,10 @@ int session_establishment_procedure::run(
     //-------------------
     // IE create_pdr
     //-------------------
-    pfcp::create_pdr create_pdr = {};
-    pfcp::pdr_id_t pdr_id = {};
-    pfcp::precedence_t precedence = {};
-    pfcp::pdi pdi = {};
+    pfcp::create_pdr create_pdr                       = {};
+    pfcp::pdr_id_t pdr_id                             = {};
+    pfcp::precedence_t precedence                     = {};
+    pfcp::pdi pdi                                     = {};
     pfcp::outer_header_removal_t outer_header_removal = {};
     //    pfcp::far_id_t                    far_id;
     //    pfcp::urr_id_t                    urr_id;
@@ -176,11 +176,11 @@ int session_establishment_procedure::run(
     //    pfcp::activate_predefined_rules_t activate_predefined_rules;
     // pdi IEs
     pfcp::source_interface_t source_interface = {};
-    pfcp::fteid_t local_fteid = {};
+    pfcp::fteid_t local_fteid                 = {};
     // pfcp::network_instance_t         network_instance = {};
     pfcp::ue_ip_address_t ue_ip_address = {};
     // pfcp::traffic_endpoint_id_t      traffic_endpoint_id = {};
-    pfcp::sdf_filter_t sdf_filter = {};
+    pfcp::sdf_filter_t sdf_filter         = {};
     pfcp::application_id_t application_id = {};
     // pfcp::ethernet_packet_filter     ethernet_packet_filter = {};
     pfcp::qfi_t qfi = {};
@@ -188,7 +188,7 @@ int session_establishment_procedure::run(
     // pfcp::framed_routing_t           framed_routing = {};
     // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
     source_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS;
-    local_fteid.ch = 1;
+    local_fteid.ch                   = 1;
     // local_fteid.chid = 1;
     xgpp_conv::paa_to_pfcp_ue_ip_address(
         s5_triggered_pending->gtp_ies.paa.second, ue_ip_address);
@@ -219,20 +219,20 @@ int session_establishment_procedure::run(
     sx_ser->pfcp_ies.set(create_far);
 
     // Have to backup far id and pdr id
-    pgw_eps_bearer b = {};
-    b.far_id_ul.first = true;
+    pgw_eps_bearer b   = {};
+    b.far_id_ul.first  = true;
     b.far_id_ul.second = far_id;
-    b.pdr_id_ul = pdr_id;
-    b.ebi = it.eps_bearer_id;
-    pgw_eps_bearer b2 = b;
+    b.pdr_id_ul        = pdr_id;
+    b.ebi              = it.eps_bearer_id;
+    pgw_eps_bearer b2  = b;
     ppc->add_eps_bearer(b2);
   }
 
   // for finding procedure when receiving response
   pgw_app_inst->set_seid_2_pgw_context(cp_fseid.seid, pc);
 
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_SX",
-                          sx_ser->get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_SX", sx_ser->get_msg_name());
   int ret = itti_inst->send_msg(sx_triggered);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -268,19 +268,20 @@ void session_establishment_procedure::handle_itti_msg(
         // uncomment if SPGW-C allocate up fteid
         // ppc->add_eps_bearer(b);
       } else {
-        Logger::pgwc_app().error("Could not get EPS bearer for created_pdr %d",
-                                 pdr_id.rule_id);
+        Logger::pgwc_app().error(
+            "Could not get EPS bearer for created_pdr %d", pdr_id.rule_id);
       }
     } else {
-      Logger::pgwc_app().error("Could not get pdr_id for created_pdr in %s",
-                               resp.pfcp_ies.get_msg_name());
+      Logger::pgwc_app().error(
+          "Could not get pdr_id for created_pdr in %s",
+          resp.pfcp_ies.get_msg_name());
     }
   }
 
   for (auto it : s5_trigger->gtp_ies.bearer_contexts_to_be_created) {
-    pgw_eps_bearer b = {};
+    pgw_eps_bearer b                                                  = {};
     gtpv2c::bearer_context_created_within_create_session_response bcc = {};
-    ::cause_t bcc_cause = {
+    ::cause_t bcc_cause                                               = {
         .cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
     if (not ppc->get_eps_bearer(it.eps_bearer_id, b)) {
       bcc_cause.cause_value = SYSTEM_FAILURE;
@@ -297,8 +298,9 @@ void session_establishment_procedure::handle_itti_msg(
     s5_triggered_pending->gtp_ies.add_bearer_context_created(bcc);
   }
 
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                          s5_triggered_pending->gtp_ies.get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_S5S8",
+      s5_triggered_pending->gtp_ies.get_msg_name());
   int ret = itti_inst->send_msg(s5_triggered_pending);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -319,21 +321,21 @@ int modify_bearer_procedure::run(
   if (not pfcp_associations::get_instance().select_up_node(
           up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
     // TODO
-    ::cause_t cause = {};
-    cause.pce = 1;
+    ::cause_t cause   = {};
+    cause.pce         = 1;
     cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
     resp->gtp_ies.set(cause);
     return RETURNerror;
   }
 
   //-------------------
-  s5_trigger = req;
-  s5_triggered_pending = resp;
+  s5_trigger                       = req;
+  s5_triggered_pending             = resp;
   s5_triggered_pending->gtpc_tx_id = req->gtpc_tx_id;
   itti_sxab_session_modification_request* sx_smr =
       new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
-  sx_smr->seid = ppc->up_fseid.seid;
-  sx_smr->trxn_id = this->trxn_id;
+  sx_smr->seid       = ppc->up_fseid.seid;
+  sx_smr->trxn_id    = this->trxn_id;
   sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
   sx_triggered =
       std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
@@ -348,7 +350,7 @@ int modify_bearer_procedure::run(
   // sx_smr->pfcp_ies.set(cp_fseid);
 
   for (auto it : s5_trigger->gtp_ies.bearer_contexts_to_be_modified) {
-    ::fteid_t v = {};
+    ::fteid_t v         = {};
     pgw_eps_bearer& peb = ppc->get_eps_bearer(it.eps_bearer_id);
     if (peb.ebi !=
         it.eps_bearer_id) {  // target is to test EPS_BEARER_IDENTITY_UNASSIGNED
@@ -357,13 +359,13 @@ int modify_bearer_procedure::run(
           "modify_bearer_procedure: missing pgw_eps_bearer ebi %d",
           it.eps_bearer_id.ebi);
       ::cause_t cause = {};
-      cause.pce = 1;
+      cause.pce       = 1;
       // TODO cause
       cause.cause_value = SYSTEM_FAILURE;
       resp->gtp_ies.set(cause);
 
       gtpv2c::bearer_context_modified_within_modify_bearer_response bcc = {};
-      ::cause_t bcc_cause = {
+      ::cause_t bcc_cause                                               = {
           .cause_value = SYSTEM_FAILURE, .pce = 0, .bce = 0, .cs = 0};
       bcc.set(peb.ebi);
       bcc.set(bcc_cause);
@@ -380,13 +382,13 @@ int modify_bearer_procedure::run(
             "modify_bearer_procedure: ebi %d sgw_fteid_s5_s8_up unchanged",
             it.eps_bearer_id.ebi);
         ::cause_t cause = {};
-        cause.pce = 1;
+        cause.pce       = 1;
         // TODO CAUSE
         cause.cause_value = REQUEST_ACCEPTED;
         resp->gtp_ies.set(cause);
 
         gtpv2c::bearer_context_modified_within_modify_bearer_response bcc = {};
-        ::cause_t bcc_cause = {
+        ::cause_t bcc_cause                                               = {
             .cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
         bcc.set(peb.ebi);
         bcc.set(bcc_cause);
@@ -395,16 +397,16 @@ int modify_bearer_procedure::run(
         continue;
       } else if ((peb.far_id_dl.first) && (peb.far_id_dl.second.far_id)) {
         // Update FAR
-        far_id.far_id = peb.far_id_dl.second.far_id;
-        pfcp::update_far update_far = {};
+        far_id.far_id                     = peb.far_id_dl.second.far_id;
+        pfcp::update_far update_far       = {};
         pfcp::apply_action_t apply_action = {};
-        pfcp::outer_header_creation_t outer_header_creation = {};
+        pfcp::outer_header_creation_t outer_header_creation             = {};
         pfcp::update_forwarding_parameters update_forwarding_parameters = {};
 
         update_far.set(peb.far_id_dl.second);
         outer_header_creation.outer_header_creation_description =
             OUTER_HEADER_CREATION_GTPU_UDP_IPV4;
-        outer_header_creation.teid = v.teid_gre_key;
+        outer_header_creation.teid                = v.teid_gre_key;
         outer_header_creation.ipv4_address.s_addr = v.ipv4_address.s_addr;
         update_forwarding_parameters.set(outer_header_creation);
         update_far.set(update_forwarding_parameters);
@@ -418,8 +420,8 @@ int modify_bearer_procedure::run(
         peb.far_id_dl.first = true;
       } else {
         // Create FAR
-        pfcp::create_far create_far = {};
-        pfcp::apply_action_t apply_action = {};
+        pfcp::create_far create_far                       = {};
+        pfcp::apply_action_t apply_action                 = {};
         pfcp::forwarding_parameters forwarding_parameters = {};
         //    pfcp::duplicating_parameters      duplicating_parameters = {};
         //    pfcp::bar_id_t                    bar_id = {};
@@ -459,7 +461,7 @@ int modify_bearer_procedure::run(
 
         send_sx = true;
 
-        peb.far_id_dl.first = true;
+        peb.far_id_dl.first  = true;
         peb.far_id_dl.second = far_id;
       }
 
@@ -467,9 +469,9 @@ int modify_bearer_procedure::run(
         //-------------------
         // IE create_pdr
         //-------------------
-        pfcp::create_pdr create_pdr = {};
+        pfcp::create_pdr create_pdr   = {};
         pfcp::precedence_t precedence = {};
-        pfcp::pdi pdi = {};
+        pfcp::pdi pdi                 = {};
         //    pfcp::far_id_t                    far_id;
         //    pfcp::urr_id_t                    urr_id;
         //    pfcp::qer_id_t                    qer_id;
@@ -480,7 +482,7 @@ int modify_bearer_procedure::run(
         // pfcp::network_instance_t         network_instance = {};
         pfcp::ue_ip_address_t ue_ip_address = {};
         // pfcp::traffic_endpoint_id_t      traffic_endpoint_id = {};
-        pfcp::sdf_filter_t sdf_filter = {};
+        pfcp::sdf_filter_t sdf_filter         = {};
         pfcp::application_id_t application_id = {};
         // pfcp::ethernet_packet_filter     ethernet_packet_filter = {};
         pfcp::qfi_t qfi = {};
@@ -491,11 +493,11 @@ int modify_bearer_procedure::run(
 
         // local_fteid.from_core_fteid(peb.sgw_fteid_s5_s8_up);
         if (ppc->ipv4) {
-          ue_ip_address.v4 = 1;
+          ue_ip_address.v4                  = 1;
           ue_ip_address.ipv4_address.s_addr = ppc->ipv4_address.s_addr;
         }
         if (ppc->ipv6) {
-          ue_ip_address.v6 = 1;
+          ue_ip_address.v6           = 1;
           ue_ip_address.ipv6_address = ppc->ipv6_address;
         }
 
@@ -523,8 +525,8 @@ int modify_bearer_procedure::run(
         peb.pdr_id_dl = pdr_id;
       } else {
         // Update FAR
-        far_id.far_id = peb.far_id_ul.second.far_id;
-        pfcp::update_far update_far = {};
+        far_id.far_id                     = peb.far_id_ul.second.far_id;
+        pfcp::update_far update_far       = {};
         pfcp::apply_action_t apply_action = {};
 
         update_far.set(peb.far_id_ul.second);
@@ -547,8 +549,8 @@ int modify_bearer_procedure::run(
         //-------------------
         // IE create_far
         //-------------------
-        pfcp::create_far create_far = {};
-        pfcp::apply_action_t apply_action = {};
+        pfcp::create_far create_far                       = {};
+        pfcp::apply_action_t apply_action                 = {};
         pfcp::forwarding_parameters forwarding_parameters = {};
         //    pfcp::duplicating_parameters      duplicating_parameters = {};
         //    pfcp::bar_id_t                    bar_id = {};
@@ -576,7 +578,7 @@ int modify_bearer_procedure::run(
         create_far.set(apply_action);
         create_far.set(forwarding_parameters);
 
-        peb.far_id_ul.first = true;
+        peb.far_id_ul.first  = true;
         peb.far_id_ul.second = far_id;
 
         //-------------------
@@ -589,9 +591,9 @@ int modify_bearer_procedure::run(
       }
 
       if (not peb.pdr_id_ul.rule_id) {
-        pfcp::create_pdr create_pdr = {};
-        pfcp::precedence_t precedence = {};
-        pfcp::pdi pdi = {};
+        pfcp::create_pdr create_pdr                       = {};
+        pfcp::precedence_t precedence                     = {};
+        pfcp::pdi pdi                                     = {};
         pfcp::outer_header_removal_t outer_header_removal = {};
         //    pfcp::far_id_t                    far_id;
         //    pfcp::urr_id_t                    urr_id;
@@ -599,11 +601,11 @@ int modify_bearer_procedure::run(
         //    pfcp::activate_predefined_rules_t activate_predefined_rules;
         // pdi IEs
         pfcp::source_interface_t source_interface = {};
-        pfcp::fteid_t local_fteid = {};
+        pfcp::fteid_t local_fteid                 = {};
         // pfcp::network_instance_t         network_instance = {};
         pfcp::ue_ip_address_t ue_ip_address = {};
         // pfcp::traffic_endpoint_id_t      traffic_endpoint_id = {};
-        pfcp::sdf_filter_t sdf_filter = {};
+        pfcp::sdf_filter_t sdf_filter         = {};
         pfcp::application_id_t application_id = {};
         // pfcp::ethernet_packet_filter     ethernet_packet_filter = {};
         pfcp::qfi_t qfi = {};
@@ -611,7 +613,7 @@ int modify_bearer_procedure::run(
         // pfcp::framed_routing_t           framed_routing = {};
         // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
         source_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS;
-        local_fteid.ch = 1;
+        local_fteid.ch                   = 1;
         // local_fteid.chid = 1;
         xgpp_conv::pdn_ip_to_pfcp_ue_ip_address(
             ppc->pdn_type, ppc->ipv4_address, ppc->ipv6_address, ue_ip_address);
@@ -651,8 +653,8 @@ int modify_bearer_procedure::run(
   }
 
   if (send_sx) {
-    Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_SX",
-                            sx_smr->get_msg_name());
+    Logger::pgwc_app().info(
+        "Sending ITTI message %s to task TASK_PGWC_SX", sx_smr->get_msg_name());
     int ret = itti_inst->send_msg(sx_triggered);
     if (RETURNok != ret) {
       Logger::pgwc_app().error(
@@ -662,8 +664,9 @@ int modify_bearer_procedure::run(
     }
   } else {
     // send s5
-    Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                            s5_triggered_pending->gtp_ies.get_msg_name());
+    Logger::pgwc_app().info(
+        "Sending ITTI message %s to task TASK_PGWC_S5S8",
+        s5_triggered_pending->gtp_ies.get_msg_name());
     int ret = itti_inst->send_msg(s5_triggered_pending);
     if (RETURNok != ret) {
       Logger::pgwc_app().error(
@@ -687,7 +690,7 @@ void modify_bearer_procedure::handle_itti_msg(
 
   bool bearer_context_found = false;
   for (auto it_created_pdr : resp.pfcp_ies.created_pdrs) {
-    bearer_context_found = false;
+    bearer_context_found  = false;
     pfcp::pdr_id_t pdr_id = {};
     if (it_created_pdr.get(pdr_id)) {
       pgw_eps_bearer b = {};
@@ -718,13 +721,14 @@ void modify_bearer_procedure::handle_itti_msg(
             xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
             b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
             // comment if SPGW-C allocate up fteid
-            Logger::pgwc_app().error("got local_up_fteid from created_pdr %s",
-                                     b.pgw_fteid_s5_s8_up.toString().c_str());
+            Logger::pgwc_app().error(
+                "got local_up_fteid from created_pdr %s",
+                b.pgw_fteid_s5_s8_up.toString().c_str());
           } else {
             Logger::pgwc_app().error(
                 "Could not get local_up_fteid from created_pdr");
           }
-          b.released = false;
+          b.released        = false;
           pgw_eps_bearer b2 = b;
           ppc->add_eps_bearer(b2);
 
@@ -745,8 +749,9 @@ void modify_bearer_procedure::handle_itti_msg(
         }
       }
     } else {
-      Logger::pgwc_app().error("Could not get pdr_id for created_pdr in %s",
-                               resp.pfcp_ies.get_msg_name());
+      Logger::pgwc_app().error(
+          "Could not get pdr_id for created_pdr in %s",
+          resp.pfcp_ies.get_msg_name());
     }
   }
   if (cause.cause_value == CAUSE_VALUE_REQUEST_ACCEPTED) {
@@ -773,7 +778,7 @@ void modify_bearer_procedure::handle_itti_msg(
               ppc->add_eps_bearer(b2);
 
               gtpv2c::bearer_context_modified_within_modify_bearer_response
-                  bcc = {};
+                  bcc             = {};
               ::cause_t bcc_cause = {
                   .cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
               bcc.set(b.ebi);
@@ -789,8 +794,9 @@ void modify_bearer_procedure::handle_itti_msg(
               resp.pfcp_ies.get_msg_name());
         }
       } else {
-        Logger::pgwc_app().error("Could not get far_id for update_far in %s",
-                                 resp.pfcp_ies.get_msg_name());
+        Logger::pgwc_app().error(
+            "Could not get far_id for update_far in %s",
+            resp.pfcp_ies.get_msg_name());
       }
     }
   }
@@ -809,9 +815,9 @@ void modify_bearer_procedure::handle_itti_msg(
           if ((cause_gtp.cause_value == REQUEST_ACCEPTED) &&
               (it_modified.cause.second.cause_value != REQUEST_ACCEPTED)) {
             cause_gtp.cause_value = REQUEST_ACCEPTED_PARTIALLY;
-          } else if ((cause_gtp.cause_value != REQUEST_ACCEPTED) &&
-                     (it_modified.cause.second.cause_value ==
-                      REQUEST_ACCEPTED)) {
+          } else if (
+              (cause_gtp.cause_value != REQUEST_ACCEPTED) &&
+              (it_modified.cause.second.cause_value == REQUEST_ACCEPTED)) {
             cause_gtp.cause_value = REQUEST_ACCEPTED_PARTIALLY;
           }
           // found = true;
@@ -824,8 +830,9 @@ void modify_bearer_procedure::handle_itti_msg(
     }
   }
   s5_triggered_pending->gtp_ies.set(cause_gtp);
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                          s5_triggered_pending->gtp_ies.get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_S5S8",
+      s5_triggered_pending->gtp_ies.get_msg_name());
   int ret = itti_inst->send_msg(s5_triggered_pending);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -840,13 +847,13 @@ int release_access_bearers_procedure::run(
     std::shared_ptr<itti_s5s8_release_access_bearers_response>& resp,
     std::shared_ptr<pgwc::pgw_context> pc) {
   //-------------------
-  s5_trigger = req;
-  s5_triggered_pending = resp;
+  s5_trigger                       = req;
+  s5_triggered_pending             = resp;
   s5_triggered_pending->gtpc_tx_id = req->gtpc_tx_id;
   itti_sxab_session_modification_request* sx_smr =
       new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
-  sx_smr->seid = ppc->up_fseid.seid;
-  sx_smr->trxn_id = this->trxn_id;
+  sx_smr->seid       = ppc->up_fseid.seid;
+  sx_smr->trxn_id    = this->trxn_id;
   sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
   sx_triggered =
       std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
@@ -869,7 +876,7 @@ int release_access_bearers_procedure::run(
     //-------------------
     // IE create_far
     //-------------------
-    pfcp::update_far far = {};
+    pfcp::update_far far  = {};
     pfcp::far_id_t far_id = {};
     //    pfcp::update_forwarding_parameters forwarding_parameters = {};
     //    pfcp::update_duplicating_parameters      duplicating_parameters = {};
@@ -891,7 +898,7 @@ int release_access_bearers_procedure::run(
       far_id.far_id = peb.far_id_dl.second.far_id;
       // apply_action.buff = 1;
       pfcp::apply_action_t apply_action = {};
-      apply_action.nocp = 1;
+      apply_action.nocp                 = 1;
 
       far.set(far_id);
       far.set(apply_action);
@@ -906,11 +913,11 @@ int release_access_bearers_procedure::run(
           peb.ebi.ebi);
     }
     if (peb.far_id_ul.first) {
-      pfcp::update_far far = {};
-      pfcp::far_id_t far_id = {};
-      far_id.far_id = peb.far_id_ul.second.far_id;
+      pfcp::update_far far              = {};
+      pfcp::far_id_t far_id             = {};
+      far_id.far_id                     = peb.far_id_ul.second.far_id;
       pfcp::apply_action_t apply_action = {};
-      apply_action.drop = 1;
+      apply_action.drop                 = 1;
 
       far.set(far_id);
       far.set(apply_action);
@@ -922,8 +929,8 @@ int release_access_bearers_procedure::run(
     ppc->add_eps_bearer(b2);
   }
 
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_SX",
-                          sx_smr->get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_SX", sx_smr->get_msg_name());
   int ret = itti_inst->send_msg(sx_triggered);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -936,7 +943,7 @@ int release_access_bearers_procedure::run(
 //------------------------------------------------------------------------------
 void release_access_bearers_procedure::handle_itti_msg(
     itti_sxab_session_modification_response& resp) {
-  ::cause_t gtp_cause = {};
+  ::cause_t gtp_cause      = {};
   pfcp::cause_t pfcp_cause = {};
 
   resp.pfcp_ies.get(pfcp_cause);
@@ -944,8 +951,9 @@ void release_access_bearers_procedure::handle_itti_msg(
 
   s5_triggered_pending->gtp_ies.set(gtp_cause);
   // for now we do not need more IEs
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                          s5_triggered_pending->gtp_ies.get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_S5S8",
+      s5_triggered_pending->gtp_ies.get_msg_name());
   int ret = itti_inst->send_msg(s5_triggered_pending);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -963,26 +971,27 @@ int delete_session_procedure::run(
   if (not pfcp_associations::get_instance().select_up_node(
           up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
     // TODO
-    ::cause_t cause = {};
-    cause.pce = 1;
+    ::cause_t cause   = {};
+    cause.pce         = 1;
     cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
     resp->gtp_ies.set(cause);
     return RETURNerror;
   }
 
   //-------------------
-  s5_trigger = req;
-  s5_triggered_pending = resp;
+  s5_trigger                       = req;
+  s5_triggered_pending             = resp;
   s5_triggered_pending->gtpc_tx_id = req->gtpc_tx_id;
   itti_sxab_session_deletion_request* sx =
       new itti_sxab_session_deletion_request(TASK_PGWC_APP, TASK_PGWC_SX);
-  sx->seid = ppc->up_fseid.seid;
-  sx->trxn_id = this->trxn_id;
+  sx->seid       = ppc->up_fseid.seid;
+  sx->trxn_id    = this->trxn_id;
   sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
-  sx_triggered = std::shared_ptr<itti_sxab_session_deletion_request>(sx);
+  sx_triggered   = std::shared_ptr<itti_sxab_session_deletion_request>(sx);
 
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_SX",
-                          sx->pfcp_ies.get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_SX",
+      sx->pfcp_ies.get_msg_name());
   int ret = itti_inst->send_msg(sx_triggered);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -1023,8 +1032,9 @@ void delete_session_procedure::handle_itti_msg(
 
   s5_triggered_pending->gtp_ies.set(gtp_cause);
 
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                          s5_triggered_pending->gtp_ies.get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_S5S8",
+      s5_triggered_pending->gtp_ies.get_msg_name());
   int ret = itti_inst->send_msg(s5_triggered_pending);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -1034,8 +1044,9 @@ void delete_session_procedure::handle_itti_msg(
 
   // find APN context
   pdn_duo_t pdn_duo = {};
-  if (pc->find_pdn_connection(ppc->pgw_fteid_s5_s8_cp.teid_gre_key,
-                              IS_FIND_PDN_WITH_LOCAL_TEID, pdn_duo)) {
+  if (pc->find_pdn_connection(
+          ppc->pgw_fteid_s5_s8_cp.teid_gre_key, IS_FIND_PDN_WITH_LOCAL_TEID,
+          pdn_duo)) {
     pc->delete_pdn_connection(pdn_duo.first, pdn_duo.second);
   } else {
     Logger::pgwc_app().error(
@@ -1047,20 +1058,21 @@ int downlink_data_report_procedure::run(
     std::shared_ptr<pgwc::pgw_context> context,
     std::shared_ptr<pgwc::pgw_pdn_connection> pdn, const ebi_t& e) {
   ppc = pdn;
-  pc = context;
+  pc  = context;
   ebi = e;
 
   itti_s5s8_downlink_data_notification* s5 =
       new itti_s5s8_downlink_data_notification(TASK_PGWC_APP, TASK_PGWC_S5S8);
-  s5->teid = ppc->sgw_fteid_s5_s8_cp.teid_gre_key;
+  s5->teid       = ppc->sgw_fteid_s5_s8_cp.teid_gre_key;
   s5->gtpc_tx_id = this->trxn_id;
   s5->r_endpoint =
       endpoint(ppc->sgw_fteid_s5_s8_cp.ipv4_address, pgw_cfg.s5s8_cp.port);
   s5->gtp_ies.set(e);
   s5_triggered = std::shared_ptr<itti_s5s8_downlink_data_notification>(s5);
 
-  Logger::pgwc_app().info("Sending ITTI message %s to task TASK_PGWC_S5S8",
-                          s5->gtp_ies.get_msg_name());
+  Logger::pgwc_app().info(
+      "Sending ITTI message %s to task TASK_PGWC_S5S8",
+      s5->gtp_ies.get_msg_name());
   int ret = itti_inst->send_msg(s5_triggered);
   if (RETURNok != ret) {
     Logger::pgwc_app().error(
@@ -1094,8 +1106,8 @@ void downlink_data_report_procedure::handle_itti_msg(
 
   itti_sxab_session_report_response* sx =
       new itti_sxab_session_report_response(TASK_PGWC_APP, TASK_PGWC_SX);
-  sx->seid = ppc->up_fseid.seid;
-  sx->trxn_id = this->trxn_id;
+  sx->seid       = ppc->up_fseid.seid;
+  sx->trxn_id    = this->trxn_id;
   sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
   std::shared_ptr<itti_sxab_session_report_response> sx_triggered =
       std::shared_ptr<itti_sxab_session_report_response>(sx);

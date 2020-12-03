@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -107,18 +107,18 @@ class sgwc_config {
   sgwc_config()
       : m_rw_lock(), pid_dir(), instance(0), s11_cp(), s11_up(), s5s8_cp() {
     itti.itti_timer_sched_params.sched_priority = 85;
-    itti.s11_sched_params.sched_priority = 84;
-    itti.s5s8_sched_params.sched_priority = 84;
-    itti.sgw_app_sched_params.sched_priority = 84;
-    itti.async_cmd_sched_params.sched_priority = 84;
+    itti.s11_sched_params.sched_priority        = 84;
+    itti.s5s8_sched_params.sched_priority       = 84;
+    itti.sgw_app_sched_params.sched_priority    = 84;
+    itti.async_cmd_sched_params.sched_priority  = 84;
 
     s11_cp.thread_rd_sched_params.sched_priority = 95;
-    s11_cp.port = gtpv2c::default_port;
+    s11_cp.port                                  = gtpv2c::default_port;
 
     s11_up.thread_rd_sched_params.sched_priority = 95;
 
     s5s8_cp.thread_rd_sched_params.sched_priority = 95;
-    s5s8_cp.port = gtpv2c::default_port;
+    s5s8_cp.port                                  = gtpv2c::default_port;
   };
   void lock() { m_rw_lock.lock(); };
   void unlock() { m_rw_lock.unlock(); };

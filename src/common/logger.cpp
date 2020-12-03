@@ -22,10 +22,10 @@
 #include <sstream>
 #include <string>
 
-Logger *Logger::m_singleton = NULL;
+Logger* Logger::m_singleton = NULL;
 
-void Logger::_init(const char *app, const bool log_stdout,
-                   bool const log_rot_file) {
+void Logger::_init(
+    const char* app, const bool log_stdout, bool const log_rot_file) {
   int num_sinks = 0;
   spdlog::set_async_mode(2048);
 #if TRACE_IS_ON
@@ -54,39 +54,40 @@ void Logger::_init(const char *app, const bool log_stdout,
   ss << "[%Y-%m-%dT%H:%M:%S.%f] [" << app << "] [%n] [%l] %v";
 
   m_async_cmd = new _Logger("async_c  ", m_sinks, ss.str().c_str());
-  m_enb_s1u = new _Logger("enb_s1u  ", m_sinks, ss.str().c_str());
-  m_gtpv1_u = new _Logger("gtpv1_u  ", m_sinks, ss.str().c_str());
-  m_gtpv2_c = new _Logger("gtpv2_c  ", m_sinks, ss.str().c_str());
+  m_enb_s1u   = new _Logger("enb_s1u  ", m_sinks, ss.str().c_str());
+  m_gtpv1_u   = new _Logger("gtpv1_u  ", m_sinks, ss.str().c_str());
+  m_gtpv2_c   = new _Logger("gtpv2_c  ", m_sinks, ss.str().c_str());
   // m_gx        = new _Logger( "gx      ", m_sinks, ss.str().c_str() );
-  m_itti = new _Logger("itti     ", m_sinks, ss.str().c_str());
-  m_mme_s11 = new _Logger("mme_s11  ", m_sinks, ss.str().c_str());
+  m_itti     = new _Logger("itti     ", m_sinks, ss.str().c_str());
+  m_mme_s11  = new _Logger("mme_s11  ", m_sinks, ss.str().c_str());
   m_pgwc_app = new _Logger("pgwc_app ", m_sinks, ss.str().c_str());
   // m_pgwu_app  = new _Logger( "pgwu_app", m_sinks, ss.str().c_str() );
   m_pgwc_s5s8 = new _Logger("pgwc_s5  ", m_sinks, ss.str().c_str());
-  m_pgwc_sx = new _Logger("pgwc_sx  ", m_sinks, ss.str().c_str());
+  m_pgwc_sx   = new _Logger("pgwc_sx  ", m_sinks, ss.str().c_str());
   // m_pgwu_sx   = new _Logger( "pgwu_sx ", m_sinks, ss.str().c_str() );
   // m_pgw_udp   = new _Logger( "pgw_udp ", m_sinks, ss.str().c_str() );
   m_sgwc_app = new _Logger("sgwc_app ", m_sinks, ss.str().c_str());
   // m_sgwu_app  = new _Logger( "sgwu_app", m_sinks, ss.str().c_str() );
   // m_sgwu_sx   = new _Logger( "sgwu_sx ", m_sinks, ss.str().c_str() );
-  m_sgwc_s11 = new _Logger("sgwc_s11 ", m_sinks, ss.str().c_str());
+  m_sgwc_s11  = new _Logger("sgwc_s11 ", m_sinks, ss.str().c_str());
   m_sgwc_s5s8 = new _Logger("sgwc_s5  ", m_sinks, ss.str().c_str());
-  m_sgwc_sx = new _Logger("sgwc_sx  ", m_sinks, ss.str().c_str());
+  m_sgwc_sx   = new _Logger("sgwc_sx  ", m_sinks, ss.str().c_str());
   // m_sgw_udp   = new _Logger( "sgw_udp ", m_sinks, ss.str().c_str() );
-  m_spgwu_app = new _Logger("spgwu_app", m_sinks, ss.str().c_str());
-  m_spgwu_s1u = new _Logger("spgwu_s1u", m_sinks, ss.str().c_str());
-  m_spgwu_sx = new _Logger("spgwu_sx ", m_sinks, ss.str().c_str());
-  m_system = new _Logger("system   ", m_sinks, ss.str().c_str());
-  m_udp = new _Logger("udp      ", m_sinks, ss.str().c_str());
-  m_pfcp = new _Logger("pfcp     ", m_sinks, ss.str().c_str());
+  m_spgwu_app   = new _Logger("spgwu_app", m_sinks, ss.str().c_str());
+  m_spgwu_s1u   = new _Logger("spgwu_s1u", m_sinks, ss.str().c_str());
+  m_spgwu_sx    = new _Logger("spgwu_sx ", m_sinks, ss.str().c_str());
+  m_system      = new _Logger("system   ", m_sinks, ss.str().c_str());
+  m_udp         = new _Logger("udp      ", m_sinks, ss.str().c_str());
+  m_pfcp        = new _Logger("pfcp     ", m_sinks, ss.str().c_str());
   m_pfcp_switch = new _Logger("pfcp_sw  ", m_sinks, ss.str().c_str());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-_Logger::_Logger(const char *category, std::vector<spdlog::sink_ptr> &sinks,
-                 const char *pattern)
+_Logger::_Logger(
+    const char* category, std::vector<spdlog::sink_ptr>& sinks,
+    const char* pattern)
     : m_log(category, sinks.begin(), sinks.end()) {
   m_log.set_pattern(pattern);
 #if TRACE_IS_ON
@@ -100,7 +101,7 @@ _Logger::_Logger(const char *category, std::vector<spdlog::sink_ptr> &sinks,
 #endif
 }
 
-void _Logger::trace(const char *format, ...) {
+void _Logger::trace(const char* format, ...) {
 #if TRACE_IS_ON
   va_list args;
   va_start(args, format);
@@ -109,7 +110,7 @@ void _Logger::trace(const char *format, ...) {
 #endif
 }
 
-void _Logger::trace(const std::string &format, ...) {
+void _Logger::trace(const std::string& format, ...) {
 #if TRACE_IS_ON
   va_list args;
   va_start(args, format);
@@ -118,7 +119,7 @@ void _Logger::trace(const std::string &format, ...) {
 #endif
 }
 
-void _Logger::debug(const char *format, ...) {
+void _Logger::debug(const char* format, ...) {
 #if DEBUG_IS_ON
   va_list args;
   va_start(args, format);
@@ -127,7 +128,7 @@ void _Logger::debug(const char *format, ...) {
 #endif
 }
 
-void _Logger::debug(const std::string &format, ...) {
+void _Logger::debug(const std::string& format, ...) {
 #if DEBUG_IS_ON
   va_list args;
   va_start(args, format);
@@ -136,7 +137,7 @@ void _Logger::debug(const std::string &format, ...) {
 #endif
 }
 
-void _Logger::info(const char *format, ...) {
+void _Logger::info(const char* format, ...) {
 #if INFO_IS_ON
   va_list args;
   va_start(args, format);
@@ -145,7 +146,7 @@ void _Logger::info(const char *format, ...) {
 #endif
 }
 
-void _Logger::info(const std::string &format, ...) {
+void _Logger::info(const std::string& format, ...) {
 #if INFO_IS_ON
   va_list args;
   va_start(args, format);
@@ -154,49 +155,49 @@ void _Logger::info(const std::string &format, ...) {
 #endif
 }
 
-void _Logger::startup(const char *format, ...) {
+void _Logger::startup(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log(_ltStartup, format, args);
   va_end(args);
 }
 
-void _Logger::startup(const std::string &format, ...) {
+void _Logger::startup(const std::string& format, ...) {
   va_list args;
   va_start(args, format);
   log(_ltStartup, format.c_str(), args);
   va_end(args);
 }
 
-void _Logger::warn(const char *format, ...) {
+void _Logger::warn(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log(_ltWarn, format, args);
   va_end(args);
 }
 
-void _Logger::warn(const std::string &format, ...) {
+void _Logger::warn(const std::string& format, ...) {
   va_list args;
   va_start(args, format);
   log(_ltWarn, format.c_str(), args);
   va_end(args);
 }
 
-void _Logger::error(const char *format, ...) {
+void _Logger::error(const char* format, ...) {
   va_list args;
   va_start(args, format);
   log(_ltError, format, args);
   va_end(args);
 }
 
-void _Logger::error(const std::string &format, ...) {
+void _Logger::error(const std::string& format, ...) {
   va_list args;
   va_start(args, format);
   log(_ltError, format.c_str(), args);
   va_end(args);
 }
 
-void _Logger::log(_LogType lt, const char *format, va_list &args) {
+void _Logger::log(_LogType lt, const char* format, va_list& args) {
   char buffer[2048];
 
   vsnprintf(buffer, sizeof(buffer), format, args);

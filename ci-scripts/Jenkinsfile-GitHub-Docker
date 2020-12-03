@@ -128,7 +128,7 @@ pipeline {
                 myShCmd('docker image rm oai-spgwc:develop', new_host_flag, new_host_user, new_host)
               }
               myShCmd('docker image prune --force', new_host_flag, new_host_user, new_host)
-              myShCmd('docker build --target oai-spgwc --tag oai-spgwc:ci-temp --file docker/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" . > archives/spgwc_docker_image_build.log 2>&1', new_host_flag, new_host_user, new_host)
+              myShCmd('docker build --target oai-spgwc --tag oai-spgwc:' + spgwc_tag + ' --file docker/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" . > archives/spgwc_docker_image_build.log 2>&1', new_host_flag, new_host_user, new_host)
               myShCmd('docker image ls >> archives/spgwc_docker_image_build.log', new_host_flag, new_host_user, new_host)
             }
           }

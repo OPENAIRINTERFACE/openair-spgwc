@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -49,27 +49,28 @@ typedef volatile enum task_state_s {
 } task_state_t;
 
 typedef uint32_t timer_id_t;
-#define ITTI_INVALID_TIMER_ID (timer_id_t)0
+#define ITTI_INVALID_TIMER_ID (timer_id_t) 0
 
 class itti_timer {
  public:
-  itti_timer(const timer_id_t id, const task_id_t task_id,
-             const uint32_t interval_sec, const uint32_t interval_us,
-             uint64_t arg1_user, uint64_t arg2_user)
+  itti_timer(
+      const timer_id_t id, const task_id_t task_id, const uint32_t interval_sec,
+      const uint32_t interval_us, uint64_t arg1_user, uint64_t arg2_user)
       : id(id), task_id(task_id), arg1_user(arg1_user), arg2_user(arg2_user) {
     time_out = std::chrono::system_clock::now() +
                std::chrono::seconds(interval_sec) +
                std::chrono::microseconds(interval_us);
   }
-  itti_timer(const timer_id_t id, const task_id_t task_id,
-             const std::chrono::system_clock::time_point time_out,
-             uint64_t arg1_user, uint64_t arg2_user)
+  itti_timer(
+      const timer_id_t id, const task_id_t task_id,
+      const std::chrono::system_clock::time_point time_out, uint64_t arg1_user,
+      uint64_t arg2_user)
       : id(id),
         task_id(task_id),
         time_out(time_out),
         arg1_user(arg1_user),
         arg2_user(arg2_user) {}
-  itti_timer(const itti_timer &t)
+  itti_timer(const itti_timer& t)
       : id(t.id),
         task_id(t.task_id),
         time_out(t.time_out),
@@ -78,7 +79,7 @@ class itti_timer {
   // itti_timer(itti_timer&& t) noexcept : id(std::move(t.id)),
   // task_id(std::move(t.task_id)) , time_out(std::move(t.time_out)) {}
 
-  bool operator<(const itti_timer &t) const { return time_out < t.time_out; }
+  bool operator<(const itti_timer& t) const { return time_out < t.time_out; }
   ~itti_timer() {}
   timer_id_t id;
   task_id_t task_id;
@@ -89,7 +90,7 @@ class itti_timer {
 
 //------------------------------------------------------------------------------
 struct timer_comparator {
-  bool operator()(const itti_timer &left, const itti_timer &right) const {
+  bool operator()(const itti_timer& left, const itti_timer& right) const {
     return (left.time_out < right.time_out);
   }
 };
@@ -124,7 +125,7 @@ class itti_task_ctxt {
 
 class itti_mw {
  private:
-  itti_task_ctxt *itti_task_ctxts[TASK_MAX];
+  itti_task_ctxt* itti_task_ctxts[TASK_MAX];
 
   /*
    * Current message number. Incremented every call to send_msg_to_task
@@ -147,15 +148,15 @@ class itti_mw {
 
   bool terminate;
 
-  static void timer_manager_task(const util::thread_sched_params &sched_params);
+  static void timer_manager_task(const util::thread_sched_params& sched_params);
 
  public:
   itti_mw();
-  itti_mw(itti_mw const &) = delete;
-  void operator=(itti_mw const &) = delete;
+  itti_mw(itti_mw const&) = delete;
+  void operator=(itti_mw const&) = delete;
   ~itti_mw();
 
-  void start(const util::thread_sched_params &sched_params);
+  void start(const util::thread_sched_params& sched_params);
 
   timer_id_t increment_timer_id();
   unsigned int increment_message_number();
@@ -191,8 +192,8 @@ class itti_mw {
    * \param args_p Optional argument to pass to the start routine
    * @returns -1 on failure, 0 otherwise
    **/
-  int create_task(const task_id_t task_id, void (*start_routine)(void *),
-                  void *args_p);
+  int create_task(
+      const task_id_t task_id, void (*start_routine)(void*), void* args_p);
 
   /** \brief Notify ITTI of a started thread
    * \param task_id of started task
@@ -230,9 +231,9 @@ class itti_mw {
    *  \param task_id      task id of the task requesting the timer
    *  @returns 0 on failure, timer id otherwise
    **/
-  timer_id_t timer_setup(uint32_t interval_sec, uint32_t interval_us,
-                         task_id_t task_id, uint64_t arg1_user = 0,
-                         uint64_t arg2_user = 0);
+  timer_id_t timer_setup(
+      uint32_t interval_sec, uint32_t interval_us, task_id_t task_id,
+      uint64_t arg1_user = 0, uint64_t arg2_user = 0);
 
   /** \brief Remove the timer from list
    *  \param timer_id unique timer id

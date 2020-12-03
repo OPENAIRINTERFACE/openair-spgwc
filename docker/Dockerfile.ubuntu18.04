@@ -53,10 +53,6 @@ WORKDIR /openair-spgwc/build/scripts
 RUN ./build_spgwc --install-deps --force
 RUN ./build_spgwc --clean --build-type Release --jobs --Verbose
 
-# Getting SHA-ONE for support
-WORKDIR /openair-spgwc
-RUN git log -n1 > version.txt
-
 #---------------------------------------------------------------------
 # TARGET IMAGE
 #---------------------------------------------------------------------
@@ -85,7 +81,6 @@ WORKDIR /openair-spgwc/etc
 COPY --from=oai-spgwc-builder /openair-spgwc/etc/spgw_c.conf .
 
 WORKDIR /openair-spgwc
-COPY --from=oai-spgwc-builder /openair-spgwc/version.txt .
 
 # expose ports
 EXPOSE 2123/udp 8805/udp

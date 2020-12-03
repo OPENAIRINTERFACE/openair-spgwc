@@ -28,8 +28,8 @@ spec:
     runPolicy: "Serial"
     source:
         git:
-            uri: "https://github.com/lionelgo/openair-spgwc.git"
-            ref: "magma-mme"
+            uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
+            ref: "develop"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:
@@ -49,4 +49,4 @@ spec:
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:magma-mme"
+            name: "oai-spgwc:onap-0.1.0"

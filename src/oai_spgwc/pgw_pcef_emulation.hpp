@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -112,10 +112,9 @@ void pgw_pcef_emulation_apply_sdf_filter(
     const struct pgw_config_s* const pgw_config_p);
 bstring pgw_pcef_emulation_packet_filter_2_iptable_string(
     packet_filter_contents_t* const packetfiltercontents, uint8_t direction);
-int pgw_pcef_get_sdf_parameters(const sdf_id_t sdf_id,
-                                bearer_qos_t* const bearer_qos,
-                                packet_filter_t* const packet_filter,
-                                uint8_t* const num_pf);
+int pgw_pcef_get_sdf_parameters(
+    const sdf_id_t sdf_id, bearer_qos_t* const bearer_qos,
+    packet_filter_t* const packet_filter, uint8_t* const num_pf);
 pcc_rule_t* pgw_pcef_get_rule_by_id(const sdf_id_t sdf_id);
 
 #ifdef __cplusplus

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -26,25 +26,25 @@
 #include <functional>
 #include <locale>
 
-template <class T>
+template<class T>
 class Buffer {
  public:
   explicit Buffer(size_t size) {
     msize = size;
-    mbuf = new T[msize];
+    mbuf  = new T[msize];
   }
   ~Buffer() {
     if (mbuf) delete[] mbuf;
   }
-  T *get() { return mbuf; }
+  T* get() { return mbuf; }
 
  private:
   Buffer();
   size_t msize;
-  T *mbuf;
+  T* mbuf;
 };
 
-std::string util::string_format(const char *format, ...) {
+std::string util::string_format(const char* format, ...) {
   va_list args;
 
   va_start(args, format);
@@ -64,21 +64,25 @@ std::string util::string_format(const char *format, ...) {
 // https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring#217605
 
 // trim from start
-std::string &util::ltrim(std::string &s) {
-  s.erase(s.begin(),
-          std::find_if(s.begin(), s.end(),
-                       std::not1(std::ptr_fun<int, int>(std::isspace))));
+std::string& util::ltrim(std::string& s) {
+  s.erase(
+      s.begin(),
+      std::find_if(
+          s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
   return s;
 }
 
 // trim from end
-std::string &util::rtrim(std::string &s) {
-  s.erase(std::find_if(s.rbegin(), s.rend(),
-                       std::not1(std::ptr_fun<int, int>(std::isspace)))
-              .base(),
-          s.end());
+std::string& util::rtrim(std::string& s) {
+  s.erase(
+      std::find_if(
+          s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace)))
+          .base(),
+      s.end());
   return s;
 }
 
 // trim from both ends
-std::string &util::trim(std::string &s) { return util::ltrim(util::rtrim(s)); }
+std::string& util::trim(std::string& s) {
+  return util::ltrim(util::rtrim(s));
+}
