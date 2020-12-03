@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -49,7 +49,7 @@ using namespace spgwu;
 mme_s11* mme_s11_inst = nullptr;
 enb_s1u* enb_s1u_inst = nullptr;
 #endif
-sgw_s11* sgw_s11_inst = nullptr;
+sgw_s11* sgw_s11_inst   = nullptr;
 sgw_s5s8* sgw_s5s8_inst = nullptr;
 
 extern itti_mw* itti_inst;
@@ -61,7 +61,7 @@ void sgwc_app_task(void*);
 //------------------------------------------------------------------------------
 teid_t sgwc_app::generate_s11_cp_teid() {
   teid_t loop_detect_teid = teid_s11_cp;
-  teid_t teid = ++teid_s11_cp;
+  teid_t teid             = ++teid_s11_cp;
   while ((is_s11c_teid_exist(teid)) || (teid == UNASSIGNED_TEID)) {
     teid = ++teid_s11_cp;
     if (loop_detect_teid == teid) return UNASSIGNED_TEID;
@@ -71,7 +71,7 @@ teid_t sgwc_app::generate_s11_cp_teid() {
 //------------------------------------------------------------------------------
 teid_t sgwc_app::generate_s5s8_cp_teid() {
   teid_t loop_detect_teid = teid_s5s8_cp;
-  teid_t teid = ++teid_s5s8_cp;
+  teid_t teid             = ++teid_s5s8_cp;
   while ((is_s5s8c_teid_exist(teid)) || (teid == UNASSIGNED_TEID)) {
     teid = ++teid_s5s8_cp;
     if (loop_detect_teid == teid) return UNASSIGNED_TEID;
@@ -89,24 +89,24 @@ bool sgwc_app::is_s5s8c_teid_exist(const teid_t& teid_s5s8_cp) const {
 }
 //------------------------------------------------------------------------------
 fteid_t sgwc_app::generate_s11_cp_fteid(const struct in_addr ipv4_address) {
-  fteid_t fteid = {};
+  fteid_t fteid        = {};
   fteid.interface_type = S11_S4_SGW_GTP_C;
-  fteid.v4 = 1;
-  fteid.ipv4_address = ipv4_address;
-  fteid.v6 = 0;
-  fteid.ipv6_address = in6addr_any;
-  fteid.teid_gre_key = generate_s11_cp_teid();
+  fteid.v4             = 1;
+  fteid.ipv4_address   = ipv4_address;
+  fteid.v6             = 0;
+  fteid.ipv6_address   = in6addr_any;
+  fteid.teid_gre_key   = generate_s11_cp_teid();
   return fteid;
 }
 //------------------------------------------------------------------------------
 fteid_t sgwc_app::generate_s5s8_cp_fteid(const struct in_addr ipv4_address) {
-  fteid_t fteid = {};
+  fteid_t fteid        = {};
   fteid.interface_type = S5_S8_SGW_GTP_C;
-  fteid.v4 = 1;
-  fteid.ipv4_address = ipv4_address;
-  fteid.v6 = 0;
-  fteid.ipv6_address = in6addr_any;
-  fteid.teid_gre_key = generate_s5s8_cp_teid();
+  fteid.v4             = 1;
+  fteid.ipv4_address   = ipv4_address;
+  fteid.v6             = 0;
+  fteid.ipv6_address   = in6addr_any;
+  fteid.teid_gre_key   = generate_s5s8_cp_teid();
   return fteid;
 }
 //------------------------------------------------------------------------------
@@ -119,8 +119,9 @@ bool sgwc_app::is_s11sgw_teid_2_sgw_eps_bearer_context(
   return bool{s11lteid2sgw_eps_bearer_context.count(sgw_teid) > 0};
 }
 //------------------------------------------------------------------------------
-std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-          std::shared_ptr<sgw_pdn_connection>>
+std::pair<
+    std::shared_ptr<sgw_eps_bearer_context>,
+    std::shared_ptr<sgw_pdn_connection>>
 sgwc_app::s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid) const {
   return s5s8lteid2sgw_contexts.at(sgw_teid);
 }
@@ -179,7 +180,7 @@ void sgwc_app_task(void* args_p) {
 
   do {
     std::shared_ptr<itti_msg> shared_msg = itti_inst->receive_msg(task_id);
-    auto* msg = shared_msg.get();
+    auto* msg                            = shared_msg.get();
     switch (msg->msg_type) {
       case S5S8_CREATE_SESSION_RESPONSE:
         if (itti_s5s8_create_session_response* m =
@@ -288,8 +289,8 @@ void sgwc_app_task(void* args_p) {
         break;
 
       default:
-        Logger::sgwc_app().info("no handler for ITTI msg type %d",
-                                msg->msg_type);
+        Logger::sgwc_app().info(
+            "no handler for ITTI msg type %d", msg->msg_type);
     }
   } while (true);
 }
@@ -300,15 +301,15 @@ sgwc_app::sgwc_app(const std::string& config_file)
   Logger::sgwc_app().startup("Starting...");
   sgwc_cfg.execute();
 
-  teid_s11_cp = 0;
-  teid_s5s8_cp = 0;
-  imsi2sgw_eps_bearer_context = {};
+  teid_s11_cp                     = 0;
+  teid_s5s8_cp                    = 0;
+  imsi2sgw_eps_bearer_context     = {};
   s11lteid2sgw_eps_bearer_context = {};
-  s5s8lteid2sgw_contexts = {};
+  s5s8lteid2sgw_contexts          = {};
 
   try {
     sgw_s5s8_inst = new sgw_s5s8();
-    sgw_s11_inst = new sgw_s11();
+    sgw_s11_inst  = new sgw_s11();
 #if SGW_AUTOTEST
     mme_s11_inst = new mme_s11();
     enb_s1u_inst = new enb_s1u();
@@ -379,13 +380,13 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
   }
 
   if ((csreq.teid) && (not sgwc_app_inst->is_s11c_teid_exist(csreq.teid))) {
-    Logger::sgwc_app().warn("Received S11 CSReq with dest teid " TEID_FMT
-                            " unknown, ignore CSreq",
-                            csreq.teid);
+    Logger::sgwc_app().warn(
+        "Received S11 CSReq with dest teid " TEID_FMT " unknown, ignore CSreq",
+        csreq.teid);
     cause_t cause = {
         .cause_value = CONTEXT_NOT_FOUND, .pce = 0, .bce = 0, .cs = 0};
-    send_create_session_response_cause(csreq.gtpc_tx_id, csreq.teid,
-                                       csreq.r_endpoint, cause);
+    send_create_session_response_cause(
+        csreq.gtpc_tx_id, csreq.teid, csreq.r_endpoint, cause);
     return;
   }
 
@@ -431,8 +432,8 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
     }
   }
   ebc->handle_itti_msg(csreq);
-  Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                           ebc->toString().c_str());
+  Logger::sgwc_app().debug(
+      "sgw_eps_bearer_context: %s!", ebc->toString().c_str());
 }
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg(itti_s11_delete_session_request& m) {
@@ -445,8 +446,8 @@ void sgwc_app::handle_itti_msg(itti_s11_delete_session_request& m) {
       shared_ptr<sgw_eps_bearer_context> ebc =
           s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
       ebc->handle_itti_msg(m);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               ebc->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Discarding S11 DELETE_SESSION_REQUEST sender teid " TEID_FMT
@@ -474,8 +475,8 @@ void sgwc_app::handle_itti_msg(itti_s11_modify_bearer_request& m) {
       shared_ptr<sgw_eps_bearer_context> ebc =
           s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
       ebc->handle_itti_msg(m);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               ebc->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Discarding S11 MODIFY_BEARER_REQUEST sender teid " TEID_FMT
@@ -503,8 +504,8 @@ void sgwc_app::handle_itti_msg(itti_s11_release_access_bearers_request& m) {
       shared_ptr<sgw_eps_bearer_context> ebc =
           s11sgw_teid_2_sgw_eps_bearer_context(m.teid);
       ebc->handle_itti_msg(m);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               ebc->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", ebc->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Discarding S11 RELEASE_ACCESS_BEARERS_REQUEST sender teid " TEID_FMT
@@ -578,8 +579,9 @@ void sgwc_app::handle_itti_msg(itti_s5s8_create_session_response& m) {
     }
   }
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
-    std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-              std::shared_ptr<sgw_pdn_connection>>
+    std::pair<
+        std::shared_ptr<sgw_eps_bearer_context>,
+        std::shared_ptr<sgw_pdn_connection>>
         p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
@@ -587,8 +589,8 @@ void sgwc_app::handle_itti_msg(itti_s5s8_create_session_response& m) {
       if (0 == p.first->get_num_pdn_connections()) {
         delete_sgw_eps_bearer_context(p.first);
       } else {
-        Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                                 p.first->toString().c_str());
+        Logger::sgwc_app().debug(
+            "sgw_eps_bearer_context: %s!", p.first->toString().c_str());
       }
     } else {
       Logger::sgwc_app().debug(
@@ -606,8 +608,9 @@ void sgwc_app::handle_itti_msg(itti_s5s8_create_session_response& m) {
 //------------------------------------------------------------------------------
 void sgwc_app::handle_itti_msg(itti_s5s8_delete_session_response& m) {
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
-    std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-              std::shared_ptr<sgw_pdn_connection>>
+    std::pair<
+        std::shared_ptr<sgw_eps_bearer_context>,
+        std::shared_ptr<sgw_pdn_connection>>
         p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
@@ -615,11 +618,12 @@ void sgwc_app::handle_itti_msg(itti_s5s8_delete_session_response& m) {
       if (0 == p.first->get_num_pdn_connections()) {
         delete_sgw_eps_bearer_context(p.first);
       } else {
-        Logger::sgwc_app().debug("get_num_pdn_connections() = %d",
-                                 p.first->get_num_pdn_connections());
+        Logger::sgwc_app().debug(
+            "get_num_pdn_connections() = %d",
+            p.first->get_num_pdn_connections());
       }
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               p.first->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Received S5S8 DELETE_SESSION_RESPONSE with dest teid " TEID_FMT
@@ -640,13 +644,14 @@ void sgwc_app::handle_itti_msg(itti_s5s8_modify_bearer_response& m) {
       "  gtpc_tx_id " PROC_ID_FMT " ",
       m.teid, m.gtpc_tx_id);
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
-    std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-              std::shared_ptr<sgw_pdn_connection>>
+    std::pair<
+        std::shared_ptr<sgw_eps_bearer_context>,
+        std::shared_ptr<sgw_pdn_connection>>
         p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               p.first->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Received S5S8 MODIFY_BEARER_RESPONSE with dest teid " TEID_FMT
@@ -667,13 +672,14 @@ void sgwc_app::handle_itti_msg(itti_s5s8_release_access_bearers_response& m) {
       "  gtpc_tx_id " PROC_ID_FMT " ",
       m.teid, m.gtpc_tx_id);
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
-    std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-              std::shared_ptr<sgw_pdn_connection>>
+    std::pair<
+        std::shared_ptr<sgw_eps_bearer_context>,
+        std::shared_ptr<sgw_pdn_connection>>
         p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               p.first->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Received S5S8 RELEASE_ACCESS_BEARERS_RESPONSE with dest "
@@ -703,8 +709,9 @@ void sgwc_app::handle_itti_msg(itti_s5s8_remote_peer_not_responding& m) {
         " local teid " TEID_FMT ".",
         m.gtpc_tx_id, m.l_teid);
 
-    std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-              std::shared_ptr<sgw_pdn_connection>>
+    std::pair<
+        std::shared_ptr<sgw_eps_bearer_context>,
+        std::shared_ptr<sgw_pdn_connection>>
         p = s5s8sgw_teid_2_sgw_contexts(m.l_teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
@@ -712,8 +719,8 @@ void sgwc_app::handle_itti_msg(itti_s5s8_remote_peer_not_responding& m) {
       if (0 == p.first->get_num_pdn_connections()) {
         delete_sgw_eps_bearer_context(p.first);
       } else {
-        Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                                 p.first->toString().c_str());
+        Logger::sgwc_app().debug(
+            "sgw_eps_bearer_context: %s!", p.first->toString().c_str());
       }
     } else {
       Logger::sgwc_app().debug(
@@ -736,13 +743,14 @@ void sgwc_app::handle_itti_msg(itti_s5s8_downlink_data_notification& m) {
       "  gtpc_tx_id " PROC_ID_FMT " ",
       m.teid, m.gtpc_tx_id);
   if (is_s5s8sgw_teid_2_sgw_contexts(m.teid)) {
-    std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-              std::shared_ptr<sgw_pdn_connection>>
+    std::pair<
+        std::shared_ptr<sgw_eps_bearer_context>,
+        std::shared_ptr<sgw_pdn_connection>>
         p = s5s8sgw_teid_2_sgw_contexts(m.teid);
     if ((p.first.get()) && (p.second.get())) {
       p.first->handle_itti_msg(m, p.second);
-      Logger::sgwc_app().debug("sgw_eps_bearer_context: %s!",
-                               p.first->toString().c_str());
+      Logger::sgwc_app().debug(
+          "sgw_eps_bearer_context: %s!", p.first->toString().c_str());
     } else {
       Logger::sgwc_app().debug(
           "Received S5S8 DOWNLINK_DATA_NOTIFICATION with dest teid " TEID_FMT
@@ -758,17 +766,16 @@ void sgwc_app::handle_itti_msg(itti_s5s8_downlink_data_notification& m) {
 }
 
 //------------------------------------------------------------------------------
-void sgwc_app::send_create_session_response_cause(const uint64_t gtpc_tx_id,
-                                                  const teid_t teid,
-                                                  const endpoint& r_endpoint,
-                                                  const cause_t& cause) const {
+void sgwc_app::send_create_session_response_cause(
+    const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint,
+    const cause_t& cause) const {
   itti_s11_create_session_response* s11 =
       new itti_s11_create_session_response(TASK_SGWC_APP, TASK_SGWC_S11);
   //------
   // GTPV2C-Stack
   //------
   s11->gtpc_tx_id = gtpc_tx_id;
-  s11->teid = teid;
+  s11->teid       = teid;
   s11->r_endpoint = r_endpoint;
   s11->gtp_ies.set(cause);
   std::shared_ptr<itti_s11_create_session_response> msg =

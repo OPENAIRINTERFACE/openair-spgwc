@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -83,7 +83,7 @@ enum pfcp_transaction_action { DELETE_TX = 0, CONTINUE_TX };
 class pfcp_l4_stack : public udp_application {
 #define PFCP_T1_RESPONSE_MS 1000
 #define PFCP_N1_REQUESTS 3
-#define PFCP_PROC_TIME_OUT_MS \
+#define PFCP_PROC_TIME_OUT_MS                                                  \
   ((PFCP_T1_RESPONSE_MS) * (PFCP_N1_REQUESTS + 1 + 1))
 
  protected:
@@ -109,14 +109,14 @@ class pfcp_l4_stack : public udp_application {
   }
 
   static bool check_request_type(const uint8_t initial);
-  static bool check_response_type(const uint8_t initial,
-                                  const uint8_t triggered);
-  void start_proc_cleanup_timer(pfcp_procedure& p,
-                                uint32_t time_out_milli_seconds,
-                                const task_id_t& task_id,
-                                const uint32_t& seq_num);
-  void start_msg_retry_timer(pfcp_procedure& p, uint32_t time_out_milli_seconds,
-                             const task_id_t& task_id, const uint32_t& seq_num);
+  static bool check_response_type(
+      const uint8_t initial, const uint8_t triggered);
+  void start_proc_cleanup_timer(
+      pfcp_procedure& p, uint32_t time_out_milli_seconds,
+      const task_id_t& task_id, const uint32_t& seq_num);
+  void start_msg_retry_timer(
+      pfcp_procedure& p, uint32_t time_out_milli_seconds,
+      const task_id_t& task_id, const uint32_t& seq_num);
   void stop_msg_retry_timer(pfcp_procedure& p);
   void stop_msg_retry_timer(timer_id_t& t);
   void stop_proc_cleanup_timer(pfcp_procedure& p);
@@ -124,38 +124,36 @@ class pfcp_l4_stack : public udp_application {
 
  public:
   static const uint8_t version = 2;
-  pfcp_l4_stack(const std::string& ip_address, const unsigned short port_num,
-                const util::thread_sched_params& sched_params);
-  virtual void handle_receive(char* recv_buffer,
-                              const std::size_t bytes_transferred,
-                              endpoint& remote_endpoint);
-  void handle_receive_message_cb(const pfcp_msg& msg,
-                                 const endpoint& remote_endpoint,
-                                 const task_id_t& task_id, bool& error,
-                                 uint64_t& trxn_id);
+  pfcp_l4_stack(
+      const std::string& ip_address, const unsigned short port_num,
+      const util::thread_sched_params& sched_params);
+  virtual void handle_receive(
+      char* recv_buffer, const std::size_t bytes_transferred,
+      endpoint& remote_endpoint);
+  void handle_receive_message_cb(
+      const pfcp_msg& msg, const endpoint& remote_endpoint,
+      const task_id_t& task_id, bool& error, uint64_t& trxn_id);
 
   // Node related messages
   //  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid,
   //  const pfcp_pfd_management_request& pfcp_ies, const task_id_t& task_id,
   //  const uint64_t trxn_id);
-  virtual uint32_t send_request(const endpoint& dest,
-                                const pfcp_heartbeat_request& pfcp_ies,
-                                const task_id_t& task_id,
-                                const uint64_t trxn_id);
-  virtual uint32_t send_request(const endpoint& dest,
-                                const pfcp_association_setup_request& pfcp_ies,
-                                const task_id_t& task_id,
-                                const uint64_t trxn_id);
+  virtual uint32_t send_request(
+      const endpoint& dest, const pfcp_heartbeat_request& pfcp_ies,
+      const task_id_t& task_id, const uint64_t trxn_id);
+  virtual uint32_t send_request(
+      const endpoint& dest, const pfcp_association_setup_request& pfcp_ies,
+      const task_id_t& task_id, const uint64_t trxn_id);
   //  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid,
   //  const pfcp_association_update_request& pfcp_ies, const task_id_t& task_id,
   //  const uint64_t trxn_id);
   virtual uint32_t send_request(
       const endpoint& dest, const pfcp_association_release_request& pfcp_ies,
       const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid,
-                                const pfcp_node_report_request& pfcp_ies,
-                                const task_id_t& task_id,
-                                const uint64_t trxn_id);
+  virtual uint32_t send_request(
+      const endpoint& dest, const uint64_t seid,
+      const pfcp_node_report_request& pfcp_ies, const task_id_t& task_id,
+      const uint64_t trxn_id);
 
   // session related messages
   virtual uint32_t send_request(
@@ -166,49 +164,46 @@ class pfcp_l4_stack : public udp_application {
       const endpoint& dest, const uint64_t seid,
       const pfcp_session_modification_request& pfcp_ies,
       const task_id_t& task_id, const uint64_t trxn_id);
-  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid,
-                                const pfcp_session_deletion_request& pfcp_ies,
-                                const task_id_t& task_id,
-                                const uint64_t trxn_id);
-  virtual uint32_t send_request(const endpoint& dest, const uint64_t seid,
-                                const pfcp_session_report_request& pfcp_ies,
-                                const task_id_t& task_id,
-                                const uint64_t trxn_id);
+  virtual uint32_t send_request(
+      const endpoint& dest, const uint64_t seid,
+      const pfcp_session_deletion_request& pfcp_ies, const task_id_t& task_id,
+      const uint64_t trxn_id);
+  virtual uint32_t send_request(
+      const endpoint& dest, const uint64_t seid,
+      const pfcp_session_report_request& pfcp_ies, const task_id_t& task_id,
+      const uint64_t trxn_id);
 
   // Node related messages
-  virtual void send_response(const endpoint& dest,
-                             const pfcp_heartbeat_response& pfcp_ies,
-                             const uint64_t trxn_id,
-                             const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const endpoint& dest,
-                             const pfcp_association_setup_response& pfcp_ies,
-                             const uint64_t trxn_id,
-                             const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const endpoint& dest,
-                             const pfcp_association_release_response& pfcp_ies,
-                             const uint64_t trxn_id,
-                             const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(
+      const endpoint& dest, const pfcp_heartbeat_response& pfcp_ies,
+      const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(
+      const endpoint& dest, const pfcp_association_setup_response& pfcp_ies,
+      const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(
+      const endpoint& dest, const pfcp_association_release_response& pfcp_ies,
+      const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
 
   // session related messages
   virtual void send_response(
       const endpoint& dest, const uint64_t seid,
       const pfcp_session_establishment_response& pfcp_ies,
       const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const endpoint& dest, const uint64_t seid,
-                             const pfcp_session_modification_response& pfcp_ies,
-                             const uint64_t trxn_id,
-                             const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const endpoint& dest, const uint64_t seid,
-                             const pfcp_session_deletion_response& pfcp_ies,
-                             const uint64_t trxn_id,
-                             const pfcp_transaction_action& a = DELETE_TX);
-  virtual void send_response(const endpoint& dest, const uint64_t seid,
-                             const pfcp_session_report_response& pfcp_ies,
-                             const uint64_t trxn_id,
-                             const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(
+      const endpoint& dest, const uint64_t seid,
+      const pfcp_session_modification_response& pfcp_ies,
+      const uint64_t trxn_id, const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(
+      const endpoint& dest, const uint64_t seid,
+      const pfcp_session_deletion_response& pfcp_ies, const uint64_t trxn_id,
+      const pfcp_transaction_action& a = DELETE_TX);
+  virtual void send_response(
+      const endpoint& dest, const uint64_t seid,
+      const pfcp_session_report_response& pfcp_ies, const uint64_t trxn_id,
+      const pfcp_transaction_action& a = DELETE_TX);
 
-  void time_out_event(const uint32_t timer_id, const task_id_t& task_id,
-                      bool& error);
+  void time_out_event(
+      const uint32_t timer_id, const task_id_t& task_id, bool& error);
 };
 }  // namespace pfcp
 

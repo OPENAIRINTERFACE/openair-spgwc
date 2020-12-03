@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -31,9 +31,9 @@
 #include <cstdlib>
 
 //------------------------------------------------------------------------------
-void udp_application::handle_receive(char* recv_buffer,
-                                     const std::size_t bytes_transferred,
-                                     const endpoint& r_endpoint) {
+void udp_application::handle_receive(
+    char* recv_buffer, const std::size_t bytes_transferred,
+    const endpoint& r_endpoint) {
   Logger::udp().warn("Missing implementation of interface udp_application\n");
 }
 
@@ -46,7 +46,7 @@ void udp_application::start_receive(
 //------------------------------------------------------------------------------
 static std::string string_to_hex(const std::string& input) {
   static const char* const lut = "0123456789ABCDEF";
-  size_t len = input.length();
+  size_t len                   = input.length();
 
   std::string output;
   output.reserve(2 * len);
@@ -59,17 +59,17 @@ static std::string string_to_hex(const std::string& input) {
 }
 //------------------------------------------------------------------------------
 void udp_server::udp_read_loop(const util::thread_sched_params& sched_params) {
-  endpoint r_endpoint = {};
+  endpoint r_endpoint   = {};
   size_t bytes_received = 0;
 
   sched_params.apply(TASK_NONE, Logger::udp());
 
   while (1) {
     r_endpoint.addr_storage_len = sizeof(struct sockaddr_storage);
-    if ((bytes_received =
-             recvfrom(socket_, recv_buffer_, UDP_RECV_BUFFER_SIZE, 0,
-                      (struct sockaddr*)&r_endpoint.addr_storage,
-                      &r_endpoint.addr_storage_len)) > 0) {
+    if ((bytes_received = recvfrom(
+             socket_, recv_buffer_, UDP_RECV_BUFFER_SIZE, 0,
+             (struct sockaddr*) &r_endpoint.addr_storage,
+             &r_endpoint.addr_storage_len)) > 0) {
       app_->handle_receive(recv_buffer_, bytes_received, r_endpoint);
     } else {
       Logger::udp().error("Recvfrom failed %s\n", strerror(errno));
@@ -77,10 +77,10 @@ void udp_server::udp_read_loop(const util::thread_sched_params& sched_params) {
   }
 }
 //------------------------------------------------------------------------------
-int udp_server::create_socket(const struct in_addr& address,
-                              const uint16_t port) {
+int udp_server::create_socket(
+    const struct in_addr& address, const uint16_t port) {
   struct sockaddr_in addr = {};
-  int sd = 0;
+  int sd                  = 0;
 
   /*
    * Create UDP socket
@@ -93,8 +93,8 @@ int udp_server::create_socket(const struct in_addr& address,
     return errno;
   }
 
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons(port);
+  addr.sin_family      = AF_INET;
+  addr.sin_port        = htons(port);
   addr.sin_addr.s_addr = address.s_addr;
 
   std::string ipv4 = conv::toString(address);
@@ -102,7 +102,7 @@ int udp_server::create_socket(const struct in_addr& address,
       "Creating new listen socket on address %s and port %" PRIu16 "\n",
       ipv4.c_str(), port);
 
-  if (bind(sd, (struct sockaddr*)&addr, sizeof(struct sockaddr_in)) < 0) {
+  if (bind(sd, (struct sockaddr*) &addr, sizeof(struct sockaddr_in)) < 0) {
     /*
      * Bind failed
      */
@@ -116,10 +116,10 @@ int udp_server::create_socket(const struct in_addr& address,
   return sd;
 }
 //------------------------------------------------------------------------------
-int udp_server::create_socket(const struct in6_addr& address,
-                              const uint16_t port) {
+int udp_server::create_socket(
+    const struct in6_addr& address, const uint16_t port) {
   struct sockaddr_in6 addr = {};
-  int sd = 0;
+  int sd                   = 0;
 
   /*
    * Create UDP socket
@@ -133,15 +133,15 @@ int udp_server::create_socket(const struct in6_addr& address,
   }
 
   addr.sin6_family = AF_INET6;
-  addr.sin6_port = htons(port);
-  addr.sin6_addr = address;
+  addr.sin6_port   = htons(port);
+  addr.sin6_addr   = address;
 
   std::string ipv6 = conv::toString(address);
   Logger::udp().debug(
       "Creating new listen socket on address %s and port %" PRIu16 "\n",
       ipv6.c_str(), port);
 
-  if (bind(sd, (struct sockaddr*)&addr, sizeof(struct sockaddr_in6)) < 0) {
+  if (bind(sd, (struct sockaddr*) &addr, sizeof(struct sockaddr_in6)) < 0) {
     /*
      * Bind failed
      */
@@ -168,13 +168,13 @@ int udp_server::create_socket(const char* address, const uint16_t port_num) {
   } else {
     Logger::udp().error("udp_server::create_socket(%s:%d)", address, port_num);
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    throw std::system_error(socket_, std::generic_category(),
-                            "UDP socket creation failed!");
+    throw std::system_error(
+        socket_, std::generic_category(), "UDP socket creation failed!");
   }
 }
 //------------------------------------------------------------------------------
-void udp_server::start_receive(udp_application* app,
-                               const util::thread_sched_params& sched_params) {
+void udp_server::start_receive(
+    udp_application* app, const util::thread_sched_params& sched_params) {
   app_ = app;
   Logger::udp().trace("udp_server::start_receive");
   thread_ = std::thread(&udp_server::udp_read_loop, this, sched_params);

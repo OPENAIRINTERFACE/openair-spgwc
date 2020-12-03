@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -49,11 +49,12 @@
 
 class udp_application {
  public:
-  virtual void handle_receive(char* recv_buffer,
-                              const std::size_t bytes_transferred,
-                              const endpoint& r_endpoint);
-  virtual void start_receive(udp_application* gtp_stack,
-                             const util::thread_sched_params& sched_params);
+  virtual void handle_receive(
+      char* recv_buffer, const std::size_t bytes_transferred,
+      const endpoint& r_endpoint);
+  virtual void start_receive(
+      udp_application* gtp_stack,
+      const util::thread_sched_params& sched_params);
 };
 
 class udp_server {
@@ -62,15 +63,17 @@ class udp_server {
       : app_(nullptr), port_(port_num) {
     socket_ = create_socket(address, port_);
     if (socket_ > 0) {
-      Logger::udp().debug("udp_server::udp_server(%s:%d)",
-                          conv::toString(address).c_str(), port_);
+      Logger::udp().debug(
+          "udp_server::udp_server(%s:%d)", conv::toString(address).c_str(),
+          port_);
       sa_family = AF_INET;
     } else {
-      Logger::udp().error("udp_server::udp_server(%s:%d)",
-                          conv::toString(address).c_str(), port_);
+      Logger::udp().error(
+          "udp_server::udp_server(%s:%d)", conv::toString(address).c_str(),
+          port_);
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
-      throw std::system_error(socket_, std::generic_category(),
-                              "GTPV1-U socket creation failed!");
+      throw std::system_error(
+          socket_, std::generic_category(), "GTPV1-U socket creation failed!");
     }
   }
 
@@ -78,15 +81,17 @@ class udp_server {
       : app_(nullptr), port_(port_num) {
     socket_ = create_socket(address, port_);
     if (socket_ > 0) {
-      Logger::udp().debug("udp_server::udp_server(%s:%d)",
-                          conv::toString(address).c_str(), port_);
+      Logger::udp().debug(
+          "udp_server::udp_server(%s:%d)", conv::toString(address).c_str(),
+          port_);
       sa_family = AF_INET6;
     } else {
-      Logger::udp().error("udp_server::udp_server(%s:%d)",
-                          conv::toString(address).c_str(), port_);
+      Logger::udp().error(
+          "udp_server::udp_server(%s:%d)", conv::toString(address).c_str(),
+          port_);
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
-      throw std::system_error(socket_, std::generic_category(),
-                              "GTPV1-U socket creation failed!");
+      throw std::system_error(
+          socket_, std::generic_category(), "GTPV1-U socket creation failed!");
     }
   }
 
@@ -98,8 +103,8 @@ class udp_server {
     } else {
       Logger::udp().error("udp_server::udp_server(%s:%d)", address, port_);
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
-      throw std::system_error(socket_, std::generic_category(),
-                              "GTPV1-U socket creation failed!");
+      throw std::system_error(
+          socket_, std::generic_category(), "GTPV1-U socket creation failed!");
     }
   }
 
@@ -107,38 +112,43 @@ class udp_server {
 
   void udp_read_loop(const util::thread_sched_params& thread_sched_params);
 
-  void async_send_to(const char* send_buffer, const ssize_t num_bytes,
-                     const endpoint& r_endpoint) {
-    ssize_t bytes_written = sendto(socket_, send_buffer, num_bytes, 0,
-                                   (struct sockaddr*)&r_endpoint.addr_storage,
-                                   r_endpoint.addr_storage_len);
+  void async_send_to(
+      const char* send_buffer, const ssize_t num_bytes,
+      const endpoint& r_endpoint) {
+    ssize_t bytes_written = sendto(
+        socket_, send_buffer, num_bytes, 0,
+        (struct sockaddr*) &r_endpoint.addr_storage,
+        r_endpoint.addr_storage_len);
     if (bytes_written != num_bytes) {
       Logger::udp().error("sendto failed(%d:%s)\n", errno, strerror(errno));
     }
   }
 
-  void async_send_to(const char* send_buffer, const ssize_t num_bytes,
-                     const struct sockaddr_in& r_endpoint) {
-    ssize_t bytes_written =
-        sendto(socket_, send_buffer, num_bytes, 0,
-               (struct sockaddr*)&r_endpoint, sizeof(struct sockaddr_in));
+  void async_send_to(
+      const char* send_buffer, const ssize_t num_bytes,
+      const struct sockaddr_in& r_endpoint) {
+    ssize_t bytes_written = sendto(
+        socket_, send_buffer, num_bytes, 0, (struct sockaddr*) &r_endpoint,
+        sizeof(struct sockaddr_in));
     if (bytes_written != num_bytes) {
       Logger::udp().error("sendto failed(%d:%s)\n", errno, strerror(errno));
     }
   }
 
-  void async_send_to(const char* send_buffer, const ssize_t num_bytes,
-                     const struct sockaddr_in6& r_endpoint) {
-    ssize_t bytes_written =
-        sendto(socket_, send_buffer, num_bytes, 0,
-               (struct sockaddr*)&r_endpoint, sizeof(struct sockaddr_in6));
+  void async_send_to(
+      const char* send_buffer, const ssize_t num_bytes,
+      const struct sockaddr_in6& r_endpoint) {
+    ssize_t bytes_written = sendto(
+        socket_, send_buffer, num_bytes, 0, (struct sockaddr*) &r_endpoint,
+        sizeof(struct sockaddr_in6));
     if (bytes_written != num_bytes) {
       Logger::udp().error("sendto failed(%d:%s)\n", errno, strerror(errno));
     }
   }
 
-  void start_receive(udp_application* gtp_stack,
-                     const util::thread_sched_params& sched_params);
+  void start_receive(
+      udp_application* gtp_stack,
+      const util::thread_sched_params& sched_params);
 
  protected:
   int create_socket(const struct in_addr& address, const uint16_t port);
@@ -147,9 +157,9 @@ class udp_server {
 
   // void handle_receive(const int& error, std::size_t bytes_transferred);
 
-  static void handle_send(const char*, /*buffer*/
-                          const int& /*error*/,
-                          std::size_t /*bytes_transferred*/) {}
+  static void handle_send(
+      const char*, /*buffer*/
+      const int& /*error*/, std::size_t /*bytes_transferred*/) {}
 
   udp_application* app_;
   std::thread thread_;

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,201 +33,201 @@
 using namespace pfcp;
 
 //------------------------------------------------------------------------------
-pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
+pfcp_ie* pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
   pfcp_tlv tlv;
   tlv.load_from(is);
   if (tlv.length) {
     switch (tlv.type) {
       case PFCP_IE_CREATE_PDR: {
-        pfcp_create_pdr_ie *ie = new pfcp_create_pdr_ie(tlv);
+        pfcp_create_pdr_ie* ie = new pfcp_create_pdr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_PDI: {
-        pfcp_pdi_ie *ie = new pfcp_pdi_ie(tlv);
+        pfcp_pdi_ie* ie = new pfcp_pdi_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_CREATE_FAR: {
-        pfcp_create_far_ie *ie = new pfcp_create_far_ie(tlv);
+        pfcp_create_far_ie* ie = new pfcp_create_far_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_FORWARDING_PARAMETERS: {
-        pfcp_forwarding_parameters_ie *ie =
+        pfcp_forwarding_parameters_ie* ie =
             new pfcp_forwarding_parameters_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_DUPLICATING_PARAMETERS: {
-        pfcp_duplicating_parameters_ie *ie =
+        pfcp_duplicating_parameters_ie* ie =
             new pfcp_duplicating_parameters_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_CREATE_URR: {
-        pfcp_create_urr_ie *ie = new pfcp_create_urr_ie(tlv);
+        pfcp_create_urr_ie* ie = new pfcp_create_urr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_CREATE_QER: {
-        pfcp_create_qer_ie *ie = new pfcp_create_qer_ie(tlv);
+        pfcp_create_qer_ie* ie = new pfcp_create_qer_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_CREATED_PDR: {
-        pfcp_created_pdr_ie *ie = new pfcp_created_pdr_ie(tlv);
+        pfcp_created_pdr_ie* ie = new pfcp_created_pdr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UPDATE_PDR: {
-        pfcp_update_pdr_ie *ie = new pfcp_update_pdr_ie(tlv);
+        pfcp_update_pdr_ie* ie = new pfcp_update_pdr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UPDATE_FAR: {
-        pfcp_update_far_ie *ie = new pfcp_update_far_ie(tlv);
+        pfcp_update_far_ie* ie = new pfcp_update_far_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UPDATE_FORWARDING_PARAMETERS: {
-        pfcp_update_forwarding_parameters_ie *ie =
+        pfcp_update_forwarding_parameters_ie* ie =
             new pfcp_update_forwarding_parameters_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UPDATE_BAR_WITHIN_PFCP_SESSION_REPORT_RESPONSE: {
-        pfcp_update_bar_within_pfcp_session_report_response_ie *ie =
+        pfcp_update_bar_within_pfcp_session_report_response_ie* ie =
             new pfcp_update_bar_within_pfcp_session_report_response_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UPDATE_URR: {
-        pfcp_update_urr_ie *ie = new pfcp_update_urr_ie(tlv);
+        pfcp_update_urr_ie* ie = new pfcp_update_urr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UPDATE_QER: {
-        pfcp_update_qer_ie *ie = new pfcp_update_qer_ie(tlv);
+        pfcp_update_qer_ie* ie = new pfcp_update_qer_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_REMOVE_PDR: {
-        pfcp_remove_pdr_ie *ie = new pfcp_remove_pdr_ie(tlv);
+        pfcp_remove_pdr_ie* ie = new pfcp_remove_pdr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_REMOVE_FAR: {
-        pfcp_remove_far_ie *ie = new pfcp_remove_far_ie(tlv);
+        pfcp_remove_far_ie* ie = new pfcp_remove_far_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_REMOVE_URR: {
-        pfcp_remove_urr_ie *ie = new pfcp_remove_urr_ie(tlv);
+        pfcp_remove_urr_ie* ie = new pfcp_remove_urr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_REMOVE_QER: {
-        pfcp_remove_qer_ie *ie = new pfcp_remove_qer_ie(tlv);
+        pfcp_remove_qer_ie* ie = new pfcp_remove_qer_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_CAUSE: {
-        pfcp_cause_ie *ie = new pfcp_cause_ie(tlv);
+        pfcp_cause_ie* ie = new pfcp_cause_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_SOURCE_INTERFACE: {
-        pfcp_source_interface_ie *ie = new pfcp_source_interface_ie(tlv);
+        pfcp_source_interface_ie* ie = new pfcp_source_interface_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_F_TEID: {
-        pfcp_fteid_ie *ie = new pfcp_fteid_ie(tlv);
+        pfcp_fteid_ie* ie = new pfcp_fteid_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_NETWORK_INSTANCE: {
-        pfcp_network_instance_ie *ie = new pfcp_network_instance_ie(tlv);
+        pfcp_network_instance_ie* ie = new pfcp_network_instance_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_SDF_FILTER: {
-        pfcp_sdf_filter_ie *ie = new pfcp_sdf_filter_ie(tlv);
+        pfcp_sdf_filter_ie* ie = new pfcp_sdf_filter_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_APPLICATION_ID: {
-        pfcp_application_id_ie *ie = new pfcp_application_id_ie(tlv);
+        pfcp_application_id_ie* ie = new pfcp_application_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_GATE_STATUS: {
-        pfcp_gate_status_ie *ie = new pfcp_gate_status_ie(tlv);
+        pfcp_gate_status_ie* ie = new pfcp_gate_status_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_MBR: {
-        pfcp_mbr_ie *ie = new pfcp_mbr_ie(tlv);
+        pfcp_mbr_ie* ie = new pfcp_mbr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_GBR: {
-        pfcp_gbr_ie *ie = new pfcp_gbr_ie(tlv);
+        pfcp_gbr_ie* ie = new pfcp_gbr_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_QER_CORRELATION_ID: {
-        pfcp_qer_correlation_id_ie *ie = new pfcp_qer_correlation_id_ie(tlv);
+        pfcp_qer_correlation_id_ie* ie = new pfcp_qer_correlation_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_PRECEDENCE: {
-        pfcp_precedence_ie *ie = new pfcp_precedence_ie(tlv);
+        pfcp_precedence_ie* ie = new pfcp_precedence_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_TRANSPORT_LEVEL_MARKING: {
-        pfcp_transport_level_marking_ie *ie =
+        pfcp_transport_level_marking_ie* ie =
             new pfcp_transport_level_marking_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_VOLUME_THRESHOLD: {
-        pfcp_volume_threshold_ie *ie = new pfcp_volume_threshold_ie(tlv);
+        pfcp_volume_threshold_ie* ie = new pfcp_volume_threshold_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_TIME_THRESHOLD: {
-        pfcp_time_threshold_ie *ie = new pfcp_time_threshold_ie(tlv);
+        pfcp_time_threshold_ie* ie = new pfcp_time_threshold_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_MONITORING_TIME: {
-        pfcp_monitoring_time_ie *ie = new pfcp_monitoring_time_ie(tlv);
+        pfcp_monitoring_time_ie* ie = new pfcp_monitoring_time_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_SUBSEQUENT_VOLUME_THRESHOLD: {
-        pfcp_subsequent_volume_threshold_ie *ie =
+        pfcp_subsequent_volume_threshold_ie* ie =
             new pfcp_subsequent_volume_threshold_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_SUBSEQUENT_TIME_THRESHOLD: {
-        pfcp_subsequent_time_threshold_ie *ie =
+        pfcp_subsequent_time_threshold_ie* ie =
             new pfcp_subsequent_time_threshold_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_INACTIVITY_DETECTION_TIME: {
-        pfcp_inactivity_detection_time_ie *ie =
+        pfcp_inactivity_detection_time_ie* ie =
             new pfcp_inactivity_detection_time_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_REPORTING_TRIGGERS: {
-        pfcp_reporting_triggers_ie *ie = new pfcp_reporting_triggers_ie(tlv);
+        pfcp_reporting_triggers_ie* ie = new pfcp_reporting_triggers_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -238,34 +238,34 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_REPORT_TYPE: {
-        pfcp_report_type_ie *ie = new pfcp_report_type_ie(tlv);
+        pfcp_report_type_ie* ie = new pfcp_report_type_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_OFFENDING_IE: {
-        pfcp_offending_ie_ie *ie = new pfcp_offending_ie_ie(tlv);
+        pfcp_offending_ie_ie* ie = new pfcp_offending_ie_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_FORWARDING_POLICY: {
-        pfcp_forwarding_policy_ie *ie = new pfcp_forwarding_policy_ie(tlv);
+        pfcp_forwarding_policy_ie* ie = new pfcp_forwarding_policy_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_DESTINATION_INTERFACE: {
-        pfcp_destination_interface_ie *ie =
+        pfcp_destination_interface_ie* ie =
             new pfcp_destination_interface_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_UP_FUNCTION_FEATURES: {
-        pfcp_up_function_features_ie *ie =
+        pfcp_up_function_features_ie* ie =
             new pfcp_up_function_features_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_APPLY_ACTION: {
-        pfcp_apply_action_ie *ie = new pfcp_apply_action_ie(tlv);
+        pfcp_apply_action_ie* ie = new pfcp_apply_action_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -336,12 +336,12 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_PACKET_DETECTION_RULE_ID: {
-        pfcp_pdr_id_ie *ie = new pfcp_pdr_id_ie(tlv);
+        pfcp_pdr_id_ie* ie = new pfcp_pdr_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_F_SEID: {
-        pfcp_f_seid_ie *ie = new pfcp_f_seid_ie(tlv);
+        pfcp_f_seid_ie* ie = new pfcp_f_seid_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -358,7 +358,7 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_NODE_ID: {
-        pfcp_node_id_ie *ie = new pfcp_node_id_ie(tlv);
+        pfcp_node_id_ie* ie = new pfcp_node_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -485,7 +485,7 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_URR_ID: {
-        pfcp_urr_id_ie *ie = new pfcp_urr_id_ie(tlv);
+        pfcp_urr_id_ie* ie = new pfcp_urr_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -496,13 +496,13 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_DOWNLINK_DATA_REPORT: {
-        pfcp_downlink_data_report_ie *ie =
+        pfcp_downlink_data_report_ie* ie =
             new pfcp_downlink_data_report_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_OUTER_HEADER_CREATION: {
-        pfcp_outer_header_creation_ie *ie =
+        pfcp_outer_header_creation_ie* ie =
             new pfcp_outer_header_creation_ie(tlv);
         ie->load_from(is);
         return ie;
@@ -529,12 +529,12 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_BAR_ID: {
-        pfcp_bar_id_ie *ie = new pfcp_bar_id_ie(tlv);
+        pfcp_bar_id_ie* ie = new pfcp_bar_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_CP_FUNCTION_FEATURES: {
-        pfcp_cp_function_features_ie *ie =
+        pfcp_cp_function_features_ie* ie =
             new pfcp_cp_function_features_ie(tlv);
         ie->load_from(is);
         return ie;
@@ -556,7 +556,7 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_UE_IP_ADDRESS: {
-        pfcp_ue_ip_address_ie *ie = new pfcp_ue_ip_address_ie(tlv);
+        pfcp_ue_ip_address_ie* ie = new pfcp_ue_ip_address_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -567,13 +567,13 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_OUTER_HEADER_REMOVAL: {
-        pfcp_outer_header_removal_ie *ie =
+        pfcp_outer_header_removal_ie* ie =
             new pfcp_outer_header_removal_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_RECOVERY_TIME_STAMP: {
-        pfcp_recovery_time_stamp_ie *ie = new pfcp_recovery_time_stamp_ie(tlv);
+        pfcp_recovery_time_stamp_ie* ie = new pfcp_recovery_time_stamp_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -630,24 +630,24 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_ACTIVATE_PREDEFINED_RULES: {
-        pfcp_activate_predefined_rules_ie *ie =
+        pfcp_activate_predefined_rules_ie* ie =
             new pfcp_activate_predefined_rules_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_DEACTIVATE_PREDEFINED_RULES: {
-        pfcp_deactivate_predefined_rules_ie *ie =
+        pfcp_deactivate_predefined_rules_ie* ie =
             new pfcp_deactivate_predefined_rules_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_FAR_ID: {
-        pfcp_far_id_ie *ie = new pfcp_far_id_ie(tlv);
+        pfcp_far_id_ie* ie = new pfcp_far_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_QER_ID: {
-        pfcp_qer_id_ie *ie = new pfcp_qer_id_ie(tlv);
+        pfcp_qer_id_ie* ie = new pfcp_qer_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -677,7 +677,7 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_FAILED_RULE_ID: {
-        pfcp_failed_rule_id_ie *ie = new pfcp_failed_rule_id_ie(tlv);
+        pfcp_failed_rule_id_ie* ie = new pfcp_failed_rule_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -688,13 +688,13 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_USER_PLANE_IP_RESOURCE_INFORMATION: {
-        pfcp_user_plane_ip_resource_information_ie *ie =
+        pfcp_user_plane_ip_resource_information_ie* ie =
             new pfcp_user_plane_ip_resource_information_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
       case PFCP_IE_USER_PLANE_INACTIVITY_TIMER: {
-        pfcp_user_plane_inactivity_timer_ie *ie =
+        pfcp_user_plane_inactivity_timer_ie* ie =
             new pfcp_user_plane_inactivity_timer_ie(tlv);
         ie->load_from(is);
         return ie;
@@ -734,7 +734,7 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_QFI: {
-        pfcp_qfi_ie *ie = new pfcp_qfi_ie(tlv);
+        pfcp_qfi_ie* ie = new pfcp_qfi_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -836,7 +836,7 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       case PFCP_IE_USER_ID: {
-        pfcp_user_id_ie *ie = new pfcp_user_id_ie(tlv);
+        pfcp_user_id_ie* ie = new pfcp_user_id_ie(tlv);
         ie->load_from(is);
         return ie;
       } break;
@@ -921,18 +921,19 @@ pfcp_ie *pfcp_ie::new_pfcp_ie_from_stream(std::istream &is) {
         //      }
         //      break;
       default:
-        Logger::pfcp().error("Unknown PFCP IE type %d (length %d)",
-                             tlv.get_type(), tlv.get_length());
+        Logger::pfcp().error(
+            "Unknown PFCP IE type %d (length %d)", tlv.get_type(),
+            tlv.get_length());
         return nullptr;
     }
   } else {
-    Logger::pfcp().error("PFCP IE type %d length %d", tlv.get_type(),
-                         tlv.get_length());
+    Logger::pfcp().error(
+        "PFCP IE type %d length %d", tlv.get_type(), tlv.get_length());
     return nullptr;
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_heartbeat_request &pfcp_ies) : pfcp_msg_header() {
+pfcp_msg::pfcp_msg(const pfcp_heartbeat_request& pfcp_ies) : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_HEARTBEAT_REQUEST);
   if (pfcp_ies.recovery_time_stamp.first) {
@@ -942,7 +943,7 @@ pfcp_msg::pfcp_msg(const pfcp_heartbeat_request &pfcp_ies) : pfcp_msg_header() {
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_heartbeat_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_heartbeat_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_HEARTBEAT_RESPONSE);
@@ -953,7 +954,7 @@ pfcp_msg::pfcp_msg(const pfcp_heartbeat_response &pfcp_ies)
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_association_setup_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_association_setup_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_ASSOCIATION_SETUP_REQUEST);
@@ -985,7 +986,7 @@ pfcp_msg::pfcp_msg(const pfcp_association_setup_request &pfcp_ies)
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_association_setup_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_association_setup_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_ASSOCIATION_SETUP_RESPONSE);
@@ -1022,7 +1023,7 @@ pfcp_msg::pfcp_msg(const pfcp_association_setup_response &pfcp_ies)
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_association_release_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_association_release_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_ASSOCIATION_RELEASE_REQUEST);
@@ -1033,7 +1034,7 @@ pfcp_msg::pfcp_msg(const pfcp_association_release_request &pfcp_ies)
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_association_release_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_association_release_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_ASSOCIATION_RELEASE_RESPONSE);
@@ -1049,7 +1050,7 @@ pfcp_msg::pfcp_msg(const pfcp_association_release_response &pfcp_ies)
   }
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_node_report_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_node_report_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_NODE_REPORT_REQUEST);
@@ -1076,7 +1077,7 @@ pfcp_msg::pfcp_msg(const pfcp_node_report_request &pfcp_ies)
   //}
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_establishment_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_establishment_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_ESTABLISHMENT_REQUEST);
@@ -1144,7 +1145,7 @@ pfcp_msg::pfcp_msg(const pfcp_session_establishment_request &pfcp_ies)
   //  add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_establishment_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_establishment_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_ESTABLISHMENT_RESPONSE);
@@ -1188,7 +1189,7 @@ pfcp_msg::pfcp_msg(const pfcp_session_establishment_response &pfcp_ies)
   //  std::pair<bool, pfcp::created_traffic_endpoint> created_traffic_endpoint;
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_modification_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_modification_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_MODIFICATION_REQUEST);
@@ -1298,7 +1299,7 @@ pfcp_msg::pfcp_msg(const pfcp_session_modification_request &pfcp_ies)
   //  add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_modification_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_modification_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_MODIFICATION_RESPONSE);
@@ -1342,14 +1343,14 @@ pfcp_msg::pfcp_msg(const pfcp_session_modification_response &pfcp_ies)
   // add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_deletion_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_deletion_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_DELETION_REQUEST);
   // NO IEs !
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_deletion_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_deletion_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_DELETION_RESPONSE);
@@ -1377,7 +1378,7 @@ pfcp_msg::pfcp_msg(const pfcp_session_deletion_response &pfcp_ies)
   // add_ie(sie);}
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_report_request &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_report_request& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_REPORT_REQUEST);
@@ -1404,7 +1405,7 @@ pfcp_msg::pfcp_msg(const pfcp_session_report_request &pfcp_ies)
   // additional_usage_reports_information;
 }
 //------------------------------------------------------------------------------
-pfcp_msg::pfcp_msg(const pfcp_session_report_response &pfcp_ies)
+pfcp_msg::pfcp_msg(const pfcp_session_report_response& pfcp_ies)
     : pfcp_msg_header() {
   ies = {};
   set_message_type(PFCP_SESSION_REPORT_RESPONSE);

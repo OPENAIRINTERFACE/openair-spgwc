@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -55,23 +55,24 @@ void async_cmd_task(void* args_p) {
   const task_id_t task_id = TASK_ASYNC_SHELL_CMD;
 
   const thread_sched_params* const sched_params =
-      (const util::thread_sched_params* const)args_p;
+      (const util::thread_sched_params* const) args_p;
   sched_params->apply(task_id, Logger::async_cmd());
 
   itti_inst->notify_task_ready(task_id);
 
   do {
     std::shared_ptr<itti_msg> shared_msg = itti_inst->receive_msg(task_id);
-    auto* msg = shared_msg.get();
+    auto* msg                            = shared_msg.get();
     switch (msg->msg_type) {
       case ASYNC_SHELL_CMD:
         if (itti_async_shell_cmd* to =
                 dynamic_cast<itti_async_shell_cmd*>(msg)) {
-          int rc = system((const char*)to->system_command.c_str());
+          int rc = system((const char*) to->system_command.c_str());
 
           if (rc) {
-            Logger::async_cmd().error("Failed cmd from %d: %s ", to->origin,
-                                      (const char*)to->system_command.c_str());
+            Logger::async_cmd().error(
+                "Failed cmd from %d: %s ", to->origin,
+                (const char*) to->system_command.c_str());
             if (to->is_abort_on_error) {
               Logger::async_cmd().error(
                   "Terminate cause failed cmd %s at %s:%d",
@@ -111,8 +112,8 @@ void async_cmd_task(void* args_p) {
 async_shell_cmd::async_shell_cmd(util::thread_sched_params& sched_params) {
   Logger::async_cmd().startup("Starting...");
 
-  if (itti_inst->create_task(TASK_ASYNC_SHELL_CMD, async_cmd_task,
-                             &sched_params)) {
+  if (itti_inst->create_task(
+          TASK_ASYNC_SHELL_CMD, async_cmd_task, &sched_params)) {
     Logger::async_cmd().error("Cannot create task TASK_ASYNC_SHELL_CMD");
     throw std::runtime_error("Cannot create task TASK_ASYNC_SHELL_CMD");
   }
@@ -120,12 +121,12 @@ async_shell_cmd::async_shell_cmd(util::thread_sched_params& sched_params) {
 }
 
 //------------------------------------------------------------------------------
-int async_shell_cmd::run_command(const task_id_t sender_itti_task,
-                                 const bool is_abort_on_error,
-                                 const char* src_file, const int src_line,
-                                 const std::string& cmd_str) {
-  itti_async_shell_cmd cmd(sender_itti_task, TASK_ASYNC_SHELL_CMD, cmd_str,
-                           is_abort_on_error, src_file, src_line);
+int async_shell_cmd::run_command(
+    const task_id_t sender_itti_task, const bool is_abort_on_error,
+    const char* src_file, const int src_line, const std::string& cmd_str) {
+  itti_async_shell_cmd cmd(
+      sender_itti_task, TASK_ASYNC_SHELL_CMD, cmd_str, is_abort_on_error,
+      src_file, src_line);
   std::shared_ptr<itti_async_shell_cmd> msg =
       std::make_shared<itti_async_shell_cmd>(cmd);
   int ret = itti_inst->send_msg(msg);

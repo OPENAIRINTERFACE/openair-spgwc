@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -37,8 +37,9 @@
 
 class itti_s1u_msg : public itti_msg {
  public:
-  itti_s1u_msg(const itti_msg_type_t msg_type, const task_id_t orig,
-               const task_id_t dest)
+  itti_s1u_msg(
+      const itti_msg_type_t msg_type, const task_id_t orig,
+      const task_id_t dest)
       : itti_msg(msg_type, orig, dest) {}
 
   itti_s1u_msg& operator=(itti_s1u_msg other) {
@@ -48,10 +49,10 @@ class itti_s1u_msg : public itti_msg {
 
   itti_s1u_msg(const itti_s1u_msg& i) : itti_msg(i) {}
 
-  itti_s1u_msg(const itti_s1u_msg& i, const task_id_t orig,
-               const task_id_t dest)
+  itti_s1u_msg(
+      const itti_s1u_msg& i, const task_id_t orig, const task_id_t dest)
       : itti_s1u_msg(i) {
-    origin = orig;
+    origin      = orig;
     destination = dest;
   }
 };
@@ -69,8 +70,9 @@ class itti_s1u_echo_request : public itti_s1u_msg {
     std::swap(gtp_ies, other.gtp_ies);
     return *this;
   }
-  itti_s1u_echo_request(const itti_s1u_echo_request& i, const task_id_t orig,
-                        const task_id_t dest)
+  itti_s1u_echo_request(
+      const itti_s1u_echo_request& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s1u_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -92,8 +94,9 @@ class itti_s1u_echo_response : public itti_s1u_msg {
     std::swap(gtp_ies, other.gtp_ies);
     return *this;
   }
-  itti_s1u_echo_response(const itti_s1u_echo_response& i, const task_id_t orig,
-                         const task_id_t dest)
+  itti_s1u_echo_response(
+      const itti_s1u_echo_response& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s1u_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -115,8 +118,9 @@ class itti_s1u_error_indication : public itti_s1u_msg {
     std::swap(gtp_ies, other.gtp_ies);
     return *this;
   }
-  itti_s1u_error_indication(const itti_s1u_error_indication& i,
-                            const task_id_t orig, const task_id_t dest)
+  itti_s1u_error_indication(
+      const itti_s1u_error_indication& i, const task_id_t orig,
+      const task_id_t dest)
       : itti_s1u_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }
@@ -127,8 +131,8 @@ class itti_s1u_error_indication : public itti_s1u_msg {
 //------------------------------------------------------------------------------
 class itti_s1u_supported_extension_headers_notification : public itti_s1u_msg {
  public:
-  itti_s1u_supported_extension_headers_notification(const task_id_t orig,
-                                                    const task_id_t dest)
+  itti_s1u_supported_extension_headers_notification(
+      const task_id_t orig, const task_id_t dest)
       : itti_s1u_msg(S1U_SUPPORTED_EXTENSION_HEADERS_NOTIFICATION, orig, dest) {
   }
   explicit itti_s1u_supported_extension_headers_notification(
@@ -169,8 +173,8 @@ class itti_s1u_end_marker : public itti_s1u_msg {
     return *this;
   }
 
-  itti_s1u_end_marker(const itti_s1u_end_marker& i, const task_id_t orig,
-                      const task_id_t dest)
+  itti_s1u_end_marker(
+      const itti_s1u_end_marker& i, const task_id_t orig, const task_id_t dest)
       : itti_s1u_msg(i, orig, dest) {
     gtp_ies = i.gtp_ies;
   }

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -35,54 +35,54 @@ using namespace sgwc;
 using namespace std;
 
 extern pgwc::pgw_config pgw_cfg;
-extern itti_mw *itti_inst;
-extern sgwc_app *sgwc_app_inst;
+extern itti_mw* itti_inst;
+extern sgwc_app* sgwc_app_inst;
 extern sgwc_config sgwc_cfg;
 
 void sebc_procedure::handle_itti_msg(
-    itti_s5s8_create_session_response &resp,
+    itti_s5s8_create_session_response& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> spc) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s5s8_create_session_response");
 }
 void sebc_procedure::handle_itti_msg(
-    itti_s5s8_delete_session_response &resp,
+    itti_s5s8_delete_session_response& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> spc) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s5s8_delete_session_response");
 }
 void sebc_procedure::handle_itti_msg(
-    itti_s5s8_modify_bearer_response &resp,
+    itti_s5s8_modify_bearer_response& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> spc) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s5s8_modify_bearer_response");
 }
 void sebc_procedure::handle_itti_msg(
-    itti_s5s8_release_access_bearers_response &resp,
+    itti_s5s8_release_access_bearers_response& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> spc) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s5s8_release_access_bearers_response");
 }
 void sebc_procedure::handle_itti_msg(
-    itti_s5s8_remote_peer_not_responding &resp,
+    itti_s5s8_remote_peer_not_responding& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> spc) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s5s8_remote_peer_not_responding");
 }
 void sebc_procedure::handle_itti_msg(
-    itti_s5s8_downlink_data_notification &resp,
+    itti_s5s8_downlink_data_notification& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> spc) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s5s8_downlink_data_notification");
 }
 void sebc_procedure::handle_itti_msg(
-    itti_s11_downlink_data_notification_acknowledge &resp) {
+    itti_s11_downlink_data_notification_acknowledge& resp) {
   Logger::sgwc_app().error(
       "Unhandled message itti_s11_downlink_data_notification_acknowledge");
 }
@@ -97,17 +97,18 @@ int create_session_request_procedure::run(
   //  }
   //}
   std::shared_ptr<sgw_pdn_connection> pdn = {};
-  if (c->find_pdn_connection(msg.gtp_ies.apn.access_point_name,
-                             msg.gtp_ies.pdn_type, pdn)) {
-    Logger::sgwc_app().info("PDN connection already exist for APN %s",
-                            msg.gtp_ies.apn.access_point_name.c_str());
+  if (c->find_pdn_connection(
+          msg.gtp_ies.apn.access_point_name, msg.gtp_ies.pdn_type, pdn)) {
+    Logger::sgwc_app().info(
+        "PDN connection already exist for APN %s",
+        msg.gtp_ies.apn.access_point_name.c_str());
     return RETURNerror;
   }
   ebc = c;
 
-  sgw_pdn_connection *p = new sgw_pdn_connection();
-  p->apn_in_use = msg.gtp_ies.apn.access_point_name;
-  p->pdn_type = msg.gtp_ies.pdn_type;
+  sgw_pdn_connection* p                   = new sgw_pdn_connection();
+  p->apn_in_use                           = msg.gtp_ies.apn.access_point_name;
+  p->pdn_type                             = msg.gtp_ies.pdn_type;
   std::shared_ptr<sgw_pdn_connection> spc = ebc->insert_pdn_connection(p);
   // TODO : default_bearer
   p->default_bearer =
@@ -118,10 +119,10 @@ int create_session_request_procedure::run(
       p->sgw_fteid_s5_s8_cp.teid_gre_key, c, spc);
 
   // Forward to P-GW (temp use ITTI instead of ITTI/GTPv2-C/UDP)
-  itti_s5s8_create_session_request *s5s8_csr =
+  itti_s5s8_create_session_request* s5s8_csr =
       new itti_s5s8_create_session_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
   s5s8_csr->gtpc_tx_id = get_trxn_id();
-  s5s8_csr->l_teid = p->sgw_fteid_s5_s8_cp.teid_gre_key;
+  s5s8_csr->l_teid     = p->sgw_fteid_s5_s8_cp.teid_gre_key;
 
   // transfer IEs from S11 msg to S5 msg
   // Mandatory imsi
@@ -178,7 +179,7 @@ int create_session_request_procedure::run(
   if (msg.gtp_ies.has_bearer_context_to_be_created()) {
     for (auto i : msg.gtp_ies.bearer_contexts_to_be_created) {
       bearer_context_to_be_created_within_create_session_request b = {};
-      ebi_t ebi = {};
+      ebi_t ebi                                                    = {};
       if (i.get(ebi)) b.set(ebi);
       bearer_qos_t bearer_qos = {};
       if (i.get(bearer_qos)) b.set(bearer_qos);
@@ -189,9 +190,9 @@ int create_session_request_procedure::run(
       ;
       s5s8_csr->gtp_ies.add_bearer_context_to_be_created(b);
 
-      ebi_t cebi = {.ebi = ebi};
-      sgw_eps_bearer *eps_bearer = new sgw_eps_bearer();
-      eps_bearer->ebi = cebi;
+      ebi_t cebi                 = {.ebi = ebi};
+      sgw_eps_bearer* eps_bearer = new sgw_eps_bearer();
+      eps_bearer->ebi            = cebi;
       // eps_bearer->sgw_fteid_s5_s8_up = s5s8_up_fteid;
       eps_bearer->eps_bearer_qos = bearer_qos;
       spc->add_eps_bearer(std::shared_ptr<sgw_eps_bearer>(eps_bearer));
@@ -200,11 +201,11 @@ int create_session_request_procedure::run(
   if (msg.gtp_ies.has_bearer_context_to_be_removed()) {
     for (auto i : msg.gtp_ies.bearer_contexts_to_be_removed) {
       bearer_context_to_be_removed_within_create_session_request b = {};
-      ebi_t ebi = {};
+      ebi_t ebi                                                    = {};
       if (i.get(ebi)) b.set(ebi);
       s5s8_csr->gtp_ies.add_bearer_context_to_be_removed(b);
 
-      ebi_t cebi = {.ebi = ebi};
+      ebi_t cebi                          = {.ebi = ebi};
       std::shared_ptr<sgw_eps_bearer> seb = {};
       if (spc->get_eps_bearer(cebi, seb)) {
         seb->deallocate_ressources();
@@ -233,7 +234,7 @@ int create_session_request_procedure::run(
 
 //------------------------------------------------------------------------------
 void create_session_request_procedure::handle_itti_msg(
-    itti_s5s8_create_session_response &csresp,
+    itti_s5s8_create_session_response& csresp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> pdn) {
   marked_for_removal = true;
@@ -245,11 +246,11 @@ void create_session_request_procedure::handle_itti_msg(
     return;
   }
 
-  itti_s11_create_session_response *s11_csresp =
+  itti_s11_create_session_response* s11_csresp =
       new itti_s11_create_session_response(TASK_SGWC_APP, TASK_SGWC_S11);
   s11_csresp->gtpc_tx_id = get_trxn_id();
   s11_csresp->r_endpoint = this->msg.r_endpoint;
-  s11_csresp->teid = this->msg.gtp_ies.sender_fteid_for_cp.teid_gre_key;
+  s11_csresp->teid       = this->msg.gtp_ies.sender_fteid_for_cp.teid_gre_key;
 
   // transfer IEs from S5 msg to S11 msg
   // Mandatory imsi
@@ -284,12 +285,12 @@ void create_session_request_procedure::handle_itti_msg(
   if (csresp.gtp_ies.has_bearer_context_created()) {
     for (auto i : csresp.gtp_ies.bearer_contexts_created.second) {
       bearer_context_created_within_create_session_response b = {};
-      cause_t cause = {};
+      cause_t cause                                           = {};
       if (i.get(cause)) b.set(cause);
       ebi_t ebi = {};
       if (i.get(ebi)) b.set(ebi);
       if (cause.cause_value == REQUEST_ACCEPTED) {
-        ebi_t cebi = {.ebi = ebi};
+        ebi_t cebi                          = {.ebi = ebi};
         std::shared_ptr<sgw_eps_bearer> seb = {};
         if (pdn->get_eps_bearer(cebi, seb)) {
           seb->ebi = cebi;
@@ -317,13 +318,13 @@ void create_session_request_procedure::handle_itti_msg(
   if (csresp.gtp_ies.has_bearer_context_marked_for_removal()) {
     for (auto i : csresp.gtp_ies.bearer_contexts_marked_for_removal.second) {
       bearer_context_marked_for_removal_within_create_session_response b = {};
-      cause_t cause = {};
+      cause_t cause                                                      = {};
       if (i.get(cause)) b.set(cause);
       ebi_t ebi = {};
       if (i.get(ebi)) b.set(ebi);
       s11_csresp->gtp_ies.add_bearer_context_marked_for_removal(b);
 
-      ebi_t cebi = {.ebi = ebi};
+      ebi_t cebi                          = {.ebi = ebi};
       std::shared_ptr<sgw_eps_bearer> seb = {};
       if (pdn->get_eps_bearer(cebi, seb)) {
         if (seb.get()) {
@@ -349,7 +350,7 @@ void create_session_request_procedure::handle_itti_msg(
 
 //------------------------------------------------------------------------------
 void create_session_request_procedure::handle_itti_msg(
-    itti_s5s8_remote_peer_not_responding &resp,
+    itti_s5s8_remote_peer_not_responding& resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> pdn) {
   marked_for_removal = true;
@@ -358,21 +359,21 @@ void create_session_request_procedure::handle_itti_msg(
     ebc->delete_pdn_connection(pdn);
   }
 
-  itti_s11_create_session_response *s11_csresp =
+  itti_s11_create_session_response* s11_csresp =
       new itti_s11_create_session_response(TASK_SGWC_APP, TASK_SGWC_S11);
   s11_csresp->gtpc_tx_id = get_trxn_id();
   s11_csresp->r_endpoint = this->msg.r_endpoint;
-  s11_csresp->teid = this->msg.gtp_ies.sender_fteid_for_cp.teid_gre_key;
-  s11_csresp->l_teid = resp.l_teid;
+  s11_csresp->teid       = this->msg.gtp_ies.sender_fteid_for_cp.teid_gre_key;
+  s11_csresp->l_teid     = resp.l_teid;
 
-  cause_t cause = {.cause_value = REMOTE_PEER_NOT_RESPONDING,
-                   .pce = 0,
-                   .bce = 0,
-                   .cs = 1,
+  cause_t cause = {.cause_value           = REMOTE_PEER_NOT_RESPONDING,
+                   .pce                   = 0,
+                   .bce                   = 0,
+                   .cs                    = 1,
                    .offending_ie_instance = 0,
-                   .filler = 0,
-                   .offending_ie_type = 0,
-                   .offending_ie_length = 0};
+                   .filler                = 0,
+                   .offending_ie_type     = 0,
+                   .offending_ie_length   = 0};
   s11_csresp->gtp_ies.set(cause);
 
   s11_csresp->gtp_ies.set_sender_fteid_for_cp(ebc->sgw_fteid_s11_s4_cp);
@@ -396,7 +397,7 @@ int delete_session_request_procedure::run(
     ebc = c;
 
     indication_t indication = {};
-    bool oi_set = false;
+    bool oi_set             = false;
     if (msg.gtp_ies.get(indication)) {
       if (indication.oi) {
         oi_set = true;
@@ -404,11 +405,11 @@ int delete_session_request_procedure::run(
     }
 
     // Forward to P-GW (temp use ITTI instead of ITTI/GTPv2-C/UDP)
-    itti_s5s8_delete_session_request *s5s8_dsr =
+    itti_s5s8_delete_session_request* s5s8_dsr =
         new itti_s5s8_delete_session_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
     s5s8_dsr->gtpc_tx_id = get_trxn_id();
-    s5s8_dsr->teid = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
-    s5s8_dsr->l_teid = pdn_connection->sgw_fteid_s5_s8_cp.teid_gre_key;
+    s5s8_dsr->teid       = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
+    s5s8_dsr->l_teid     = pdn_connection->sgw_fteid_s5_s8_cp.teid_gre_key;
     s5s8_dsr->r_endpoint =
         endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
@@ -491,14 +492,14 @@ int delete_session_request_procedure::run(
 }
 //------------------------------------------------------------------------------
 void delete_session_request_procedure::handle_itti_msg(
-    itti_s5s8_delete_session_response &dsresp,
+    itti_s5s8_delete_session_response& dsresp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
-    std::shared_ptr<sgw_pdn_connection> &pdn) {
-  itti_s11_delete_session_response *s11_dsresp =
+    std::shared_ptr<sgw_pdn_connection>& pdn) {
+  itti_s11_delete_session_response* s11_dsresp =
       new itti_s11_delete_session_response(TASK_SGWC_APP, TASK_SGWC_S11);
   s11_dsresp->gtpc_tx_id = get_trxn_id();
   s11_dsresp->r_endpoint = this->msg.r_endpoint;
-  s11_dsresp->teid = this->ebc->mme_fteid_s11.teid_gre_key;
+  s11_dsresp->teid       = this->ebc->mme_fteid_s11.teid_gre_key;
 
   marked_for_removal = true;
 
@@ -535,18 +536,18 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
   if (nullptr == c.get()) {
     return RETURNerror;
   } else {
-    ebc = c;
+    ebc               = c;
     bool report_error = false;
 
     if (msg.gtp_ies.has_bearer_context_to_be_modified()) {
       for (auto it : msg.gtp_ies.bearer_contexts_to_be_modified) {
         std::shared_ptr<sgw_pdn_connection> pdn = {};
-        std::shared_ptr<sgw_eps_bearer> sb = {};
+        std::shared_ptr<sgw_eps_bearer> sb      = {};
         // bearer_context_to_be_modified_within_modify_bearer_request
         if (not ebc->find_pdn_connection(it.eps_bearer_id, pdn)) {
           bearer_context_modified_within_modify_bearer_response bm = {};
           bm.set(it.eps_bearer_id);
-          cause_t cause = {};
+          cause_t cause     = {};
           cause.cause_value = CONTEXT_NOT_FOUND;
           bm.set(cause);
           bearer_contexts_modified.push_back(bm);
@@ -565,7 +566,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
                     it.eps_bearer_id.ebi);
                 bearer_context_modified_within_modify_bearer_response bm = {};
                 bm.set(it.eps_bearer_id);
-                cause_t cause = {};
+                cause_t cause     = {};
                 cause.cause_value = REQUEST_ACCEPTED;
                 bm.set(cause);
                 bearer_contexts_modified.push_back(bm);
@@ -573,7 +574,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
                 for (std::vector<std::shared_ptr<pdn_bearers_to_be_xied>>::
                          iterator it_pdns = pdn_bearers.begin();
                      it_pdns != pdn_bearers.end(); ++it_pdns) {
-                  pdn_bearers_to_be_xied *px = it_pdns->get();
+                  pdn_bearers_to_be_xied* px = it_pdns->get();
                   if (px->pdn == pdn) {
                     pdn_registered = true;
                     px->bearer_contexts_to_be_modified.push_back(bm);
@@ -581,8 +582,8 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
                 }
 
                 if (not pdn_registered) {
-                  pdn_bearers_to_be_xied *px = new (pdn_bearers_to_be_xied);
-                  px->pdn = pdn;
+                  pdn_bearers_to_be_xied* px = new (pdn_bearers_to_be_xied);
+                  px->pdn                    = pdn;
                   px->bearer_contexts_to_be_modified.push_back(bm);
                   pdn_bearers.push_back(
                       std::shared_ptr<pdn_bearers_to_be_xied>(px));
@@ -596,12 +597,12 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
     if (msg.gtp_ies.has_bearer_context_to_be_removed()) {
       for (auto it : msg.gtp_ies.bearer_contexts_to_be_removed) {
         std::shared_ptr<sgw_pdn_connection> pdn = {};
-        std::shared_ptr<sgw_eps_bearer> sb = {};
+        std::shared_ptr<sgw_eps_bearer> sb      = {};
         if (not c->find_pdn_connection(it.eps_bearer_id, pdn)) {
           bearer_context_marked_for_removal_within_modify_bearer_response bm =
               {};
           bm.set(it.eps_bearer_id);
-          cause_t cause = {};
+          cause_t cause     = {};
           cause.cause_value = CONTEXT_NOT_FOUND;
           bm.set(cause);
           bearer_contexts_marked_for_removal.push_back(bm);
@@ -613,7 +614,7 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
           for (std::vector<std::shared_ptr<pdn_bearers_to_be_xied>>::iterator
                    it_pdns = pdn_bearers.begin();
                it_pdns != pdn_bearers.end(); ++it_pdns) {
-            pdn_bearers_to_be_xied *px = it_pdns->get();
+            pdn_bearers_to_be_xied* px = it_pdns->get();
             if (px->pdn == pdn) {
               pdn_registered = true;
               // pdn_bearers.erase(it_pdns);
@@ -623,8 +624,8 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
           }
 
           if (not pdn_registered) {
-            pdn_bearers_to_be_xied *px = new (pdn_bearers_to_be_xied);
-            px->pdn = pdn;
+            pdn_bearers_to_be_xied* px = new (pdn_bearers_to_be_xied);
+            px->pdn                    = pdn;
             px->bearer_contexts_to_be_removed.push_back(bm);
             pdn_bearers.push_back(std::shared_ptr<pdn_bearers_to_be_xied>(px));
           }
@@ -633,13 +634,13 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
     }
 
     if (pdn_bearers.empty()) {
-      itti_s11_modify_bearer_response *s11_mbresp =
+      itti_s11_modify_bearer_response* s11_mbresp =
           new itti_s11_modify_bearer_response(TASK_SGWC_APP, TASK_SGWC_S11);
       s11_mbresp->gtpc_tx_id = get_trxn_id();
       s11_mbresp->r_endpoint = this->msg.r_endpoint;
-      s11_mbresp->teid = ebc->mme_fteid_s11.teid_gre_key;
+      s11_mbresp->teid       = ebc->mme_fteid_s11.teid_gre_key;
 
-      cause_t cause = {};
+      cause_t cause     = {};
       cause.cause_value = CONTEXT_NOT_FOUND;
       s11_mbresp->gtp_ies.set(cause);
 
@@ -663,9 +664,9 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
     } else {
       // Now we can send X modify bearer request to X GTPV2-C tunnels
       for (auto it_pdns : pdn_bearers) {
-        pdn_bearers_to_be_xied *px = it_pdns.get();
+        pdn_bearers_to_be_xied* px = it_pdns.get();
 
-        itti_s5s8_modify_bearer_request *s5s8_mbr =
+        itti_s5s8_modify_bearer_request* s5s8_mbr =
             new itti_s5s8_modify_bearer_request(TASK_SGWC_APP, TASK_SGWC_S5S8);
         std::shared_ptr<itti_s5s8_modify_bearer_request> msg_s5s8 =
             std::shared_ptr<itti_s5s8_modify_bearer_request>(s5s8_mbr);
@@ -673,8 +674,8 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
         px->gtpc_tx_id =
             util::uint_uid_generator<uint64_t>::get_instance().get_uid();
         s5s8_mbr->gtpc_tx_id = px->gtpc_tx_id;
-        s5s8_mbr->teid = px->pdn->pgw_fteid_s5_s8_cp.teid_gre_key;
-        s5s8_mbr->l_teid = px->pdn->sgw_fteid_s5_s8_cp.teid_gre_key;
+        s5s8_mbr->teid       = px->pdn->pgw_fteid_s5_s8_cp.teid_gre_key;
+        s5s8_mbr->l_teid     = px->pdn->sgw_fteid_s5_s8_cp.teid_gre_key;
         s5s8_mbr->r_endpoint =
             endpoint(pgw_cfg.s5s8_cp.addr4, sgwc_cfg.s5s8_cp.port);
 
@@ -717,14 +718,14 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
 }
 //------------------------------------------------------------------------------
 void modify_bearer_request_procedure::handle_itti_msg(
-    itti_s5s8_modify_bearer_response &s5resp,
+    itti_s5s8_modify_bearer_response& s5resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> pdn) {
-  itti_s11_modify_bearer_response *s11_resp =
+  itti_s11_modify_bearer_response* s11_resp =
       new itti_s11_modify_bearer_response(TASK_SGWC_APP, TASK_SGWC_S11);
   s11_resp->gtpc_tx_id = get_trxn_id();
   s11_resp->r_endpoint = this->msg.r_endpoint;
-  s11_resp->teid = this->ebc->mme_fteid_s11.teid_gre_key;
+  s11_resp->teid       = this->ebc->mme_fteid_s11.teid_gre_key;
 
   // transfer IEs from S5 msg to S11 msg
   cause_t cause = {};
@@ -746,7 +747,7 @@ void modify_bearer_request_procedure::handle_itti_msg(
   for (std::vector<std::shared_ptr<pdn_bearers_to_be_xied>>::iterator
            it_bearer = pdn_bearers.begin();
        it_bearer != pdn_bearers.end(); ++it_bearer) {
-    pdn_bearers_to_be_xied *px = it_bearer->get();
+    pdn_bearers_to_be_xied* px = it_bearer->get();
     if (px->gtpc_tx_id == s5resp.gtpc_tx_id) {
       if (s5resp.gtp_ies.has_bearer_context_modified()) {
         for (auto it_modified :
@@ -797,7 +798,7 @@ void modify_bearer_request_procedure::handle_itti_msg(
       if (pdn_bearers.empty()) {
         // Send modify bearer response
 
-        cause_t global_cause = {};
+        cause_t global_cause     = {};
         global_cause.cause_value = SYSTEM_FAILURE;
 
         marked_for_removal = true;
@@ -820,7 +821,7 @@ void modify_bearer_request_procedure::handle_itti_msg(
           if (not bearer_found) {
             bearer_context_modified_within_modify_bearer_response b = {};
             b.set(it_to_be_modified.eps_bearer_id);
-            cause = {};
+            cause             = {};
             cause.cause_value = CONTEXT_NOT_FOUND;
             b.set(cause);
             s11_resp->gtp_ies.add_bearer_context_modified(b);
@@ -850,7 +851,7 @@ void modify_bearer_request_procedure::handle_itti_msg(
             bearer_context_marked_for_removal_within_modify_bearer_response b =
                 {};
             b.set(it_to_be_removed.eps_bearer_id);
-            cause = {};
+            cause             = {};
             cause.cause_value = CONTEXT_NOT_FOUND;
             b.set(cause);
             s11_resp->gtp_ies.add_bearer_context_marked_for_removal(b);
@@ -934,20 +935,20 @@ int release_access_bearers_request_procedure::run(
              it_pdn = ebc->pdn_connections.begin();
          it_pdn != ebc->pdn_connections.end(); ++it_pdn) {
       if (not it_pdn->second->is_released()) {
-        bearers_to_be_released *breal = new bearers_to_be_released();
+        bearers_to_be_released* breal = new bearers_to_be_released();
 
-        breal->pdn = it_pdn->second;
+        breal->pdn        = it_pdn->second;
         breal->gtpc_tx_id = get_trxn_id();
         bearers.push_back(std::shared_ptr<bearers_to_be_released>(breal));
 
-        itti_s5s8_release_access_bearers_request *s5s8 =
-            new itti_s5s8_release_access_bearers_request(TASK_SGWC_APP,
-                                                         TASK_SGWC_S5S8);
+        itti_s5s8_release_access_bearers_request* s5s8 =
+            new itti_s5s8_release_access_bearers_request(
+                TASK_SGWC_APP, TASK_SGWC_S5S8);
         s5s8->gtpc_tx_id = breal->gtpc_tx_id;
-        s5s8->teid = it_pdn->second->pgw_fteid_s5_s8_cp.teid_gre_key;
-        s5s8->r_endpoint =
-            endpoint(it_pdn->second->pgw_fteid_s5_s8_cp.ipv4_address,
-                     pgw_cfg.s5s8_cp.port);
+        s5s8->teid       = it_pdn->second->pgw_fteid_s5_s8_cp.teid_gre_key;
+        s5s8->r_endpoint = endpoint(
+            it_pdn->second->pgw_fteid_s5_s8_cp.ipv4_address,
+            pgw_cfg.s5s8_cp.port);
 
         std::shared_ptr<itti_s5s8_release_access_bearers_request> msg =
             std::shared_ptr<itti_s5s8_release_access_bearers_request>(s5s8);
@@ -966,14 +967,14 @@ int release_access_bearers_request_procedure::run(
       Logger::sgwc_app().error(
           "release_access_bearers_request_procedure all pdn connections "
           "already released");
-      itti_s11_release_access_bearers_response *s11 =
-          new itti_s11_release_access_bearers_response(TASK_SGWC_APP,
-                                                       TASK_SGWC_S11);
+      itti_s11_release_access_bearers_response* s11 =
+          new itti_s11_release_access_bearers_response(
+              TASK_SGWC_APP, TASK_SGWC_S11);
       s11->gtpc_tx_id = get_trxn_id();
       s11->r_endpoint = this->msg.r_endpoint;
-      s11->teid = ebc->mme_fteid_s11.teid_gre_key;
+      s11->teid       = ebc->mme_fteid_s11.teid_gre_key;
 
-      cause_t cause = {};
+      cause_t cause     = {};
       cause.cause_value = REQUEST_ACCEPTED;
       s11->gtp_ies.set(cause);
 
@@ -993,15 +994,15 @@ int release_access_bearers_request_procedure::run(
 }
 //------------------------------------------------------------------------------
 void release_access_bearers_request_procedure::handle_itti_msg(
-    itti_s5s8_release_access_bearers_response &s5resp,
+    itti_s5s8_release_access_bearers_response& s5resp,
     std::shared_ptr<sgw_eps_bearer_context> ebc,
     std::shared_ptr<sgw_pdn_connection> pdn) {
-  itti_s11_release_access_bearers_response *s11_resp =
-      new itti_s11_release_access_bearers_response(TASK_SGWC_APP,
-                                                   TASK_SGWC_S11);
+  itti_s11_release_access_bearers_response* s11_resp =
+      new itti_s11_release_access_bearers_response(
+          TASK_SGWC_APP, TASK_SGWC_S11);
   s11_resp->gtpc_tx_id = get_trxn_id();
   s11_resp->r_endpoint = this->msg.r_endpoint;
-  s11_resp->teid = this->ebc->mme_fteid_s11.teid_gre_key;
+  s11_resp->teid       = this->ebc->mme_fteid_s11.teid_gre_key;
 
   // transfer IEs from S5 msg to S11 msg
 
@@ -1014,7 +1015,7 @@ void release_access_bearers_request_procedure::handle_itti_msg(
   for (std::vector<std::shared_ptr<bearers_to_be_released>>::iterator
            it_bearer = bearers.begin();
        it_bearer != bearers.end(); ++it_bearer) {
-    bearers_to_be_released *px = it_bearer->get();
+    bearers_to_be_released* px = it_bearer->get();
     if (px->gtpc_tx_id == s5resp.gtpc_tx_id) {
       if (cause.cause_value == 0) {
         if (not s5resp.gtp_ies.get(cause)) {
@@ -1075,7 +1076,7 @@ int downlink_data_notification_procedure::run(
   if ((nullptr == sebc.get()) || (nullptr == pdn.get())) {
     return RETURNerror;
   } else {
-    ebc = sebc;
+    ebc            = sebc;
     pdn_connection = pdn;
 
     ebi_t ebi = {};
@@ -1094,18 +1095,19 @@ int downlink_data_notification_procedure::run(
       return RETURNerror;
     }
 
-    itti_s11_downlink_data_notification *s11 =
-        new itti_s11_downlink_data_notification(msg.gtp_ies, TASK_SGWC_APP,
-                                                TASK_SGWC_S11);
+    itti_s11_downlink_data_notification* s11 =
+        new itti_s11_downlink_data_notification(
+            msg.gtp_ies, TASK_SGWC_APP, TASK_SGWC_S11);
 
-    s11->teid = ebc->mme_fteid_s11.teid_gre_key;
+    s11->teid       = ebc->mme_fteid_s11.teid_gre_key;
     s11->gtpc_tx_id = get_trxn_id();
     s11->r_endpoint =
         endpoint(ebc->mme_fteid_s11.ipv4_address, gtpv2c::default_port);
     s11_triggered = std::shared_ptr<itti_s11_downlink_data_notification>(s11);
 
-    Logger::sgwc_app().info("Sending ITTI message %s to task TASK_SGWC_S11",
-                            s11->gtp_ies.get_msg_name());
+    Logger::sgwc_app().info(
+        "Sending ITTI message %s to task TASK_SGWC_S11",
+        s11->gtp_ies.get_msg_name());
     int ret = itti_inst->send_msg(s11_triggered);
     if (RETURNok != ret) {
       Logger::sgwc_app().error(
@@ -1118,20 +1120,21 @@ int downlink_data_notification_procedure::run(
 }
 //------------------------------------------------------------------------------
 void downlink_data_notification_procedure::handle_itti_msg(
-    itti_s11_downlink_data_notification_acknowledge &s11resp) {
-  itti_s5s8_downlink_data_notification_acknowledge *s5 =
+    itti_s11_downlink_data_notification_acknowledge& s11resp) {
+  itti_s5s8_downlink_data_notification_acknowledge* s5 =
       new itti_s5s8_downlink_data_notification_acknowledge(
           s11resp.gtp_ies, TASK_SGWC_APP, TASK_SGWC_S5S8);
-  s5->teid = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
+  s5->teid       = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
   s5->gtpc_tx_id = get_trxn_id();
-  s5->r_endpoint = endpoint(pdn_connection->pgw_fteid_s5_s8_cp.ipv4_address,
-                            gtpv2c::default_port);
+  s5->r_endpoint = endpoint(
+      pdn_connection->pgw_fteid_s5_s8_cp.ipv4_address, gtpv2c::default_port);
   std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge>
       s5_response =
           std::shared_ptr<itti_s5s8_downlink_data_notification_acknowledge>(s5);
 
-  Logger::sgwc_app().info("Sending ITTI message %s to task TASK_SGWC_S5S8",
-                          s5->gtp_ies.get_msg_name());
+  Logger::sgwc_app().info(
+      "Sending ITTI message %s to task TASK_SGWC_S5S8",
+      s5->gtp_ies.get_msg_name());
   int ret = itti_inst->send_msg(s5_response);
   if (RETURNok != ret) {
     Logger::sgwc_app().error(
