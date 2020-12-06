@@ -36,6 +36,11 @@
 #include "pgwc_sxab.hpp"
 #include "string.hpp"
 
+#include "pfcp.hpp"
+#include "pgw_pfcp_association.hpp"
+#include "pgw_config.hpp"
+#include "itti_msg_sxab.hpp"
+
 #include <stdexcept>
 
 using namespace pgwc;
@@ -306,7 +311,54 @@ pgw_app::pgw_app(const std::string& config_file)
   }
 
   Logger::pgwc_app().startup("Started");
+  // trigger association req to UPFs 
+  //TODO: should be done when SMF select UPF for a particular UE (should be verified)
+  for (std::vector<pfcp::node_id_t>::const_iterator it = pgw_cfg.upfs.begin();
+      it != pgw_cfg.upfs.end(); ++it) {
+    start_upf_association(*it);
+    }
 }
+//From SPGWU
+void pgw_app::start_upf_association(const pfcp::node_id_t &node_id) {
+  Logger::pgwc_app().info("start_upf_association for %s:%d", inet_ntoa(node_id.u1.ipv4_address),pfcp::default_port);
+
+  std::time_t time_epoch = std::time(nullptr);
+  uint64_t tv_ntp = time_epoch + SECONDS_SINCE_FIRST_EPOCH;
+
+  pfcp_associations::get_instance().add_peer_candidate_node(node_id);
+  std::shared_ptr<itti_sxab_association_setup_request> sxa_asc = std::shared_ptr<
+      itti_sxab_association_setup_request>(
+      new itti_sxab_association_setup_request(TASK_PGWC_APP, TASK_PGWC_SX));
+  //sxa_asc->trxn_id = smf_n4_inst->generate_trxn_id();
+  pfcp::cp_function_features_s cp_function_features;
+  cp_function_features = { };
+  cp_function_features.load = 1;
+  cp_function_features.ovrl = 1;
+
+  pfcp::node_id_t this_node_id = { };
+
+  if (pgw_cfg.get_pfcp_node_id(this_node_id) == RETURNok) {
+    sxa_asc->pfcp_ies.set(this_node_id);
+    pfcp::recovery_time_stamp_t r = { .recovery_time_stamp = (uint32_t) tv_ntp };
+    sxa_asc->pfcp_ies.set(r);
+
+    sxa_asc->pfcp_ies.set(cp_function_features);
+    if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
+      sxa_asc->r_endpoint = endpoint(node_id.u1.ipv4_address,
+                                    pfcp::default_port);
+      Logger::pgwc_app().info("here calling assoctiation setup request");
+      int ret = itti_inst->send_msg(sxa_asc);
+      if (RETURNok != ret) {
+        Logger::pgwc_app().error(
+            "Could not send ITTI message %s to task TASK_PGWC_SX ",
+            sxa_asc.get()->get_msg_name());
+      }
+    } else {
+      Logger::pgwc_app().warn("TODO start_association() node_id IPV6, FQDN!");
+    }
+  }
+}
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 void pgw_app::send_create_session_response_cause(
     const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint,

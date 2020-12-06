@@ -268,3 +268,23 @@ void pfcp_associations::notify_del_session(const pfcp::fseid_t& cp_fseid) {
     sa->notify_del_session(cp_fseid);
   }
 }
+
+//------------------------------------------------------------------------------
+
+bool pfcp_associations::add_peer_candidate_node(
+    const pfcp::node_id_t &node_id) {
+  for (std::vector<std::shared_ptr<pfcp_association>>::iterator it =
+      pending_associations.begin(); it < pending_associations.end(); ++it) {
+    if ((*it)->node_id == node_id) {
+      // TODO purge sessions of this node
+      Logger::pgwc_sx().info("TODO purge sessions of this node");
+      pending_associations.erase(it);
+      break;
+    }
+  }
+  pfcp_association *association = new pfcp_association(node_id);
+  std::shared_ptr<pfcp_association> s = std::shared_ptr<pfcp_association>(
+      association);
+  pending_associations.push_back(s);
+  return true;
+}

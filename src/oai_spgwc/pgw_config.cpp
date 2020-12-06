@@ -552,6 +552,37 @@ int pgw_config::load(const string& config_file) {
     Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
     return RETURNerror;
   }
+        //UPF list
+    unsigned char buf_in_addr[sizeof(struct in_addr) + 1];
+    const Setting &upf_list_cfg = pgw_cfg[PGW_CONFIG_STRING_UPF_LIST];
+
+    const Setting &pool_cfg = pgw_cfg[PGW_CONFIG_STRING_IP_ADDRESS_POOL];
+    const Setting &ipv4_pool_cfg = pool_cfg[PGW_CONFIG_STRING_IPV4_ADDRESS_LIST];
+    int num_upf = ipv4_pool_cfg.getLength();
+    num_upf = upf_list_cfg.getLength();
+    for (int i = 0; i < num_upf; i++) {
+      const Setting &upf_cfg = upf_list_cfg[i];
+
+      string address = { };
+      if (upf_cfg.lookupValue(PGW_CONFIG_STRING_UPF_IPV4_ADDRESS, address)) {
+
+        pfcp::node_id_t n = { };
+        n.node_id_type = pfcp::NODE_ID_TYPE_IPV4_ADDRESS;  // actually
+        if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
+          memcpy(&n.u1.ipv4_address, buf_in_addr, sizeof(struct in_addr));
+        } else {
+          Logger::pgwc_app().error(
+              "CONFIG: BAD IPV4 ADDRESS in " PGW_CONFIG_STRING_UPF_LIST " item %d",
+              i);
+          throw("CONFIG: BAD ADDRESS in ", PGW_CONFIG_STRING_UPF_LIST);
+        }
+        upfs.push_back(n);
+      } else {
+        // TODO IPV6_ADDRESS, FQDN
+        throw("Bad value in section %s : item no %d in config file %s", PGW_CONFIG_STRING_UPF_LIST, i, config_file
+            .c_str());
+      }
+    }
   return finalize();
 }
 
@@ -663,6 +694,11 @@ void pgw_config::display() {
   if (inet_ntop(AF_INET6, &default_dns_secv6, str_addr6, sizeof(str_addr6))) {
     Logger::pgwc_app().info("    Secondary DNS v6 .....: %s", str_addr6);
   }
+  Logger::pgwc_app().info("- " PGW_CONFIG_STRING_UPF_LIST ":");
+    for (int i = 0; i < num_upf; i++) {
+    Logger::pgwc_app().info("    UPF %d:", i);
+
+    }
 
   Logger::pgwc_app().info("- " PGW_CONFIG_STRING_APN_LIST ":");
   for (int i = 0; i < num_apn; i++) {

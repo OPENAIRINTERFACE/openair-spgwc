@@ -44,6 +44,13 @@ extern itti_mw* itti_inst;
 extern pgw_config pgw_cfg;
 extern pgwc_sxab* pgwc_sxab_inst;
 
+
+
+void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_request& i)
+{
+  send_request(i.r_endpoint, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
+}
+
 void pgwc_sxab_task(void*);
 
 //------------------------------------------------------------------------------
@@ -73,7 +80,8 @@ void pgwc_sxab_task(void* args_p) {
       case SXAB_ASSOCIATION_SETUP_REQUEST:
         if (itti_sxab_association_setup_request* m =
                 dynamic_cast<itti_sxab_association_setup_request*>(msg)) {
-          pgwc_sxab_inst->handle_itti_msg(ref(*m));
+          // pgwc_sxab_inst->handle_itti_msg(ref(*m));
+          pgwc_sxab_inst->send_sx_msg(ref(*m));
         }
         break;
 
@@ -581,3 +589,4 @@ void pgwc_sxab::time_out_itti_event(const uint32_t timer_id) {
     Logger::pgwc_sx().error("Timer %d not Found", timer_id);
   }
 }
+

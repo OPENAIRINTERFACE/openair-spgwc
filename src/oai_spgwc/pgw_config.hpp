@@ -125,6 +125,11 @@
 #define PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS "PGW_APP_SCHED_PARAMS"
 #define PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS "ASYNC_CMD_SCHED_PARAMS"
 
+#define PGW_CONFIG_STRING_UPF_LIST                              "UPF_LIST"
+#define PGW_CONFIG_STRING_UPF_IPV4_ADDRESS                      "IPV4_ADDRESS"
+#define PGW_CONFIG_STRING_IPV4_ADDRESS_LIST                     "IPV4_LIST"
+#define PGW_CONFIG_STRING_IP_ADDRESS_POOL                       "IP_ADDRESS_POOL"
+
 #define PGW_MAX_ALLOCATED_PDN_ADDRESSES 1024
 
 namespace pgwc {
@@ -172,6 +177,7 @@ class pgw_config {
 
 #define PGW_NUM_APN_MAX 5
   int num_apn;
+  int num_upf;
   struct {
     std::string apn;
     std::string apn_label;
@@ -205,6 +211,8 @@ class pgw_config {
     unsigned int apn_ambr_ul;
     unsigned int apn_ambr_dl;
   } pcef;
+
+  std::vector<pfcp::node_id_t> upfs;
 
   pgw_config()
       : m_rw_lock(),

@@ -177,6 +177,8 @@ class pfcp_associations {
 
   bool select_up_node(
       pfcp::node_id_t& node_id, const int node_selection_criteria);
+  bool add_peer_candidate_node(const pfcp::node_id_t &node_id);
+  
 };
 }  // namespace pgwc
 
