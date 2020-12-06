@@ -149,7 +149,7 @@ typedef struct protocol_configuration_options_s {
   uint8_t configuration_protocol : 3;
   uint8_t num_protocol_or_container_id;
   // arbitrary value, can be greater than defined (250/3)
-#define PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID 8
+#define PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID 30
   pco_protocol_or_container_id_t
       protocol_or_container_ids[PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID];
 } protocol_configuration_options_t;
