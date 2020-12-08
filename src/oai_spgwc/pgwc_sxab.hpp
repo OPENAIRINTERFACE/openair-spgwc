@@ -105,6 +105,10 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
   void handle_receive_association_setup_request(
       pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
 
+  void handle_receive_association_setup_response(
+      pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
+
+
   void handle_receive_session_establishment_response(
       pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
   void handle_receive_session_modification_response(

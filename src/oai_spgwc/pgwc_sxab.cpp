@@ -263,7 +263,11 @@ void pgwc_sxab::handle_receive_pfcp_msg(
       break;
     case PFCP_PFCP_PFD_MANAGEMENT_REQUEST:
     case PFCP_PFCP_PFD_MANAGEMENT_RESPONSE:
+    //case PFCP_ASSOCIATION_SETUP_RESPONSE:
     case PFCP_ASSOCIATION_SETUP_RESPONSE:
+      handle_receive_association_setup_response(msg, remote_endpoint);
+      break;
+
     case PFCP_ASSOCIATION_UPDATE_REQUEST:
     case PFCP_ASSOCIATION_UPDATE_RESPONSE:
     case PFCP_ASSOCIATION_RELEASE_REQUEST:
@@ -401,6 +405,45 @@ void pgwc_sxab::handle_receive_association_setup_request(
           msg_ies_container.node_id.second);
     }
   }
+}
+//------------------------------------------------------------------------------
+void pgwc_sxab::handle_receive_association_setup_response(
+    pfcp::pfcp_msg &msg, const endpoint &remote_endpoint) {
+  //TODO: To be completed
+  Logger::pgwc_sx().info("Received N4 ASSOCIATION SETUP RESPONSE from an UPF");
+  bool error = true;
+  uint64_t trxn_id = 0;
+  pfcp_association_setup_response msg_ies_container = { };
+  msg.to_core_type(msg_ies_container);
+
+  handle_receive_message_cb(msg, remote_endpoint, TASK_SPGWU_SX, error, trxn_id);
+  if (!error) {
+    if (not msg_ies_container.node_id.first) {
+      // Should be detected by lower layers
+      Logger::pgwc_sx().warn(
+          "Received Sx ASSOCIATION SETUP RESPONSE without node id IE!, ignore message");
+      return;
+    }
+    if (not msg_ies_container.recovery_time_stamp.first) {
+      // Should be detected by lower layers
+      Logger::pgwc_sx().warn(
+          "Received Sx ASSOCIATION SETUP RESPONSE without recovery time stamp IE!, ignore message");
+      return;
+    }
+    Logger::pgwc_sx().info("Received Sx ASSOCIATION SETUP RESPONSE");
+    bool restore_sx_sessions = false;
+    if (msg_ies_container.up_function_features.first) {
+      pfcp_associations::get_instance().add_association(
+          msg_ies_container.node_id.second,
+          msg_ies_container.recovery_time_stamp.second,
+          msg_ies_container.up_function_features.second, restore_sx_sessions);
+    } else {
+      pfcp_associations::get_instance().add_association(
+          msg_ies_container.node_id.second,
+          msg_ies_container.recovery_time_stamp.second, restore_sx_sessions);
+    }
+  }
+
 }
 
 //------------------------------------------------------------------------------
