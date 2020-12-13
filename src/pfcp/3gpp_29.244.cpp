@@ -38,6 +38,11 @@ pfcp_ie* pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
   tlv.load_from(is);
   if (tlv.length) {
     switch (tlv.type) {
+      case PFCP_IE_ENTERPRISE_SPECIFIC: {
+        pfcp_enterprise_specific_ie* ie = new pfcp_enterprise_specific_ie(tlv);
+        ie->load_from(is);
+        return ie;
+      } break;
       case PFCP_IE_CREATE_PDR: {
         pfcp_create_pdr_ie* ie = new pfcp_create_pdr_ie(tlv);
         ie->load_from(is);
@@ -984,6 +989,12 @@ pfcp_msg::pfcp_msg(const pfcp_association_setup_request& pfcp_ies)
             pfcp_ies.user_plane_ip_resource_information.second));
     add_ie(sie);
   }
+  if (pfcp_ies.user_plane_ip_resource_information.first) {
+    std::shared_ptr<pfcp_user_plane_ip_resource_information_ie> sie(
+        new pfcp_user_plane_ip_resource_information_ie(
+            pfcp_ies.user_plane_ip_resource_information.second));
+    add_ie(sie);
+  }
 }
 //------------------------------------------------------------------------------
 pfcp_msg::pfcp_msg(const pfcp_association_setup_response& pfcp_ies)
@@ -1019,6 +1030,12 @@ pfcp_msg::pfcp_msg(const pfcp_association_setup_response& pfcp_ies)
     std::shared_ptr<pfcp_user_plane_ip_resource_information_ie> sie(
         new pfcp_user_plane_ip_resource_information_ie(
             pfcp_ies.user_plane_ip_resource_information.second));
+    add_ie(sie);
+  }
+  if (pfcp_ies.enterprise_specific.first) {
+    std::shared_ptr<pfcp_enterprise_specific_ie> sie(
+        new pfcp_enterprise_specific_ie(
+            pfcp_ies.enterprise_specific.second));
     add_ie(sie);
   }
 }

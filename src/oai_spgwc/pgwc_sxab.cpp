@@ -362,7 +362,8 @@ void pgwc_sxab::handle_receive_association_setup_request(
       pfcp_associations::get_instance().add_association(
           msg_ies_container.node_id.second,
           msg_ies_container.recovery_time_stamp.second,
-          msg_ies_container.up_function_features.second, restore_sx_sessions);
+          msg_ies_container.up_function_features.second, 
+          msg_ies_container.enterprise_specific.second, restore_sx_sessions);
     } else {
       pfcp_associations::get_instance().add_association(
           msg_ies_container.node_id.second,
@@ -436,7 +437,8 @@ void pgwc_sxab::handle_receive_association_setup_response(
       pfcp_associations::get_instance().add_association(
           msg_ies_container.node_id.second,
           msg_ies_container.recovery_time_stamp.second,
-          msg_ies_container.up_function_features.second, restore_sx_sessions);
+          msg_ies_container.up_function_features.second, 
+          msg_ies_container.enterprise_specific.second, restore_sx_sessions);
     } else {
       pfcp_associations::get_instance().add_association(
           msg_ies_container.node_id.second,

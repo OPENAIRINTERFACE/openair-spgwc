@@ -107,6 +107,7 @@ bool pfcp_associations::add_association(
 bool pfcp_associations::add_association(
     pfcp::node_id_t& node_id, pfcp::recovery_time_stamp_t& recovery_time_stamp,
     pfcp::up_function_features_s& function_features,
+    pfcp::enterprise_specific_s& enterprise_specific,
     bool& restore_sx_sessions) {
   std::shared_ptr<pfcp_association> sa =
       std::shared_ptr<pfcp_association>(nullptr);
@@ -120,6 +121,7 @@ bool pfcp_associations::add_association(
     sa->recovery_time_stamp      = recovery_time_stamp;
     sa->function_features.first  = true;
     sa->function_features.second = function_features;
+    
   } else {
     restore_sx_sessions = false;
     pfcp_association* association =

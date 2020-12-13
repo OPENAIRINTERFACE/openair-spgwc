@@ -94,6 +94,7 @@ int session_establishment_procedure::run(
     cause.pce         = 1;
     cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
     resp->gtp_ies.set(cause);
+    Logger::pgwc_sx().error("Error here");
     return RETURNerror;
   }
 

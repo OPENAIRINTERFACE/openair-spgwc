@@ -307,6 +307,7 @@ struct pfcp_ie_value_exception : public pfcp_ie_exception {
 #define PFCP_IE_FRAMED_ROUTE (153)
 #define PFCP_IE_FRAMED_ROUTING (154)
 #define PFCP_IE_FRAMED_IPV6_ROUTE (155)
+#define PFCP_IE_ENTERPRISE_SPECIFIC (32770) //VPP-UPF Travelping
 
 #define PFCP_MESSAGE_RESERVED (0)
 // PFCP_NODE_RELATED_MESSAGES
@@ -337,6 +338,12 @@ struct pfcp_ie_value_exception : public pfcp_ie_exception {
 }  // namespace pfcp
 
 namespace pfcp {
+//-------------------------------------
+// 8.1.1 IE with Enterprise Info
+typedef struct enterprise_specific_s {
+  uint16_t enterprise_id;
+  std::string proprietary_data;
+} enterprise_specific_t;
 //-------------------------------------
 // 8.2.1 Cause
 enum cause_value_e {

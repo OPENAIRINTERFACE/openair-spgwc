@@ -327,7 +327,7 @@ void pgw_app::start_upf_association(const pfcp::node_id_t &node_id) {
 
   pfcp_associations::get_instance().add_peer_candidate_node(node_id);
   std::shared_ptr<itti_sxab_association_setup_request> sxa_asc = std::shared_ptr<
-      itti_sxab_association_setup_request>(
+      itti_sxab_association_setup_request>(                  
       new itti_sxab_association_setup_request(TASK_PGWC_APP, TASK_PGWC_SX));
   //sxa_asc->trxn_id = smf_n4_inst->generate_trxn_id();
   pfcp::cp_function_features_s cp_function_features;

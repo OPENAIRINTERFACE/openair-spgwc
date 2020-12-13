@@ -53,12 +53,12 @@ class pfcp_tlv : public stream_serializable {
   static const uint16_t tlv_ie_length = 4;
   uint16_t type;
   uint16_t length;
-  uint16_t enterprise_id;
+  uint16_t enterprise_id_tmp;
 
-  pfcp_tlv() : type(0), length(0), enterprise_id(0) {}
+  pfcp_tlv() : type(0), length(0), enterprise_id_tmp(0) {}
 
   pfcp_tlv(uint16_t t, uint16_t l = 0, uint16_t e = 0)
-      : type(t), length(l), enterprise_id(e) {}
+      : type(t), length(l), enterprise_id_tmp(e) {}
 
   //~pfcp_tlv() {};
 
@@ -72,9 +72,9 @@ class pfcp_tlv : public stream_serializable {
 
   uint16_t get_length() { return length; }
 
-  void set_enterprise_id(const uint16_t& e) { enterprise_id = e; }
+  void set_enterprise_id(const uint16_t& e) { enterprise_id_tmp = e; }
 
-  uint16_t get_enterprise_id() { return enterprise_id; }
+  uint16_t get_enterprise_id() { return enterprise_id_tmp; }
 
   void dump_to(std::ostream& os) {
     auto ns_type = htobe16(type);
@@ -82,7 +82,7 @@ class pfcp_tlv : public stream_serializable {
     auto ns_length = htobe16(length);
     os.write(reinterpret_cast<const char*>(&ns_length), sizeof(ns_length));
     if (type & 0x8000) {
-      auto ns_enterprise_id = htobe16(enterprise_id);
+      auto ns_enterprise_id = htobe16(enterprise_id_tmp);
       os.write(
           reinterpret_cast<const char*>(&ns_enterprise_id),
           sizeof(ns_enterprise_id));
@@ -95,8 +95,8 @@ class pfcp_tlv : public stream_serializable {
     is.read(reinterpret_cast<char*>(&length), sizeof(length));
     length = be16toh(length);
     if (type & 0x8000) {
-      is.read(reinterpret_cast<char*>(&enterprise_id), sizeof(enterprise_id));
-      enterprise_id = be16toh(enterprise_id);
+      is.read(reinterpret_cast<char*>(&enterprise_id_tmp), sizeof(enterprise_id_tmp));
+      enterprise_id_tmp = be16toh(enterprise_id_tmp);
     }
   }
 };
@@ -107,7 +107,7 @@ class pfcp_ie : public stream_serializable {
 
   pfcp_ie() : tlv() {}
   explicit pfcp_ie(const pfcp_tlv& t) : tlv(t) {}
-  explicit pfcp_ie(const uint8_t tlv_type) : tlv() { tlv.type = tlv_type; }
+  explicit pfcp_ie(const uint16_t tlv_type) : tlv() { tlv.type = tlv_type; }
 
   virtual ~pfcp_ie(){};
 
@@ -547,6 +547,74 @@ class pfcp_cause_ie : public pfcp_ie {
     pfcp::cause_t v = {};
     to_core_type(v);
     s.set(v);
+  }
+};
+//-------------------------------------
+// IE ENTERPRISE SPECIFIC
+class pfcp_enterprise_specific_ie : public pfcp_ie {
+ public:
+  uint16_t enterprise_id;
+  std::string proprietary_data;
+
+    //--------
+  explicit pfcp_enterprise_specific_ie(const pfcp::enterprise_specific_t& b)
+      : pfcp_ie(PFCP_IE_ENTERPRISE_SPECIFIC) {
+    enterprise_id = b.enterprise_id;
+    proprietary_data = b.proprietary_data;
+    tlv.set_length(2+proprietary_data.size());
+  }
+  //--------
+  pfcp_enterprise_specific_ie() : pfcp_ie(PFCP_IE_ENTERPRISE_SPECIFIC) {
+    enterprise_id = 0;
+    proprietary_data = {};
+    tlv.set_length(2);
+  }
+  //--------
+ // explicit pfcp_enterprise_specific_ie(const pfcp_tlv& t) 
+ // : pfcp_ie(t),
+  //  enterprise_id(0),
+  //  proprietary_data(){};
+
+  explicit pfcp_enterprise_specific_ie(const pfcp_tlv& t) 
+  : pfcp_ie(t),
+    enterprise_id(0),
+    proprietary_data(){};
+  //--------
+  void to_core_type(pfcp::enterprise_specific_t& b) {
+    b.enterprise_id = enterprise_id;
+    b.proprietary_data = proprietary_data;
+  }
+  //--------
+  void dump_to(std::ostream& os) {
+    tlv.dump_to(os);
+    auto be_enterprise_id = htobe16(enterprise_id);
+    os.write(reinterpret_cast<const char*>(&be_enterprise_id),
+              sizeof(be_enterprise_id));
+  }
+  //--------
+  void load_from(std::istream& is) {
+    // tlv.load_from(is);
+    if (tlv.get_length() != sizeof(enterprise_id)) {
+      throw pfcp_tlv_bad_length_exception(
+          tlv.type, tlv.get_length(), __FILE__, __LINE__);
+    }
+    is.read(reinterpret_cast<char*>(&enterprise_id),
+        sizeof(enterprise_id));
+    //enterprise_id = be16toh(enterprise_id);
+    if (tlv.get_length() != (2 + proprietary_data.size())) {
+      throw pfcp_tlv_bad_length_exception(
+          tlv.type, tlv.get_length(), __FILE__, __LINE__);
+    }
+  
+  char e[enterprise_id];
+  is.read(e, enterprise_id);
+  proprietary_data.assign(e, enterprise_id);
+  }
+  //--------
+  void to_core_type(pfcp_ies_container& s) {
+    pfcp::enterprise_specific_t enterprise_specific = {};
+    to_core_type(enterprise_specific);
+    s.set(enterprise_specific);
   }
 };
 //-------------------------------------
@@ -2114,8 +2182,7 @@ class pfcp_forwarding_policy_ie : public pfcp_ie {
   //--------
   void dump_to(std::ostream& os) {
     tlv.dump_to(os);
-    os.write(
-        reinterpret_cast<const char*>(&forwarding_policy_identifier_length),
+    os.write(reinterpret_cast<const char*>(&forwarding_policy_identifier_length),
         sizeof(forwarding_policy_identifier_length));
     os << forwarding_policy_identifier;
   }

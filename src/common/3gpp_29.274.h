@@ -1676,7 +1676,7 @@ typedef fully_qualified_domain_name_t fqdn_t;
 // 8.67 Private Extension
 typedef struct private_extension_s {
   uint16_t enterprise_id;
-  std::string proprietary_value;
+  std::string proprietary_data;
 } private_extension_t;
 
 //-------------------------------------
