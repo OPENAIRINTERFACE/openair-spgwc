@@ -171,6 +171,7 @@ void sgwc_app::delete_sgw_eps_bearer_context(
     imsi2sgw_eps_bearer_context.erase(imsi64);
     s11lteid2sgw_eps_bearer_context.erase(
         sebc->sgw_fteid_s11_s4_cp.teid_gre_key);
+    sebc->release();
   }
 }
 //------------------------------------------------------------------------------
@@ -395,6 +396,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
   if (csreq.gtp_ies.get(imsi)) {
     // imsi not authenticated
     indication_t indication = {};
+    bool delete_pdn_flag = false;
     if ((csreq.gtp_ies.get(indication)) && (indication.uimsi)) {
       Logger::sgwc_app().debug(
           "TODO S11 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) sender "
@@ -405,6 +407,47 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
       imsi64_t imsi64 = imsi.to_imsi64();
       if (is_imsi64_2_sgw_eps_bearer_context(imsi64)) {
         ebc = imsi64_2_sgw_eps_bearer_context(imsi64);
+
+        // case identified in: the existing PDN connection context locally,
+        // if the Create Session Request is received with the TEID set to zero
+        // in the header, or if it is received with a TEID not set to zero in
+        // the header and it collides with the default bearer of an existing PDN
+        // connection context;
+        ebi_t ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
+        std::shared_ptr<sgw_pdn_connection> sp;
+        if (csreq.gtp_ies.bearer_contexts_to_be_created.size() >= 1) {
+          ebi = csreq.gtp_ies.bearer_contexts_to_be_created[0].eps_bearer_id;
+          if (ebc->find_pdn_connection(ebi, sp)) {
+            delete_pdn_flag = true;
+          }
+        }
+        if (!csreq.teid) {
+          ebi = csreq.gtp_ies.bearer_contexts_to_be_created[0].eps_bearer_id;
+          if (ebc->find_pdn_connection(ebi, sp)) {
+            delete_pdn_flag = true;
+          }
+        }
+        if (delete_pdn_flag) {
+          // Create delete session request
+          // Quick fix: emulate reception DSR by SGW on S11
+          // TODO: 3 options
+          //       1) delete ctxt and send CSR (delegate tricky job to PGW)
+          //       2) send a single DSR (no procedure), delete ctxt and send CSR
+          //       3) create DSR procedure, delete ctxt and send CSR
+          // emulate reception by
+          itti_s11_delete_session_request dsr{TASK_SGWC_APP, TASK_SGWC_APP};
+          dsr.gtp_ies.set(ebc->mme_fteid_s11, 0); // sender FTEID
+          dsr.gtp_ies.set(ebi);
+          indication_t indication_flags = {};
+          indication_flags.oi = 1;
+          dsr.gtp_ies.set(indication_flags);
+          dsr.teid = ebc->sgw_fteid_s11_s4_cp.teid_gre_key;
+          // send 'S11' DSR
+          ebc->handle_itti_msg(dsr);
+
+          // finally delete the pdn connection
+          ebc->delete_pdn_connection(sp);
+        }
       } else {
         ebc = std::shared_ptr<sgw_eps_bearer_context>(
             new sgw_eps_bearer_context());

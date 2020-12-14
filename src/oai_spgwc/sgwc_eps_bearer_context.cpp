@@ -78,6 +78,17 @@ void sgw_eps_bearer::deallocate_ressources() {
 }
 
 //------------------------------------------------------------------------------
+void sgw_eps_bearer_context::release() {
+  // pending_procedures
+  pending_procedures.clear();
+  // pdn connections
+  for (auto it = pdn_connections.begin(); it != pdn_connections.end(); ++it) {
+    std::shared_ptr<sgw_pdn_connection> sp = it->second;
+    delete_pdn_connection(sp);
+  }
+}
+
+//------------------------------------------------------------------------------
 void sgw_eps_bearer_context::erase_pdn_connection(
     std::shared_ptr<sgw_pdn_connection> spc) {
   kpdn_t k = std::make_pair<std::string, uint8_t>(
