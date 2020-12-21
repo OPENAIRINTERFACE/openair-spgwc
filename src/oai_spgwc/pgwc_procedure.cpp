@@ -94,7 +94,6 @@ int session_establishment_procedure::run(
     cause.pce         = 1;
     cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
     resp->gtp_ies.set(cause);
-    Logger::pgwc_sx().error("Error here");
     return RETURNerror;
   }
 
@@ -156,9 +155,14 @@ int session_establishment_procedure::run(
     ppc->generate_far_id(far_id);
     apply_action.forw = 1;
 
-    destination_interface.interface_value =
-        pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for uplink
+    // destination_interface.interface_value =
+    //     pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for uplink
+      destination_interface.interface_value =
+        pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN;  // ACCESS is for downlink, CORE for uplink
+    pfcp::network_instance_t         network_instance = {};
+    network_instance = {"sgi1"};
     forwarding_parameters.set(destination_interface);
+    forwarding_parameters.set(network_instance);
 
     create_far.set(far_id);
     create_far.set(apply_action);
@@ -179,6 +183,7 @@ int session_establishment_procedure::run(
     pfcp::source_interface_t source_interface = {};
     pfcp::fteid_t local_fteid                 = {};
     // pfcp::network_instance_t         network_instance = {};
+    network_instance = {"access"};
     pfcp::ue_ip_address_t ue_ip_address = {};
     // pfcp::traffic_endpoint_id_t      traffic_endpoint_id = {};
     pfcp::sdf_filter_t sdf_filter         = {};
@@ -190,6 +195,7 @@ int session_establishment_procedure::run(
     // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
     source_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS;
     local_fteid.ch                   = 1;
+    local_fteid.v4                   = 1;
     // local_fteid.chid = 1;
     xgpp_conv::paa_to_pfcp_ue_ip_address(
         s5_triggered_pending->gtp_ies.paa.second, ue_ip_address);
@@ -202,7 +208,9 @@ int session_establishment_procedure::run(
 
     pdi.set(source_interface);
     pdi.set(local_fteid);
+  
     pdi.set(ue_ip_address);
+    pdi.set(network_instance);
 
     outer_header_removal.outer_header_removal_description =
         OUTER_HEADER_REMOVAL_GTPU_UDP_IPV4;
@@ -1120,3 +1128,4 @@ void downlink_data_report_procedure::handle_itti_msg(
         sx->pfcp_ies.get_msg_name());
   }
 }
+

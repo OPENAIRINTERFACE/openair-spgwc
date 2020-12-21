@@ -569,16 +569,16 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
     proprietary_data = {};
     tlv.set_length(2);
   }
-  //--------
- // explicit pfcp_enterprise_specific_ie(const pfcp_tlv& t) 
- // : pfcp_ie(t),
-  //  enterprise_id(0),
-  //  proprietary_data(){};
-
+  //  --------
   explicit pfcp_enterprise_specific_ie(const pfcp_tlv& t) 
   : pfcp_ie(t),
-    enterprise_id(0),
-    proprietary_data(){};
+   enterprise_id(0),
+   proprietary_data(){};
+
+  // explicit pfcp_enterprise_specific_ie(const uint16_t tlv_type) 
+  // : pfcp_ie(tlv_type),
+  //   enterprise_id(0),
+  //   proprietary_data(){};
   //--------
   void to_core_type(pfcp::enterprise_specific_t& b) {
     b.enterprise_id = enterprise_id;
@@ -594,7 +594,7 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
   //--------
   void load_from(std::istream& is) {
     // tlv.load_from(is);
-    if (tlv.get_length() != sizeof(enterprise_id)) {
+    if (tlv.get_length() != 2) {
       throw pfcp_tlv_bad_length_exception(
           tlv.type, tlv.get_length(), __FILE__, __LINE__);
     }
@@ -693,6 +693,7 @@ class pfcp_fteid_ie : public pfcp_ie {
     teid         = b.teid;
     ipv4_address = b.ipv4_address;
     ipv6_address = b.ipv6_address;
+
     if (!u1.bf.ch) {
       tlv.add_length(4);  // teid
       u1.bf.v4 = b.v4;
@@ -703,7 +704,14 @@ class pfcp_fteid_ie : public pfcp_ie {
       if (u1.bf.v6) {
         tlv.add_length(16);
       }
-    } else {
+    }
+    // R16 8.2.3 -> At least one of the V4 and V6 flags shall be set to "1", and both may be set to "1" for scenarios
+    // when the UP function is requested to allocate the F-TEID, i.e. when CHOOSE bit is set to "1", 
+    // and the IPv4 address and IPv6 address fields are not present. 
+    if (u1.bf.ch & b.v4){
+      u1.bf.v4 = b.v4;
+    }
+    else {
       ipv4_address.s_addr = INADDR_ANY;
       ipv6_address        = in6addr_any;
       // else should clear v4 v6 bits
@@ -9165,4 +9173,5 @@ class pfcp_create_traffic_endpoint_ie : public pfcp_grouped_ie {
 }  // namespace pfcp
 
 #endif /* FILE_3GPP_29_244_HPP_SEEN */
+
 
