@@ -270,6 +270,7 @@ class sgw_eps_bearer_context
         pending_procedures(),
         pdn_connections() {}
 
+  void release();
   void create_procedure(itti_s11_create_session_request&);
   void create_procedure(itti_s11_modify_bearer_request&);
   void create_procedure(itti_s11_delete_session_request&);
