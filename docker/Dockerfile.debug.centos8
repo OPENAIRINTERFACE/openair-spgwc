@@ -39,7 +39,7 @@ ARG CI_DEST_BRANCH
 RUN yum update -y \
   && yum install epel-release -y \
   && yum install dnf-plugins-core -y \
-  && yum config-manager --set-enabled PowerTools \
+  && yum config-manager --set-enabled powertools \
   && yum install -y \
     psmisc \
     git \
