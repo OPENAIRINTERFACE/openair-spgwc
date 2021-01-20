@@ -428,16 +428,20 @@ pipeline {
           archiveArtifacts artifacts: 'test_results_oai_epc.html'
         }
         // Sending an email to the last committer. Maybe not the Pull Request's author.
-        def emailTo = getCommitterEmail()
-        emailext attachmentsPattern: '*results*.html',
-          body: '''Hi,
+        if (params.sendToCommitterEmail != null) {
+          if (params.sendToCommitterEmail) {
+            def emailTo = getCommitterEmail()
+            emailext attachmentsPattern: '*results*.html',
+              body: '''Hi,
 Here are attached HTML report files for $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
 
 Regards,
 OAI CI Team''',
-          replyTo: 'no-reply@openairinterface.org',
-          subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',
-          to: emailTo
+              replyTo: 'no-reply@openairinterface.org',
+              subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',
+              to: emailTo
+          }
+        }
       }
     }
   }
