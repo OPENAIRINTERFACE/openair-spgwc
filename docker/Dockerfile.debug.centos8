@@ -60,7 +60,7 @@ RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $H
 RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 # In normal case, we build out of the develop branch
-RUN /bin/bash -c "if [[ -v CI_SRC_BRANCH ]]; then git clone https://github.com/lionelgo/openair-spgwc.git -b $CI_SRC_BRANCH /openair-spgwc; else git clone https://github.com/lionelgo/openair-spgwc.git -b csr-collision /openair-spgwc; fi"
+RUN /bin/bash -c "if [[ -v CI_SRC_BRANCH ]]; then git clone https://github.com/lionelgo/openair-spgwc.git -b $CI_SRC_BRANCH /openair-spgwc; else git clone https://github.com/lionelgo/openair-spgwc.git -b ue-mtu-1358 /openair-spgwc; fi"
 # For CI, especially for Pull/Merge Requests, we build out of temp merge
 WORKDIR /openair-spgwc
 RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git config --global user.name \"OAI CI\"; fi"
