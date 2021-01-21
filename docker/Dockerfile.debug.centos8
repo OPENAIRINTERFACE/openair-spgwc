@@ -28,7 +28,7 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM oai-spgwc:centos8-spgwc-debug-3rd-party as oai-spgwc-builder
+FROM oai-spgwc:debug-3rd-party as centos8-spgwc-debug
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
