@@ -29,7 +29,7 @@ spec:
     source:
         git:
             uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "develop"
+            ref: "ue-mtu-1358"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:
@@ -46,7 +46,10 @@ spec:
     strategy:
         dockerStrategy:
             dockerfilePath: "docker/Dockerfile.debug.centos8"
+            from:
+                kind: "ImageStreamTag"
+                name: "oai-spgwc:debug-3rd-party"
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:onap-0.1.0"
+            name: "oai-spgwc:ue-mtu-1358"
