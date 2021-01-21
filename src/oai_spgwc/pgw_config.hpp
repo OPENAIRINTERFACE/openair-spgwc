@@ -235,7 +235,8 @@ class pgw_config {
       ue_pool_excluded[i]     = {};
     }
     force_push_pco = true;
-    ue_mtu         = 1358; // Do not change this value unless you know what you are doing
+    // Do not change this value unless you know what you are doing
+    ue_mtu         = 1358;
 
     itti.itti_timer_sched_params.sched_priority = 85;
     itti.sx_sched_params.sched_priority         = 84;
