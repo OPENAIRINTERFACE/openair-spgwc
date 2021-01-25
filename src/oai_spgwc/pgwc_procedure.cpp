@@ -158,9 +158,9 @@ int session_establishment_procedure::run(
     // destination_interface.interface_value =
     //     pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for uplink
       destination_interface.interface_value =
-        pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN;  // ACCESS is for downlink, CORE for uplink
-    pfcp::network_instance_t         network_instance = {};
-    network_instance = {"sgi1"};
+        pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN;  // ACCESS is for downlink, SGi-LAN for uplink
+    pfcp::network_instance_t         network_instance = {};  // mandatory for travelping
+    network_instance.network_instance = {"sgi"};
     forwarding_parameters.set(destination_interface);
     forwarding_parameters.set(network_instance);
 
@@ -183,7 +183,7 @@ int session_establishment_procedure::run(
     pfcp::source_interface_t source_interface = {};
     pfcp::fteid_t local_fteid                 = {};
     // pfcp::network_instance_t         network_instance = {};
-    network_instance = {"access"};
+    network_instance.network_instance = {"access"};  // mandatory for travelping
     pfcp::ue_ip_address_t ue_ip_address = {};
     // pfcp::traffic_endpoint_id_t      traffic_endpoint_id = {};
     pfcp::sdf_filter_t sdf_filter         = {};
@@ -233,6 +233,7 @@ int session_establishment_procedure::run(
     b.far_id_ul.second = far_id;
     b.pdr_id_ul        = pdr_id;
     b.ebi              = it.eps_bearer_id;
+    b.seid             = ppc->seid;
     pgw_eps_bearer b2  = b;
     ppc->add_eps_bearer(b2);
   }
@@ -437,7 +438,7 @@ int modify_bearer_procedure::run(
 
         // forwarding_parameters IEs
         pfcp::destination_interface_t destination_interface = {};
-        // pfcp::network_instance_t          network_instance = {};
+        pfcp::network_instance_t          network_instance = {};
         // pfcp::redirect_information_t      redirect_information = {};
         pfcp::outer_header_creation_t outer_header_creation = {};
         // pfcp::transport_level_marking_t   transport_level_marking = {};
@@ -450,9 +451,12 @@ int modify_bearer_procedure::run(
         apply_action.forw = 1;
 
         destination_interface.interface_value =
-            pfcp::INTERFACE_VALUE_ACCESS;  // ACCESS is for downlink, CORE for
+            pfcp::INTERFACE_VALUE_ACCESS;  // ACCESS is for downlink, SGi-LAN for
                                            // uplink
+        network_instance.network_instance = {"access"};   // mandatory for travelping
+
         forwarding_parameters.set(destination_interface);
+        forwarding_parameters.set(network_instance);
         outer_header_creation.outer_header_creation_description =
             OUTER_HEADER_CREATION_GTPU_UDP_IPV4;
         outer_header_creation.teid = it.s1_u_enb_fteid.teid_gre_key;
@@ -488,7 +492,7 @@ int modify_bearer_procedure::run(
         // pdi IEs
         pfcp::source_interface_t source_interface = {};
         // pfcp::fteid_t                    local_fteid = {};
-        // pfcp::network_instance_t         network_instance = {};
+        pfcp::network_instance_t         network_instance = {};
         pfcp::ue_ip_address_t ue_ip_address = {};
         // pfcp::traffic_endpoint_id_t      traffic_endpoint_id = {};
         pfcp::sdf_filter_t sdf_filter         = {};
@@ -498,11 +502,14 @@ int modify_bearer_procedure::run(
         // pfcp::framed_route_t             framed_route = {};
         // pfcp::framed_routing_t           framed_routing = {};
         // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
-        source_interface.interface_value = pfcp::INTERFACE_VALUE_CORE;
-
+        // source_interface.interface_value = pfcp::INTERFACE_VALUE_CORE;
+        source_interface.interface_value = pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN;
+        network_instance.network_instance = {"sgi"};
+ 
         // local_fteid.from_core_fteid(peb.sgw_fteid_s5_s8_up);
         if (ppc->ipv4) {
           ue_ip_address.v4                  = 1;
+          ue_ip_address.sd                  = 1;
           ue_ip_address.ipv4_address.s_addr = ppc->ipv4_address.s_addr;
         }
         if (ppc->ipv6) {
@@ -517,6 +524,7 @@ int modify_bearer_procedure::run(
         precedence.precedence = peb.eps_bearer_qos.pl;
 
         pdi.set(source_interface);
+	      pdi.set(network_instance);
         // pdi.set(local_fteid);
         pdi.set(ue_ip_address);
 
@@ -578,8 +586,11 @@ int modify_bearer_procedure::run(
         ppc->generate_far_id(far_id);
         apply_action.forw = 1;
 
+        // destination_interface.interface_value =
+        //     pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for
+        //                                  // uplink
         destination_interface.interface_value =
-            pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for
+            pfcp::INTERFACE_VALUE_SGI_LAN_N6_LAN;  // ACCESS is for downlink, CORE for
                                          // uplink
         forwarding_parameters.set(destination_interface);
 
@@ -696,10 +707,64 @@ void modify_bearer_procedure::handle_itti_msg(
   if (resp.pfcp_ies.get(cause)) {
     xgpp_conv::pfcp_cause_to_core_cause(cause, cause_gtp);
   }
+  pgw_eps_bearer b = {};
+  if (ppc->get_eps_bearer(ppc->seid, b)) {
+      bool bearer_context_found = false;
+      for (
+          std::vector<
+              gtpv2c::
+                  bearer_context_to_be_modified_within_modify_bearer_request>::
+              const_iterator it_to_be_modified =
+                  s5_trigger->gtp_ies.bearer_contexts_to_be_modified.begin();
+            it_to_be_modified !=
+            s5_trigger->gtp_ies.bearer_contexts_to_be_modified.end();
+            ++it_to_be_modified) {
+          // pfcp::pdr_id_t conv_pdr_id = {};
+          // ebi2pdr_id(it_to_be_modified.eps_bearer_id, conv_pdr_id,
+          // EBI2PDR_ID_DL_BEARER);
 
-  bool bearer_context_found = false;
+          // False can be UL Bearer also
+          // if (conv_pdr_id.rule_id == pdr_id.rule_id) {
+          bearer_context_found = true;
+          // can try the two till SGW not split (depends on developer convention
+          // to fake PGW)
+          it_to_be_modified->get_s5_s8_u_sgw_fteid(b.sgw_fteid_s5_s8_up);
+          it_to_be_modified->get_s1_u_enb_fteid(b.sgw_fteid_s5_s8_up);
+
+          pfcp::fteid_t local_up_fteid = {};
+          //if (it_created_pdr.get(local_up_fteid)) {
+            xgpp_conv::pfcp_to_core_fteid(local_up_fteid, b.pgw_fteid_s5_s8_up);
+            b.pgw_fteid_s5_s8_up.interface_type = S5_S8_PGW_GTP_U;
+            // comment if SPGW-C allocate up fteid
+            Logger::pgwc_app().error(
+                "got local_up_fteid from created_pdr %s",
+                b.pgw_fteid_s5_s8_up.toString().c_str());
+          // } else {
+          //   Logger::pgwc_app().error(
+          //       "Could not get local_up_fteid from created_pdr");
+         // }
+          b.released        = false;
+          pgw_eps_bearer b2 = b;
+          ppc->add_eps_bearer(b2);
+
+          gtpv2c::bearer_context_modified_within_modify_bearer_response bcc =
+              {};
+          ::cause_t bcc_cause = {
+              .cause_value = REQUEST_ACCEPTED, .pce = 0, .bce = 0, .cs = 0};
+          bcc.set_s1_u_sgw_fteid(b.pgw_fteid_s5_s8_up);
+          bcc.set(b.ebi);
+          bcc.set(bcc_cause);
+          s5_triggered_pending->gtp_ies.add_bearer_context_modified(bcc);
+
+          // Avoid duplicate with update fars
+          s5_trigger->gtp_ies.bearer_contexts_to_be_modified.erase(
+              it_to_be_modified);
+          break;
+         }        
+        }
+
   for (auto it_created_pdr : resp.pfcp_ies.created_pdrs) {
-    bearer_context_found  = false;
+    bool bearer_context_found  = false;
     pfcp::pdr_id_t pdr_id = {};
     if (it_created_pdr.get(pdr_id)) {
       pgw_eps_bearer b = {};

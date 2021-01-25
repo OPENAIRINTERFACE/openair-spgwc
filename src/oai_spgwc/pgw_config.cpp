@@ -694,6 +694,7 @@ void pgw_config::display() {
   if (inet_ntop(AF_INET6, &default_dns_secv6, str_addr6, sizeof(str_addr6))) {
     Logger::pgwc_app().info("    Secondary DNS v6 .....: %s", str_addr6);
   }
+  // ToDo -> verify this logging
   Logger::pgwc_app().info("- " PGW_CONFIG_STRING_UPF_LIST ":");
     for (int i = 0; i < num_upf; i++) {
     Logger::pgwc_app().info("    UPF %d:", i);

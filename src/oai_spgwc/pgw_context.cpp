@@ -51,6 +51,7 @@ std::string pgw_eps_bearer::toString() const {
   std::string s = {};
   s.append("EPS BEARER:\n");
   s.append("\tEBI:\t\t\t\t").append(std::to_string(ebi.ebi)).append("\n");
+  s.append("\tSEID:\t\t\t\t").append(std::to_string(seid)).append("\n");
   s.append("\tTFT:\t\t\t\tTODO tft").append("\n");
   s.append("\tSGW FTEID S5S8 UP:\t\t")
       .append(sgw_fteid_s5_s8_up.toString())

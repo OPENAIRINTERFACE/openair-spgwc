@@ -49,6 +49,7 @@ class pgw_eps_bearer {
 
   void clear() {
     ebi.ebi            = EPS_BEARER_IDENTITY_UNASSIGNED;
+    seid               = 0;
     tft                = {};
     sgw_fteid_s5_s8_up = {};
     pgw_fteid_s5_s8_up = {};
@@ -100,6 +101,9 @@ class pgw_eps_bearer {
   // std::pair<bool, pfcp::qer_id_t>   qer_id;
   // std::pair<bool, pfcp::activate_predefined_rules_t>
   // activate_predefined_rules;
+
+  // PFCP Session
+  uint64_t seid;
 };
 
 class pgw_pdn_connection
@@ -152,6 +156,17 @@ class pgw_pdn_connection
     }
     return false;
   }
+  bool get_eps_bearer(uint64_t seid, pgw_eps_bearer& b) {
+    for (auto it : eps_bearers) {
+      if ((it.second.seid) &&
+          (it.second.seid == seid)) {
+        b = it.second;
+        return true;
+      }
+    }
+    return false;
+  }
+
   bool get_eps_bearer(const ebi_t& ebi, pgw_eps_bearer& b) {
     for (auto it : eps_bearers) {
       if (it.second.ebi == ebi) {
