@@ -152,3 +152,31 @@ bool xgpp_conv::endpoint_to_gtp_u_peer_address(
       return false;
   }
 }
+//------------------------------------------------------------------------------
+bool xgpp_conv::string_to_dotted(const std::string& str, std::string& dotted) {
+  uint8_t offset = 0;
+  uint8_t* last_size;
+  uint8_t word_length = 0;
+
+  uint8_t  value[str.length() + 1];
+  dotted = {};
+  last_size  = &value[0];
+
+  while (str[offset]) {
+    // We replace the . by the length of the word
+    if (str[offset] == '.') {
+      *last_size  = word_length;
+      word_length = 0;
+      last_size   = &value[offset + 1];
+    } else {
+      word_length++;
+      value[offset + 1] = str[offset];
+    }
+
+    offset++;
+  }
+
+  *last_size = word_length;
+  dotted.assign((const char*)value, str.length() + 1);
+  return true;
+}

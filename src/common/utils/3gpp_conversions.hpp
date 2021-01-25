@@ -45,6 +45,7 @@ void pfcp_from_core_fteid(pfcp::fteid_t& pfteid, const fteid_t& fteid);
 void pfcp_cause_to_core_cause(const pfcp::cause_t& pc, cause_t& c);
 bool endpoint_to_gtp_u_peer_address(
     const endpoint& ep, gtp_u_peer_address_t& gpa);
+bool string_to_dotted(const std::string& str, std::string& dotted);
 }  // namespace xgpp_conv
 
 #endif /* FILE_3GPP_CONVERSIONS_HPP_SEEN */

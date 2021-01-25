@@ -30,6 +30,7 @@
 #define FILE_3GPP_29_244_HPP_SEEN
 
 #include "3gpp_29.244.h"
+#include "3gpp_conversions.hpp"
 #include "logger.hpp"
 #include "msg_pfcp.hpp"
 #include "serializable.hpp"
@@ -594,14 +595,14 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
   //--------
   void load_from(std::istream& is) {
     // tlv.load_from(is);
-    if (tlv.get_length() != 2) {
+    if (tlv.get_length() != proprietary_data.size()) {
       throw pfcp_tlv_bad_length_exception(
           tlv.type, tlv.get_length(), __FILE__, __LINE__);
     }
     is.read(reinterpret_cast<char*>(&enterprise_id),
         sizeof(enterprise_id));
     //enterprise_id = be16toh(enterprise_id);
-    if (tlv.get_length() != (2 + proprietary_data.size())) {
+    if (tlv.get_length() != (proprietary_data.size())) {
       throw pfcp_tlv_bad_length_exception(
           tlv.type, tlv.get_length(), __FILE__, __LINE__);
     }
@@ -827,11 +828,14 @@ class pfcp_fteid_ie : public pfcp_ie {
 class pfcp_network_instance_ie : public pfcp_ie {
  public:
   std::string network_instance;
+  std::string network_instance_tmp;
 
   //--------
   explicit pfcp_network_instance_ie(const pfcp::network_instance_t& b)
       : pfcp_ie(PFCP_IE_NETWORK_INSTANCE) {
     network_instance = b.network_instance;
+    xgpp_conv::string_to_dotted(network_instance, network_instance_tmp);
+    network_instance = network_instance_tmp;
     tlv.set_length(network_instance.size());
   }
   //--------
