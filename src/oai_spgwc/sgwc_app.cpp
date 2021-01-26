@@ -33,7 +33,7 @@
 #include "mme_s11.hpp"
 #endif
 #include "sgwc_app.hpp"
-#include "sgwc_config.hpp"
+#include "pgw_config.hpp"
 #include "sgwc_s11.hpp"
 #include "sgwc_s5s8.hpp"
 
@@ -54,7 +54,7 @@ sgw_s5s8* sgw_s5s8_inst = nullptr;
 
 extern itti_mw* itti_inst;
 extern sgwc_app* sgwc_app_inst;
-extern sgwc_config sgwc_cfg;
+extern pgwc::pgw_config pgw_cfg;
 
 void sgwc_app_task(void*);
 
@@ -300,8 +300,6 @@ void sgwc_app_task(void* args_p) {
 sgwc_app::sgwc_app(const std::string& config_file)
     : s11lteid2sgw_eps_bearer_context() {
   Logger::sgwc_app().startup("Starting...");
-  sgwc_cfg.execute();
-
   teid_s11_cp                     = 0;
   teid_s5s8_cp                    = 0;
   imsi2sgw_eps_bearer_context     = {};
@@ -311,10 +309,6 @@ sgwc_app::sgwc_app(const std::string& config_file)
   try {
     sgw_s5s8_inst = new sgw_s5s8();
     sgw_s11_inst  = new sgw_s11();
-#if SGW_AUTOTEST
-    mme_s11_inst = new mme_s11();
-    enb_s1u_inst = new enb_s1u();
-#endif
   } catch (std::exception& e) {
     Logger::sgwc_app().error("Cannot create SGW_APP: %s", e.what());
     throw;
@@ -330,10 +324,6 @@ sgwc_app::sgwc_app(const std::string& config_file)
 sgwc_app::~sgwc_app() {
   if (sgw_s5s8_inst) delete sgw_s5s8_inst;
   if (sgw_s11_inst) delete sgw_s11_inst;
-#if SGW_AUTOTEST
-  if (mme_s11_inst) delete mme_s11_inst;
-  if (enb_s1u_inst) delete enb_s1u_inst;
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -394,6 +384,9 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
   shared_ptr<sgw_eps_bearer_context> ebc;
   imsi_t imsi = {};
   if (csreq.gtp_ies.get(imsi)) {
+    Logger::sgwc_app().debug(
+        "S11 CREATE_SESSION_REQUEST IMSI %s ",
+        imsi.toString());
     // imsi not authenticated
     indication_t indication = {};
     bool delete_pdn_flag = false;
@@ -406,6 +399,9 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
     } else {
       imsi64_t imsi64 = imsi.to_imsi64();
       if (is_imsi64_2_sgw_eps_bearer_context(imsi64)) {
+        Logger::sgwc_app().debug(
+            "S11 CREATE_SESSION_REQUEST IMSI %s found sgw eps bearer context",
+            imsi.toString());
         ebc = imsi64_2_sgw_eps_bearer_context(imsi64);
 
         // case identified in: the existing PDN connection context locally,
@@ -449,12 +445,17 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
           ebc->delete_pdn_connection(sp);
         }
       } else {
+        Logger::sgwc_app().debug(
+            "S11 CREATE_SESSION_REQUEST IMSI %s sgw eps bearer context not found!",
+            imsi.toString());
         ebc = std::shared_ptr<sgw_eps_bearer_context>(
             new sgw_eps_bearer_context());
         set_imsi64_2_sgw_eps_bearer_context(imsi64, ebc);
       }
     }
   } else {
+    Logger::sgwc_app().debug(
+        "S11 CREATE_SESSION_REQUEST no IMSI !");
     if (csreq.teid) {
       if (is_s11sgw_teid_2_sgw_eps_bearer_context(csreq.teid)) {
         ebc = s11sgw_teid_2_sgw_eps_bearer_context(csreq.teid);

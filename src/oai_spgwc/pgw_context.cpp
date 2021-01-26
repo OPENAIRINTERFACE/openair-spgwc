@@ -40,7 +40,6 @@ using namespace pgwc;
 
 extern itti_mw* itti_inst;
 extern pgwc::pgw_app* pgw_app_inst;
-extern pgwc::pgw_config pgw_cfg;
 
 //------------------------------------------------------------------------------
 void pgw_eps_bearer::release_access_bearer() {
@@ -193,7 +192,7 @@ void pgw_pdn_connection::deallocate_ressources(const std::string& apn) {
 void pgw_pdn_connection::generate_seid() {
   // DO it simple now:
   seid =
-      pgw_fteid_s5_s8_cp.teid_gre_key | (((uint64_t) pgw_cfg.instance) << 32);
+      pgw_fteid_s5_s8_cp.teid_gre_key | (((uint64_t) pgwc::pgw_config::instance_) << 32);
 }
 //------------------------------------------------------------------------------
 // TODO check if prd_id should be uniq in the (S)PGW-U or in the context of a
@@ -522,7 +521,7 @@ void pgw_context::handle_itti_msg(
         csreq->gtp_ies.bearer_contexts_to_be_created.at(0).eps_bearer_id;
     p->sgw_fteid_s5_s8_cp = csreq->gtp_ies.sender_fteid_for_cp;
     p->pgw_fteid_s5_s8_cp =
-        pgw_app_inst->generate_s5s8_cp_fteid(pgw_cfg.s5s8_cp.addr4);
+        pgw_app_inst->generate_s5s8_cp_fteid(pgwc::pgw_config::pgw_s5s8_.iface.addr4);
     pgw_app_inst->set_s5s8cpgw_fteid_2_pgw_context(
         p->pgw_fteid_s5_s8_cp, shared_from_this());
     sp = std::shared_ptr<pgw_pdn_connection>(p);

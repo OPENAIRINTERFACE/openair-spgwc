@@ -25,8 +25,23 @@
   \company Eurecom
   \email: lionel.gauthier@eurecom.fr
 */
-
+//--related header -------------------------------------------------------------
 #include "pgw_config.hpp"
+// C includes ------------------------------------------------------------------
+#include <arpa/inet.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+//--C++ includes ---------------------------------------------------------------
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <cstdlib>
+#include <iomanip>
+#include <iostream>
+//--Other includes -------------------------------------------------------------
 #include "3gpp_29.274.hpp"
 #include "common_defs.h"
 #include "epc.h"
@@ -34,674 +49,807 @@
 #include "logger.hpp"
 #include "pgw_app.hpp"
 #include "string.hpp"
-
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-
-#include <cstdlib>
-#include <iomanip>
-#include <iostream>
-
+//------------------------------------------------------------------------------
 using namespace std;
-using namespace libconfig;
 using namespace pgwc;
 
-// C includes
-#include <arpa/inet.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 extern pgw_app* pgw_app_inst;
-extern pgw_config pgw_cfg;
 
+const int pgw_config::kJsonFileBuffer = 1024;
+std::string pgw_config::jsoncfg_;
+std::mutex pgw_config::rw_lock_;
+timer_cfg_t pgw_config::timer_;
+gtpv2c_cfg_t pgw_config::gtpv2c_;
+pfcp_cfg_t pgw_config::pfcp_;
+s11_cfg_t pgw_config::s11_;
+s5s8_cfg_t pgw_config::sgw_s5s8_;
+s5s8_cfg_t pgw_config::pgw_s5s8_;
+sx_cfg_t pgw_config::sx_;
+pgw_app_cfg_t pgw_config::spgw_app_;
+PdnCfg pgw_config::pdn_;
+cups_cfg_t pgw_config::cups_;
+std::string pgw_config::pid_dir_;
+unsigned int pgw_config::instance_;
 //------------------------------------------------------------------------------
-int pgw_config::finalize() {
+const bool pgw_config::Finalize() {
   Logger::pgwc_app().info("Finalize config...");
-
-  for (int i = 0; i < num_ue_pool; i++) {
-    uint32_t range_low_hbo  = ntohl(ue_pool_range_low[i].s_addr);
-    uint32_t range_high_hbo = ntohl(ue_pool_range_high[i].s_addr);
+  std::vector<PdnCfg> pdns = {};
+  for (auto p : spgw_app_.pdns) {
+    uint32_t range_low_hbo  = ntohl(p.ue_pool_range_low.s_addr);
+    uint32_t range_high_hbo = ntohl(p.ue_pool_range_high.s_addr);
     uint32_t tmp_hbo        = range_low_hbo ^ range_high_hbo;
     uint8_t nbits           = 32;
     while (tmp_hbo) {
       tmp_hbo = tmp_hbo >> 1;
       nbits -= 1;
     }
-    uint32_t network_hbo      = range_high_hbo & (UINT32_MAX << (32 - nbits));
-    uint32_t netmask_hbo      = 0xFFFFFFFF << (32 - nbits);
-    ue_pool_network[i].s_addr = htonl(network_hbo);
-    ue_pool_netmask[i].s_addr = htonl(netmask_hbo);
+    uint32_t network_hbo = range_high_hbo & (UINT32_MAX << (32 - nbits));
+    uint32_t netmask_hbo = 0xFFFFFFFF << (32 - nbits);
+    p.ue_pool_network.s_addr = htonl(network_hbo);
+    p.ue_pool_netmask.s_addr = htonl(netmask_hbo);
+    // TODO
+    p.apn_label = p.apn;
+    pdns.push_back(p);
   }
+  spgw_app_.pdns = pdns;
   // "TODO"
   // pgw_pcef_emulation_init(config_pP);
   Logger::pgwc_app().info("Finalized config");
-  return 0;
+  return true;
 }
-
 //------------------------------------------------------------------------------
-int pgw_config::load_thread_sched_params(
-    const Setting& thread_sched_params_cfg, util::thread_sched_params& cfg) {
-  try {
-    thread_sched_params_cfg.lookupValue(
-        PGW_CONFIG_STRING_THREAD_RD_CPU_ID, cfg.cpu_id);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
+const bool pgw_config::ParseSchedParams(
+    const RAPIDJSON_NAMESPACE::Value& conf, util::thread_sched_params& cfg) {
+  if (conf.HasMember("cpu_id")) {
+    if (!conf["cpu_id"].IsInt()) {
+      Logger::pgwc_app().error("Error parsing json value: [cpu_id]");
+      return false;
+    }
+    cfg.cpu_id = conf["cpu_id"].GetUint();
   }
-  try {
-    std::string thread_rd_sched_policy;
-    thread_sched_params_cfg.lookupValue(
-        PGW_CONFIG_STRING_THREAD_RD_SCHED_POLICY, thread_rd_sched_policy);
-    util::trim(thread_rd_sched_policy);
-    if (boost::iequals(thread_rd_sched_policy, "SCHED_OTHER")) {
+  if (conf.HasMember("sched_priority")) {
+    if (!conf["sched_priority"].IsInt()) {
+      Logger::pgwc_app().error("Error parsing json value: [sched_priority]");
+      return false;
+    }
+    cfg.sched_priority = conf["sched_priority"].GetUint();
+  }
+  if (conf.HasMember("sched_policy")) {
+    if (!conf["sched_policy"].IsString()) {
+      Logger::pgwc_app().error("Error parsing json value: [sched_policy]");
+      return false;
+    }
+    std::string sched_policy = conf["sched_policy"].GetString();
+    util::trim(sched_policy);
+    if (boost::iequals(sched_policy, "sched_other")) {
       cfg.sched_policy = SCHED_OTHER;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_IDLE")) {
+    } else if (boost::iequals(sched_policy, "sched_idle")) {
       cfg.sched_policy = SCHED_IDLE;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_BATCH")) {
+    } else if (boost::iequals(sched_policy, "sched_batch")) {
       cfg.sched_policy = SCHED_BATCH;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_FIFO")) {
+    } else if (boost::iequals(sched_policy, "sched_fifo")) {
       cfg.sched_policy = SCHED_FIFO;
-    } else if (boost::iequals(thread_rd_sched_policy, "SCHED_RR")) {
+    } else if (boost::iequals(sched_policy, "sched_rr")) {
       cfg.sched_policy = SCHED_RR;
     } else {
       Logger::pgwc_app().error(
-          "thread_rd_sched_policy: %s, unknown in config file",
-          thread_rd_sched_policy.c_str());
-      return RETURNerror;
+          "sched_policy: %s, unknown, allowed values [sched_other, sched_idle"
+          ", sched_batch, sched_fifo, sched_rr",
+          sched_policy.c_str());
+      return false;
     }
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
   }
-
-  try {
-    thread_sched_params_cfg.lookupValue(
-        PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY, cfg.sched_priority);
-    if ((cfg.sched_priority > 99) || (cfg.sched_priority < 1)) {
-      Logger::pgwc_app().error(
-          "thread_rd_sched_priority: %d, must be in interval [1..99] in config "
-          "file",
-          cfg.sched_priority);
-      return RETURNerror;
-    }
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::spgwu_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-  return RETURNok;
+  return true;
 }
 //------------------------------------------------------------------------------
-int pgw_config::load_itti(const Setting& itti_cfg, itti_cfg_t& cfg) {
-  try {
-    const Setting& itti_timer_sched_params_cfg =
-        itti_cfg[PGW_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS];
-    load_thread_sched_params(
-        itti_timer_sched_params_cfg, cfg.itti_timer_sched_params);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
+const bool pgw_config::ParseTimer(
+    const RAPIDJSON_NAMESPACE::Value& conf, timer_cfg_t& cfg) {
+  if (conf.HasMember("itti")) {
+    const RAPIDJSON_NAMESPACE::Value& itti_section = conf["itti"];
+    if (itti_section.HasMember("sched_params")) {
+      const RAPIDJSON_NAMESPACE::Value& sched_section =
+          itti_section["sched_params"];
+      return ParseSchedParams(sched_section, cfg.sched_params);
+    }
   }
-
-  try {
-    const Setting& s5s8_sched_params_cfg =
-        itti_cfg[PGW_CONFIG_STRING_S5S8_SCHED_PARAMS];
-    load_thread_sched_params(s5s8_sched_params_cfg, cfg.s5s8_sched_params);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
+  return true;
+}
+//------------------------------------------------------------------------------
+const bool pgw_config::ParseInterface(
+    const RAPIDJSON_NAMESPACE::Value& conf, interface_cfg_t& cfg) {
+  if (conf.HasMember("interface_name")) {
+    if (!conf["interface_name"].IsString()) {
+      Logger::pgwc_app().error("Error parsing json value: [interface_name]");
+      return false;
+    }
+    cfg.if_name = conf["interface_name"].GetString();
+    util::trim(cfg.if_name);
+    if (not boost::iequals(cfg.if_name, "none")) {
+      std::string address = {};
+      if (conf.HasMember("ipv4_address")) {
+        if (!conf["ipv4_address"].IsString()) {
+          Logger::pgwc_app().error("Error parsing json value: [ipv4_address]");
+          return false;
+        }
+        address = conf["ipv4_address"].GetString();
+        if (boost::iequals(address, "read")) {
+          if (get_inet_addr_infos_from_iface(
+                  cfg.if_name, cfg.addr4, cfg.network4, cfg.mtu)) {
+            Logger::pgwc_app().error(
+                "Could not read %s network interface configuration",
+                cfg.if_name);
+            return false;
+          }
+        } else {
+          unsigned char buf_in_addr[sizeof(struct in6_addr)];
+          memset(buf_in_addr, 0, sizeof(buf_in_addr));
+          if (inet_pton(
+                  AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
+            memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
+          } else {
+            Logger::pgwc_app().error(
+                "Could not read %s IP address configuration",
+                address.c_str());
+            return false;
+          }
+        }
+      } else {
+        if (get_inet_addr_infos_from_iface(
+                cfg.if_name, cfg.addr4, cfg.network4, cfg.mtu)) {
+          Logger::pgwc_app().error(
+              "Could not read %s network interface configuration", cfg.if_name);
+          return false;
+        }
+      }
+    }
   }
-
-  try {
-    const Setting& sx_sched_params_cfg =
-        itti_cfg[PGW_CONFIG_STRING_SX_SCHED_PARAMS];
-    load_thread_sched_params(sx_sched_params_cfg, cfg.sx_sched_params);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  try {
-    const Setting& pgw_app_sched_params_cfg =
-        itti_cfg[PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS];
-    load_thread_sched_params(
-        pgw_app_sched_params_cfg, cfg.pgw_app_sched_params);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  try {
-    const Setting& async_cmd_sched_params_cfg =
-        itti_cfg[PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS];
-    load_thread_sched_params(
-        async_cmd_sched_params_cfg, cfg.async_cmd_sched_params);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  return RETURNok;
+  return true;
 }
 
 //------------------------------------------------------------------------------
-int pgw_config::load_interface(const Setting& if_cfg, interface_cfg_t& cfg) {
-  if_cfg.lookupValue(PGW_CONFIG_STRING_INTERFACE_NAME, cfg.if_name);
-  util::trim(cfg.if_name);
-  if (not boost::iequals(cfg.if_name, "none")) {
-    std::string address = {};
-    if_cfg.lookupValue(PGW_CONFIG_STRING_IPV4_ADDRESS, address);
-    util::trim(address);
-    if (boost::iequals(address, "read")) {
-      if (get_inet_addr_infos_from_iface(
-              cfg.if_name, cfg.addr4, cfg.network4, cfg.mtu)) {
-        Logger::pgwc_app().error(
-            "Could not read %s network interface configuration", cfg.if_name);
-        return RETURNerror;
-      }
-    } else {
-      std::vector<std::string> words;
-      boost::split(
-          words, address, boost::is_any_of("/"), boost::token_compress_on);
-      if (words.size() != 2) {
-        Logger::pgwc_app().error(
-            "Bad value " PGW_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
-            address.c_str());
-        return RETURNerror;
-      }
-      unsigned char buf_in_addr[sizeof(struct in6_addr)];  // you never know...
-      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr) ==
-          1) {
-        memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
-      } else {
-        Logger::pgwc_app().error(
-            "In conversion: Bad value " PGW_CONFIG_STRING_IPV4_ADDRESS
-            " = %s in config file",
-            util::trim(words.at(0)).c_str());
-        return RETURNerror;
-      }
-      cfg.network4.s_addr = htons(
-          ntohs(cfg.addr4.s_addr) &
-          0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
-    }
-    if_cfg.lookupValue(PGW_CONFIG_STRING_PORT, cfg.port);
+bool pgw_config::ParseJson() {
+  FILE* fp = fopen(jsoncfg_.c_str(), "r");
+  if (fp == NULL) {
+    std::cout << "The json config file specified does not exists" << std::endl;
+    return false;
+  }
 
-    try {
-      const Setting& sched_params_cfg = if_cfg[PGW_CONFIG_STRING_SCHED_PARAMS];
-      load_thread_sched_params(sched_params_cfg, cfg.thread_rd_sched_params);
-    } catch (const SettingNotFoundException& nfex) {
-      Logger::pgwc_app().info(
-          "%s : %s, using defaults", nfex.what(), nfex.getPath());
+  char readBuffer[kJsonFileBuffer];
+  RAPIDJSON_NAMESPACE::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
+  RAPIDJSON_NAMESPACE::Document doc;
+  doc.ParseStream(is);
+  fclose(fp);
+
+  if (!doc.IsObject()) {
+    std::cout << "Error parsing the json config file" << std::endl;
+    return false;
+  }
+
+  if (doc.HasMember("timer")) {
+    const RAPIDJSON_NAMESPACE::Value& timer_section = doc["timer"];
+    if (timer_section.HasMember("timer")) {
+      if (!ParseTimer(doc["timer"], timer_)) {
+        Logger::pgwc_app().error("Failed to parse json timer");
+        return false;
+      }
     }
   }
-  return RETURNok;
-}
-
-//------------------------------------------------------------------------------
-int pgw_config::load(const string& config_file) {
-  Config cfg;
-  unsigned char buf_in6_addr[sizeof(struct in6_addr)];
-
-  // Read the file. If there is an error, report it and exit.
-  try {
-    cfg.readFile(config_file.c_str());
-  } catch (const FileIOException& fioex) {
-    Logger::pgwc_app().error(
-        "I/O error while reading file %s - %s", config_file.c_str(),
-        fioex.what());
-    throw;
-  } catch (const ParseException& pex) {
-    Logger::pgwc_app().error(
-        "Parse error at %s:%d - %s", pex.getFile(), pex.getLine(),
-        pex.getError());
-    throw;
-  }
-
-  const Setting& root = cfg.getRoot();
-
-  try {
-    const Setting& pgw_cfg = root[PGW_CONFIG_STRING_PGW_CONFIG];
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return RETURNerror;
-  }
-
-  const Setting& pgw_cfg = root[PGW_CONFIG_STRING_PGW_CONFIG];
-
-  try {
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_INSTANCE, instance);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  try {
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_PID_DIRECTORY, pid_dir);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  try {
-    const Setting& itti_cfg = pgw_cfg[PGW_CONFIG_STRING_ITTI_TASKS];
-    load_itti(itti_cfg, itti);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().info(
-        "%s : %s, using defaults", nfex.what(), nfex.getPath());
-  }
-
-  try {
-    const Setting& nw_if_cfg = pgw_cfg[PGW_CONFIG_STRING_INTERFACES];
-
-    const Setting& s5s8_cp_cfg =
-        nw_if_cfg[PGW_CONFIG_STRING_INTERFACE_S5_S8_CP];
-    load_interface(s5s8_cp_cfg, s5s8_cp);
-
-    const Setting& sx_cfg = nw_if_cfg[PGW_CONFIG_STRING_INTERFACE_SX];
-    load_interface(sx_cfg, sx);
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return RETURNerror;
-  }
-
-  try {
-    string astring;
-
-    const Setting& pool_cfg = pgw_cfg[PGW_CONFIG_STRING_IP_ADDRESS_POOL];
-
-    const Setting& ipv4_pool_cfg =
-        pool_cfg[PGW_CONFIG_STRING_IPV4_ADDRESS_LIST];
-    int count = ipv4_pool_cfg.getLength();
-    for (int i = 0; i < count; i++) {
-      const Setting& ipv4_cfg = ipv4_pool_cfg[i];
-      string ipv4_range;
-      unsigned char buf_in_addr[sizeof(struct in_addr)];
-
-      ipv4_cfg.lookupValue(PGW_CONFIG_STRING_RANGE, ipv4_range);
-      std::vector<std::string> ips;
-      boost::split(
-          ips, ipv4_range,
-          boost::is_any_of(PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER),
-          boost::token_compress_on);
-      if (ips.size() != 2) {
-        Logger::pgwc_app().error(
-            "Bad value %s : %s in config file %s",
-            PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER, ipv4_range.c_str(),
-            config_file.c_str());
-        throw(
-            "Bad value %s : %s in config file %s",
-            PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER, ipv4_range.c_str(),
-            config_file.c_str());
+  if (doc.HasMember("gtpv2c")) {
+    const RAPIDJSON_NAMESPACE::Value& gtpv2c_section = doc["gtpv2c"];
+    if (gtpv2c_section.HasMember("port")) {
+      if (!gtpv2c_section["port"].IsInt()) {
+        Logger::pgwc_app().error("Error parsing json value: gtpv2c/port");
+        return false;
       }
-
-      memset(buf_in_addr, 0, sizeof(buf_in_addr));
-      if (inet_pton(AF_INET, util::trim(ips.at(0)).c_str(), buf_in_addr) == 1) {
-        memcpy(
-            &ue_pool_range_low[num_ue_pool], buf_in_addr,
-            sizeof(struct in_addr));
-      } else {
-        Logger::pgwc_app().error(
-            "CONFIG POOL ADDR IPV4: BAD LOWER ADDRESS "
-            "in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST " pool %d",
-            i);
-        throw(
-            "CONFIG POOL ADDR IPV4: BAD ADDRESS "
-            "in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST);
+      gtpv2c_.port = gtpv2c_section["port"].GetUint();
+    }
+    if (gtpv2c_section.HasMember("n3")) {
+      if (!gtpv2c_section["n3"].IsInt()) {
+        Logger::pgwc_app().error("Error parsing json value: gtpv2c/n3");
+        return false;
       }
-
-      memset(buf_in_addr, 0, sizeof(buf_in_addr));
-      if (inet_pton(AF_INET, util::trim(ips.at(1)).c_str(), buf_in_addr) == 1) {
-        memcpy(
-            &ue_pool_range_high[num_ue_pool], buf_in_addr,
-            sizeof(struct in_addr));
-      } else {
-        Logger::pgwc_app().error(
-            "CONFIG POOL ADDR IPV4: BAD HIGHER ADDRESS "
-            "in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST " pool %d",
-            i);
-        throw(
-            "CONFIG POOL ADDR IPV4: BAD ADDRESS "
-            "in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST);
+      gtpv2c_.n3 = gtpv2c_section["n3"].GetUint();
+    }
+    if (gtpv2c_section.HasMember("t3_ms")) {
+      if (!gtpv2c_section["t3_ms"].IsInt()) {
+        Logger::pgwc_app().error("Error parsing json value: gtpv2c/t3_ms");
+        return false;
       }
-      if (htonl(ue_pool_range_low[num_ue_pool].s_addr) >=
-          htonl(ue_pool_range_high[num_ue_pool].s_addr)) {
+      gtpv2c_.t3_ms = gtpv2c_section["t3_ms"].GetUint();
+    }
+    if (gtpv2c_section.HasMember("worker_threads")) {
+      if (!gtpv2c_section["worker_threads"].IsInt()) {
         Logger::pgwc_app().error(
-            "CONFIG POOL ADDR IPV4: BAD RANGE "
-            "in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST " pool %d",
-            i);
-        throw(
-            "CONFIG POOL ADDR IPV4: BAD RANGE "
-            "in " PGW_CONFIG_STRING_IPV4_ADDRESS_LIST);
+            "Error parsing json value: gtpv2c/worker_threads");
+        return false;
       }
-      num_ue_pool += 1;
+      gtpv2c_.worker_threads = gtpv2c_section["worker_threads"].GetUint();
+    }
+    if (gtpv2c_section.HasMember("max_concurrent_procedures")) {
+      if (!gtpv2c_section["max_concurrent_procedures"].IsInt()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: gtpv2c/max_concurrent_procedures");
+        return false;
+      }
+      gtpv2c_.max_concurrent_procedures =
+          gtpv2c_section["max_concurrent_procedures"].GetUint();
     }
 
-    const Setting& ipv6_pool_cfg =
-        pool_cfg[PGW_CONFIG_STRING_IPV6_ADDRESS_LIST];
-    int count6 = ipv6_pool_cfg.getLength();
-    for (int i = 0; i < count6; i++) {
-      const Setting& ipv6_cfg = ipv6_pool_cfg[i];
-      string ipv6_prefix;
-      ipv6_cfg.lookupValue(PGW_CONFIG_STRING_PREFIX, ipv6_prefix);
-      std::vector<std::string> ips6;
-      boost::split(
-          ips6, ipv6_prefix,
-          boost::is_any_of(PGW_CONFIG_STRING_IPV6_ADDRESS_PREFIX_DELIMITER),
-          boost::token_compress_on);
-      if (ips6.size() != 2) {
+    if (gtpv2c_section.HasMember("sched_params")) {
+      const RAPIDJSON_NAMESPACE::Value& sched_section =
+          gtpv2c_section["sched_params"];
+      if (!ParseSchedParams(sched_section, gtpv2c_.sched_params)) {
         Logger::pgwc_app().error(
-            "Bad value %s : %s in config file %s", PGW_CONFIG_STRING_PREFIX,
-            ipv6_prefix.c_str(), config_file.c_str());
-        throw(
-            "Bad value %s : %s in config file %s", PGW_CONFIG_STRING_PREFIX,
-            ipv6_prefix.c_str(), config_file.c_str());
+            "Error parsing json section: gtpv2c/sched_params");
+        return false;
       }
-
-      std::string addr = ips6.at(0);
-      util::trim(addr);
-      if (inet_pton(AF_INET6, addr.c_str(), buf_in6_addr) == 1) {
+    }
+  }
+  if (doc.HasMember("pfcp")) {
+    const RAPIDJSON_NAMESPACE::Value& pfcp_section = doc["pfcp"];
+    if (pfcp_section.HasMember("port")) {
+      if (!pfcp_section["port"].IsInt()) {
+        Logger::pgwc_app().error("Error parsing json value: pfcp/port");
+        return false;
+      }
+      pfcp_.port = pfcp_section["port"].GetUint();
+    }
+    if (pfcp_section.HasMember("n1")) {
+      if (!pfcp_section["n1"].IsInt()) {
+        Logger::pgwc_app().error("Error parsing json value: pfcp/n1");
+        return false;
+      }
+      pfcp_.n1 = pfcp_section["n1"].GetUint();
+    }
+    if (pfcp_section.HasMember("t1_ms")) {
+      if (!pfcp_section["t1_ms"].IsInt()) {
+        Logger::pgwc_app().error("Error parsing json value: pfcp/t1_ms");
+        return false;
+      }
+      pfcp_.t1_ms = pfcp_section["t1_ms"].GetUint();
+    }
+    if (pfcp_section.HasMember("worker_threads")) {
+      if (!pfcp_section["worker_threads"].IsInt()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: pfcp/worker_threads");
+        return false;
+      }
+      pfcp_.worker_threads = pfcp_section["worker_threads"].GetUint();
+    }
+    if (pfcp_section.HasMember("max_concurrent_procedures")) {
+      if (!pfcp_section["max_concurrent_procedures"].IsInt()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: pfcp/max_concurrent_procedures");
+        return false;
+      }
+      pfcp_.max_concurrent_procedures =
+          pfcp_section["max_concurrent_procedures"].GetUint();
+    }
+    if (pfcp_section.HasMember("sched_params")) {
+      const RAPIDJSON_NAMESPACE::Value& sched_section =
+          pfcp_section["sched_params"];
+      if (!ParseSchedParams(sched_section, pfcp_.sched_params)) {
+        Logger::pgwc_app().error(
+            "Error parsing json section: pfcp/sched_params");
+        return false;
+      }
+    }
+  }
+  if (doc.HasMember("s11")) {
+    const RAPIDJSON_NAMESPACE::Value& iface_section = doc["s11"];
+    if (!ParseInterface(iface_section, s11_.iface)) {
+      Logger::pgwc_app().error("Error parsing json section: s11");
+      return false;
+    }
+  }
+  if (doc.HasMember("sgws5s8")) {
+    const RAPIDJSON_NAMESPACE::Value& iface_section = doc["sgws5s8"];
+    if (!ParseInterface(iface_section, sgw_s5s8_.iface)) {
+      Logger::pgwc_app().error("Error parsing json section: sgws5s8");
+      return false;
+    }
+  }
+  if (doc.HasMember("pgws5s8")) {
+    const RAPIDJSON_NAMESPACE::Value& iface_section = doc["pgws5s8"];
+    if (!ParseInterface(iface_section, pgw_s5s8_.iface)) {
+      Logger::pgwc_app().error("Error parsing json section: pgws5s8");
+      return false;
+    }
+  }
+  if (doc.HasMember("sx")) {
+    const RAPIDJSON_NAMESPACE::Value& iface_section = doc["sx"];
+    if (!ParseInterface(iface_section, sx_.iface)) {
+      Logger::pgwc_app().error("Error parsing json section: sx");
+      return false;
+    }
+  }
+  if (doc.HasMember("spgw_app")) {
+    const RAPIDJSON_NAMESPACE::Value& spgw_app_section = doc["spgw_app"];
+    if (spgw_app_section.HasMember("worker_threads")) {
+      if (!spgw_app_section["worker_threads"].IsInt()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: spgw_app/worker_threads");
+        return false;
+      }
+    }
+    if (spgw_app_section.HasMember("sched_params")) {
+      const RAPIDJSON_NAMESPACE::Value& sched_section =
+          spgw_app_section["sched_params"];
+      if (!ParseSchedParams(sched_section, spgw_app_.sched_params)) {
+        Logger::pgwc_app().error(
+            "Error parsing json section: spgw_app/sched_params");
+        return false;
+      }
+    }
+    if (spgw_app_section.HasMember("default_dns_ipv4_address")) {
+      if (!spgw_app_section["default_dns_ipv4_address"].IsString()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: spgw_app/default_dns_ipv4_address");
+        return false;
+      }
+      std::string dns =
+          spgw_app_section["default_dns_ipv4_address"].GetString();
+      IPV4_STR_ADDR_TO_INADDR(
+          util::trim(dns).c_str(), spgw_app_.default_dnsv4,
+          "BAD IPv4 ADDRESS FORMAT FOR DEFAULT DNS !");
+    }
+    if (spgw_app_section.HasMember("default_dns_sec_ipv4_address")) {
+      if (!spgw_app_section["default_dns_sec_ipv4_address"].IsString()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: spgw_app/default_dns_sec_ipv4_address");
+        return false;
+      }
+      std::string dns =
+          spgw_app_section["default_dns_sec_ipv4_address"].GetString();
+      IPV4_STR_ADDR_TO_INADDR(
+          util::trim(dns).c_str(), spgw_app_.default_dns_secv4,
+          "BAD IPv4 ADDRESS FORMAT FOR DEFAULT SEC DNS !");
+    }
+    if (spgw_app_section.HasMember("default_dns_ipv6_address")) {
+      if (!spgw_app_section["default_dns_ipv6_address"].IsString()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: spgw_app/default_dns_ipv6_address");
+        return false;
+      }
+      unsigned char buf_in6_addr[sizeof(struct in6_addr)];
+      std::string dns =
+          spgw_app_section["default_dns_ipv6_address"].GetString();
+      if (inet_pton(AF_INET6, util::trim(dns).c_str(), buf_in6_addr) == 1) {
+        memcpy(&spgw_app_.default_dnsv6, buf_in6_addr, sizeof(struct in6_addr));
+      } else {
+        Logger::pgwc_app().error(
+            "CONFIG : BAD ADDRESS in default_dns_ipv6_address %s", dns.c_str());
+        return false;
+      }
+    }
+    if (spgw_app_section.HasMember("default_dns_sec_ipv6_address")) {
+      if (!spgw_app_section["default_dns_sec_ipv6_address"].IsString()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: spgw_app/default_dns_sec_ipv6_address");
+        return false;
+      }
+      unsigned char buf_in6_addr[sizeof(struct in6_addr)];
+      std::string dns =
+          spgw_app_section["default_dns_sec_ipv6_address"].GetString();
+      if (inet_pton(AF_INET6, util::trim(dns).c_str(), buf_in6_addr) == 1) {
         memcpy(
-            &paa_pool6_prefix[num_paa6_pool], buf_in6_addr,
+            &spgw_app_.default_dns_secv6, buf_in6_addr,
             sizeof(struct in6_addr));
       } else {
         Logger::pgwc_app().error(
-            "CONFIG POOL ADDR IPV6: BAD ADDRESS "
-            "in " PGW_CONFIG_STRING_IPV6_ADDRESS_LIST " pool %d",
-            i);
-        throw(
-            "CONFIG POOL ADDR IPV6: BAD ADDRESS "
-            "in " PGW_CONFIG_STRING_IPV6_ADDRESS_LIST);
+            "CONFIG : BAD ADDRESS in default_dns_sec_ipv6_address %s",
+            dns.c_str());
+        return false;
       }
-
-      std::string prefix = ips6.at(1);
-      util::trim(prefix);
-      paa_pool6_prefix_len[num_paa6_pool] = std::stoi(prefix);
-      num_paa6_pool += 1;
     }
-
-    const Setting& apn_list_cfg = pgw_cfg[PGW_CONFIG_STRING_APN_LIST];
-    count                       = apn_list_cfg.getLength();
-    int apn_idx                 = 0;
-    num_apn                     = 0;
-    for (int i = 0; i < count; i++) {
-      const Setting& apn_cfg = apn_list_cfg[i];
-      apn_cfg.lookupValue(PGW_CONFIG_STRING_APN_NI, astring);
-      apn[apn_idx].apn       = astring;
-      apn[apn_idx].apn_label = EPC::Utility::apn_label(astring);
-      apn_cfg.lookupValue(PGW_CONFIG_STRING_PDN_TYPE, astring);
-      if (boost::iequals(astring, "IPv4")) {
-        apn[apn_idx].pdn_type.pdn_type = PDN_TYPE_E_IPV4;
-      } else if (boost::iequals(astring, "IPv6") == 0) {
-        apn[apn_idx].pdn_type.pdn_type = PDN_TYPE_E_IPV6;
-      } else if (boost::iequals(astring, "IPv4IPv6") == 0) {
-        apn[apn_idx].pdn_type.pdn_type = PDN_TYPE_E_IPV4V6;
-      } else if (boost::iequals(astring, "Non-IP") == 0) {
-        apn[apn_idx].pdn_type.pdn_type = PDN_TYPE_E_NON_IP;
-      } else {
+    if (spgw_app_section.HasMember(
+            "force_push_protocol_configuration_options")) {
+      if (!spgw_app_section["force_push_protocol_configuration_options"]
+               .IsBool()) {
         Logger::pgwc_app().error(
-            " " PGW_CONFIG_STRING_PDN_TYPE " in %d'th APN :%s", i + 1,
-            astring.c_str());
-        throw("Error PDN_TYPE in config file");
+            "Error parsing json value: "
+            "spgw_app/force_push_protocol_configuration_options");
+        return false;
       }
-      apn_cfg.lookupValue(
-          PGW_CONFIG_STRING_IPV4_POOL, apn[apn_idx].pool_id_iv4);
-      apn_cfg.lookupValue(
-          PGW_CONFIG_STRING_IPV6_POOL, apn[apn_idx].pool_id_iv6);
-
-      if ((0 <= apn[apn_idx].pool_id_iv4) &&
-          (apn[apn_idx].pdn_type.pdn_type == PDN_TYPE_E_IPV6)) {
+      spgw_app_.force_push_pco =
+          spgw_app_section["force_push_protocol_configuration_options"]
+              .GetBool();
+    }
+    if (doc.HasMember("pdns")) {
+      const RAPIDJSON_NAMESPACE::Value& pdns_section = doc["pdns"];
+      if (!pdns_section.IsArray()) {
+        Logger::pgwc_app().error("Error parsing json value: spgw_app/pdns");
+        return false;
+      }
+      for (RAPIDJSON_NAMESPACE::SizeType i = 0; i < pdns_section.Size(); i++) {
+        PdnCfg pdn_cfg = {};
+        if (pdns_section[i].HasMember("apn_ni")) {
+          if (!pdns_section[i]["apn_ni"].IsString()) {
+            Logger::pgwc_app().error("Error parsing json value: pdns/[apn_ni]");
+            return false;
+          }
+          pdn_cfg.apn = pdns_section[i]["apn_ni"].GetString();
+          //std::vector<PdnCfg>::iterator it = std::find_if(
+          //    spgw_app_.pdns.begin(), spgw_app_.pdns.end(),
+          //    [pdn_cfg](const PdnCfg& p) {
+          //      return p.apn.compare(pdn_cfg.apn) == 0;
+          //    });
+          //if (it != spgw_app_.pdns.end()) {
+          //  pdn_cfg = *it;
+          //  spgw_app_.pdns.erase(it);
+          //}
+          if (pdns_section[i].HasMember("dyn_ue_ipv4_range")) {
+            if (!pdns_section[i]["dyn_ue_ipv4_range"].IsString()) {
+              Logger::pgwc_app().error(
+                  "Error parsing json value: pdns/[dyn_ue_ipv4_range]");
+              return false;
+            }
+            unsigned char buf_in_addr[sizeof(struct in_addr)];
+            std::vector<std::string> ips;
+            std::string ipv4_range =
+                pdns_section[i]["dyn_ue_ipv4_range"].GetString();
+            struct in_addr in = {};
+            boost::split(
+                ips, ipv4_range, boost::is_any_of("-"),
+                boost::token_compress_on);
+            if (ips.size() != 2) {
+              Logger::pgwc_app().error(
+                  "Bad value %s : %s pdns/[dyn_ue_ipv4_range]",
+                  ipv4_range.c_str());
+              return false;
+            }
+            memset(buf_in_addr, 0, sizeof(buf_in_addr));
+            if (inet_pton(
+                    AF_INET, util::trim(ips.at(0)).c_str(), buf_in_addr) == 1) {
+              memcpy(&in, buf_in_addr, sizeof(struct in_addr));
+              //pdn_cfg.ue_pool_range_low.push_back(in);
+              pdn_cfg.ue_pool_range_low = in;
+            } else {
+              Logger::pgwc_app().error(
+                  "Config pool addr ipv4: bad lower address in "
+                  "pdns/[dyn_ue_ipv4_range] %d nth item",
+                  i);
+              return false;
+            }
+            memset(buf_in_addr, 0, sizeof(buf_in_addr));
+            if (inet_pton(
+                    AF_INET, util::trim(ips.at(1)).c_str(), buf_in_addr) == 1) {
+              memcpy(&in, buf_in_addr, sizeof(struct in_addr));
+              //pdn_cfg.ue_pool_range_high.push_back(in);
+              pdn_cfg.ue_pool_range_high = in;
+            } else {
+              Logger::pgwc_app().error(
+                  "Config pool addr ipv4: bad high address in "
+                  "pdns/[dyn_ue_ipv4_range] %d nth item",
+                  i);
+              return false;
+            }
+            if (htonl(
+                    pdn_cfg
+                        .ue_pool_range_low.s_addr) >=
+                htonl(pdn_cfg
+                          .ue_pool_range_high.s_addr)) {
+              Logger::pgwc_app().error(
+                  "config pool addr ipv4: bad range in "
+                  "pdns/[dyn_ue_ipv4_range] %d nth item",
+                  i);
+              return false;
+            }
+            if (pdn_cfg.pdn_type == PDN_TYPE_E_IPV6) {
+              pdn_cfg.pdn_type = PDN_TYPE_E_IPV4V6;
+            } else if (pdn_cfg.pdn_type.pdn_type != PDN_TYPE_E_IPV4V6) {
+              pdn_cfg.pdn_type = PDN_TYPE_E_IPV4;
+            }
+          } else if (pdns_section[i].HasMember("ipv6_prefix")) {
+            if (!pdns_section[i]["ipv6_prefix"].IsString()) {
+              Logger::pgwc_app().error(
+                  "Error parsing json value: pdns/[ipv6_prefix]");
+              return false;
+            }
+            std::string ipv6_prefix =
+                pdns_section[i]["ipv6_prefix"].GetString();
+            std::vector<std::string> ips6;
+            boost::split(
+                ips6, ipv6_prefix, boost::is_any_of("/"),
+                boost::token_compress_on);
+            if (ips6.size() != 2) {
+              Logger::pgwc_app().error(
+                  "Bad value ipv6_prefix : %s in pdns/[ipv6_prefix] %d nth "
+                  "item",
+                  ipv6_prefix.c_str(), i);
+              return false;
+            }
+            unsigned char buf_in6_addr[sizeof(struct in6_addr)];
+            struct in6_addr in6 = {};
+            std::string addr    = ips6.at(0);
+            util::trim(addr);
+            if (inet_pton(AF_INET6, addr.c_str(), buf_in6_addr) == 1) {
+              memcpy(&in6, buf_in6_addr, sizeof(struct in6_addr));
+              //pdn_cfg.paa_pool6_prefix.push_back(in6);
+              pdn_cfg.paa_pool6_prefix = in6;
+            } else {
+              Logger::pgwc_app().error(
+                  "config pool addr ipv4: bad address in pdns/[ipv6_prefix]"
+                  "  %d nth item",
+                  i);
+              return false;
+            }
+            std::string prefix = ips6.at(1);
+            util::trim(prefix);
+            //pdn_cfg.paa_pool6_prefix_len.push_back(std::stoi(prefix));
+            pdn_cfg.paa_pool6_prefix_len = std::stoi(prefix);
+            if (pdn_cfg.pdn_type == PDN_TYPE_E_IPV4) {
+              pdn_cfg.pdn_type = PDN_TYPE_E_IPV4V6;
+            } else if (pdn_cfg.pdn_type.pdn_type != PDN_TYPE_E_IPV4V6) {
+              pdn_cfg.pdn_type = PDN_TYPE_E_IPV6;
+            }
+          } else {
+            pdn_cfg.pdn_type = PDN_TYPE_E_NON_IP;
+          }
+          spgw_app_.pdns.push_back(pdn_cfg);
+        }
+      }
+    }
+  }
+  if (doc.HasMember("cups")) {
+    const RAPIDJSON_NAMESPACE::Value& cups_section = doc["cups"];
+    if (cups_section.HasMember("association_retry_period_ms")) {
+      if (!cups_section["association_retry_period_ms"].IsInt()) {
         Logger::pgwc_app().error(
-            "PDN_TYPE versus pool identifier %d 'th APN in config file\n",
-            i + 1);
-        throw("PDN_TYPE versus pool identifier APN");
+            "Error parsing json value: "
+            "cups/association_retry_period_ms");
+        return false;
       }
-      if ((0 <= apn[apn_idx].pool_id_iv6) &&
-          (apn[apn_idx].pdn_type.pdn_type == PDN_TYPE_E_IPV4)) {
+      cups_.association_retry_period_ms =
+          cups_section["association_retry_period_ms"].GetInt();
+    }
+    if (cups_section.HasMember("association_heartbeat_period_ms")) {
+      if (!cups_section["association_heartbeat_period_ms"].IsInt()) {
         Logger::pgwc_app().error(
-            "PDN_TYPE versus pool identifier %d 'th APN in config file\n",
-            i + 1);
-        throw("PDN_TYPE versus pool identifier APN");
+            "Error parsing json value: cups/association_heartbeat_period_ms");
+        return false;
       }
+      cups_.association_heartbeat_period_ms =
+          cups_section["association_heartbeat_period_ms"].GetInt();
+    }
+    if (cups_section.HasMember("feature_overload_control")) {
+      if (!cups_section["feature_overload_control"].IsBool()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: cups/feature_overload_control");
+        return false;
+      }
+      cups_.feature_overload_control =
+          cups_section["feature_overload_control"].GetBool();
+    }
+    if (cups_section.HasMember("feature_load_control")) {
+      if (!cups_section["feature_load_control"].IsBool()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: cups/feature_load_control");
+        return false;
+      }
+      cups_.feature_load_control =
+          cups_section["feature_load_control"].GetBool();
+    }
+    if (cups_section.HasMember("up_nodes_selection")) {
+      const RAPIDJSON_NAMESPACE::Value& nodes_section = cups_section["up_nodes_selection"];
+      if (!nodes_section.IsArray()) {
+        Logger::pgwc_app().error("Error parsing json value: up_nodes_selection");
+        return false;
+      }
+      for (RAPIDJSON_NAMESPACE::SizeType i = 0; i < nodes_section.Size(); i++) {
+        if (nodes_section[i].HasMember("mcc")) {
+          if (!nodes_section[i]["mcc"].IsString()) {
+            Logger::pgwc_app().error(
+                "Error parsing json value: up_nodes_selection/[mcc]");
+            return false;
+          }
+          if (nodes_section[i].HasMember("mnc")) {
+            if (!nodes_section[i]["mnc"].IsString()) {
+              Logger::pgwc_app().error(
+                  "Error parsing json value: cup_nodes_selection/[mnc]");
+              return false;
+            }
+          }
+          if (nodes_section[i].HasMember("tac")) {
+            if (!nodes_section[i]["tac"].IsInt()) {
+              Logger::pgwc_app().error(
+                  "Error parsing json value: cup_nodes_selection/[tac]");
+              return false;
+            }
+          }
+          if (nodes_section[i].HasMember("pdn_idx")) {
+            if (!nodes_section[i]["pdn_idx"].IsInt()) {
+              Logger::pgwc_app().error(
+                  "Error parsing json value: cup_nodes_selection/[pdn_idx]");
+              return false;
+            }
+          }
+          if (nodes_section[i].HasMember("id")) {
+            if (!nodes_section[i]["id"].IsString()) {
+              Logger::pgwc_app().error(
+                  "Error parsing json value: cup_nodes_selection/[id]");
+              return false;
+            }
+            /*unsigned char buf_in_addr[sizeof(struct in6_addr)];
+            std::string up_ip_addr = nodes_section[i]["id"].GetString();
+            memset(buf_in_addr, 0, sizeof(buf_in_addr));
+            pfcp::node_id_t node = {};
+            if (inet_pton(AF_INET, up_ip_addr.c_str(), buf_in_addr) == 1) {
+              memcpy(
+                  &node.u1.ipv4_address, buf_in_addr, sizeof(struct in_addr));
 
-      if (((0 <= apn[apn_idx].pool_id_iv4) ||
-           (0 <= apn[apn_idx].pool_id_iv6)) &&
-          (not boost::iequals(apn[apn_idx].apn, "none"))) {
-        bool doublon = false;
-        for (int j = 0; j < apn_idx; j++) {
-          if (boost::iequals(apn[j].apn, apn[apn_idx].apn)) {
-            doublon = true;
-            Logger::pgwc_app().info(
-                "%d'th APN %s already found in config file (%d 'th APN %s), "
-                "bypassing\n",
-                i + 1, apn[apn_idx].apn.c_str(), j + 1, apn[j].apn.c_str());
+            } else {
+              Logger::pgwc_app().error(
+                  "Config : bad SPGW-U IP address  "
+                  "cups_up_nodes/[ip_address] %d nth item",
+                  i);
+              return false;
+            }*/
+            up_node_cfg_t up_node = {};
+            up_node.mcc = nodes_section[i]["mcc"].GetString();
+            up_node.mnc = nodes_section[i]["mnc"].GetString();
+            up_node.tac = nodes_section[i]["tac"].GetInt();
+            up_node.pdn_index = nodes_section[i]["pdn_idx"].GetUint();
+            up_node.id  = nodes_section[i]["id"].GetString();
+            up_node.tai.from_items(up_node.mcc, up_node.mnc, up_node.tac);
+            cups_.nodes.push_back(up_node);
           }
         }
-        if (not doublon) {
-          apn_idx++;
-          num_apn++;
-        }
-      } else {
-        Logger::pgwc_app().error(
-            "Bypass %d'th APN %s in config file\n", i + 1,
-            apn[apn_idx].apn.c_str());
       }
     }
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_DEFAULT_DNS_IPV4_ADDRESS, astring);
-    IPV4_STR_ADDR_TO_INADDR(
-        util::trim(astring).c_str(), default_dnsv4,
-        "BAD IPv4 ADDRESS FORMAT FOR DEFAULT DNS !");
-
-    pgw_cfg.lookupValue(
-        PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV4_ADDRESS, astring);
-    IPV4_STR_ADDR_TO_INADDR(
-        util::trim(astring).c_str(), default_dns_secv4,
-        "BAD IPv4 ADDRESS FORMAT FOR DEFAULT DNS !");
-
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_DEFAULT_DNS_IPV6_ADDRESS, astring);
-    if (inet_pton(AF_INET6, util::trim(astring).c_str(), buf_in6_addr) == 1) {
-      memcpy(&default_dnsv6, buf_in6_addr, sizeof(struct in6_addr));
-    } else {
-      Logger::pgwc_app().error(
-          "CONFIG : BAD ADDRESS in " PGW_CONFIG_STRING_DEFAULT_DNS_IPV6_ADDRESS
-          " %s",
-          astring.c_str());
-      throw(
-          "CONFIG : BAD ADDRESS in " PGW_CONFIG_STRING_DEFAULT_DNS_IPV6_ADDRESS
-          " %s",
-          astring.c_str());
-    }
-    pgw_cfg.lookupValue(
-        PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV6_ADDRESS, astring);
-    if (inet_pton(AF_INET6, util::trim(astring).c_str(), buf_in6_addr) == 1) {
-      memcpy(&default_dns_secv6, buf_in6_addr, sizeof(struct in6_addr));
-    } else {
-      Logger::pgwc_app().error(
-          "CONFIG : BAD ADDRESS "
-          "in " PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV6_ADDRESS " %s",
-          astring.c_str());
-      throw(
-          "CONFIG : BAD ADDRESS "
-          "in " PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV6_ADDRESS " %s",
-          astring.c_str());
-    }
-
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_NAS_FORCE_PUSH_PCO, astring);
-    if (boost::iequals(astring, "yes")) {
-      force_push_pco = true;
-    } else {
-      force_push_pco = false;
-    }
-    pgw_cfg.lookupValue(PGW_CONFIG_STRING_UE_MTU, ue_mtu);
-
-    const Setting& pcef_cfg = pgw_cfg[PGW_CONFIG_STRING_PCEF];
-    unsigned int apn_ambr   = 0;
-    if (!(pcef_cfg.lookupValue(PGW_CONFIG_STRING_APN_AMBR_UL, apn_ambr))) {
-      Logger::pgwc_app().error(PGW_CONFIG_STRING_APN_AMBR_UL "failed");
-      throw(PGW_CONFIG_STRING_APN_AMBR_UL "failed");
-    }
-    pcef.apn_ambr_ul = apn_ambr;
-    if (!(pcef_cfg.lookupValue(PGW_CONFIG_STRING_APN_AMBR_DL, apn_ambr))) {
-      Logger::pgwc_app().error(PGW_CONFIG_STRING_APN_AMBR_DL "failed");
-      // throw (PGW_CONFIG_STRING_APN_AMBR_DL "failed");
-    }
-    pcef.apn_ambr_dl = apn_ambr;
-  } catch (const SettingNotFoundException& nfex) {
-    Logger::pgwc_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return RETURNerror;
   }
-  return finalize();
+  return Finalize();
 }
 
+#ifndef PACKAGE_NAME
+#define PACKAGE_NAME "UNKNOWN PACKAGE NAME"
+#endif
+#ifndef PACKAGE_VERSION
+#define PACKAGE_VERSION "UNKNOWN PACKAGE VERSION"
+#endif
 //------------------------------------------------------------------------------
-void pgw_config::display() {
+void pgw_config::Display() {
   Logger::pgwc_app().info(
       "==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
-  Logger::pgwc_app().info("Configuration PGW-C:");
-  Logger::pgwc_app().info("- Instance ..............: %d\n", instance);
-  Logger::pgwc_app().info("- PID dir ...............: %s\n", pid_dir.c_str());
-
-  Logger::pgwc_app().info("- S5S8-C Networking:");
+  Logger::pgwc_app().info("Configuration SPGW-C:");
+  Logger::pgwc_app().info("- S11-C Networking:");
   Logger::pgwc_app().info(
-      "    iface ............: %s", s5s8_cp.if_name.c_str());
+      "    iface ............: %s", s11_.iface.if_name.c_str());
   Logger::pgwc_app().info(
-      "    ipv4.addr ........: %s", inet_ntoa(s5s8_cp.addr4));
-  if (s5s8_cp.network4.s_addr) {
-    Logger::pgwc_app().info(
-        "    ipv4.mask ........: %s", inet_ntoa(s5s8_cp.network4));
-  }
-  Logger::pgwc_app().info("    port .............: %d", s5s8_cp.port);
-  if (s5s8_cp.mtu) {
-    Logger::pgwc_app().info("    MTU ..............: %u", s5s8_cp.mtu);
-  }
-  Logger::pgwc_app().info("- SX Networking:");
-  Logger::pgwc_app().info("    iface ................: %s", sx.if_name.c_str());
+      "    ipv4.addr ........: %s", inet_ntoa(s11_.iface.addr4));
   Logger::pgwc_app().info(
-      "    ip ...................: %s", inet_ntoa(sx.addr4));
-  Logger::pgwc_app().info("    port .................: %d", sx.port);
-  Logger::pgwc_app().info("- S5S8 Threading:");
+      "    ipv4.mask ........: %s", inet_ntoa(s11_.iface.network4));
+  Logger::pgwc_app().info("- SGW S5S8-C Networking:");
   Logger::pgwc_app().info(
-      "    CPU id............: %d", s5s8_cp.thread_rd_sched_params.cpu_id);
+      "    iface ............: %s", sgw_s5s8_.iface.if_name.c_str());
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d",
-      s5s8_cp.thread_rd_sched_params.sched_policy);
+      "    ipv4.addr ........: %s", inet_ntoa(sgw_s5s8_.iface.addr4));
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d",
-      s5s8_cp.thread_rd_sched_params.sched_priority);
-  Logger::pgwc_app().info("- SX Threading:");
+      "    ipv4.mask ........: %s", inet_ntoa(sgw_s5s8_.iface.network4));
+  Logger::pgwc_app().info("- PGW S5S8-C Networking:");
   Logger::pgwc_app().info(
-      "    CPU id............: %d", sx.thread_rd_sched_params.cpu_id);
+      "    iface ............: %s", pgw_s5s8_.iface.if_name.c_str());
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d", sx.thread_rd_sched_params.sched_policy);
+      "    ipv4.addr ........: %s", inet_ntoa(pgw_s5s8_.iface.addr4));
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d", sx.thread_rd_sched_params.sched_priority);
-  Logger::pgwc_app().info("- ITTI Timer Task Threading:");
+      "    ipv4.mask ........: %s", inet_ntoa(pgw_s5s8_.iface.network4));
+  Logger::pgwc_app().info("- SXab Networking:");
   Logger::pgwc_app().info(
-      "    CPU id............: %d", itti.itti_timer_sched_params.cpu_id);
+      "    iface ............: %s", sx_.iface.if_name.c_str());
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d", itti.itti_timer_sched_params.sched_policy);
+      "    ipv4.addr ........: %s", inet_ntoa(sx_.iface.addr4));
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d",
-      itti.itti_timer_sched_params.sched_priority);
-  Logger::pgwc_app().info("- ITTI S5S8 Task Threading:");
+      "    ipv4.mask ........: %s", inet_ntoa(sx_.iface.network4));
+  Logger::pgwc_app().info("- GTPv2-C:");
+  Logger::pgwc_app().info("    port .............: %u", gtpv2c_.port);
+  Logger::pgwc_app().info("    N3 ...............: %u", gtpv2c_.n3);
+  Logger::pgwc_app().info("    T3 ...............: %u ms", gtpv2c_.t3_ms);
+  Logger::pgwc_app().info("    workers ..........: %u", gtpv2c_.worker_threads);
   Logger::pgwc_app().info(
-      "    CPU id............: %d", itti.s5s8_sched_params.cpu_id);
+      "    max procedures ...: %u", gtpv2c_.max_concurrent_procedures);
+  Logger::pgwc_app().info("    Threading:");
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d", itti.s5s8_sched_params.sched_policy);
+      "        CPU id .......: %d", gtpv2c_.sched_params.cpu_id);
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d", itti.s5s8_sched_params.sched_priority);
-  Logger::pgwc_app().info("- ITTI Sx Task Threading:");
+      "        Sched policy .: %d", gtpv2c_.sched_params.sched_policy);
   Logger::pgwc_app().info(
-      "    CPU id............: %d", itti.sx_sched_params.cpu_id);
+      "        Sched prio ...: %d", gtpv2c_.sched_params.sched_priority);
+  Logger::pgwc_app().info("- PFCP:");
+  Logger::pgwc_app().info("    port .............: %u", pfcp_.port);
+  Logger::pgwc_app().info("    N1 ...............: %u", pfcp_.n1);
+  Logger::pgwc_app().info("    T1 ...............: %u ms", pfcp_.t1_ms);
+  Logger::pgwc_app().info("    workers ..........: %u", pfcp_.worker_threads);
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d", itti.sx_sched_params.sched_policy);
+      "    max procedures ...: %u", pfcp_.max_concurrent_procedures);
+  Logger::pgwc_app().info("    Threading:");
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d", itti.sx_sched_params.sched_priority);
-  Logger::pgwc_app().info("- ITTI PGW_APP task Threading:");
+      "        CPU id .......: %d", pfcp_.sched_params.cpu_id);
   Logger::pgwc_app().info(
-      "    CPU id............: %d", itti.pgw_app_sched_params.cpu_id);
+      "        Sched policy .: %d", pfcp_.sched_params.sched_policy);
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d", itti.pgw_app_sched_params.sched_policy);
+      "        Sched prio ...: %d", pfcp_.sched_params.sched_priority);
+  Logger::pgwc_app().info("- Timers :");
+  Logger::pgwc_app().info("    ITTI implementation:");
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d", itti.pgw_app_sched_params.sched_priority);
-  Logger::pgwc_app().info("- ITTI ASYNC_CMD task Threading:");
+      "        CPU id .......: %d", timer_.sched_params.cpu_id);
   Logger::pgwc_app().info(
-      "    CPU id............: %d", itti.async_cmd_sched_params.cpu_id);
+      "        Sched policy .: %d", timer_.sched_params.sched_policy);
   Logger::pgwc_app().info(
-      "    Scheduling policy : %d", itti.async_cmd_sched_params.sched_policy);
+      "        Sched prio ...: %d", timer_.sched_params.sched_priority);
+  Logger::pgwc_app().info("- SPGW-C APP :");
+  Logger::pgwc_app().info("    Threading:");
   Logger::pgwc_app().info(
-      "    Scheduling prio  .: %d", itti.async_cmd_sched_params.sched_priority);
-  Logger::pgwc_app().info("- " PGW_CONFIG_STRING_IP_ADDRESS_POOL ":");
-  for (int i = 0; i < num_ue_pool; i++) {
-    std::string range_low(inet_ntoa(ue_pool_range_low[apn[i].pool_id_iv4]));
-    std::string range_high(inet_ntoa(ue_pool_range_high[apn[i].pool_id_iv4]));
-    Logger::pgwc_app().info(
-        "    IPv4 pool %d ..........: %s - %s", i, range_low.c_str(),
-        range_high.c_str());
-  }
+      "        CPU id .......: %d", spgw_app_.sched_params.cpu_id);
+  Logger::pgwc_app().info(
+      "        Sched policy .: %d", spgw_app_.sched_params.sched_policy);
+  Logger::pgwc_app().info(
+      "        Sched prio ...: %d", spgw_app_.sched_params.sched_priority);
+  Logger::pgwc_app().info("- PDNs :");
+  Logger::pgwc_app().info("    - DEFAULT DNS:");
+  Logger::pgwc_app().info(
+      "        Primary DNS ..: %s",
+      inet_ntoa(*((struct in_addr*) &spgw_app_.default_dnsv4)));
+  Logger::pgwc_app().info(
+      "        Secondary DNS : %s",
+      inet_ntoa(*((struct in_addr*) &spgw_app_.default_dns_secv4)));
   char str_addr6[INET6_ADDRSTRLEN];
-  for (int i = 0; i < num_paa6_pool; i++) {
-    if (inet_ntop(
-            AF_INET6, &paa_pool6_prefix[i], str_addr6, sizeof(str_addr6))) {
-      Logger::pgwc_app().info(
-          "    IPv6 pool %d ..........: %s / %d", i, str_addr6,
-          paa_pool6_prefix_len[i]);
-    }
+  if (inet_ntop(
+          AF_INET6, &spgw_app_.default_dnsv6, str_addr6, sizeof(str_addr6))) {
+    Logger::pgwc_app().info("        Primary DNS v6: %s", str_addr6);
   }
-  Logger::pgwc_app().info("- DEFAULT DNS:");
-  Logger::pgwc_app().info(
-      "    Primary DNS ..........: %s",
-      inet_ntoa(*((struct in_addr*) &default_dnsv4)));
-  Logger::pgwc_app().info(
-      "    Secondary DNS ........: %s",
-      inet_ntoa(*((struct in_addr*) &default_dns_secv4)));
-  if (inet_ntop(AF_INET6, &default_dnsv6, str_addr6, sizeof(str_addr6))) {
-    Logger::pgwc_app().info("    Primary DNS v6........: %s", str_addr6);
+  if (inet_ntop(
+          AF_INET6, &spgw_app_.default_dns_secv6, str_addr6,
+          sizeof(str_addr6))) {
+    Logger::pgwc_app().info("        Second. DNS v6: %s", str_addr6);
   }
-  if (inet_ntop(AF_INET6, &default_dns_secv6, str_addr6, sizeof(str_addr6))) {
-    Logger::pgwc_app().info("    Secondary DNS v6 .....: %s", str_addr6);
+  uint index = 0;
+  Logger::pgwc_app().info("    - PDNs :");
+  for (const PdnCfg& pdn : spgw_app_.pdns) {
+    std::string range_low(inet_ntoa(pdn.ue_pool_range_low));
+    std::string range_high(inet_ntoa(pdn.ue_pool_range_high));
+    std::string network(inet_ntoa(pdn.ue_pool_network));
+    std::string netmask(inet_ntoa(pdn.ue_pool_netmask));
+    inet_ntop(AF_INET6, &pdn.paa_pool6_prefix, str_addr6, sizeof(str_addr6));
+    Logger::pgwc_app().info("    - PDN %02u.: apn ni %s label %s "
+        " IPv4 pool: %s - %s <=> %s/%s"
+        "  IPv6 pool: %s / %u",
+        index++,
+        pdn.apn.c_str(), pdn.apn_label.c_str(),
+        range_low.c_str(), range_high.c_str(), network.c_str(), netmask.c_str(),
+        str_addr6, pdn.paa_pool6_prefix_len);
   }
-
-  Logger::pgwc_app().info("- " PGW_CONFIG_STRING_APN_LIST ":");
-  for (int i = 0; i < num_apn; i++) {
-    Logger::pgwc_app().info("    APN %d:", i);
-    Logger::pgwc_app().info(
-        "        " PGW_CONFIG_STRING_APN_NI ":  %s", apn[i].apn.c_str());
-    Logger::pgwc_app().info(
-        "        " PGW_CONFIG_STRING_PDN_TYPE ":  %s",
-        apn[i].pdn_type.toString().c_str());
-    if (apn[i].pool_id_iv4 >= 0) {
-      std::string range_low(inet_ntoa(ue_pool_range_low[apn[i].pool_id_iv4]));
-      std::string range_high(inet_ntoa(ue_pool_range_high[apn[i].pool_id_iv4]));
-      Logger::pgwc_app().info(
-          "        " PGW_CONFIG_STRING_IPV4_POOL ":  %d ( %s - %s)",
-          apn[i].pool_id_iv4, range_low.c_str(), range_high.c_str());
-    }
-    if (apn[i].pool_id_iv6 >= 0) {
-      Logger::pgwc_app().info(
-          "        " PGW_CONFIG_STRING_IPV6_POOL ":  %d", apn[i].pool_id_iv6);
-    }
+  //  Logger::pgwc_app().info("- PCEF support (in development)");
+  //  Logger::pgwc_app().info("    APN AMBR UL ..........: %lu  (Kilo bits/s)",
+  //                          pcef.apn_ambr_ul);
+  //  Logger::pgwc_app().info("    APN AMBR DL ..........: %lu  (Kilo bits/s)",
+  //                          pcef.apn_ambr_dl);
+  Logger::pgwc_app().info("- CUPS:");
+  Logger::pgwc_app().info(
+      "    Node association retry : %u ms",
+      cups_.association_retry_period_ms);
+  Logger::pgwc_app().info(
+      "    Echo Node period: %u ms", cups_.association_heartbeat_period_ms);
+  Logger::pgwc_app().info(
+      "    User Plane Nodes, network planning:");
+  for (auto it : cups_.nodes) {
+    Logger::pgwc_app().info("        %s", it.toString().c_str());
   }
-  Logger::pgwc_app().info("- PCEF support (in development)");
-  Logger::pgwc_app().info(
-      "    APN AMBR UL ..........: %lu  (Kilo bits/s)", pcef.apn_ambr_ul);
-  Logger::pgwc_app().info(
-      "    APN AMBR DL ..........: %lu  (Kilo bits/s)", pcef.apn_ambr_dl);
   Logger::pgwc_app().info("- Helpers:");
   Logger::pgwc_app().info(
       "    Push PCO (DNS+MTU) ........: %s",
-      force_push_pco == 0 ? "false" : "true");
+      spgw_app_.force_push_pco == 0 ? "false" : "true");
 }
 
 //------------------------------------------------------------------------------
-bool pgw_config::is_dotted_apn_handled(
-    const string& apn, const pdn_type_t& pdn_type) {
-  for (int i = 0; i < pgw_cfg.num_apn; i++) {
-    if (0 == apn.compare(pgw_cfg.apn[i].apn_label)) {
+bool pgw_config::IsDottedApnHandled(
+    const std::string& t_apn, const pdn_type_t& pdn_type) {
+  for (auto p : spgw_app_.pdns) {
+    Logger::pgwc_app().info("pgw_config::IsDottedApnHandled: %s / %s",
+        t_apn.c_str(), p.apn.c_str());
+    if (0 == t_apn.compare(p.apn)) {
       // TODO refine
-      if (pdn_type.pdn_type == pgw_cfg.apn[i].pdn_type.pdn_type) {
+      if (pdn_type.pdn_type == p.pdn_type.pdn_type) {
         return true;
       }
     }
@@ -710,38 +858,74 @@ bool pgw_config::is_dotted_apn_handled(
 }
 
 //------------------------------------------------------------------------------
-int pgw_config::get_pfcp_node_id(pfcp::node_id_t& node_id) {
+int pgw_config::GetPfcpNodeId(pfcp::node_id_t& node_id) {
   node_id = {};
-  if (sx.addr4.s_addr) {
+  if (sx_.iface.addr4.s_addr) {
     node_id.node_id_type    = pfcp::NODE_ID_TYPE_IPV4_ADDRESS;
-    node_id.u1.ipv4_address = sx.addr4;
+    node_id.u1.ipv4_address = sx_.iface.addr4;
     return RETURNok;
   }
-  if (sx.addr6.s6_addr32[0] | sx.addr6.s6_addr32[1] | sx.addr6.s6_addr32[2] |
-      sx.addr6.s6_addr32[3]) {
+  if (sx_.iface.addr6.s6_addr32[0] | sx_.iface.addr6.s6_addr32[1] |
+      sx_.iface.addr6.s6_addr32[2] | sx_.iface.addr6.s6_addr32[3]) {
     node_id.node_id_type    = pfcp::NODE_ID_TYPE_IPV6_ADDRESS;
-    node_id.u1.ipv6_address = sx.addr6;
+    node_id.u1.ipv6_address = sx_.iface.addr6;
     return RETURNok;
   }
   return RETURNerror;
 }
 //------------------------------------------------------------------------------
-int pgw_config::get_pfcp_fseid(pfcp::fseid_t& fseid) {
+int pgw_config::GetPfcpFseid(pfcp::fseid_t& fseid) {
   int rc = RETURNerror;
   fseid  = {};
-  if (sx.addr4.s_addr) {
+  if (sx_.iface.addr4.s_addr) {
     fseid.v4           = 1;
-    fseid.ipv4_address = sx.addr4;
+    fseid.ipv4_address = sx_.iface.addr4;
     rc                 = RETURNok;
   }
-  if (sx.addr6.s6_addr32[0] | sx.addr6.s6_addr32[1] | sx.addr6.s6_addr32[2] |
-      sx.addr6.s6_addr32[3]) {
+  if (sx_.iface.addr6.s6_addr32[0] | sx_.iface.addr6.s6_addr32[1] |
+      sx_.iface.addr6.s6_addr32[2] | sx_.iface.addr6.s6_addr32[3]) {
     fseid.v6           = 1;
-    fseid.ipv6_address = sx.addr6;
+    fseid.ipv6_address = sx_.iface.addr6;
     rc                 = RETURNok;
   }
   return rc;
 }
-
 //------------------------------------------------------------------------------
-pgw_config::~pgw_config() {}
+bool pgw_config::GetUpNodes(const apn_t& apn, const uli_t& uli,
+    const paa_t& paa, std::vector<up_node_cfg_t>& up_nodes) {
+
+  for (auto n = cups_.nodes.begin() ; n != cups_.nodes.end(); ++n) {
+    PdnCfg& pdncfg = pgw_config::spgw_app_.GetPdnCfg(n->pdn_index);
+    if (paa.is_ip_assigned()) {
+      if (not pdncfg.is_in_pool(paa)) {
+        continue;
+      }
+    }
+    if ((apn.access_point_name.compare(pdncfg.apn) == 0) &&
+        (uli.is_tai(n->tai))) {
+      up_nodes.push_back(*n);
+      //std::cout << "up_nodes.push_back( " << n->id << " )" << std::endl;
+    }
+  }
+
+  /*auto it = std::copy_if (cups_.nodes.begin(),
+      cups_.nodes.end(),
+      up_nodes.begin(),
+      [apn, uli, paa](up_node_cfg_t& n) {
+        PdnCfg& pdncfg = pgw_config::spgw_app_.GetPdnCfg(n.pdn_index);
+        std::cout << "Eval PdnCfg id " << n.id << " pool " << n.pdn_index << std::endl;
+        if (paa.is_ip_assigned()) {
+          if (not pdncfg.is_in_pool(paa)) {
+            return false;
+          }
+        }
+        std::cout << "apn.access_point_name " << apn.access_point_name << " / pdncfg.apn " << pdncfg.apn << std::endl;
+        std::cout << "uli " << uli.toString() << " / pdncfg.tai " << n.tai.toString() << std::endl;
+        return ((apn.access_point_name.compare(pdncfg.apn) == 0) &&
+            (uli.is_tai(n.tai)));
+      } );
+  // shrink container to new size
+  up_nodes.resize(std::distance(up_nodes.begin(),it)); */
+  return (up_nodes.size() > 0);
+}
+

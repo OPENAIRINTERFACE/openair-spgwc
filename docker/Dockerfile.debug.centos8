@@ -28,60 +28,35 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM centos:8 as oai-spgwc-builder
-
-ARG HTTP_PROXY
-ARG BUILD_FOR_CI
-ARG CI_SRC_BRANCH
-ARG CI_SRC_COMMIT
-ARG CI_DEST_BRANCH
-
-RUN yum update -y \
-  && yum install epel-release -y \
-  && yum install dnf-plugins-core -y \
-  && yum config-manager --set-enabled PowerTools \
-  && yum install -y \
-    psmisc \
-    git \
-    net-tools \
-    tcpdump \
-    glog \
-    double-conversion \
-    libconfig \
-    libevent \
-    boost-system \
-    gdb \
-    valgrind \
-  && yum clean all -y \
-  && rm -rf /var/cache/yum
+FROM oai-spgwc:centos8-spgwc-debug-3rd-party as oai-spgwc-builder
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
 RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 # In normal case, we build out of the develop branch
-RUN /bin/bash -c "if [[ -v CI_SRC_BRANCH ]]; then git clone https://github.com/lionelgo/openair-spgwc.git -b $CI_SRC_BRANCH /openair-spgwc; else git clone https://github.com/lionelgo/openair-spgwc.git -b csr-collision /openair-spgwc; fi"
-# For CI, especially for Pull/Merge Requests, we build out of temp merge
-WORKDIR /openair-spgwc
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git config --global user.name \"OAI CI\"; fi"
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git config --global user.email ci@openairinterface.org; fi"
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git checkout -f $CI_SRC_COMMIT; fi"
-RUN /bin/bash -c "if [[ -v BUILD_FOR_CI ]]; then git merge --ff origin/$CI_DEST_BRANCH -m \"Temporary merge for CI\"; fi"
 
-# Installing and Building SPGW-C
+COPY ./ /openair-spgwc
+
+# Installing and Building SPGW-U
 WORKDIR /openair-spgwc/build/scripts
-RUN ./build_spgwc --install-deps --force
 RUN ./build_spgwc --clean --build-type Debug --jobs --Verbose
 
 # Copying executable and generated libraries
 WORKDIR /openair-spgwc/bin
 RUN cp /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc \
-    && cp /openair-spgwc/scripts/entrypoint.sh .
+    && cp /openair-spgwc/scripts/entrypoint.sh . \
+    && cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.deb
+
+# WORKDIR /openair-spgwc/build/scripts
+# RUN ./build_spgwc --clean --build-type Release --jobs --Verbose && \
+#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.rel && \
+#    ./build_spgwu --clean --build-type RelWithDebInfo --jobs --Verbose && \
+#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.red && \
+#    ./build_spgwu --clean --build-type MinSizeRel --jobs --Verbose && \
+#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.min
 
 WORKDIR /openair-spgwc
 
 # expose ports
 EXPOSE 2123/udp 8805/udp
-
-CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.conf", "-o"]
-ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]

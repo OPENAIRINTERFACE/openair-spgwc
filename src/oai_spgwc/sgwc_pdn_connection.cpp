@@ -27,7 +27,6 @@
 */
 
 #include "sgwc_app.hpp"
-#include "sgwc_config.hpp"
 #include "sgwc_eps_bearer_context.hpp"
 
 #include <algorithm>

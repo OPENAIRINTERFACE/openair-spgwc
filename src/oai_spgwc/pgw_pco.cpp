@@ -155,7 +155,7 @@ int pgw_app::process_pco_request_ipcp(
               ipcp_dns_prim_ipv4_addr);
 
           if (ipcp_dns_prim_ipv4_addr == INADDR_ANY) {
-            ipcp_out_dns_prim_ipv4_addr = pgw_cfg.default_dnsv4.s_addr;
+            ipcp_out_dns_prim_ipv4_addr = pgw_cfg.spgw_app_.default_dnsv4.s_addr;
             /* RFC 1877:
              * Primary-DNS-Address
              *  The four octet Primary-DNS-Address is the address of the primary
@@ -163,9 +163,9 @@ int pgw_app::process_pco_request_ipcp(
              *  set to zero, it indicates an explicit request that the peer
              *  provide the address information in a Config-Nak packet. */
             ipcp_out_code = IPCP_CODE_CONFIGURE_NACK;
-          } else if (pgw_cfg.default_dnsv4.s_addr != ipcp_dns_prim_ipv4_addr) {
+          } else if (pgw_cfg.spgw_app_.default_dnsv4.s_addr != ipcp_dns_prim_ipv4_addr) {
             ipcp_out_code               = IPCP_CODE_CONFIGURE_NACK;
-            ipcp_out_dns_prim_ipv4_addr = pgw_cfg.default_dnsv4.s_addr;
+            ipcp_out_dns_prim_ipv4_addr = pgw_cfg.spgw_app_.default_dnsv4.s_addr;
           } else {
             ipcp_out_dns_prim_ipv4_addr = ipcp_dns_prim_ipv4_addr;
           }
@@ -218,12 +218,12 @@ int pgw_app::process_pco_request_ipcp(
               ipcp_dns_sec_ipv4_addr);
 
           if (ipcp_dns_sec_ipv4_addr == INADDR_ANY) {
-            ipcp_out_dns_sec_ipv4_addr = pgw_cfg.default_dns_secv4.s_addr;
+            ipcp_out_dns_sec_ipv4_addr = pgw_cfg.spgw_app_.default_dns_secv4.s_addr;
             ipcp_out_code              = IPCP_CODE_CONFIGURE_NACK;
           } else if (
-              pgw_cfg.default_dns_secv4.s_addr != ipcp_dns_sec_ipv4_addr) {
+              pgw_cfg.spgw_app_.default_dns_secv4.s_addr != ipcp_dns_sec_ipv4_addr) {
             ipcp_out_code              = IPCP_CODE_CONFIGURE_NACK;
-            ipcp_out_dns_sec_ipv4_addr = pgw_cfg.default_dns_secv4.s_addr;
+            ipcp_out_dns_sec_ipv4_addr = pgw_cfg.spgw_app_.default_dns_secv4.s_addr;
           } else {
             ipcp_out_dns_sec_ipv4_addr = ipcp_dns_sec_ipv4_addr;
           }
@@ -268,7 +268,7 @@ int pgw_app::process_pco_request_ipcp(
 int pgw_app::process_pco_dns_server_request(
     protocol_configuration_options_t& pco_resp,
     const pco_protocol_or_container_id_t* const poc_id) {
-  in_addr_t ipcp_out_dns_prim_ipv4_addr      = pgw_cfg.default_dnsv4.s_addr;
+  in_addr_t ipcp_out_dns_prim_ipv4_addr      = pgw_cfg.spgw_app_.default_dnsv4.s_addr;
   pco_protocol_or_container_id_t poc_id_resp = {0};
   uint8_t dns_array[4];
 
@@ -296,8 +296,8 @@ int pgw_app::process_pco_link_mtu_request(
       "PCO: Protocol identifier IPCP option Link MTU Request");
   poc_id_resp.protocol_id = PCO_CONTAINER_IDENTIFIER_IPV4_LINK_MTU;
   poc_id_resp.length_of_protocol_id_contents = 2;
-  mtu_array[0]                               = (uint8_t)(pgw_cfg.ue_mtu >> 8);
-  mtu_array[1]                               = (uint8_t)(pgw_cfg.ue_mtu & 0xFF);
+  mtu_array[0]                               = (uint8_t)(pgw_cfg.spgw_app_.default_ue_mtu >> 8);
+  mtu_array[1]                               = (uint8_t)(pgw_cfg.spgw_app_.default_ue_mtu & 0xFF);
   std::string tmp_s((const char*) &mtu_array[0], 2);
   poc_id_resp.protocol_id_contents = tmp_s;
 
@@ -356,7 +356,7 @@ int pgw_app::process_pco_request(
     }
   }
 
-  if (pgw_cfg.force_push_pco) {
+  if (pgw_cfg.spgw_app_.force_push_pco) {
     pco_ids.ci_ip_address_allocation_via_nas_signalling = true;
     if (!pco_ids.ci_dns_server_ipv4_address_request) {
       process_pco_dns_server_request(pco_resp, NULL);

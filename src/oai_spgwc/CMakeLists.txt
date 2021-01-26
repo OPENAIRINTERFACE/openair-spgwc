@@ -284,6 +284,8 @@ include_directories(${SRC_TOP_DIR}/common)
 include_directories(${SRC_TOP_DIR}/common/msg)
 include_directories(${SRC_TOP_DIR}/common/utils)
 include_directories(${SRC_TOP_DIR}/gtpv2c)
+include_directories(${SRC_TOP_DIR}/include_ext)
+include_directories(${SRC_TOP_DIR}/include_ext/rapidjson)
 include_directories(${SRC_TOP_DIR}/itti)
 include_directories(${SRC_TOP_DIR}/oai_spgwc)
 include_directories(${SRC_TOP_DIR}/pfcp)
@@ -291,6 +293,7 @@ include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
 add_library (SPGWC STATIC
+  ${SRC_TOP_DIR}/oai_spgwc/PfcpUpNodes.cpp
   ${SRC_TOP_DIR}/oai_spgwc/pgw_app.cpp
   ${SRC_TOP_DIR}/oai_spgwc/pgw_config.cpp
   ${SRC_TOP_DIR}/oai_spgwc/pgw_context.cpp
@@ -300,7 +303,6 @@ add_library (SPGWC STATIC
   ${SRC_TOP_DIR}/oai_spgwc/pgwc_procedure.cpp
   ${SRC_TOP_DIR}/oai_spgwc/pgwc_sxab.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_app.cpp
-  ${SRC_TOP_DIR}/oai_spgwc/sgwc_config.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_eps_bearer_context.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_pdn_connection.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_procedure.cpp

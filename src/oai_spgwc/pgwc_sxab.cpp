@@ -31,6 +31,7 @@
 #include "itti.hpp"
 #include "logger.hpp"
 #include "pgw_config.hpp"
+#include "PfcpUpNodes.hpp"
 
 #include <chrono>
 #include <ctime>
@@ -163,7 +164,7 @@ void pgwc_sxab_task(void* args_p) {
 
       case TIME_OUT:
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
-          Logger::pgwc_sx().info("TIME-OUT event timer id %d", to->timer_id);
+          Logger::pgwc_sx().trace("TIME-OUT event timer id %d", to->timer_id);
           switch (to->arg1_user) {
             case TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST:
               pfcp_associations::get_instance().initiate_heartbeat_request(
@@ -198,8 +199,8 @@ void pgwc_sxab_task(void* args_p) {
 //------------------------------------------------------------------------------
 pgwc_sxab::pgwc_sxab()
     : pfcp_l4_stack(
-          string(inet_ntoa(pgw_cfg.sx.addr4)), pgw_cfg.sx.port,
-          pgw_cfg.sx.thread_rd_sched_params) {
+          string(inet_ntoa(pgw_cfg.sx_.iface.addr4)), pgw_cfg.pfcp_.port,
+          pgw_cfg.pfcp_.sched_params) {
   Logger::pgwc_sx().startup("Starting...");
   // TODO  refine this, look at RFC5905
   std::tm tm_epoch       = {0};          // Feb 8th, 2036
@@ -296,6 +297,8 @@ void pgwc_sxab::handle_receive_heartbeat_request(
           "ignore message");
       return;
     }
+    pfcp_associations::get_instance().handle_receive_heartbeat_request(
+        trxn_id, remote_endpoint, msg_ies_container.recovery_time_stamp.second);
     send_heartbeat_response(remote_endpoint, trxn_id);
   }
 }
@@ -317,7 +320,7 @@ void pgwc_sxab::handle_receive_heartbeat_response(
       return;
     }
     pfcp_associations::get_instance().handle_receive_heartbeat_response(
-        trxn_id);
+        trxn_id, remote_endpoint, msg_ies_container.recovery_time_stamp.second);
   }
 }
 //------------------------------------------------------------------------------
@@ -344,54 +347,12 @@ void pgwc_sxab::handle_receive_association_setup_request(
           "IE!, ignore message");
       return;
     }
-    bool restore_sx_sessions = false;
-    if (msg_ies_container.up_function_features.first) {
-      // Should be detected by lower layers
-      pfcp_associations::get_instance().add_association(
-          msg_ies_container.node_id.second,
-          msg_ies_container.recovery_time_stamp.second,
-          msg_ies_container.up_function_features.second, restore_sx_sessions);
-    } else {
-      pfcp_associations::get_instance().add_association(
-          msg_ies_container.node_id.second,
-          msg_ies_container.recovery_time_stamp.second, restore_sx_sessions);
-    }
-
-    // always yes (for the time being)
-    itti_sxab_association_setup_response a(TASK_SPGWU_SX, TASK_SPGWU_SX);
-    a.trxn_id           = trxn_id;
-    pfcp::cause_t cause = {.cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
-    a.pfcp_ies.set(cause);
-    pfcp::node_id_t node_id = {};
-    if (pgw_cfg.get_pfcp_node_id(node_id) == RETURNok) {
-      a.pfcp_ies.set(node_id);
-      pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                           (uint32_t) recovery_time_stamp};
-      a.pfcp_ies.set(r);
-      a.pfcp_ies.set(cp_function_features);
-      if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
-        // a.l_endpoint =
-        // boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(pgw_cfg.sx.addr4),
-        // 0);
-        a.r_endpoint = remote_endpoint;
-        send_sx_msg(a);
-      } else {
-        Logger::pgwc_sx().warn(
-            "Received SX ASSOCIATION SETUP REQUEST TODO node_id IPV6, FQDN!, "
-            "ignore message");
-        return;
-      }
-    } else {
-      Logger::pgwc_sx().warn(
-          "Received SX ASSOCIATION SETUP REQUEST could not set node id!, "
-          "ignore message");
-      return;
-    }
-
-    if (restore_sx_sessions) {
-      pfcp_associations::get_instance().restore_sx_sessions(
-          msg_ies_container.node_id.second);
-    }
+    PfcpUpNodes::Instance().AssociationSetupRequest(
+        trxn_id, remote_endpoint,
+        msg_ies_container.node_id.second,
+        msg_ies_container.recovery_time_stamp.second,
+        msg_ies_container.up_function_features,
+        msg_ies_container.user_plane_ip_resource_information);
   }
 }
 
@@ -507,7 +468,20 @@ void pgwc_sxab::handle_receive_session_report_request(
 }
 
 //------------------------------------------------------------------------------
+void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_request& i) {
+  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
+                                       (uint32_t) recovery_time_stamp};
+  i.pfcp_ies.set(r);
+  send_request(i.r_endpoint, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
+}
+//------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i) {
+  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
+                                       (uint32_t) recovery_time_stamp};
+  i.pfcp_ies.set(r);
+  if (cp_function_features.has_features()) {
+    i.pfcp_ies.set(cp_function_features);
+  }
   send_response(i.r_endpoint, i.pfcp_ies, i.trxn_id);
 }
 //------------------------------------------------------------------------------
@@ -521,19 +495,15 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
                                        (uint32_t) recovery_time_stamp};
   h.set(r);
 
-  pfcp::node_id_t& node_id = a->node_id;
-  if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
-    a->timer_heartbeat = itti_inst->timer_setup(
-        5, 0, TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST,
-        a->hash_node_id);
+  a->timer_heartbeat = itti_inst->timer_setup(
+      pgw_config::pfcp_.t1_ms / 1000, (pgw_config::pfcp_.t1_ms % 1000) * 1000,
+      TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST,
+      a->hash_node_id);
 
-    endpoint r_endpoint = endpoint(node_id.u1.ipv4_address, pfcp::default_port);
-    a->trxn_id_heartbeat = generate_trxn_id();
-    send_request(r_endpoint, h, TASK_PGWC_SX, a->trxn_id_heartbeat);
-
-  } else {
-    Logger::pgwc_sx().warn("TODO send_heartbeat_request() node_id IPV6, FQDN!");
-  }
+  endpoint r_endpoint = a->remote_endpoint;
+  r_endpoint.set_port(pfcp::default_port);
+  a->trxn_id_heartbeat = generate_trxn_id();
+  send_request(r_endpoint, h, TASK_PGWC_SX, a->trxn_id_heartbeat);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_response(

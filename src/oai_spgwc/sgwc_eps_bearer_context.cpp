@@ -29,7 +29,7 @@
 #include "sgwc_eps_bearer_context.hpp"
 #include "3gpp_29.274.h"
 #include "sgwc_app.hpp"
-#include "sgwc_config.hpp"
+#include "pgw_config.hpp"
 
 #include <algorithm>
 
@@ -37,7 +37,7 @@ using namespace sgwc;
 using namespace std;
 
 extern sgwc_app* sgwc_app_inst;
-extern sgwc_config sgwc_cfg;
+extern pgwc::pgw_config pgw_cfg;
 
 //------------------------------------------------------------------------------
 std::string sgw_eps_bearer::toString() const {
@@ -325,7 +325,7 @@ void sgw_eps_bearer_context::handle_itti_msg(
     itti_s11_create_session_request& csreq) {
   if (sgw_fteid_s11_s4_cp.teid_gre_key == UNASSIGNED_TEID) {
     sgw_fteid_s11_s4_cp =
-        sgwc_app_inst->generate_s11_cp_fteid(sgwc_cfg.s11_cp.addr4);
+        sgwc_app_inst->generate_s11_cp_fteid(pgw_cfg.s11_.iface.addr4);
     sgwc_app_inst->set_s11sgw_teid_2_sgw_eps_bearer_context(
         sgw_fteid_s11_s4_cp.teid_gre_key, shared_from_this());
     mme_fteid_s11 = csreq.gtp_ies.sender_fteid_for_cp;

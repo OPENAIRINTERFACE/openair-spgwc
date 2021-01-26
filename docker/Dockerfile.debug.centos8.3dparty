@@ -1,0 +1,72 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this file
+# * except in compliance with the License.
+# * You may obtain a copy of the License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+#---------------------------------------------------------------------
+#
+# Dockerfile for the Open-Air-Interface SPGW-C service
+#   Valid for CentOS 8
+#
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# BUILDER IMAGE
+#---------------------------------------------------------------------
+FROM centos:8 as centos8-spgwc-debug-3rd-party
+
+ARG HTTP_PROXY
+
+RUN yum update -y \
+  && yum install epel-release -y \
+  && yum install dnf-plugins-core -y \
+  && yum config-manager --set-enabled powertools \
+  && yum install -y \
+    psmisc \
+    git \
+    iptables \
+    ethtool \
+    glog \
+    double-conversion \
+    libevent \
+    boost-system \
+    # debugging
+    gdb \
+    valgrind \
+    diffutils \
+    iputils \
+    tree \
+    tcpdump \
+    wireshark-cli \
+    net-tools \
+    openssh-server \
+    procps-ng \  
+  && yum clean all -y \
+  && rm -rf /var/cache/yum
+
+# Some GIT configuration command quite useful
+RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
+RUN git config --global https.postBuffer 123289600
+RUN git config --global http.sslverify false
+# In normal case, we build out of the develop branch
+
+COPY ./ /openair-spgwc
+
+# Installing and Building SPGW-C
+WORKDIR /openair-spgwc/build/scripts
+RUN ./build_spgwc --install-deps --force

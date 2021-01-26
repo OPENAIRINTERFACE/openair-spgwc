@@ -1,0 +1,73 @@
+{
+ "timer" : {
+     "itti" : {
+         "sched_params" : {
+             "sched_policy" : "sched_fifo", 
+             "sched_priority" : 46
+         }
+     }
+ },
+ "gtpv2c" : {
+     "port" : 2123,
+     "n3" : 3,
+     "t3_ms" : 1000,
+     "sched_params" : {
+         "sched_policy" : "sched_fifo", 
+         "sched_priority" : 40
+     }
+ },
+ "pfcp" : {
+     "port" : 8805,
+     "n1" : 3,
+     "t1_ms" : 1000,
+     "sched_params" : {
+         "sched_policy" : "sched_fifo", 
+         "sched_priority" : 42
+     }
+ },
+ "s11" : {
+     "interface_name" : "@sgw_interface_name_for_s11@",
+     "ipv4_address" : "read"
+ },
+ "sgws5s8" : {
+     "interface_name" : "lo",
+     "ipv4_address" : "127.0.58.1"
+ },
+ "pgws5s8" : {
+     "interface_name" : "lo",
+     "ipv4_address" : "127.0.58.2"
+ },
+ "sx" : {
+     "interface_name" : "@pgw_interface_name_for_sx@",
+     "ipv4_address" : "read"
+ },
+ "spgw_app" : {
+     "sched_params" : {
+         "sched_policy" : "sched_fifo", 
+         "sched_priority" : 44
+     },
+     "default_dns_ipv4_address" : "@default_dns_ipv4_address@",
+     "default_dns_sec_ipv4_address" : "@default_dns_sec_ipv4_address@",
+     "default_dns_ipv6_address"     : "2001:4860:4860::8888",
+     "default_dns_sec_ipv6_address" : "2001:4860:4860::8844",
+     "force_push_protocol_configuration_options" : false
+ },
+ "pdns" : [
+    { "apn_ni" : "oai.ipv4", "dyn_ue_ipv4_range" : "12.1.1.2 - 12.1.1.128" },
+    { "apn_ni" : "lowlat4", "dyn_ue_ipv4_range" : "192.168.21.1 - 192.168.21.253" }
+ ], 
+ "cups" : {
+     "association_retry_period_ms" : 15000,
+     "association_heartbeat_period_ms" : 2000,
+     "feature_overload_control" : false,
+     "feature_load_control" : false,
+     "up_nodes_selection" : [
+         { "mcc" : "@mcc@", "mnc" : "@mnc@", "tac" : @tac@, "apn_ni" : "@apn_ni@", "pdn_idx" : 0, "id" : "gw1.spgw.node.epc.mnc@mnc@.mcc@mcc@.3gppnetwork.org" }
+     ]
+ },
+ "pcef" : {
+     "apn_ambr_ul_kbits" : 500000,
+     "apn_ambr_dl_kbits" : 500000
+ }
+}
+

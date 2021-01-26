@@ -88,7 +88,7 @@ class pfcp_l4_stack : public udp_application {
 
  protected:
   uint32_t id;
-  udp_server udp_s_8805;
+  udp_server udp_s_registered;
   udp_server udp_s_allocated;
 
   // seems no need for std::atomic_uint32_t

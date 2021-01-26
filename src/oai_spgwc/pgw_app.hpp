@@ -42,6 +42,17 @@
 
 namespace pgwc {
 
+enum TimeOutType {
+  kTriggerAssociationUpNodes = 0
+};
+
+enum LivenessEventType {
+  kEchoRequestResponded = 0,
+  kEchoRequestNotResponded,
+  kEchoRequestRetriesFailed,
+  kEchoRequestReceived
+};
+
 // typedef std::pair<shared_ptr<pgw_context>,shared_ptr<pgw_pdn_connection>>
 // zzz;
 class pgw_config;  // same namespace
@@ -65,7 +76,7 @@ class pgw_app {
   mutable std::shared_mutex m_s5s8lteid2pgw_context;
   mutable std::shared_mutex m_seid2pgw_context;
 
-  int apply_config(const pgw_config& cfg);
+  int apply_config();
 
   teid_t generate_s5s8_cp_teid();
   void free_s5s8c_teid(const teid_t& teid_s5s8_cp);

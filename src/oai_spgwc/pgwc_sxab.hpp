@@ -27,12 +27,15 @@
 
 #ifndef FILE_PGWC_SXAB_HPP_SEEN
 #define FILE_PGWC_SXAB_HPP_SEEN
-
+//--related header -------------------------------------------------------------
+//--C includes -----------------------------------------------------------------
+//--C++ includes ---------------------------------------------------------------
+#include <thread>
+//--Other includes -------------------------------------------------------------
 #include "itti_msg_sxab.hpp"
 #include "pfcp.hpp"
 #include "pgw_pfcp_association.hpp"
 
-#include <thread>
 
 namespace pgwc {
 
@@ -45,7 +48,7 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
   std::thread::id thread_id;
   std::thread thread;
 
-  uint64_t recovery_time_stamp;  // timestamp in seconds
+  std::time_t recovery_time_stamp;  // timestamp in seconds
 
   pfcp::cp_function_features_t cp_function_features;
 
@@ -72,7 +75,7 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
 
   void send_sx_msg(itti_sxab_heartbeat_request& s){};
   void send_sx_msg(itti_sxab_heartbeat_response& s){};
-  void send_sx_msg(itti_sxab_association_setup_request& s){};
+  void send_sx_msg(itti_sxab_association_setup_request& s);
   void send_sx_msg(itti_sxab_association_setup_response& s);
   void send_sx_msg(itti_sxab_association_update_request& s){};
   void send_sx_msg(itti_sxab_association_update_response& s){};
@@ -112,6 +115,11 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
       pfcp::pfcp_msg& msg, const endpoint& r_endpoint);
 
   void time_out_itti_event(const uint32_t timer_id);
+
+  uint16_t pfcp_registered_port_number() const {return udp_s_registered.get_port();}
+
+  std::time_t get_recovery_time_stamp() const { return recovery_time_stamp; };
+
 };
 }  // namespace pgwc
 #endif /* FILE_PGWC_SXAB_HPP_SEEN */

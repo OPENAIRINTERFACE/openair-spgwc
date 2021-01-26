@@ -338,7 +338,7 @@ timer_id_t itti_mw::timer_setup(
 }
 
 //------------------------------------------------------------------------------
-int itti_mw::timer_remove(timer_id_t timer_id) {
+int itti_mw::timer_remove(timer_id_t& timer_id) {
   std::lock_guard<std::mutex> lk(m_timers);
   if (current_timer.id == timer_id) {
     // cout << "timer_remove() current_timer.id == timer_id" << endl;
@@ -347,12 +347,14 @@ int itti_mw::timer_remove(timer_id_t timer_id) {
     // wake up thread timer if necessary
     std::unique_lock<std::mutex> l2(m_timeout);
     c_timeout.notify_one();
+    timer_id = ITTI_INVALID_TIMER_ID;
     return RETURNok;
   } else {
     std::set<itti_timer>::iterator it = itti_inst->timers.begin();
     while (it != itti_inst->timers.end()) {
       if (it->id == timer_id) {
         itti_inst->timers.erase(it);
+        timer_id = ITTI_INVALID_TIMER_ID;
         return RETURNok;
       }
       ++it;

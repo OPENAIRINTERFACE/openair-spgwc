@@ -27,13 +27,13 @@ class Options {
   static bool parseJson();
   static bool validateOptions();
 
-  static const std::string& getlibconfigConfig() { return m_libconfigcfg; }
+  static const std::string& getConfig() { return m_config; }
   static const bool& getlogRotFilelog() { return m_log_rot_file_log; }
   static const bool& getlogStdout() { return m_log_stdout; }
 
  private:
   enum OptionsSelected {
-    libconfigcfg     = 0x01,
+    config           = 0x01,
     log_stdout       = 0x02,
     log_rot_file_log = 0x04
   };
@@ -44,7 +44,7 @@ class Options {
 
   static bool m_log_rot_file_log;
   static bool m_log_stdout;
-  static std::string m_libconfigcfg;
+  static std::string m_config;
 };
 
 #endif  // #define __OPTIONS_H

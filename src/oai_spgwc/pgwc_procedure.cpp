@@ -88,15 +88,25 @@ int session_establishment_procedure::run(
   // TODO check if compatible with ongoing procedures if any
   pfcp::node_id_t up_node_id = {};
   if (not pfcp_associations::get_instance().select_up_node(
-          up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
+      req->gtp_ies.apn, req->gtp_ies.uli,
+      req->gtp_ies.serving_network, req->gtp_ies.rat_type,
+      req->gtp_ies.pdn_type, req->gtp_ies.paa,
+          up_node_id, kNodeSelectionCriteriaMinPfcpSessions)) {
     // TODO
     ::cause_t cause   = {};
     cause.pce         = 1;
-    cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
+    cause.cause_value = NO_RESOURCES_AVAILABLE;
     resp->gtp_ies.set(cause);
     return RETURNerror;
   }
-
+  std::shared_ptr<pfcp_association> sa = {};
+  if (not pfcp_associations::get_instance().get_association(up_node_id, sa)) {
+    ::cause_t cause   = {};
+    cause.pce         = 1;
+    cause.cause_value = SYSTEM_FAILURE;
+    resp->gtp_ies.set(cause);
+    return RETURNerror;
+  }
   //-------------------
   s5_trigger           = req;
   s5_triggered_pending = resp;
@@ -105,10 +115,10 @@ int session_establishment_procedure::run(
       new itti_sxab_session_establishment_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx_ser->seid    = 0;
   sx_ser->trxn_id = this->trxn_id;
-  // sx_ser->l_endpoint =
-  // boost::asio::ip::udp::endpoint(boost::asio::ip::address_v4(0xC0A8A064),
-  // 8805);
-  sx_ser->r_endpoint = endpoint(up_node_id.u1.ipv4_address, pfcp::default_port);
+
+  sx_ser->r_endpoint = sa->remote_endpoint;
+  //sx_ser->r_endpoint =
+  //                   endpoint(up_node_id.u1.ipv4_address, pfcp::default_port);
   sx_triggered =
       std::shared_ptr<itti_sxab_session_establishment_request>(sx_ser);
 
@@ -116,14 +126,14 @@ int session_establishment_procedure::run(
   // IE node_id_t
   //-------------------
   pfcp::node_id_t node_id = {};
-  pgw_cfg.get_pfcp_node_id(node_id);
+  pgw_cfg.GetPfcpNodeId(node_id);
   sx_ser->pfcp_ies.set(node_id);
 
   //-------------------
   // IE fseid_t
   //-------------------
   pfcp::fseid_t cp_fseid = {};
-  pgw_cfg.get_pfcp_fseid(cp_fseid);
+  pgw_cfg.GetPfcpFseid(cp_fseid);
   cp_fseid.seid = ppc->seid;
   sx_ser->pfcp_ies.set(cp_fseid);
 
@@ -316,18 +326,6 @@ int modify_bearer_procedure::run(
     std::shared_ptr<pgwc::pgw_context> pc) {
   bool send_sx = false;
 
-  // TODO check if compatible with ongoing procedures if any
-  pfcp::node_id_t up_node_id = {};
-  if (not pfcp_associations::get_instance().select_up_node(
-          up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
-    // TODO
-    ::cause_t cause   = {};
-    cause.pce         = 1;
-    cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
-    resp->gtp_ies.set(cause);
-    return RETURNerror;
-  }
-
   //-------------------
   s5_trigger                       = req;
   s5_triggered_pending             = resp;
@@ -336,7 +334,7 @@ int modify_bearer_procedure::run(
       new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx_smr->seid       = ppc->up_fseid.seid;
   sx_smr->trxn_id    = this->trxn_id;
-  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
+  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.pfcp_.port);
   sx_triggered =
       std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
 
@@ -854,7 +852,7 @@ int release_access_bearers_procedure::run(
       new itti_sxab_session_modification_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx_smr->seid       = ppc->up_fseid.seid;
   sx_smr->trxn_id    = this->trxn_id;
-  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
+  sx_smr->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.pfcp_.port);
   sx_triggered =
       std::shared_ptr<itti_sxab_session_modification_request>(sx_smr);
 
@@ -967,16 +965,6 @@ int delete_session_procedure::run(
     std::shared_ptr<itti_s5s8_delete_session_response>& resp,
     std::shared_ptr<pgwc::pgw_context> pc) {
   // TODO check if compatible with ongoing procedures if any
-  pfcp::node_id_t up_node_id = {};
-  if (not pfcp_associations::get_instance().select_up_node(
-          up_node_id, NODE_SELECTION_CRITERIA_MIN_PFCP_SESSIONS)) {
-    // TODO
-    ::cause_t cause   = {};
-    cause.pce         = 1;
-    cause.cause_value = REMOTE_PEER_NOT_RESPONDING;
-    resp->gtp_ies.set(cause);
-    return RETURNerror;
-  }
 
   //-------------------
   s5_trigger                       = req;
@@ -986,7 +974,7 @@ int delete_session_procedure::run(
       new itti_sxab_session_deletion_request(TASK_PGWC_APP, TASK_PGWC_SX);
   sx->seid       = ppc->up_fseid.seid;
   sx->trxn_id    = this->trxn_id;
-  sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
+  sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.pfcp_.port);
   sx_triggered   = std::shared_ptr<itti_sxab_session_deletion_request>(sx);
 
   Logger::pgwc_app().info(
@@ -1066,7 +1054,7 @@ int downlink_data_report_procedure::run(
   s5->teid       = ppc->sgw_fteid_s5_s8_cp.teid_gre_key;
   s5->gtpc_tx_id = this->trxn_id;
   s5->r_endpoint =
-      endpoint(ppc->sgw_fteid_s5_s8_cp.ipv4_address, pgw_cfg.s5s8_cp.port);
+      endpoint(ppc->sgw_fteid_s5_s8_cp.ipv4_address, pgw_cfg.gtpv2c_.port);
   s5->gtp_ies.set(e);
   s5_triggered = std::shared_ptr<itti_s5s8_downlink_data_notification>(s5);
 
@@ -1108,7 +1096,7 @@ void downlink_data_report_procedure::handle_itti_msg(
       new itti_sxab_session_report_response(TASK_PGWC_APP, TASK_PGWC_SX);
   sx->seid       = ppc->up_fseid.seid;
   sx->trxn_id    = this->trxn_id;
-  sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.sx.port);
+  sx->r_endpoint = endpoint(ppc->up_fseid.ipv4_address, pgw_cfg.pfcp_.port);
   std::shared_ptr<itti_sxab_session_report_response> sx_triggered =
       std::shared_ptr<itti_sxab_session_report_response>(sx);
   sx->pfcp_ies.set(pfcp_cause);

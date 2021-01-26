@@ -687,6 +687,20 @@ struct up_function_features_s {
     frrt  = i.frrt;
     spare = i.spare;
   }
+  bool has_features() { return (bucp > 0) ||
+      (ddnd > 0) ||
+      (dlbd > 0) ||
+      (trst > 0) ||
+      (ftup > 0) ||
+      (pfdm > 0) ||
+      (heeu > 0) ||
+      (treu > 0) ||
+      (empu > 0) ||
+      (pdiu > 0) ||
+      (udbc > 0) ||
+      (quoac > 0) ||
+      (trace > 0) ||
+      (frrt > 0);}
 };
 // typedef struct up_function_features_s up_function_features_t;
 
@@ -879,6 +893,44 @@ struct node_id_s {
       return false;
     }
   };
+  bool operator==(const std::string& f) const {
+    if ((NODE_ID_TYPE_FQDN == this->node_id_type) &&
+        (fqdn.compare(f) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  bool operator==(const struct in_addr& a) const {
+    if ((NODE_ID_TYPE_IPV4_ADDRESS == this->node_id_type) &&
+        (a.s_addr == u1.ipv4_address.s_addr)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  bool operator==(const struct in6_addr& i) const {
+    if ((NODE_ID_TYPE_IPV6_ADDRESS == this->node_id_type) &&
+        (i.s6_addr32[0] == this->u1.ipv6_address.s6_addr32[0]) &&
+        (i.s6_addr32[1] == this->u1.ipv6_address.s6_addr32[1]) &&
+        (i.s6_addr32[2] == this->u1.ipv6_address.s6_addr32[2]) &&
+        (i.s6_addr32[3] == this->u1.ipv6_address.s6_addr32[3])) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+  std::string toString() const {
+    if (NODE_ID_TYPE_FQDN == this->node_id_type) {
+      return fqdn;
+    }
+    if (NODE_ID_TYPE_IPV4_ADDRESS == this->node_id_type) {
+      return conv::toString(u1.ipv4_address);
+    } else if (NODE_ID_TYPE_IPV6_ADDRESS == this->node_id_type) {
+      return conv::toString(u1.ipv6_address);
+    }
+    return std::string("Node id - unknown node id type");
+  }
 };
 typedef struct node_id_s node_id_t;
 //-------------------------------------
@@ -1064,6 +1116,7 @@ struct cp_function_features_s {
   cp_function_features_s() : spare(0), ovrl(0), load(0) {}
   cp_function_features_s(const cp_function_features_s& i)
       : spare(i.spare), ovrl(i.ovrl), load(i.load) {}
+  bool has_features() { return (ovrl > 0) || (load > 0);}
 };
 typedef struct cp_function_features_s cp_function_features_t;
 //-------------------------------------

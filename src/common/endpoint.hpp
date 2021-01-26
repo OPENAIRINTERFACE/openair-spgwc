@@ -70,7 +70,21 @@ class endpoint {
     return ntohs(((struct sockaddr_in*) &addr_storage)->sin_port);
   }
 
+  void set_port(uint16_t port) const {
+    ((struct sockaddr_in*) &addr_storage)->sin_port = htons(port);
+  }
+
   sa_family_t family() const { return addr_storage.ss_family; }
+
+  bool operator==(const endpoint& e) const {
+    if ((addr_storage_len == e.addr_storage_len) &&
+        (memcmp((const void*)&addr_storage,
+            (const void*)&e.addr_storage, addr_storage_len) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
 
   std::string toString() const {
     std::string str;
