@@ -28,7 +28,36 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM oai-spgwc:debug-3rd-party as centos8-spgwc-debug
+FROM centos:8 as centos8-spgwc-debug-3rd-party
+
+ARG HTTP_PROXY
+
+RUN yum update -y \
+  && yum install epel-release -y \
+  && yum install dnf-plugins-core -y \
+  && yum config-manager --set-enabled powertools \
+  && yum install -y \
+    psmisc \
+    git \
+    iptables \
+    ethtool \
+    glog \
+    double-conversion \
+    libevent \
+    boost-system \
+    # debugging
+    gdb \
+    valgrind \
+    diffutils \
+    iputils \
+    tree \
+    tcpdump \
+    wireshark-cli \
+    net-tools \
+    openssh-server \
+    procps-ng \  
+  && yum clean all -y \
+  && rm -rf /var/cache/yum
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
@@ -38,22 +67,6 @@ RUN git config --global http.sslverify false
 
 COPY ./ /openair-spgwc
 
-# Installing and Building SPGW-U
+# Installing and Building SPGW-C
 WORKDIR /openair-spgwc/build/scripts
-RUN ./build_spgwc --clean --build-type Debug --jobs --Verbose
-
-# Copying executable and generated libraries
-WORKDIR /openair-spgwc/bin
-RUN cp /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc \
-    && cp /openair-spgwc/scripts/entrypoint.sh . \
-    && cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.deb
-
-WORKDIR /openair-spgwc
-
-# expose ports
-EXPOSE 2123/udp 8805/udp
-
-
-CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.conf", "-o"]
-ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]
-
+RUN ./build_spgwc --install-deps --force

@@ -23,7 +23,7 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: "oai-spgwc-build-config"
+  name: "spgwc-debug-centos8-3dparty"
 spec:
     runPolicy: "Serial"
     source:
@@ -45,11 +45,8 @@ spec:
             destinationDir: rhsm-ca
     strategy:
         dockerStrategy:
-            dockerfilePath: "docker/Dockerfile.debug.centos8"
-            from:
-                kind: "ImageStreamTag"
-                name: "oai-spgwc:debug-3rd-party"
+            dockerfilePath: "docker/Dockerfile.debug.centos8.3dparty"
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:ue-mtu-1358"
+            name: "oai-spgwc:debug-centos8-3rd-party"

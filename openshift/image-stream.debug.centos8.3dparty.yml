@@ -18,38 +18,15 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-#---------------------------------------------------------------------
 #
-kind: BuildConfig
-apiVersion: build.openshift.io/v1
+apiVersion: v1
+kind: ImageStream
 metadata:
-  name: "oai-spgwc-build-config"
+    name: oai-spgwc
+    namespace: oai
+status:
+    tag: debug-centos8-3rd-party
 spec:
-    runPolicy: "Serial"
-    source:
-        git:
-            uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "ue-mtu-1358"
-            httpProxy: http://proxy.eurecom.fr:8080
-            httpsProxy: https://proxy.eurecom.fr:8080
-        secrets:
-          - secret:
-              name: etc-pki-entitlement
-            destinationDir: etc-pki-entitlement
-        configMaps:
-          - configMap:
-              name: rhsm-conf
-            destinationDir: rhsm-conf
-          - configMap:
-              name: rhsm-ca
-            destinationDir: rhsm-ca
-    strategy:
-        dockerStrategy:
-            dockerfilePath: "docker/Dockerfile.debug.centos8"
-            from:
-                kind: "ImageStreamTag"
-                name: "oai-spgwc:debug-3rd-party"
-    output:
-        to:
-            kind: "ImageStreamTag"
-            name: "oai-spgwc:ue-mtu-1358"
+    lookupPolicy:
+        local: true
+    
