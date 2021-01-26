@@ -29,7 +29,7 @@ spec:
     source:
         git:
             uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "ue-mtu-1358"
+            ref: "develop"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:
