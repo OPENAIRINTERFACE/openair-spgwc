@@ -562,7 +562,7 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
       : pfcp_ie(PFCP_IE_ENTERPRISE_SPECIFIC) {
     enterprise_id = b.enterprise_id;
     proprietary_data = b.proprietary_data;
-    tlv.set_length(2+proprietary_data.size());
+    tlv.set_length(2 + proprietary_data.size());
   }
   //--------
   pfcp_enterprise_specific_ie() : pfcp_ie(PFCP_IE_ENTERPRISE_SPECIFIC) {
@@ -576,10 +576,6 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
    enterprise_id(0),
    proprietary_data(){};
 
-  // explicit pfcp_enterprise_specific_ie(const uint16_t tlv_type) 
-  // : pfcp_ie(tlv_type),
-  //   enterprise_id(0),
-  //   proprietary_data(){};
   //--------
   void to_core_type(pfcp::enterprise_specific_t& b) {
     b.enterprise_id = enterprise_id;
@@ -588,28 +584,29 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
   //--------
   void dump_to(std::ostream& os) {
     tlv.dump_to(os);
-    auto be_enterprise_id = htobe16(enterprise_id);
-    os.write(reinterpret_cast<const char*>(&be_enterprise_id),
-              sizeof(be_enterprise_id));
+    os.write(reinterpret_cast<const char*>(&enterprise_id),
+        sizeof(enterprise_id));
+    os << enterprise_id;
   }
   //--------
   void load_from(std::istream& is) {
     // tlv.load_from(is);
-    if (tlv.get_length() != proprietary_data.size()) {
+    if (tlv.get_length() < 2) {
       throw pfcp_tlv_bad_length_exception(
           tlv.type, tlv.get_length(), __FILE__, __LINE__);
     }
     is.read(reinterpret_cast<char*>(&enterprise_id),
         sizeof(enterprise_id));
-    //enterprise_id = be16toh(enterprise_id);
-    if (tlv.get_length() != (proprietary_data.size())) {
+        
+    char e[tlv.get_length() - 2];
+    is.read(e, tlv.get_length() - 2);
+    proprietary_data.assign(e, tlv.get_length() - 2);
+
+    if (tlv.get_length() != (2 + proprietary_data.size())) {
       throw pfcp_tlv_bad_length_exception(
           tlv.type, tlv.get_length(), __FILE__, __LINE__);
     }
   
-  char e[enterprise_id];
-  is.read(e, enterprise_id);
-  proprietary_data.assign(e, enterprise_id);
   }
   //--------
   void to_core_type(pfcp_ies_container& s) {
