@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -euo pipefail
+set -uo pipefail
 
 CONFIG_DIR="/openair-spgwc/etc"
 PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
@@ -13,7 +13,7 @@ for c in ${CONFIG_DIR}/*.json; do
     # with the value of the environment variable "VAR"
     EXPRESSIONS=""
     for v in ${VARS}; do
-	NEW_VAR=`echo $v | sed -e "s#@##g"`
+        NEW_VAR=`echo $v | sed -e "s#@##g"`
         if [[ "${!NEW_VAR}x" == "x" ]]; then
             echo "Error: Environment variable '${NEW_VAR}' is not set." \
                 "Config file '$(basename $c)' requires all of $VARS."
