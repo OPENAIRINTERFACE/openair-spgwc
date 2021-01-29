@@ -1,0 +1,50 @@
+#!/bin/bash
+################################################################################
+# Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The OpenAirInterface Software Alliance licenses this file to You under
+# the Apache License, Version 2.0  (the "License"); you may not use this file
+# except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#-------------------------------------------------------------------------------
+# For more information about the OpenAirInterface (OAI) Software Alliance:
+#      contact@openairinterface.org
+################################################################################
+# file build_image.debug.centos8
+# brief
+# author Lionel Gauthier
+# company Eurecom
+# email: lionel.gauthier@eurecom.fr
+#
+
+set -o pipefail
+
+THIS_SCRIPT_PATH=$(dirname $(readlink -f $0))
+
+function main()
+{
+  oc apply -f $THIS_SCRIPT_PATH/build-config.debug.centos8.yml
+  if [[ $? -ne 0 ]]; then
+    echo "Error: oc apply -f $THIS_SCRIPT_PATH/build-config.debug.centos8.yml failed"
+    return 1
+  fi
+  oc apply -f $THIS_SCRIPT_PATH/image-stream.debug.centos8.yml
+  if [[ $? -ne 0 ]]; then
+    echo "Error: oc apply -f $THIS_SCRIPT_PATH/image-stream.debug.centos8.yml failed"
+    return 1
+  fi
+
+  oc start-build spgwc-debug-centos8 --follow
+  return $?
+}
+
+main "$@"

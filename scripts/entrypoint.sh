@@ -5,7 +5,7 @@ set -euo pipefail
 CONFIG_DIR="/openair-spgwc/etc"
 PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
 
-for c in ${CONFIG_DIR}/*.conf; do
+for c in ${CONFIG_DIR}/*.json; do
     # grep variable names (format: ${VAR}) from template to be rendered
     VARS=$(grep -oP '@[a-zA-Z0-9_]+@' ${c} | sort | uniq | xargs)
 
