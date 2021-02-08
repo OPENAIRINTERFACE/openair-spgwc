@@ -1,0 +1,5 @@
+# Any CI/CD artifact
+openair-spgwc.tar.bz2
+archives
+*-cfg.sh
+src/oai_rules_result*txt

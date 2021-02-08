@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,14 +39,14 @@
 #define LOCATION_AREA_IDENTIFICATION_IE_MAX_LENGTH 6
 
 #define INVALID_LAC_0000                                                       \
-  (uint16_t)0x0000 /*!< \brief  This LAC can be coded using a full hexadecimal \
-                      representation except for the following reserved                                             \
-                      hexadecimal values: 0000, and FFFE.   */
+  (uint16_t) 0x0000 /*!< \brief  This LAC can be coded using a full            \
+                       hexadecimal representation except for the following     \
+                       reserved hexadecimal values: 0000, and FFFE.   */
 
 #define INVALID_LAC_FFFE                                                       \
-  (uint16_t)0xFFFE /*!< \brief  This LAC can be coded using a full hexadecimal \
-                      representation except for the following reserved                                             \
-                      hexadecimal values: 0000, and FFFE.   */
+  (uint16_t) 0xFFFE /*!< \brief  This LAC can be coded using a full            \
+                       hexadecimal representation except for the following     \
+                       reserved hexadecimal values: 0000, and FFFE.   */
 
 //------------------------------------------------------------------------------
 // 10.5.6.3 Protocol configuration options
@@ -71,9 +71,9 @@
 // RESERVED                                                             (0x0006)
 #define PCO_CONTAINER_IDENTIFIER_DSMIPV6_HOME_AGENT_ADDRESS_REQUEST (0x0007)
 #define PCO_CONTAINER_IDENTIFIER_DSMIPV6_HOME_NETWORK_PREFIX_REQUEST (0x0008)
-#define PCO_CONTAINER_IDENTIFIER_DSMIPV6_IPV4_HOME_AGENT_ADDRESS_REQUEST \
+#define PCO_CONTAINER_IDENTIFIER_DSMIPV6_IPV4_HOME_AGENT_ADDRESS_REQUEST       \
   (0x0009)
-#define PCO_CONTAINER_IDENTIFIER_IP_ADDRESS_ALLOCATION_VIA_NAS_SIGNALLING \
+#define PCO_CONTAINER_IDENTIFIER_IP_ADDRESS_ALLOCATION_VIA_NAS_SIGNALLING      \
   (0x000A)
 #define PCO_CONTAINER_IDENTIFIER_IPV4_ADDRESS_ALLOCATION_VIA_DHCPV4 (0x000B)
 #define PCO_CONTAINER_IDENTIFIER_P_CSCF_IPV4_ADDRESS_REQUEST (0x000C)
@@ -81,7 +81,7 @@
 #define PCO_CONTAINER_IDENTIFIER_MSISDN_REQUEST (0x000E)
 #define PCO_CONTAINER_IDENTIFIER_IFOM_SUPPORT_REQUEST (0x000F)
 #define PCO_CONTAINER_IDENTIFIER_IPV4_LINK_MTU_REQUEST (0x0010)
-#define PCO_CONTAINER_IDENTIFIER_MS_SUPPORT_OF_LOCAL_ADDRESS_IN_TFT_INDICATOR \
+#define PCO_CONTAINER_IDENTIFIER_MS_SUPPORT_OF_LOCAL_ADDRESS_IN_TFT_INDICATOR  \
   (0X0011)
 #define PCO_CONTAINER_IDENTIFIER_P_CSCF_RE_SELECTION_SUPPORT (0X0012)
 #define PCO_CONTAINER_IDENTIFIER_NBIFOM_REQUEST_INDICATOR (0X0013)
@@ -89,7 +89,7 @@
 #define PCO_CONTAINER_IDENTIFIER_NON_IP_LINK_MTU_REQUEST (0X0015)
 #define PCO_CONTAINER_IDENTIFIER_APN_RATE_CONTROL_SUPPORT_INDICATOR (0X0016)
 #define PCO_CONTAINER_IDENTIFIER_3GPP_PS_DATA_OFF_UE_STATUS (0X0017)
-#define PCO_CONTAINER_IDENTIFIER_RELIABLE_DATA_SERVICE_REQUEST_INDICATOR \
+#define PCO_CONTAINER_IDENTIFIER_RELIABLE_DATA_SERVICE_REQUEST_INDICATOR       \
   (0X0018)
 #define PCO_CONTAINER_IDENTIFIER_ADDITIONAL_APN_RATE_CONTROL_FOR_EXCEPTION_DATA_SUPPORT_INDICATOR \
   (0X0019)
@@ -122,7 +122,7 @@
 #define PCO_CONTAINER_IDENTIFIER_NON_IP_LINK_MTU (0x0015)
 #define PCO_CONTAINER_IDENTIFIER_APN_RATE_CONTROL_PARAMETERS (0x0016)
 #define PCO_CONTAINER_IDENTIFIER_3GPP_PS_DATA_OFF_SUPPORT_INDICATION (0x0017)
-#define PCO_CONTAINER_IDENTIFIER_RELIABLE_DATA_SERVICE_ACCEPTED_INDICATOR \
+#define PCO_CONTAINER_IDENTIFIER_RELIABLE_DATA_SERVICE_ACCEPTED_INDICATOR      \
   (0x0018)
 #define PCO_CONTAINER_IDENTIFIER_ADDITIONAL_APN_RATE_CONTROL_FOR_EXCEPTION_DATA_PARAMETERS \
   (0x0019)
@@ -149,7 +149,7 @@ typedef struct protocol_configuration_options_s {
   uint8_t configuration_protocol : 3;
   uint8_t num_protocol_or_container_id;
   // arbitrary value, can be greater than defined (250/3)
-#define PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID 8
+#define PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID 30
   pco_protocol_or_container_id_t
       protocol_or_container_ids[PCO_UNSPEC_MAXIMUM_PROTOCOL_ID_OR_CONTAINER_ID];
 } protocol_configuration_options_t;
@@ -164,11 +164,11 @@ typedef struct protocol_configuration_options_s {
 typedef uint8_t packet_flow_identifier_t;
 
 int encode_packet_flow_identifier_ie(
-    packet_flow_identifier_t *packetflowidentifier, const bool iei_present,
-    uint8_t *buffer, const uint32_t len);
+    packet_flow_identifier_t* packetflowidentifier, const bool iei_present,
+    uint8_t* buffer, const uint32_t len);
 int decode_packet_flow_identifier_ie(
-    packet_flow_identifier_t *packetflowidentifier, const bool iei_present,
-    uint8_t *buffer, const uint32_t len);
+    packet_flow_identifier_t* packetflowidentifier, const bool iei_present,
+    uint8_t* buffer, const uint32_t len);
 
 //------------------------------------------------------------------------------
 // 10.5.6.12 Traffic Flow Template
@@ -325,7 +325,7 @@ typedef union {
 typedef struct parameter_s {
 #define PARAMETER_IDENTIFIER_AUTHORIZATION_TOKEN 0x01  // Authorization Token
 #define PARAMETER_IDENTIFIER_FLOW_IDENTIFIER 0x02      // Flow Identifier
-#define PARAMETER_IDENTIFIER_PACKET_FILTER_IDENTIFIER \
+#define PARAMETER_IDENTIFIER_PACKET_FILTER_IDENTIFIER                          \
   0x03  // Packet Filter Identifier
   uint8_t parameteridentifier;
   uint8_t length;
@@ -343,9 +343,9 @@ typedef struct traffic_flow_template_s {
 #define TRAFFIC_FLOW_TEMPLATE_OPCODE_CREATE_NEW_TFT 0b001
 #define TRAFFIC_FLOW_TEMPLATE_OPCODE_DELETE_EXISTING_TFT 0b010
 #define TRAFFIC_FLOW_TEMPLATE_OPCODE_ADD_PACKET_FILTER_TO_EXISTING_TFT 0b011
-#define TRAFFIC_FLOW_TEMPLATE_OPCODE_REPLACE_PACKET_FILTERS_IN_EXISTING_TFT \
+#define TRAFFIC_FLOW_TEMPLATE_OPCODE_REPLACE_PACKET_FILTERS_IN_EXISTING_TFT    \
   0b100
-#define TRAFFIC_FLOW_TEMPLATE_OPCODE_DELETE_PACKET_FILTERS_FROM_EXISTING_TFT \
+#define TRAFFIC_FLOW_TEMPLATE_OPCODE_DELETE_PACKET_FILTERS_FROM_EXISTING_TFT   \
   0b101
 #define TRAFFIC_FLOW_TEMPLATE_OPCODE_NO_TFT_OPERATION 0b110
 #define TRAFFIC_FLOW_TEMPLATE_OPCODE_RESERVED 0b111

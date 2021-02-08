@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -46,21 +46,21 @@
 typedef uint32_t teid_t;
 #define TEID_FMT "0x%" PRIx32
 #define TEID_SCAN_FMT SCNx32
-#define INVALID_TEID ((teid_t)0x00000000)
-#define UNASSIGNED_TEID ((teid_t)0x00000000)
+#define INVALID_TEID ((teid_t) 0x00000000)
+#define UNASSIGNED_TEID ((teid_t) 0x00000000)
 
 // SEIDs
 typedef uint64_t seid_t;
 #define SEID_FMT "0x%" PRIx64
 #define SEID_SCAN_FMT SCNx64
-#define INVALID_SEID ((seid_t)0x00000000)
-#define UNASSIGNED_SEID ((seid_t)0x00000000)
+#define INVALID_SEID ((seid_t) 0x00000000)
+#define UNASSIGNED_SEID ((seid_t) 0x00000000)
 
 //------------------------------------------------------------------------------
 // IMSI
 typedef uint64_t imsi64_t;
 #define IMSI_64_FMT "%" SCNu64
-#define INVALID_IMSI64 (imsi64_t)0
+#define INVALID_IMSI64 (imsi64_t) 0
 
 //------------------------------------------------------------------------------
 typedef uint64_t bitrate_t;

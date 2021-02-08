@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -50,69 +50,69 @@ class gtpv2c_ies_container {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CAUSE, __FILE__, __LINE__);
   }
   virtual bool get(recovery_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_RECOVERY_RESTART_COUNTER,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_RECOVERY_RESTART_COUNTER, __FILE__, __LINE__);
   }
   virtual bool get(apn_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_ACCESS_POINT_NAME, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_ACCESS_POINT_NAME, __FILE__, __LINE__);
   }
   virtual bool get(ambr_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE, __FILE__, __LINE__);
   }
   virtual bool get(ebi_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_EPS_BEARER_ID, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_EPS_BEARER_ID, __FILE__, __LINE__);
   }
   virtual bool get(ip_address_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_IP_ADDRESS, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_IP_ADDRESS, __FILE__, __LINE__);
   }
   virtual bool get(mei_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_MOBILE_EQUIPMENT_IDENTITY,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_MOBILE_EQUIPMENT_IDENTITY, __FILE__, __LINE__);
   }
   virtual bool get(msisdn_t& v, const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_MSISDN, __FILE__, __LINE__);
   }
   virtual bool get(indication_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_INDICATION, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_INDICATION, __FILE__, __LINE__);
   }
-  virtual bool get(protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_PROTOCOL_CONFIGURATION_OPTIONS, __FILE__, __LINE__);
   }
   virtual bool get(paa_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_PDN_ADDRESS_ALLOCATION,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_PDN_ADDRESS_ALLOCATION, __FILE__, __LINE__);
   }
   virtual bool get(bearer_qos_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_BEARER_QUALITY_OF_SERVICE,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_BEARER_QUALITY_OF_SERVICE, __FILE__, __LINE__);
   }
   virtual bool get(flow_qos_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_FLOW_QUALITY_OF_SERVICE,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_FLOW_QUALITY_OF_SERVICE, __FILE__, __LINE__);
   }
   virtual bool get(rat_type_t& v, const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_RAT_TYPE, __FILE__, __LINE__);
   }
   virtual bool get(serving_network_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_SERVING_NETWORK, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_SERVING_NETWORK, __FILE__, __LINE__);
   }
-  virtual bool get(traffic_flow_template_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      traffic_flow_template_t& v, const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_EPS_BEARER_LEVEL_TRAFFIC_FLOW_TEMPLATE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_TRAFFIC_AGGREGATE_DESCRIPTION
   virtual bool get(uli_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_USER_LOCATION_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_USER_LOCATION_INFORMATION, __FILE__, __LINE__);
   }
   virtual bool get(fteid_t& v, const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(
@@ -124,30 +124,30 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_S103_PDN_DATA_FORWARDING_INFO
   // TODO GTP_IE_S1U_DATA_FORWARDING_INFO
   virtual bool get(delay_value_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_DELAY_VALUE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_DELAY_VALUE, __FILE__, __LINE__);
   }
   virtual bool get(bearer_context& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_BEARER_CONTEXT, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_BEARER_CONTEXT, __FILE__, __LINE__);
   }
   virtual bool get(charging_id_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CHARGING_ID, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_CHARGING_ID, __FILE__, __LINE__);
   }
   // TODO GTP_IE_CHARGING_CHARACTERISTICS
   // TODO  GTP_IE_TRACE_INFORMATION
   virtual bool get(bearer_flags_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_BEARER_FLAGS, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_BEARER_FLAGS, __FILE__, __LINE__);
   }
   virtual bool get(pdn_type_t& v, const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_PDN_TYPE, __FILE__, __LINE__);
   }
-  virtual bool get(procedure_transaction_id_t& v,
-                   const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_PROCEDURE_TRANSACTION_ID,
-                                        __FILE__, __LINE__);
+  virtual bool get(
+      procedure_transaction_id_t& v, const uint8_t instance = 0) const {
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_PROCEDURE_TRANSACTION_ID, __FILE__, __LINE__);
   }
   // TODO GTP_IE_MM_CONTEXT_GSM_KEY_AND_TRIPLETS
   // TODO GTP_IE_MM_CONTEXT_UMTS_KEY_USED_CIPHER_AND_QUINTUPLETS
@@ -161,8 +161,8 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_P_TMSI_SIGNATURE
   // TODO GTP_IE_HOP_COUNTER
   virtual bool get(ue_time_zone_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_UE_TIME_ZONE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_UE_TIME_ZONE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_TRACE_REFERENCE
   // TODO GTP_IE_COMPLETE_REQUEST_MESSAGE
@@ -175,14 +175,14 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_RAB_CONTEXT
   // TODO GTP_IE_SOURCE_RNC_PDCP_CONTEXT_INFO
   // TODO  GTP_IE_PORT_NUMBER
-  virtual bool get(access_point_name_restriction_t& v,
-                   const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_APN_RESTRICTION, __FILE__,
-                                        __LINE__);
+  virtual bool get(
+      access_point_name_restriction_t& v, const uint8_t instance = 0) const {
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_APN_RESTRICTION, __FILE__, __LINE__);
   }
   virtual bool get(selection_mode_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_SELECTION_MODE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_SELECTION_MODE, __FILE__, __LINE__);
   }
   // TODO
   // TODO GTP_IE_SOURCE_IDENTIFICATION
@@ -193,8 +193,8 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_CHANNEL_NEEDED
   // TODO GTP_IE_EMLPP_PRIORITY
   virtual bool get(node_type_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_NODE_TYPE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_NODE_TYPE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_FULLY_QUALIFIED_DOMAIN_NAME
   // TODO GTP_IE_TRANSACTION_IDENTIFIER
@@ -206,29 +206,29 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_MBMS_DISTRIBUTION_ACKNOWLEDGE
   // TODO GTP_IE_RFSP_INDEX
   virtual bool get(uci_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_USER_CSG_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_USER_CSG_INFORMATION, __FILE__, __LINE__);
   }
   // TODO GTP_IE_CSG_REPORTING_ACTION
   // TODO GTP_IE_CSG_ID
   // TODO GTP_IE_CSG_MEMBERSHIP_INDICATION
   // TODO GTP_IE_SERVICE_INDICATOR
   // TODO GTP_IE_DETACH_TYPE
-  virtual bool get(local_distinguished_name_t& v,
-                   const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_LOCAL_DISTINGUISHED_NAME,
-                                        __FILE__, __LINE__);
+  virtual bool get(
+      local_distinguished_name_t& v, const uint8_t instance = 0) const {
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_LOCAL_DISTINGUISHED_NAME, __FILE__, __LINE__);
   }
   virtual bool get(node_features_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_NODE_FEATURES, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_NODE_FEATURES, __FILE__, __LINE__);
   }
   // TODO GTP_IE_MBMS_TIME_TO_DATA_TRANSFER
   // TODO GTP_IE_THROTTLING
   // TODO GTP_IE_ALLOCATION_RETENTION_PRIORITY
   virtual bool get(epc_timer_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_EPC_TIMER, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_EPC_TIMER, __FILE__, __LINE__);
   }
   // TODO GTP_IE_SIGNALLING_PRIORITY_INDICATION
   // TODO GTP_IE_TMGI
@@ -245,8 +245,8 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_ULI_TIMESTAMP
   // TODO GTP_IE_MBMS_FLAGS
   virtual bool get(ran_nas_cause_t& v, const uint8_t instance = 0) const {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_RAN_NAS_CAUSE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_RAN_NAS_CAUSE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_CN_OPERATOR_SELECTION_ENTITY
   // TODO GTP_IE_TRUSTED_WLAN_MODE_INDICATION
@@ -268,15 +268,17 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_REMOTE_UE_CONTEXT
   // TODO GTP_IE_REMOTE_USER_ID
   // TODO GTP_IE_REMOTE_UE_IP_INFORMATION
-  virtual bool get(ciot_optimizations_support_indication_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      ciot_optimizations_support_indication_t& v,
+      const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION, __FILE__, __LINE__);
   }
   // TODO GTP_IE_SCEF_PDN_CONNECTION
   // TODO GTP_IE_HEADER_COMPRESSION_CONFIGURATION
-  virtual bool get(extended_protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) const {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_EXTENDED_PROTOCOL_CONFIGURATION_OPTIONS, __FILE__, __LINE__);
   }
@@ -296,69 +298,69 @@ class gtpv2c_ies_container {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CAUSE, __FILE__, __LINE__);
   }
   virtual void set(const recovery_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_RECOVERY_RESTART_COUNTER,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_RECOVERY_RESTART_COUNTER, __FILE__, __LINE__);
   }
   virtual void set(const apn_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_ACCESS_POINT_NAME, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_ACCESS_POINT_NAME, __FILE__, __LINE__);
   }
   virtual void set(const ambr_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_AGGREGATE_MAXIMUM_BIT_RATE, __FILE__, __LINE__);
   }
   virtual void set(const ebi_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_EPS_BEARER_ID, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_EPS_BEARER_ID, __FILE__, __LINE__);
   }
   virtual void set(const ip_address_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_IP_ADDRESS, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_IP_ADDRESS, __FILE__, __LINE__);
   }
   virtual void set(const mei_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_MOBILE_EQUIPMENT_IDENTITY,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_MOBILE_EQUIPMENT_IDENTITY, __FILE__, __LINE__);
   }
   virtual void set(const msisdn_t& v, const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_MSISDN, __FILE__, __LINE__);
   }
   virtual void set(const indication_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_INDICATION, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_INDICATION, __FILE__, __LINE__);
   }
-  virtual void set(const protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) {
+  virtual void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_PROTOCOL_CONFIGURATION_OPTIONS, __FILE__, __LINE__);
   }
   virtual void set(const paa_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_PDN_ADDRESS_ALLOCATION,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_PDN_ADDRESS_ALLOCATION, __FILE__, __LINE__);
   }
   virtual void set(const bearer_qos_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_BEARER_QUALITY_OF_SERVICE,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_BEARER_QUALITY_OF_SERVICE, __FILE__, __LINE__);
   }
   virtual void set(const flow_qos_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_FLOW_QUALITY_OF_SERVICE,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_FLOW_QUALITY_OF_SERVICE, __FILE__, __LINE__);
   }
   virtual void set(const rat_type_t& v, const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_RAT_TYPE, __FILE__, __LINE__);
   }
   virtual void set(const serving_network_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_SERVING_NETWORK, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_SERVING_NETWORK, __FILE__, __LINE__);
   }
-  virtual void set(const traffic_flow_template_t& v,
-                   const uint8_t instance = 0) {
+  virtual void set(
+      const traffic_flow_template_t& v, const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_EPS_BEARER_LEVEL_TRAFFIC_FLOW_TEMPLATE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_TRAFFIC_AGGREGATE_DESCRIPTION
   virtual void set(const uli_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_USER_LOCATION_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_USER_LOCATION_INFORMATION, __FILE__, __LINE__);
   }
   virtual void set(const fteid_t& v, const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(
@@ -370,30 +372,30 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_S103_PDN_DATA_FORWARDING_INFO
   // TODO GTP_IE_S1U_DATA_FORWARDING_INFO
   virtual void set(const delay_value_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_DELAY_VALUE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_DELAY_VALUE, __FILE__, __LINE__);
   }
   virtual void set(const bearer_context& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_BEARER_CONTEXT, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_BEARER_CONTEXT, __FILE__, __LINE__);
   }
   virtual void set(const charging_id_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_CHARGING_ID, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_CHARGING_ID, __FILE__, __LINE__);
   }
   // TODO GTP_IE_CHARGING_CHARACTERISTICS
   // TODO  GTP_IE_TRACE_INFORMATION
   virtual void set(const bearer_flags_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_BEARER_FLAGS, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_BEARER_FLAGS, __FILE__, __LINE__);
   }
   virtual void set(const pdn_type_t& v, const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(0, GTP_IE_PDN_TYPE, __FILE__, __LINE__);
   }
-  virtual void set(const procedure_transaction_id_t& v,
-                   const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_PROCEDURE_TRANSACTION_ID,
-                                        __FILE__, __LINE__);
+  virtual void set(
+      const procedure_transaction_id_t& v, const uint8_t instance = 0) {
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_PROCEDURE_TRANSACTION_ID, __FILE__, __LINE__);
   }
   // TODO GTP_IE_MM_CONTEXT_GSM_KEY_AND_TRIPLETS
   // TODO GTP_IE_MM_CONTEXT_UMTS_KEY_USED_CIPHER_AND_QUINTUPLETS
@@ -407,8 +409,8 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_P_TMSI_SIGNATURE
   // TODO GTP_IE_HOP_COUNTER
   virtual void set(const ue_time_zone_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_UE_TIME_ZONE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_UE_TIME_ZONE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_TRACE_REFERENCE
   // TODO GTP_IE_COMPLETE_REQUEST_MESSAGE
@@ -421,14 +423,14 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_RAB_CONTEXT
   // TODO GTP_IE_SOURCE_RNC_PDCP_CONTEXT_INFO
   // TODO  GTP_IE_PORT_NUMBER
-  virtual void set(const access_point_name_restriction_t& v,
-                   const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_APN_RESTRICTION, __FILE__,
-                                        __LINE__);
+  virtual void set(
+      const access_point_name_restriction_t& v, const uint8_t instance = 0) {
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_APN_RESTRICTION, __FILE__, __LINE__);
   }
   virtual void set(const selection_mode_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_SELECTION_MODE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_SELECTION_MODE, __FILE__, __LINE__);
   }
   // TODO
   // TODO GTP_IE_SOURCE_IDENTIFICATION
@@ -439,8 +441,8 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_CHANNEL_NEEDED
   // TODO GTP_IE_EMLPP_PRIORITY
   virtual void set(const node_type_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_NODE_TYPE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_NODE_TYPE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_FULLY_QUALIFIED_DOMAIN_NAME
   // TODO GTP_IE_TRANSACTION_IDENTIFIER
@@ -452,29 +454,29 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_MBMS_DISTRIBUTION_ACKNOWLEDGE
   // TODO GTP_IE_RFSP_INDEX
   virtual void set(const uci_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_USER_CSG_INFORMATION,
-                                        __FILE__, __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_USER_CSG_INFORMATION, __FILE__, __LINE__);
   }
   // TODO GTP_IE_CSG_REPORTING_ACTION
   // TODO GTP_IE_CSG_ID
   // TODO GTP_IE_CSG_MEMBERSHIP_INDICATION
   // TODO GTP_IE_SERVICE_INDICATOR
   // TODO GTP_IE_DETACH_TYPE
-  virtual void set(const local_distinguished_name_t& v,
-                   const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_LOCAL_DISTINGUISHED_NAME,
-                                        __FILE__, __LINE__);
+  virtual void set(
+      const local_distinguished_name_t& v, const uint8_t instance = 0) {
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_LOCAL_DISTINGUISHED_NAME, __FILE__, __LINE__);
   }
   virtual void set(const node_features_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_NODE_FEATURES, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_NODE_FEATURES, __FILE__, __LINE__);
   }
   // TODO GTP_IE_MBMS_TIME_TO_DATA_TRANSFER
   // TODO GTP_IE_THROTTLING
   // TODO GTP_IE_ALLOCATION_RETENTION_PRIORITY
   virtual void set(const epc_timer_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_EPC_TIMER, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_EPC_TIMER, __FILE__, __LINE__);
   }
   // TODO GTP_IE_SIGNALLING_PRIORITY_INDICATION
   // TODO GTP_IE_TMGI
@@ -491,8 +493,8 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_ULI_TIMESTAMP
   // TODO GTP_IE_MBMS_FLAGS
   virtual void set(const ran_nas_cause_t& v, const uint8_t instance = 0) {
-    throw gtpc_msg_illegal_ie_exception(0, GTP_IE_RAN_NAS_CAUSE, __FILE__,
-                                        __LINE__);
+    throw gtpc_msg_illegal_ie_exception(
+        0, GTP_IE_RAN_NAS_CAUSE, __FILE__, __LINE__);
   }
   // TODO GTP_IE_CN_OPERATOR_SELECTION_ENTITY
   // TODO GTP_IE_TRUSTED_WLAN_MODE_INDICATION
@@ -514,15 +516,17 @@ class gtpv2c_ies_container {
   // TODO GTP_IE_REMOTE_UE_CONTEXT
   // TODO GTP_IE_REMOTE_USER_ID
   // TODO GTP_IE_REMOTE_UE_IP_INFORMATION
-  virtual void set(const ciot_optimizations_support_indication_t& v,
-                   const uint8_t instance = 0) {
+  virtual void set(
+      const ciot_optimizations_support_indication_t& v,
+      const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_CIOT_OPTIMIZATIONS_SUPPORT_INDICATION, __FILE__, __LINE__);
   }
   // TODO GTP_IE_SCEF_PDN_CONNECTION
   // TODO GTP_IE_HEADER_COMPRESSION_CONFIGURATION
-  virtual void set(const extended_protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) {
+  virtual void set(
+      const extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) {
     throw gtpc_msg_illegal_ie_exception(
         0, GTP_IE_EXTENDED_PROTOCOL_CONFIGURATION_OPTIONS, __FILE__, __LINE__);
   }
@@ -595,50 +599,51 @@ class bearer_context : public gtpv2c_ies_container {
 
   // virtual ~bearer_context() {};
   virtual void set(const ebi_t& v, const uint8_t instance = 0) {
-    eps_bearer_id.first = true;
+    eps_bearer_id.first  = true;
     eps_bearer_id.second = v;
   }
-  virtual void set(const traffic_flow_template_t& v,
-                   const uint8_t instance = 0) {
-    tft.first = true;
+  virtual void set(
+      const traffic_flow_template_t& v, const uint8_t instance = 0) {
+    tft.first  = true;
     tft.second = v;
   }
   virtual void set(const fteid_t& v, const uint8_t instance = 0) {
     if (instance < BEARER_CONTEXT_MAX_FTEID_INSTANCES) {
       fteid[instance].second = v;
-      fteid[instance].first = true;
+      fteid[instance].first  = true;
     } else {
       throw gtpc_tlv_bad_instance_exception(GTP_IE_BEARER_CONTEXT, instance);
     }
   }
   virtual void set(const bearer_qos_t& v, const uint8_t instance = 0) {
-    bearer_level_qos.first = true;
+    bearer_level_qos.first  = true;
     bearer_level_qos.second = v;
   }
   virtual void set(const cause_t& v, const uint8_t instance = 0) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   virtual void set(const charging_id_t& v, const uint8_t instance = 0) {
-    charging_id.first = true;
+    charging_id.first  = true;
     charging_id.second = v;
   }
   virtual void set(const bearer_flags_t& v, const uint8_t instance = 0) {
-    bearer_flags.first = true;
+    bearer_flags.first  = true;
     bearer_flags.second = v;
   }
-  virtual void set(const protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) {
-    pco.first = true;
+  virtual void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
+    pco.first  = true;
     pco.second = v;
   }
-  virtual void set(const extended_protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) {
-    epco.first = true;
+  virtual void set(
+      const extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) {
+    epco.first  = true;
     epco.second = v;
   }
   virtual void set(const ran_nas_cause_t& v, const uint8_t instance = 0) {
-    ran_nas_cause.first = true;
+    ran_nas_cause.first  = true;
     ran_nas_cause.second = v;
   }
 
@@ -649,8 +654,8 @@ class bearer_context : public gtpv2c_ies_container {
     }
     return false;
   }
-  virtual bool get(traffic_flow_template_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      traffic_flow_template_t& v, const uint8_t instance = 0) const {
     if (tft.first) {
       v = tft.second;
       return true;
@@ -693,16 +698,17 @@ class bearer_context : public gtpv2c_ies_container {
     }
     return false;
   }
-  virtual bool get(protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     if (pco.first) {
       v = pco.second;
       return true;
     }
     return false;
   }
-  virtual bool get(extended_protocol_configuration_options_t& v,
-                   const uint8_t instance = 0) const {
+  virtual bool get(
+      extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) const {
     if (epco.first) {
       v = epco.second;
       return true;
@@ -723,27 +729,27 @@ class bearer_context_to_be_created_within_create_session_request
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_TFT \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S1_U_ENB_FTEID \
-  ((uint64_t)1 << 2)
+  ((uint64_t) 1 << 2)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S4_U_SGSN_FTEID \
-  ((uint64_t)1 << 3)
+  ((uint64_t) 1 << 3)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S5_S8_U_SGW_FTEID \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S5_S8_U_PGW_FTEID \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 5)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S12_RNC_FTEID \
-  ((uint64_t)1 << 6)
+  ((uint64_t) 1 << 6)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S2B_U_EPDG_FTEID \
-  ((uint64_t)1 << 7)
+  ((uint64_t) 1 << 7)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S2A_U_TWAN_FTEID \
-  ((uint64_t)1 << 8)
+  ((uint64_t) 1 << 8)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_BEARER_LEVEL_QOS \
-  ((uint64_t)1 << 9)
+  ((uint64_t) 1 << 9)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S11_U_MME_FTEID \
-  ((uint64_t)1 << 10)
+  ((uint64_t) 1 << 10)
   ebi_t eps_bearer_id;  ///< EBI,  Mandatory CSR
   traffic_flow_template_t
       tft;  ///< Bearer TFT, Optional CSR, This IE may be included on the S4/S11
@@ -984,18 +990,18 @@ class bearer_context_to_be_created_within_create_session_request
   }
 
   bearer_context_to_be_created_within_create_session_request() {
-    ie_presence_mask = 0;
-    eps_bearer_id = {};
-    tft = {};
-    s1_u_enb_fteid = {};
-    s4_u_sgsn_fteid = {};
+    ie_presence_mask  = 0;
+    eps_bearer_id     = {};
+    tft               = {};
+    s1_u_enb_fteid    = {};
+    s4_u_sgsn_fteid   = {};
     s5_s8_u_sgw_fteid = {};
     s5_s8_u_pgw_fteid = {};
-    s12_rnc_fteid = {};
-    s2b_u_epdg_fteid = {};
-    s2a_u_twan_fteid = {};
-    bearer_level_qos = {};
-    s11_u_mme_fteid = {};
+    s12_rnc_fteid     = {};
+    s2b_u_epdg_fteid  = {};
+    s2a_u_twan_fteid  = {};
+    bearer_level_qos  = {};
+    s11_u_mme_fteid   = {};
   }
 
   explicit bearer_context_to_be_created_within_create_session_request(
@@ -1042,16 +1048,16 @@ class bearer_context_to_be_removed_within_create_session_request {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_TO_BE_REMOVED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_REMOVED_WITHIN_CREATE_SESSION_REQUEST_PR_IE_S4_U_SGSN_FTEID \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
   ebi_t eps_bearer_id;      ///< EPS Bearer ID, Mandatory
   fteid_t s4_u_sgsn_fteid;  ///< S4-U SGSN F-TEID, Conditional , redundant
 
   bearer_context_to_be_removed_within_create_session_request() {
     ie_presence_mask = 0;
-    eps_bearer_id = {};
-    s4_u_sgsn_fteid = {};
+    eps_bearer_id    = {};
+    s4_u_sgsn_fteid  = {};
   }
   explicit bearer_context_to_be_removed_within_create_session_request(
       const bearer_context& b)
@@ -1113,95 +1119,96 @@ class bearer_context_to_be_removed_within_create_session_request {
 
 class gtpv2c_create_session_request : public gtpv2c_ies_container {
  public:
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_IMSI ((uint64_t)1)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MSISDN ((uint64_t)1 << 1)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MEI ((uint64_t)1 << 2)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ULI ((uint64_t)1 << 3)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SERVING_NETWORK ((uint64_t)1 << 4)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_RAT_TYPE ((uint64_t)1 << 5)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t)1 << 6)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE \
-  ((uint64_t)1 << 7)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_IMSI ((uint64_t) 1)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MSISDN ((uint64_t) 1 << 1)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MEI ((uint64_t) 1 << 2)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ULI ((uint64_t) 1 << 3)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SERVING_NETWORK ((uint64_t) 1 << 4)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_RAT_TYPE ((uint64_t) 1 << 5)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t) 1 << 6)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE     \
+  ((uint64_t) 1 << 7)
 #define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PGW_S5S8_ADDRESS_FOR_CONTROL_PLANE \
-  ((uint64_t)1 << 8)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN ((uint64_t)1 << 9)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SELECTION_MODE ((uint64_t)1 << 10)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PDN_TYPE ((uint64_t)1 << 11)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PAA ((uint64_t)1 << 12)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_RESTRICTION ((uint64_t)1 << 13)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_AMBR ((uint64_t)1 << 14)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID \
-  ((uint64_t)1 << 15)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TRUSTED_WLAN_MODE_INDICATION \
-  ((uint64_t)1 << 16)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PCO ((uint64_t)1 << 17)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_CREATED \
-  ((uint64_t)1 << 18)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_REMOVED \
-  ((uint64_t)1 << 19)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TRACE_INFORMATION \
-  ((uint64_t)1 << 20)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_RECOVERY ((uint64_t)1 << 21)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_FQ_CSID ((uint64_t)1 << 22)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_FQ_CSID ((uint64_t)1 << 23)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_FQ_CSID ((uint64_t)1 << 24)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_FQ_CSID ((uint64_t)1 << 25)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_TIME_ZONE ((uint64_t)1 << 26)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UCI ((uint64_t)1 << 27)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_CHARGING_CHARACTERISTICS \
-  ((uint64_t)1 << 28)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_S4_SGSN_LDN ((uint64_t)1 << 29)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_LDN ((uint64_t)1 << 30)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_LDN ((uint64_t)1 << 31)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_LDN ((uint64_t)1 << 32)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SIGNALLING_PRIORITY_INDICATION \
-  ((uint64_t)1 << 33)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS \
-  ((uint64_t)1 << 34)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_UDP_PORT ((uint64_t)1 << 35)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APCO ((uint64_t)1 << 36)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_HENB_LOCAL_IP_ADDRESS \
-  ((uint64_t)1 << 37)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_HENB_UDP_PORT ((uint64_t)1 << 38)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_S4_SGSN_IDENTIFIER \
-  ((uint64_t)1 << 39)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_IDENTIFIER ((uint64_t)1 << 40)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_IP_ADDRESS ((uint64_t)1 << 41)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_CN_OPERATOR_SELECTION_ENTITY \
-  ((uint64_t)1 << 42)
+  ((uint64_t) 1 << 8)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN ((uint64_t) 1 << 9)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SELECTION_MODE ((uint64_t) 1 << 10)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PDN_TYPE ((uint64_t) 1 << 11)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PAA ((uint64_t) 1 << 12)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_RESTRICTION ((uint64_t) 1 << 13)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APN_AMBR ((uint64_t) 1 << 14)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID               \
+  ((uint64_t) 1 << 15)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TRUSTED_WLAN_MODE_INDICATION       \
+  ((uint64_t) 1 << 16)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PCO ((uint64_t) 1 << 17)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_CREATED      \
+  ((uint64_t) 1 << 18)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_REMOVED      \
+  ((uint64_t) 1 << 19)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TRACE_INFORMATION                  \
+  ((uint64_t) 1 << 20)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_RECOVERY ((uint64_t) 1 << 21)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_FQ_CSID ((uint64_t) 1 << 22)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_FQ_CSID ((uint64_t) 1 << 23)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_FQ_CSID ((uint64_t) 1 << 24)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_FQ_CSID ((uint64_t) 1 << 25)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_TIME_ZONE ((uint64_t) 1 << 26)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UCI ((uint64_t) 1 << 27)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_CHARGING_CHARACTERISTICS           \
+  ((uint64_t) 1 << 28)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_S4_SGSN_LDN ((uint64_t) 1 << 29)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_LDN ((uint64_t) 1 << 30)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_LDN ((uint64_t) 1 << 31)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_LDN ((uint64_t) 1 << 32)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SIGNALLING_PRIORITY_INDICATION     \
+  ((uint64_t) 1 << 33)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS                \
+  ((uint64_t) 1 << 34)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_UDP_PORT ((uint64_t) 1 << 35)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_APCO ((uint64_t) 1 << 36)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_HENB_LOCAL_IP_ADDRESS              \
+  ((uint64_t) 1 << 37)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_HENB_UDP_PORT ((uint64_t) 1 << 38)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MME_S4_SGSN_IDENTIFIER             \
+  ((uint64_t) 1 << 39)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_IDENTIFIER ((uint64_t) 1 << 40)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPDG_IP_ADDRESS ((uint64_t) 1 << 41)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_CN_OPERATOR_SELECTION_ENTITY       \
+  ((uint64_t) 1 << 42)
 #define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PRESENCE_REPORTING_AREA_INFORMATION \
-  ((uint64_t)1 << 43)
+  ((uint64_t) 1 << 43)
 #define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MMES4_SGSN_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 44)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 45)
+  ((uint64_t) 1 << 44)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION   \
+  ((uint64_t) 1 << 45)
 #define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_TWAN_EPDG_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 46)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ORIGINATION_TIME_STAMP \
-  ((uint64_t)1 << 47)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MAXIMUM_WAIT_TIME \
-  ((uint64_t)1 << 48)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_INFORMATION \
-  ((uint64_t)1 << 49)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_TIMESTAMP \
-  ((uint64_t)1 << 50)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_NBIFOM_CONTAINER ((uint64_t)1 << 51)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_REMOTE_UE_CONTEXT_CONNECTED \
-  ((uint64_t)1 << 52)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_3GPP_AAA_SERVER_IDENTIFIER \
-  ((uint64_t)1 << 53)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPCO ((uint64_t)1 << 54)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SERVING_PLMN_RATE_CONTROL \
-  ((uint64_t)1 << 55)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MO_EXCEPTION_DATA_COUNTER \
-  ((uint64_t)1 << 56)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_TCP_PORT ((uint64_t)1 << 57)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MAPPED_UE_USAGE_TYPE \
-  ((uint64_t)1 << 58)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ULI_FOR_SGW ((uint64_t)1 << 59)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_U_NODE_NAME ((uint64_t)1 << 60)
-#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PRIVATE_EXTENSION \
-  ((uint64_t)1 << 61)
+  ((uint64_t) 1 << 46)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ORIGINATION_TIME_STAMP             \
+  ((uint64_t) 1 << 47)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MAXIMUM_WAIT_TIME                  \
+  ((uint64_t) 1 << 48)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_INFORMATION          \
+  ((uint64_t) 1 << 49)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_TIMESTAMP            \
+  ((uint64_t) 1 << 50)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_NBIFOM_CONTAINER                   \
+  ((uint64_t) 1 << 51)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_REMOTE_UE_CONTEXT_CONNECTED        \
+  ((uint64_t) 1 << 52)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_3GPP_AAA_SERVER_IDENTIFIER         \
+  ((uint64_t) 1 << 53)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_EPCO ((uint64_t) 1 << 54)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SERVING_PLMN_RATE_CONTROL          \
+  ((uint64_t) 1 << 55)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MO_EXCEPTION_DATA_COUNTER          \
+  ((uint64_t) 1 << 56)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_UE_TCP_PORT ((uint64_t) 1 << 57)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_MAPPED_UE_USAGE_TYPE               \
+  ((uint64_t) 1 << 58)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_ULI_FOR_SGW ((uint64_t) 1 << 59)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SGW_U_NODE_NAME ((uint64_t) 1 << 60)
+#define GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PRIVATE_EXTENSION                  \
+  ((uint64_t) 1 << 61)
   static const uint8_t msg_id = GTP_CREATE_SESSION_REQUEST;
   uint64_t ie_presence_mask;
 
@@ -1695,8 +1702,8 @@ class gtpv2c_create_session_request : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     if (ie_presence_mask & GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PCO) {
       v = pco;
       return true;
@@ -1831,8 +1838,8 @@ class gtpv2c_create_session_request : public gtpv2c_ies_container {
     ie_presence_mask |=
         GTPV2C_CREATE_SESSION_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE;
   }
-  void set_pgw_s5s8_address_for_cp(const fteid_t& v,
-                                   const uint8_t instance = 0) {
+  void set_pgw_s5s8_address_for_cp(
+      const fteid_t& v, const uint8_t instance = 0) {
     pgw_s5s8_address_for_cp = v;
     ie_presence_mask |=
         GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PGW_S5S8_ADDRESS_FOR_CONTROL_PLANE;
@@ -1866,8 +1873,8 @@ class gtpv2c_create_session_request : public gtpv2c_ies_container {
     ie_presence_mask |=
         GTPV2C_CREATE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |= GTPV2C_CREATE_SESSION_REQUEST_PR_IE_PCO;
   }
@@ -1962,29 +1969,29 @@ class bearer_context_created_within_create_session_response {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_CAUSE \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S1_U_SGW_FTEID \
-  ((uint64_t)1 << 2)
+  ((uint64_t) 1 << 2)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S4_U_SGW_FTEID \
-  ((uint64_t)1 << 3)
+  ((uint64_t) 1 << 3)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S5_S8_U_PGW_FTEID \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S12_SGW_FTEID \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 5)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S2B_U_PGW_FTEID \
-  ((uint64_t)1 << 6)
+  ((uint64_t) 1 << 6)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S2A_U_PGW_FTEID \
-  ((uint64_t)1 << 7)
+  ((uint64_t) 1 << 7)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S5_S8_BEARER_LEVEL_QOS \
-  ((uint64_t)1 << 8)
+  ((uint64_t) 1 << 8)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_CHARGING_ID \
-  ((uint64_t)1 << 9)
+  ((uint64_t) 1 << 9)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_BEARER_FLAGS \
-  ((uint64_t)1 << 10)
+  ((uint64_t) 1 << 10)
 #define GTPV2C_BEARER_CONTEXT_CREATED_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_S11_U_SGW_FTEID \
-  ((uint64_t)1 << 11)
+  ((uint64_t) 1 << 11)
   ebi_t eps_bearer_id;
   cause_t cause;
   fteid_t s1_u_sgw_fteid;
@@ -2211,19 +2218,19 @@ class bearer_context_created_within_create_session_response {
   }
 
   bearer_context_created_within_create_session_response() {
-    ie_presence_mask = 0;
-    eps_bearer_id = {};
-    cause = {};
-    s1_u_sgw_fteid = {};
-    s4_u_sgw_fteid = {};
+    ie_presence_mask  = 0;
+    eps_bearer_id     = {};
+    cause             = {};
+    s1_u_sgw_fteid    = {};
+    s4_u_sgw_fteid    = {};
     s5_s8_u_pgw_fteid = {};
-    s12_sgw_fteid = {};
-    s2b_u_pgw_fteid = {};
-    s2a_u_pgw_fteid = {};
-    bearer_level_qos = {};
-    charging_id = {};
-    bearer_flags = {};
-    s11_u_sgw_fteid = {};
+    s12_sgw_fteid     = {};
+    s2b_u_pgw_fteid   = {};
+    s2a_u_pgw_fteid   = {};
+    bearer_level_qos  = {};
+    charging_id       = {};
+    bearer_flags      = {};
+    s11_u_sgw_fteid   = {};
   }
   explicit bearer_context_created_within_create_session_response(
       const bearer_context& b)
@@ -2272,9 +2279,9 @@ class bearer_context_marked_for_removal_within_create_session_response {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_MARKED_FOR_REMOVAL_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_MARKED_FOR_REMOVAL_WITHIN_CREATE_SESSION_RESPONSE_PR_IE_CAUSE \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
   ebi_t eps_bearer_id;  ///< EPS Bearer ID, Mandatory
   cause_t cause;
   void set(const ebi_t& v, const uint8_t instance = 0) {
@@ -2289,8 +2296,8 @@ class bearer_context_marked_for_removal_within_create_session_response {
   }
   bearer_context_marked_for_removal_within_create_session_response() {
     ie_presence_mask = 0;
-    eps_bearer_id = {};
-    cause = {};
+    eps_bearer_id    = {};
+    cause            = {};
   }
   bool get(ebi_t& v, const uint8_t instance = 0) const {
     if (ie_presence_mask &
@@ -2425,8 +2432,9 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
   ///< SGW. If SGW receives the PCO IE, SGW shall forward it
   ///< MME/SGSN.
 
-  std::pair<bool,
-            std::vector<bearer_context_created_within_create_session_response>>
+  std::pair<
+      bool,
+      std::vector<bearer_context_created_within_create_session_response>>
       bearer_contexts_created;  ///< EPS bearers corresponding to Bearer
                                 ///< Contexts sent in
   ///< request message. Several IEs with the same type and
@@ -2565,8 +2573,9 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
     std::swap(linked_eps_bearer_id, other.linked_eps_bearer_id);
     std::swap(pco, other.pco);
     std::swap(bearer_contexts_created, other.bearer_contexts_created);
-    std::swap(bearer_contexts_marked_for_removal,
-              other.bearer_contexts_marked_for_removal);
+    std::swap(
+        bearer_contexts_marked_for_removal,
+        other.bearer_contexts_marked_for_removal);
     std::swap(pgw_fq_csid, other.pgw_fq_csid);
     std::swap(sgw_fq_csid, other.sgw_fq_csid);
     std::swap(sgw_ldn, other.sgw_ldn);
@@ -2625,8 +2634,8 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     if (pco.first) {
       v = pco.second;
       return true;
@@ -2710,8 +2719,8 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
         return get_pgw_ldn(v);
         break;
       default:
-        throw gtpc_tlv_bad_instance_exception(GTP_IE_LOCAL_DISTINGUISHED_NAME,
-                                              instance);
+        throw gtpc_tlv_bad_instance_exception(
+            GTP_IE_LOCAL_DISTINGUISHED_NAME, instance);
     }
   }
   bool has_bearer_context_created() const {
@@ -2728,36 +2737,36 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
   }
 
   void set(const cause_t& v, const uint8_t instance = 0) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set_sender_fteid_for_cp(const fteid_t& v) {
-    sender_fteid_for_cp.first = true;
+    sender_fteid_for_cp.first  = true;
     sender_fteid_for_cp.second = v;
   }
   void set_s5_s8_pgw_fteid(const fteid_t& v) {
-    s5_s8_pgw_fteid.first = true;
+    s5_s8_pgw_fteid.first  = true;
     s5_s8_pgw_fteid.second = v;
   }
   void set(const paa_t& v, const uint8_t instance = 0) {
-    paa.first = true;
+    paa.first  = true;
     paa.second = v;
   }
   void set(const apn_restriction_t& v, const uint8_t instance = 0) {
-    apn_restriction.first = true;
+    apn_restriction.first  = true;
     apn_restriction.second = v;
   }
   void set(const ambr_t& v, const uint8_t instance = 0) {
-    apn_ambr.first = true;
+    apn_ambr.first  = true;
     apn_ambr.second = v;
   }
   void set(const ebi_t& v, const uint8_t instance = 0) {
-    linked_eps_bearer_id.first = true;
+    linked_eps_bearer_id.first  = true;
     linked_eps_bearer_id.second = v;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
-    pco.first = true;
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
+    pco.first  = true;
     pco.second = v;
   }
   void add_bearer_context_created(
@@ -2772,27 +2781,27 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
     bearer_contexts_marked_for_removal.first = true;
   }
   void set_pgw_fq_csid(const fq_csid_t& v) {
-    pgw_fq_csid.first = true;
+    pgw_fq_csid.first  = true;
     pgw_fq_csid.second = v;
   }
   void set_sgw_fq_csid(const fq_csid_t& v) {
-    sgw_fq_csid.first = true;
+    sgw_fq_csid.first  = true;
     sgw_fq_csid.second = v;
   }
   void set_sgw_ldn(const local_distinguished_name_t& v) {
-    sgw_ldn.first = true;
+    sgw_ldn.first  = true;
     sgw_ldn.second = v;
   }
   void set_pgw_ldn(const local_distinguished_name_t& v) {
-    pgw_ldn.first = true;
+    pgw_ldn.first  = true;
     pgw_ldn.second = v;
   }
   void set(const epc_timer_t& v, const uint8_t instance = 0) {
-    pgw_back_off_time.first = true;
+    pgw_back_off_time.first  = true;
     pgw_back_off_time.second = v;
   }
   void set(const indication_t& v, const uint8_t instance = 0) {
-    indication_flags.first = true;
+    indication_flags.first  = true;
     indication_flags.second = v;
   }
   void set(const fteid_t& v, const uint8_t instance = 0) {
@@ -2829,8 +2838,8 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
         set_pgw_ldn(v);
         break;
       default:
-        throw gtpc_tlv_bad_instance_exception(GTP_IE_LOCAL_DISTINGUISHED_NAME,
-                                              instance);
+        throw gtpc_tlv_bad_instance_exception(
+            GTP_IE_LOCAL_DISTINGUISHED_NAME, instance);
     }
   }
   void set(const bearer_context& v, const uint8_t instance = 0) {
@@ -2849,35 +2858,35 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
   }
 
   void clear_cause(const uint8_t instance = 0) {
-    cause.first = false;
+    cause.first  = false;
     cause.second = {};
   }
   void clear_sender_fteid_for_cp() {
-    sender_fteid_for_cp.first = false;
+    sender_fteid_for_cp.first  = false;
     sender_fteid_for_cp.second = {};
   }
   void clear_s5_s8_pgw_fteid() {
-    s5_s8_pgw_fteid.first = false;
+    s5_s8_pgw_fteid.first  = false;
     s5_s8_pgw_fteid.second = {};
   }
   void clear_paa(const uint8_t instance = 0) {
-    paa.first = false;
+    paa.first  = false;
     paa.second = {};
   }
   void clear_apn_restriction(const uint8_t instance = 0) {
-    apn_restriction.first = false;
+    apn_restriction.first  = false;
     apn_restriction.second = {};
   }
   void clear_apn_ambr(const uint8_t instance = 0) {
-    apn_ambr.first = false;
+    apn_ambr.first  = false;
     apn_ambr.second = {};
   }
   void clear_linked_eps_bearer_id(const uint8_t instance = 0) {
-    linked_eps_bearer_id.first = false;
+    linked_eps_bearer_id.first  = false;
     linked_eps_bearer_id.second = {};
   }
   void clear_pco(const uint8_t instance = 0) {
-    pco.first = false;
+    pco.first  = false;
     pco.second = {};
   }
   void clear_bearer_context_created() {
@@ -2889,27 +2898,27 @@ class gtpv2c_create_session_response : public gtpv2c_ies_container {
     bearer_contexts_marked_for_removal.first = false;
   }
   void clear_pgw_fq_csid() {
-    pgw_fq_csid.first = false;
+    pgw_fq_csid.first  = false;
     pgw_fq_csid.second = {};
   }
   void clear_sgw_fq_csid() {
-    sgw_fq_csid.first = false;
+    sgw_fq_csid.first  = false;
     sgw_fq_csid.second = {};
   }
   void clear_sgw_ldn() {
-    sgw_ldn.first = false;
+    sgw_ldn.first  = false;
     sgw_ldn.second = {};
   }
   void clear_pgw_ldn() {
-    pgw_ldn.first = false;
+    pgw_ldn.first  = false;
     pgw_ldn.second = {};
   }
   void clear_pgw_back_off_time(const uint8_t instance = 0) {
-    pgw_back_off_time.first = false;
+    pgw_back_off_time.first  = false;
     pgw_back_off_time.second = {};
   }
   void clear_indication_flags(const uint8_t instance = 0) {
-    indication_flags.first = false;
+    indication_flags.first  = false;
     indication_flags.second = {};
   }
 };
@@ -2948,11 +2957,11 @@ class gtpv2c_echo_request : public gtpv2c_ies_container {
     return false;
   }
   void set(const recovery_t& v) {
-    recovery_restart_counter.first = true;
+    recovery_restart_counter.first  = true;
     recovery_restart_counter.second = v;
   }
   void set(const node_features_t& v) {
-    sending_node_features.first = true;
+    sending_node_features.first  = true;
     sending_node_features.second = v;
   }
 };
@@ -2994,11 +3003,11 @@ class gtpv2c_echo_response : public gtpv2c_ies_container {
     return false;
   }
   void set(const recovery_t& v) {
-    recovery_restart_counter.first = true;
+    recovery_restart_counter.first  = true;
     recovery_restart_counter.second = v;
   }
   void set(const node_features_t& v) {
-    sending_node_features.first = true;
+    sending_node_features.first  = true;
     sending_node_features.second = v;
   }
 };
@@ -3023,31 +3032,31 @@ class bearer_context_to_be_created_within_create_bearer_request {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_TFT \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_S1_U_SGW_FTEID \
-  ((uint64_t)1 << 2)
+  ((uint64_t) 1 << 2)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_S5_S8_U_PGW_FTEID \
-  ((uint64_t)1 << 3)
+  ((uint64_t) 1 << 3)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_S12_SGW_FTEID \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_S4_U_SGW_FTEID \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 5)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_S2B_U_PGW_FTEID \
-  ((uint64_t)1 << 6)
+  ((uint64_t) 1 << 6)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_S2A_U_PGW_FTEID \
-  ((uint64_t)1 << 7)
+  ((uint64_t) 1 << 7)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_BEARER_LEVEL_QOS \
-  ((uint64_t)1 << 9)
+  ((uint64_t) 1 << 9)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_CHARGING_ID \
-  ((uint64_t)1 << 10)
+  ((uint64_t) 1 << 10)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_BEARER_FLAGS \
-  ((uint64_t)1 << 11)
+  ((uint64_t) 1 << 11)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_PCO \
-  ((uint64_t)1 << 12)
+  ((uint64_t) 1 << 12)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_EPCO \
-  ((uint64_t)1 << 13)
+  ((uint64_t) 1 << 13)
   ebi_t eps_bearer_id;          ///< EBI,  Mandatory
   traffic_flow_template_t tft;  ///< Bearer TFT, Mandatory.
   fteid_t s1_u_sgw_fteid;
@@ -3116,14 +3125,15 @@ class bearer_context_to_be_created_within_create_bearer_request {
     ie_presence_mask |=
         GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_BEARER_FLAGS;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |=
         GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_PCO;
   }
-  void set(const extended_protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) {
     epco = v;
     ie_presence_mask |=
         GTPV2C_BEARER_CONTEXT_TO_BE_CREATED_WITHIN_CREATE_BEARER_REQUEST_PR_IE_EPCO;
@@ -3154,20 +3164,20 @@ class bearer_context_to_be_created_within_create_bearer_request {
     }
   }
   bearer_context_to_be_created_within_create_bearer_request() {
-    ie_presence_mask = 0;
-    eps_bearer_id = {};
-    tft = {};
-    s1_u_sgw_fteid = {};
+    ie_presence_mask  = 0;
+    eps_bearer_id     = {};
+    tft               = {};
+    s1_u_sgw_fteid    = {};
     s5_s8_u_pgw_fteid = {};
-    s12_sgw_fteid = {};
-    s4_u_sgw_fteid = {};
-    s2b_u_pgw_fteid = {};
-    s2a_u_pgw_fteid = {};
-    bearer_level_qos = {};
-    charging_id = {};
-    bearer_flags = {};
-    pco = {};
-    epco = {};
+    s12_sgw_fteid     = {};
+    s4_u_sgw_fteid    = {};
+    s2b_u_pgw_fteid   = {};
+    s2a_u_pgw_fteid   = {};
+    bearer_level_qos  = {};
+    charging_id       = {};
+    bearer_flags      = {};
+    pco               = {};
+    epco              = {};
   }
 
   explicit bearer_context_to_be_created_within_create_bearer_request(
@@ -3219,13 +3229,13 @@ class bearer_context_to_be_created_within_create_bearer_request {
 class gtpv2c_create_bearer_request : public gtpv2c_ies_container {
  public:
   gtpv2c_create_bearer_request() {
-    ie_presence_mask = 0;
+    ie_presence_mask             = 0;
     pti.procedure_transaction_id = 0;
-    linked_eps_bearer_id.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
-    pco = {};
+    linked_eps_bearer_id.ebi     = EPS_BEARER_IDENTITY_UNASSIGNED;
+    pco                          = {};
     // bearer_contexts = {};
-    pgw_fq_csid = {};
-    sgw_fq_csid = {};
+    pgw_fq_csid      = {};
+    sgw_fq_csid      = {};
     indication_flags = {};
   }
   gtpv2c_create_bearer_request(const gtpv2c_create_bearer_request& i)
@@ -3252,35 +3262,36 @@ class gtpv2c_create_bearer_request : public gtpv2c_ies_container {
 
   static const char* get_msg_name() { return "CREATE_BEARER_REQUEST"; };
 
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PROCEDURE_TRANSACTION_IDENTIFIER \
-  ((uint64_t)1)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_LINKED_EPS_BEARER_ID \
-  ((uint64_t)1 << 1)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PCO ((uint64_t)1 << 2)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS ((uint64_t)1 << 3)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PGW_FQ_CSID ((uint64_t)1 << 4)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_SGW_FQ_CSID ((uint64_t)1 << 5)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_CHANGE_REPORTING_ACTION \
-  ((uint64_t)1 << 6)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_CSG_INFORMATION_REPORTING_ACTION \
-  ((uint64_t)1 << 7)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_HENB_INFORMATION_REPORTING \
-  ((uint64_t)1 << 8)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PRESENCE_REPORTING_AREA_ACTION \
-  ((uint64_t)1 << 9)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t)1 << 10)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PROCEDURE_TRANSACTION_IDENTIFIER    \
+  ((uint64_t) 1)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_LINKED_EPS_BEARER_ID                \
+  ((uint64_t) 1 << 1)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PCO ((uint64_t) 1 << 2)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS ((uint64_t) 1 << 3)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PGW_FQ_CSID ((uint64_t) 1 << 4)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_SGW_FQ_CSID ((uint64_t) 1 << 5)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_CHANGE_REPORTING_ACTION             \
+  ((uint64_t) 1 << 6)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_CSG_INFORMATION_REPORTING_ACTION    \
+  ((uint64_t) 1 << 7)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_HENB_INFORMATION_REPORTING          \
+  ((uint64_t) 1 << 8)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PRESENCE_REPORTING_AREA_ACTION      \
+  ((uint64_t) 1 << 9)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t) 1 << 10)
 #define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PGW_NODE_LEVEL_LOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 11)
+  ((uint64_t) 1 << 11)
 #define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PGW_APN_LEVEL_LOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 12)
+  ((uint64_t) 1 << 12)
 #define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_SGW_NODE_LEVEL_LOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 13)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 14)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 15)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_NBIFOM_CONTAINER ((uint64_t)1 << 16)
-#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PRIVATE_EXTENSION ((uint64_t)1 << 17)
+  ((uint64_t) 1 << 13)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PGW_OVERLOAD_CONTROL_INFORMATION    \
+  ((uint64_t) 1 << 14)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION    \
+  ((uint64_t) 1 << 15)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_NBIFOM_CONTAINER ((uint64_t) 1 << 16)
+#define GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PRIVATE_EXTENSION                   \
+  ((uint64_t) 1 << 17)
 
   static const uint8_t msg_id = GTP_CREATE_BEARER_REQUEST;
   uint64_t ie_presence_mask;
@@ -3339,13 +3350,14 @@ class gtpv2c_create_bearer_request : public gtpv2c_ies_container {
     linked_eps_bearer_id = v;
     ie_presence_mask |= GTPV2C_CREATE_BEARER_REQUEST_PR_IE_LINKED_EPS_BEARER_ID;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |= GTPV2C_CREATE_BEARER_REQUEST_PR_IE_PCO;
   }
-  void set(const bearer_context_to_be_created_within_create_bearer_request& v,
-           const uint8_t instance = 0) {
+  void set(
+      const bearer_context_to_be_created_within_create_bearer_request& v,
+      const uint8_t instance = 0) {
     bearer_contexts.push_back(v);
     ie_presence_mask |= GTPV2C_CREATE_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS;
   }
@@ -3418,39 +3430,39 @@ class bearer_context_within_create_bearer_response {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
-#define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_CAUSE \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1)
+#define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_CAUSE        \
+  ((uint64_t) 1 << 1)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S1_U_ENB_FTEID \
-  ((uint64_t)1 << 2)
+  ((uint64_t) 1 << 2)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S1_U_SGW_FTEID \
-  ((uint64_t)1 << 3)
+  ((uint64_t) 1 << 3)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S5_S8_U_SGW_FTEID \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S5_S8_U_PGW_FTEID \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 5)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S12_RNC_FTEID \
-  ((uint64_t)1 << 6)
+  ((uint64_t) 1 << 6)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S12_SGW_FTEID \
-  ((uint64_t)1 << 7)
+  ((uint64_t) 1 << 7)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S4_U_SGSN_FTEID \
-  ((uint64_t)1 << 8)
+  ((uint64_t) 1 << 8)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S4_U_SGW_FTEID \
-  ((uint64_t)1 << 9)
+  ((uint64_t) 1 << 9)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S2B_U_EPDG_FTEID \
-  ((uint64_t)1 << 10)
+  ((uint64_t) 1 << 10)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S2B_U_PGW_FTEID \
-  ((uint64_t)1 << 11)
+  ((uint64_t) 1 << 11)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S2A_U_TWAN_FTEID \
-  ((uint64_t)1 << 12)
+  ((uint64_t) 1 << 12)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S2A_U_PGW_FTEID \
-  ((uint64_t)1 << 13)
-#define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_PCO \
-  ((uint64_t)1 << 14)
+  ((uint64_t) 1 << 13)
+#define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_PCO          \
+  ((uint64_t) 1 << 14)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_RAN_NAS_CAUSE \
-  ((uint64_t)1 << 15)
-#define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_EPCO \
-  ((uint64_t)1 << 16)
+  ((uint64_t) 1 << 15)
+#define GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_EPCO         \
+  ((uint64_t) 1 << 16)
   //----------------------------------------------------------------------------
   ebi_t eps_bearer_id;
   cause_t cause;
@@ -3539,14 +3551,15 @@ class bearer_context_within_create_bearer_response {
     ie_presence_mask |=
         GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_S2A_U_PGW_FTEID;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |=
         GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_PCO;
   }
-  void set(const extended_protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) {
     epco = v;
     ie_presence_mask |=
         GTPV2C_BEARER_CONTEXT_WITHIN_CREATE_BEARER_RESPONSE_PR_IE_EPCO;
@@ -3595,23 +3608,23 @@ class bearer_context_within_create_bearer_response {
     }
   }
   bearer_context_within_create_bearer_response() {
-    ie_presence_mask = 0;
-    eps_bearer_id = {};
-    cause = {};
-    s1_u_enb_fteid = {};
-    s1_u_sgw_fteid = {};
+    ie_presence_mask  = 0;
+    eps_bearer_id     = {};
+    cause             = {};
+    s1_u_enb_fteid    = {};
+    s1_u_sgw_fteid    = {};
     s5_s8_u_sgw_fteid = {};
     s5_s8_u_pgw_fteid = {};
-    s12_rnc_fteid = {};
-    s12_sgw_fteid = {};
-    s4_u_sgsn_fteid = {};
-    s4_u_sgw_fteid = {};
-    s2b_u_epdg_fteid = {};
-    s2b_u_pgw_fteid = {};
-    s2a_u_twan_fteid = {};
-    s2a_u_pgw_fteid = {};
-    pco = {};
-    epco = {};
+    s12_rnc_fteid     = {};
+    s12_sgw_fteid     = {};
+    s4_u_sgsn_fteid   = {};
+    s4_u_sgw_fteid    = {};
+    s2b_u_epdg_fteid  = {};
+    s2b_u_pgw_fteid   = {};
+    s2a_u_twan_fteid  = {};
+    s2a_u_pgw_fteid   = {};
+    pco               = {};
+    epco              = {};
   }
 
   explicit bearer_context_within_create_bearer_response(const bearer_context& b)
@@ -3711,38 +3724,39 @@ class gtpv2c_create_bearer_response : public gtpv2c_ies_container {
 
   static const char* get_msg_name() { return "CREATE_BEARER_RESPONSE"; };
 
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_CAUSE ((uint64_t)1)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_BEARER_CONTEXTS ((uint64_t)1 << 1)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_RECOVERY ((uint64_t)1 << 2)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_MME_FQ_CSID ((uint64_t)1 << 3)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_SGW_FQ_CSID ((uint64_t)1 << 4)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_EPDG_FQ_CSID ((uint64_t)1 << 5)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_TWAN_FQ_CSID ((uint64_t)1 << 6)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_PCO ((uint64_t)1 << 7)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_TIME_ZONE ((uint64_t)1 << 8)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_ULI ((uint64_t)1 << 9)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_TWAN_IDENTIFIER ((uint64_t)1 << 10)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_CAUSE ((uint64_t) 1)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_BEARER_CONTEXTS ((uint64_t) 1 << 1)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_RECOVERY ((uint64_t) 1 << 2)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_MME_FQ_CSID ((uint64_t) 1 << 3)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_SGW_FQ_CSID ((uint64_t) 1 << 4)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_EPDG_FQ_CSID ((uint64_t) 1 << 5)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_TWAN_FQ_CSID ((uint64_t) 1 << 6)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_PCO ((uint64_t) 1 << 7)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_TIME_ZONE ((uint64_t) 1 << 8)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_ULI ((uint64_t) 1 << 9)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_TWAN_IDENTIFIER ((uint64_t) 1 << 10)
 #define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_MMES4_SGSN_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 11)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 12)
+  ((uint64_t) 1 << 11)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION   \
+  ((uint64_t) 1 << 12)
 #define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_PRESENCE_REPORTING_AREA_INFORMATION \
-  ((uint64_t)1 << 13)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_MME_S4_SGSN_IDENTIFIER \
-  ((uint64_t)1 << 14)
+  ((uint64_t) 1 << 13)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_MME_S4_SGSN_IDENTIFIER             \
+  ((uint64_t) 1 << 14)
 #define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_TWAN_EPDG_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 15)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_WLAN_LOCATION_INFORMATION \
-  ((uint64_t)1 << 16)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_WLAN_LOCATION_TIMESTAMP \
-  ((uint64_t)1 << 17)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_LOCAL_IP_ADDRESS \
-  ((uint64_t)1 << 18)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_UDP_PORT ((uint64_t)1 << 19)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_NBIFOM_CONTAINER ((uint64_t)1 << 20)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_TCP_PORT ((uint64_t)1 << 21)
-#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_PRIVATE_EXTENSION \
-  ((uint64_t)1 << 22)
+  ((uint64_t) 1 << 15)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_WLAN_LOCATION_INFORMATION          \
+  ((uint64_t) 1 << 16)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_WLAN_LOCATION_TIMESTAMP            \
+  ((uint64_t) 1 << 17)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_LOCAL_IP_ADDRESS                \
+  ((uint64_t) 1 << 18)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_UDP_PORT ((uint64_t) 1 << 19)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_NBIFOM_CONTAINER                   \
+  ((uint64_t) 1 << 20)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_UE_TCP_PORT ((uint64_t) 1 << 21)
+#define GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_PRIVATE_EXTENSION                  \
+  ((uint64_t) 1 << 22)
 
   static const uint8_t msg_id = GTP_CREATE_BEARER_RESPONSE;
   uint64_t ie_presence_mask;
@@ -3818,8 +3832,8 @@ class gtpv2c_create_bearer_response : public gtpv2c_ies_container {
     twan_fq_csid = v;
     ie_presence_mask |= GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_TWAN_FQ_CSID;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |= GTPV2C_CREATE_BEARER_RESPONSE_PR_IE_PCO;
   }
@@ -3878,17 +3892,17 @@ class bearer_context_to_be_modified_within_modify_bearer_request {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_S1_U_ENB_FTEID \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_S5_S8_U_SGW_FTEID \
-  ((uint64_t)1 << 2)
+  ((uint64_t) 1 << 2)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_S12_RNC_FTEID \
-  ((uint64_t)1 << 3)
+  ((uint64_t) 1 << 3)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_S4_U_SGSN_FTEID \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_BEARER_CONTEXT_TO_BE_MODIFIED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_S11_U_MME_FTEID \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 5)
   ebi_t eps_bearer_id;
   fteid_t s1_u_enb_fteid;
   fteid_t s5_s8_u_sgw_fteid;
@@ -3977,13 +3991,13 @@ class bearer_context_to_be_modified_within_modify_bearer_request {
   }
 
   bearer_context_to_be_modified_within_modify_bearer_request() {
-    ie_presence_mask = 0;
-    eps_bearer_id = {};
-    s1_u_enb_fteid = {};
+    ie_presence_mask  = 0;
+    eps_bearer_id     = {};
+    s1_u_enb_fteid    = {};
     s5_s8_u_sgw_fteid = {};
-    s12_rnc_fteid = {};
-    s4_u_sgsn_fteid = {};
-    s11_u_mme_fteid = {};
+    s12_rnc_fteid     = {};
+    s4_u_sgsn_fteid   = {};
+    s11_u_mme_fteid   = {};
   }
 
   explicit bearer_context_to_be_modified_within_modify_bearer_request(
@@ -4020,7 +4034,7 @@ class bearer_context_to_be_removed_within_modify_bearer_request {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_TO_BE_REMOVED_WITHIN_MODIFY_BEARER_REQUEST_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
   ebi_t eps_bearer_id;
 
   void set(const ebi_t& v, const uint8_t instance = 0) {
@@ -4030,7 +4044,7 @@ class bearer_context_to_be_removed_within_modify_bearer_request {
   }
   bearer_context_to_be_removed_within_modify_bearer_request() {
     ie_presence_mask = 0;
-    eps_bearer_id = {};
+    eps_bearer_id    = {};
   }
 
   explicit bearer_context_to_be_removed_within_modify_bearer_request(
@@ -4060,7 +4074,7 @@ class gtpv2c_modify_bearer_request : public gtpv2c_ies_container {
         sgw_fq_csid(),
         uci(),
         imsi() {
-    rat_type.rat_type = RAT_TYPE_E_UTRAN;
+    rat_type.rat_type                     = RAT_TYPE_E_UTRAN;
     delay_dl_packet_notif_req.delay_value = 0;
   }
   gtpv2c_modify_bearer_request(const gtpv2c_modify_bearer_request& i)
@@ -4092,10 +4106,10 @@ class gtpv2c_modify_bearer_request : public gtpv2c_ies_container {
     std::swap(sender_fteid_for_cp, other.sender_fteid_for_cp);
     std::swap(apn_ambr, other.apn_ambr);
     std::swap(delay_dl_packet_notif_req, other.delay_dl_packet_notif_req);
-    std::swap(bearer_contexts_to_be_modified,
-              other.bearer_contexts_to_be_modified);
-    std::swap(bearer_contexts_to_be_removed,
-              other.bearer_contexts_to_be_removed);
+    std::swap(
+        bearer_contexts_to_be_modified, other.bearer_contexts_to_be_modified);
+    std::swap(
+        bearer_contexts_to_be_removed, other.bearer_contexts_to_be_removed);
     std::swap(ue_time_zone, other.ue_time_zone);
     std::swap(mme_fq_csid, other.mme_fq_csid);
     std::swap(sgw_fq_csid, other.sgw_fq_csid);
@@ -4106,52 +4120,53 @@ class gtpv2c_modify_bearer_request : public gtpv2c_ies_container {
 
   static const char* get_msg_name() { return "MODIFY_BEARER_REQUEST"; };
 
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MEI ((uint64_t)1)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_ULI ((uint64_t)1 << 1)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SERVING_NETWORK ((uint64_t)1 << 2)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_RAT_TYPE ((uint64_t)1 << 3)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t)1 << 4)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE \
-  ((uint64_t)1 << 5)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_APN_AMBR ((uint64_t)1 << 6)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MEI ((uint64_t) 1)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_ULI ((uint64_t) 1 << 1)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SERVING_NETWORK ((uint64_t) 1 << 2)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_RAT_TYPE ((uint64_t) 1 << 3)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t) 1 << 4)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE      \
+  ((uint64_t) 1 << 5)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_APN_AMBR ((uint64_t) 1 << 6)
 #define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_DELAY_DOWNLINK_PACKET_NOTIFICATION_REQUEST \
-  ((uint64_t)1 << 7)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_MODIFIED \
-  ((uint64_t)1 << 8)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_REMOVED \
-  ((uint64_t)1 << 9)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_RECOVERY ((uint64_t)1 << 10)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UE_TIME_ZONE ((uint64_t)1 << 11)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MME_FQ_CSID ((uint64_t)1 << 12)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SGW_FQ_CSID ((uint64_t)1 << 13)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UCI ((uint64_t)1 << 14)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS \
-  ((uint64_t)1 << 15)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UE_UDP_PORT ((uint64_t)1 << 16)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MME_S4_SGSN_LDN ((uint64_t)1 << 17)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SGW_LDN ((uint64_t)1 << 18)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_HENB_LOCAL_IP_ADDRESS \
-  ((uint64_t)1 << 19)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_HENB_UDP_PORT ((uint64_t)1 << 20)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MME_S4_SGSN_IDENTIFIER \
-  ((uint64_t)1 << 21)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_CN_OPERATOR_SELECTION_ENTITY \
-  ((uint64_t)1 << 22)
+  ((uint64_t) 1 << 7)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_MODIFIED      \
+  ((uint64_t) 1 << 8)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_BEARER_CONTEXTS_TO_BE_REMOVED       \
+  ((uint64_t) 1 << 9)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_RECOVERY ((uint64_t) 1 << 10)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UE_TIME_ZONE ((uint64_t) 1 << 11)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MME_FQ_CSID ((uint64_t) 1 << 12)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SGW_FQ_CSID ((uint64_t) 1 << 13)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UCI ((uint64_t) 1 << 14)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS                 \
+  ((uint64_t) 1 << 15)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_UE_UDP_PORT ((uint64_t) 1 << 16)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MME_S4_SGSN_LDN ((uint64_t) 1 << 17)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SGW_LDN ((uint64_t) 1 << 18)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_HENB_LOCAL_IP_ADDRESS               \
+  ((uint64_t) 1 << 19)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_HENB_UDP_PORT ((uint64_t) 1 << 20)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MME_S4_SGSN_IDENTIFIER              \
+  ((uint64_t) 1 << 21)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_CN_OPERATOR_SELECTION_ENTITY        \
+  ((uint64_t) 1 << 22)
 #define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_PRESENCE_REPORTING_AREA_INFORMATION \
-  ((uint64_t)1 << 23)
+  ((uint64_t) 1 << 23)
 #define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MMES4_SGSN_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 24)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 25)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_EPDG_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 26)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SERVING_PLMN_RATE_CONTROL \
-  ((uint64_t)1 << 27)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MO_EXCEPTION_DATA_COUNTER \
-  ((uint64_t)1 << 28)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_IMSI ((uint64_t)1 << 29)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_ULI_FOR_SGW ((uint64_t)1 << 30)
-#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_PRIVATE_EXTENSION ((uint64_t)1 << 34)
+  ((uint64_t) 1 << 24)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION    \
+  ((uint64_t) 1 << 25)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_EPDG_OVERLOAD_CONTROL_INFORMATION   \
+  ((uint64_t) 1 << 26)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_SERVING_PLMN_RATE_CONTROL           \
+  ((uint64_t) 1 << 27)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_MO_EXCEPTION_DATA_COUNTER           \
+  ((uint64_t) 1 << 28)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_IMSI ((uint64_t) 1 << 29)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_ULI_FOR_SGW ((uint64_t) 1 << 30)
+#define GTPV2C_MODIFY_BEARER_REQUEST_PR_IE_PRIVATE_EXTENSION                   \
+  ((uint64_t) 1 << 34)
 
   static const uint8_t msg_id = GTP_MODIFY_BEARER_REQUEST;
   uint64_t ie_presence_mask;
@@ -4622,23 +4637,23 @@ class bearer_context_modified_within_modify_bearer_response {
   std::pair<bool, fteid_t> s11_u_sgw_fteid;
 
   void set(const ebi_t& v, const uint8_t instance = 0) {
-    eps_bearer_id.first = true;
+    eps_bearer_id.first  = true;
     eps_bearer_id.second = v;
   }
   void set(const cause_t& v, const uint8_t instance = 0) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set_s1_u_sgw_fteid(const fteid_t& v, const uint8_t instance = 0) {
-    s1_u_sgw_fteid.first = true;
+    s1_u_sgw_fteid.first  = true;
     s1_u_sgw_fteid.second = v;
   }
   void set_s12_sgw_fteid(const fteid_t& v, const uint8_t instance = 0) {
-    s12_sgw_fteid.first = true;
+    s12_sgw_fteid.first  = true;
     s12_sgw_fteid.second = v;
   }
   void set_s4_u_sgw_fteid(const fteid_t& v, const uint8_t instance = 0) {
-    s4_u_sgw_fteid.first = true;
+    s4_u_sgw_fteid.first  = true;
     s4_u_sgw_fteid.second = v;
   }
 
@@ -4732,11 +4747,11 @@ class bearer_context_marked_for_removal_within_modify_bearer_response {
   std::pair<bool, cause_t> cause;
 
   void set(const ebi_t& v, const uint8_t instance = 0) {
-    eps_bearer_id.first = true;
+    eps_bearer_id.first  = true;
     eps_bearer_id.second = v;
   }
   void set(const cause_t& v, const uint8_t instance = 0) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
 
@@ -4815,8 +4830,9 @@ class gtpv2c_modify_bearer_response : public gtpv2c_ies_container {
     std::swap(apn_restriction, other.apn_restriction);
     std::swap(pco, other.pco);
     std::swap(bearer_contexts_modified, other.bearer_contexts_modified);
-    std::swap(bearer_contexts_marked_for_removal,
-              other.bearer_contexts_marked_for_removal);
+    std::swap(
+        bearer_contexts_marked_for_removal,
+        other.bearer_contexts_marked_for_removal);
     std::swap(pgw_fq_csid, other.pgw_fq_csid);
     std::swap(sgw_fq_csid, other.sgw_fq_csid);
     std::swap(indication_flags, other.indication_flags);
@@ -4861,8 +4877,9 @@ class gtpv2c_modify_bearer_response : public gtpv2c_ies_container {
   ///< GERAN to the E-UTRAN. See NOTE 2:
   ///< If MME receives the IE, but no NAS message is sent, MME discards the IE.
 
-  std::pair<bool,
-            std::vector<bearer_context_modified_within_modify_bearer_response>>
+  std::pair<
+      bool,
+      std::vector<bearer_context_modified_within_modify_bearer_response>>
       bearer_contexts_modified;  ///< EPS bearers corresponding to Bearer
                                  ///< Contexts to be
   ///< modified that were sent in Modify Bearer Request
@@ -4943,25 +4960,25 @@ class gtpv2c_modify_bearer_response : public gtpv2c_ies_container {
   // Private Extension Private Extension        ///< optional
 
   void set(const cause_t& v, const uint8_t instance = 0) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const msisdn_t& v, const uint8_t instance = 0) {
-    msisdn.first = true;
+    msisdn.first  = true;
     msisdn.second = v;
   }
   void set(const ebi_t& v, const uint8_t instance = 0) {
-    linked_eps_bearer_id.first = true;
+    linked_eps_bearer_id.first  = true;
     linked_eps_bearer_id.second = v;
   }
-  void set(const access_point_name_restriction_t& v,
-           const uint8_t instance = 0) {
-    apn_restriction.first = true;
+  void set(
+      const access_point_name_restriction_t& v, const uint8_t instance = 0) {
+    apn_restriction.first  = true;
     apn_restriction.second = v;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
-    pco.first = true;
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
+    pco.first  = true;
     pco.second = v;
   }
   void add_bearer_context_modified(
@@ -4994,19 +5011,19 @@ class gtpv2c_modify_bearer_response : public gtpv2c_ies_container {
   }
 
   void set_pgw_fq_csid(const fq_csid_t& v) {
-    pgw_fq_csid.first = true;
+    pgw_fq_csid.first  = true;
     pgw_fq_csid.second = v;
   }
   void set_sgw_fq_csid(const fq_csid_t& v) {
-    sgw_fq_csid.first = true;
+    sgw_fq_csid.first  = true;
     sgw_fq_csid.second = v;
   }
   void set(const indication_t& v, const uint8_t instance = 0) {
-    indication_flags.first = true;
+    indication_flags.first  = true;
     indication_flags.second = v;
   }
   void set(const charging_id_t& v, const uint8_t instance = 0) {
-    pdn_connection_charging_id.first = true;
+    pdn_connection_charging_id.first  = true;
     pdn_connection_charging_id.second = v;
   }
 
@@ -5044,16 +5061,16 @@ class gtpv2c_modify_bearer_response : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(access_point_name_restriction_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      access_point_name_restriction_t& v, const uint8_t instance = 0) const {
     if (apn_restriction.first) {
       v = apn_restriction.second;
       return true;
     }
     return false;
   }
-  bool get(protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     if (pco.first) {
       v = pco.second;
       return true;
@@ -5150,39 +5167,39 @@ class gtpv2c_delete_session_request : public gtpv2c_ies_container {
 
   static const char* get_msg_name() { return "DELETE_SESSION_REQUEST"; };
 
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_CAUSE ((uint64_t)1)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID \
-  ((uint64_t)1 << 1)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_ULI ((uint64_t)1 << 2)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t)1 << 3)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PCO ((uint64_t)1 << 4)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_ORIGINATING_NODE ((uint64_t)1 << 5)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE \
-  ((uint64_t)1 << 6)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_TIME_ZONE ((uint64_t)1 << 7)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_ULI_TIMESTAMP ((uint64_t)1 << 8)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_RAN_NAS_RELEASE_CAUSE \
-  ((uint64_t)1 << 9)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_TWAN_IDENTIFIER ((uint64_t)1 << 10)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_TWAN_IDENTIFIER_TIMESTAMP \
-  ((uint64_t)1 << 11)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_CAUSE ((uint64_t) 1)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_LINKED_EPS_BEARER_ID               \
+  ((uint64_t) 1 << 1)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_ULI ((uint64_t) 1 << 2)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_INDICATION_FLAGS ((uint64_t) 1 << 3)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PCO ((uint64_t) 1 << 4)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_ORIGINATING_NODE ((uint64_t) 1 << 5)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE     \
+  ((uint64_t) 1 << 6)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_TIME_ZONE ((uint64_t) 1 << 7)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_ULI_TIMESTAMP ((uint64_t) 1 << 8)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_RAN_NAS_RELEASE_CAUSE              \
+  ((uint64_t) 1 << 9)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_TWAN_IDENTIFIER ((uint64_t) 1 << 10)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_TWAN_IDENTIFIER_TIMESTAMP          \
+  ((uint64_t) 1 << 11)
 #define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_MMES4_SGSN_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 12)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 13)
+  ((uint64_t) 1 << 12)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION   \
+  ((uint64_t) 1 << 13)
 #define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_TWAN_EPDG_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 14)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_INFORMATION \
-  ((uint64_t)1 << 15)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_TIMESTAMP \
-  ((uint64_t)1 << 16)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS \
-  ((uint64_t)1 << 17)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_UDP_PORT ((uint64_t)1 << 18)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_EPCO ((uint64_t)1 << 19)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_TCP_PORT ((uint64_t)1 << 20)
-#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PRIVATE_EXTENSION \
-  ((uint64_t)1 << 21)
+  ((uint64_t) 1 << 14)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_INFORMATION          \
+  ((uint64_t) 1 << 15)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_WLAN_LOCATION_TIMESTAMP            \
+  ((uint64_t) 1 << 16)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_LOCAL_IP_ADDRESS                \
+  ((uint64_t) 1 << 17)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_UDP_PORT ((uint64_t) 1 << 18)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_EPCO ((uint64_t) 1 << 19)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_UE_TCP_PORT ((uint64_t) 1 << 20)
+#define GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PRIVATE_EXTENSION                  \
+  ((uint64_t) 1 << 21)
 
   static const uint8_t msg_id = GTP_DELETE_SESSION_REQUEST;
   uint64_t ie_presence_mask;
@@ -5214,8 +5231,8 @@ class gtpv2c_delete_session_request : public gtpv2c_ies_container {
     indication_flags = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_REQUEST_PR_IE_INDICATION_FLAGS;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PCO;
   }
@@ -5242,8 +5259,9 @@ class gtpv2c_delete_session_request : public gtpv2c_ies_container {
     ie_presence_mask |=
         GTPV2C_DELETE_SESSION_REQUEST_PR_IE_RAN_NAS_RELEASE_CAUSE;
   }
-  void set(const extended_protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) {
     epco = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_REQUEST_PR_IE_EPCO;
   }
@@ -5278,8 +5296,8 @@ class gtpv2c_delete_session_request : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     if (ie_presence_mask & GTPV2C_DELETE_SESSION_REQUEST_PR_IE_PCO) {
       v = pco;
       return true;
@@ -5318,8 +5336,9 @@ class gtpv2c_delete_session_request : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(extended_protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) const {
     if (ie_presence_mask & GTPV2C_DELETE_SESSION_REQUEST_PR_IE_EPCO) {
       v = epco;
       return true;
@@ -5366,23 +5385,24 @@ class gtpv2c_delete_session_response : public gtpv2c_ies_container {
 
   static const char* get_msg_name() { return "DELETE_SESSION_RESPONSE"; };
 
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_CAUSE ((uint64_t)1)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_RECOVERY ((uint64_t)1 << 1)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PCO ((uint64_t)1 << 2)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_INDICATION_FLAGS ((uint64_t)1 << 3)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_CAUSE ((uint64_t) 1)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_RECOVERY ((uint64_t) 1 << 1)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PCO ((uint64_t) 1 << 2)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_INDICATION_FLAGS                  \
+  ((uint64_t) 1 << 3)
 #define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PGW_NODE_LEVEL_LOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PGW_APN_LEVEL_LOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 5)
 #define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_SGW_NODE_LEVEL_LOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 6)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 7)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 8)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_EPCO ((uint64_t)1 << 9)
-#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PRIVATE_EXTENSION \
-  ((uint64_t)1 << 10)
+  ((uint64_t) 1 << 6)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PGW_OVERLOAD_CONTROL_INFORMATION  \
+  ((uint64_t) 1 << 7)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION  \
+  ((uint64_t) 1 << 8)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_EPCO ((uint64_t) 1 << 9)
+#define GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PRIVATE_EXTENSION                 \
+  ((uint64_t) 1 << 10)
 
   static const uint8_t msg_id = GTP_DELETE_SESSION_RESPONSE;
   uint64_t ie_presence_mask;
@@ -5410,8 +5430,8 @@ class gtpv2c_delete_session_response : public gtpv2c_ies_container {
     cause = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_CAUSE;
   }
-  void set(const protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const protocol_configuration_options_t& v, const uint8_t instance = 0) {
     pco = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PCO;
   }
@@ -5419,8 +5439,9 @@ class gtpv2c_delete_session_response : public gtpv2c_ies_container {
     indication_flags = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_INDICATION_FLAGS;
   }
-  void set(const extended_protocol_configuration_options_t& v,
-           const uint8_t instance = 0) {
+  void set(
+      const extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) {
     epco = v;
     ie_presence_mask |= GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_EPCO;
   }
@@ -5432,8 +5453,8 @@ class gtpv2c_delete_session_response : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      protocol_configuration_options_t& v, const uint8_t instance = 0) const {
     if (ie_presence_mask & GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_PCO) {
       v = pco;
       return true;
@@ -5448,8 +5469,9 @@ class gtpv2c_delete_session_response : public gtpv2c_ies_container {
     }
     return false;
   }
-  bool get(extended_protocol_configuration_options_t& v,
-           const uint8_t instance = 0) const {
+  bool get(
+      extended_protocol_configuration_options_t& v,
+      const uint8_t instance = 0) const {
     if (ie_presence_mask & GTPV2C_DELETE_SESSION_RESPONSE_PR_IE_EPCO) {
       v = epco;
       return true;
@@ -5505,11 +5527,11 @@ class gtpv2c_release_access_bearers_request : public gtpv2c_ies_container {
   // Secondary RAT Usage Data Report
   // Private Extension Private Extension ///< optional
   void set(const node_type_t& v, const uint8_t instance = 0) {
-    originating_node.first = true;
+    originating_node.first  = true;
     originating_node.second = v;
   }
   void set(const indication_t& v, const uint8_t instance = 0) {
-    indication_flags.first = true;
+    indication_flags.first  = true;
     indication_flags.second = v;
   }
   bool get(node_type_t& v, const uint8_t instance = 0) const {
@@ -5573,11 +5595,11 @@ class gtpv2c_release_access_bearers_response : public gtpv2c_ies_container {
 
   // Private Extension  ///< optional
   void set(const cause_t& v, const uint8_t instance = 0) {
-    cause.first = true;
+    cause.first  = true;
     cause.second = v;
   }
   void set(const indication_t& v, const uint8_t instance = 0) {
-    indication_flags.first = true;
+    indication_flags.first  = true;
     indication_flags.second = v;
   }
   bool get(cause_t& v, const uint8_t instance = 0) const {
@@ -5613,11 +5635,11 @@ class bearer_context_within_delete_bearer_command {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
-#define GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_BEARER_FLAGS \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1)
+#define GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_BEARER_FLAGS  \
+  ((uint64_t) 1 << 1)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_COMMAND_PR_IE_RAN_NAS_RELEASE_CAUSE \
-  ((uint64_t)1 << 2)
+  ((uint64_t) 1 << 2)
   ebi_t eps_bearer_id;
   bearer_flags_t bearer_flags;
   ran_nas_cause_t ran_nas_release_cause;
@@ -5677,10 +5699,10 @@ class bearer_context_within_delete_bearer_command {
 class gtpv2c_delete_bearer_command : public gtpv2c_ies_container {
  public:
   gtpv2c_delete_bearer_command() : bearer_contexts() {
-    ie_presence_mask = 0;
-    uli = {};
-    uli_timestamp = {};
-    ue_time_zone = {};
+    ie_presence_mask    = 0;
+    uli                 = {};
+    uli_timestamp       = {};
+    ue_time_zone        = {};
     sender_fteid_for_cp = {};
   }
   gtpv2c_delete_bearer_command(const gtpv2c_delete_bearer_command& i)
@@ -5705,17 +5727,17 @@ class gtpv2c_delete_bearer_command : public gtpv2c_ies_container {
   static const uint8_t msg_id = GTP_DELETE_BEARER_COMMAND;
   uint64_t ie_presence_mask;
 
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_BEARER_CONTEXTS ((uint64_t)1)
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_ULI ((uint64_t)1 << 1)
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_ULI_TIMESTAMP ((uint64_t)1 << 2)
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_UE_TIME_ZONE ((uint64_t)1 << 3)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_BEARER_CONTEXTS ((uint64_t) 1)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_ULI ((uint64_t) 1 << 1)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_ULI_TIMESTAMP ((uint64_t) 1 << 2)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_UE_TIME_ZONE ((uint64_t) 1 << 3)
 #define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_MMES4_SGSN_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 4)
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 5)
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE \
-  ((uint64_t)1 << 6)
-#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_PRIVATE_EXTENSION ((uint64_t)1 << 7)
+  ((uint64_t) 1 << 4)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION    \
+  ((uint64_t) 1 << 5)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_SENDER_FTEID_FOR_CONTROL_PLANE      \
+  ((uint64_t) 1 << 6)
+#define GTPV2C_DELETE_BEARER_COMMAND_PR_IE_PRIVATE_EXTENSION ((uint64_t) 1 << 7)
   std::vector<bearer_context_within_delete_bearer_command> bearer_contexts;
   uli_t uli;
   uli_timestamp_t uli_timestamp;
@@ -5725,8 +5747,9 @@ class gtpv2c_delete_bearer_command : public gtpv2c_ies_container {
   fteid_t sender_fteid_for_cp;
   // Secondary RAT Usage Data Report
   // Private Extension
-  void set(const bearer_context_within_delete_bearer_command& v,
-           const uint8_t instance = 0) {
+  void set(
+      const bearer_context_within_delete_bearer_command& v,
+      const uint8_t instance = 0) {
     bearer_contexts.push_back(v);
     ie_presence_mask |= GTPV2C_DELETE_BEARER_COMMAND_PR_IE_BEARER_CONTEXTS;
   }
@@ -5766,9 +5789,9 @@ class bearer_context_within_delete_bearer_failure_indication {
  public:
   uint32_t ie_presence_mask;
 #define GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_FAILURE_INDICATION_PR_IE_EPS_BEARER_ID \
-  ((uint64_t)1)
+  ((uint64_t) 1)
 #define GTPV2C_BEARER_CONTEXT_WITHIN_DELETE_BEARER_FAILURE_INDICATION_PR_IE_CAUSE \
-  ((uint64_t)1 << 1)
+  ((uint64_t) 1 << 1)
   ebi_t eps_bearer_id;
   cause_t cause;
 
@@ -5784,8 +5807,8 @@ class bearer_context_within_delete_bearer_failure_indication {
   }
   bearer_context_within_delete_bearer_failure_indication() {
     ie_presence_mask = 0;
-    eps_bearer_id = {};
-    cause = {};
+    eps_bearer_id    = {};
+    cause            = {};
   }
 
   explicit bearer_context_within_delete_bearer_failure_indication(
@@ -5820,7 +5843,7 @@ class gtpv2c_delete_bearer_failure_indication : public gtpv2c_ies_container {
  public:
   gtpv2c_delete_bearer_failure_indication() : bearer_contexts() {
     ie_presence_mask = 0;
-    cause = {};
+    cause            = {};
     indication_flags = {};
   }
   explicit gtpv2c_delete_bearer_failure_indication(
@@ -5846,19 +5869,19 @@ class gtpv2c_delete_bearer_failure_indication : public gtpv2c_ies_container {
   static const uint8_t msg_id = GTP_DELETE_BEARER_FAILURE_INDICATION;
   uint64_t ie_presence_mask;
 
-#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_CAUSE ((uint64_t)1)
-#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_BEARER_CONTEXTS \
-  ((uint64_t)1 << 1)
-#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_RECOVERY \
-  ((uint64_t)1 << 2)
-#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_INDICATION_FLAGS \
-  ((uint64_t)1 << 3)
+#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_CAUSE ((uint64_t) 1)
+#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_BEARER_CONTEXTS          \
+  ((uint64_t) 1 << 1)
+#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_RECOVERY                 \
+  ((uint64_t) 1 << 2)
+#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_INDICATION_FLAGS         \
+  ((uint64_t) 1 << 3)
 #define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_PGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 4)
+  ((uint64_t) 1 << 4)
 #define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_SGW_OVERLOAD_CONTROL_INFORMATION \
-  ((uint64_t)1 << 5)
-#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_PRIVATE_EXTENSION \
-  ((uint64_t)1 << 6)
+  ((uint64_t) 1 << 5)
+#define GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_PRIVATE_EXTENSION        \
+  ((uint64_t) 1 << 6)
 
   cause_t cause;
   std::vector<bearer_context_within_delete_bearer_failure_indication>
@@ -5872,8 +5895,9 @@ class gtpv2c_delete_bearer_failure_indication : public gtpv2c_ies_container {
     cause = v;
     ie_presence_mask |= GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_CAUSE;
   }
-  void set(const bearer_context_within_delete_bearer_failure_indication& v,
-           const uint8_t instance = 0) {
+  void set(
+      const bearer_context_within_delete_bearer_failure_indication& v,
+      const uint8_t instance = 0) {
     bearer_contexts.push_back(v);
     ie_presence_mask |=
         GTPV2C_DELETE_BEARER_FAILURE_INDICATION_PR_IE_BEARER_CONTEXTS;
@@ -5905,13 +5929,13 @@ class gtpv2c_delete_bearer_failure_indication : public gtpv2c_ies_container {
 class gtpv2c_downlink_data_notification : public gtpv2c_ies_container {
  public:
   gtpv2c_downlink_data_notification() {
-    ie_presence_mask = 0;
-    cause = {};
-    eps_bearer_id.ebi = EPS_BEARER_IDENTITY_UNASSIGNED;
-    arp = {};
-    imsi = {};
+    ie_presence_mask    = 0;
+    cause               = {};
+    eps_bearer_id.ebi   = EPS_BEARER_IDENTITY_UNASSIGNED;
+    arp                 = {};
+    imsi                = {};
     sender_fteid_for_cp = {};
-    indication_flags = {};
+    indication_flags    = {};
   }
   gtpv2c_downlink_data_notification(const gtpv2c_downlink_data_notification& i)
       : ie_presence_mask(i.ie_presence_mask),
@@ -5935,14 +5959,14 @@ class gtpv2c_downlink_data_notification : public gtpv2c_ies_container {
   }
   static const char* get_msg_name() { return "DOWNLINK_DATA_NOTIFICATION"; };
 
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_CAUSE ((uint64_t)1)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_EPS_BEARER_ID ((uint64_t)1 << 1)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_ARP ((uint64_t)1 << 2)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_IMSI ((uint64_t)1 << 3)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_SENDER_FTEID_FOR_CP ((uint64_t)1 << 4)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS ((uint64_t)1 << 5)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_SGW_NODE_LEVEL_LCI ((uint64_t)1 << 6)
-#define DOWNLINK_DATA_NOTIFICATION_PR_IE_SGW_OVERLOAD_CI ((uint64_t)1 << 7)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_CAUSE ((uint64_t) 1)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_EPS_BEARER_ID ((uint64_t) 1 << 1)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_ARP ((uint64_t) 1 << 2)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_IMSI ((uint64_t) 1 << 3)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_SENDER_FTEID_FOR_CP ((uint64_t) 1 << 4)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_INDICATION_FLAGS ((uint64_t) 1 << 5)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_SGW_NODE_LEVEL_LCI ((uint64_t) 1 << 6)
+#define DOWNLINK_DATA_NOTIFICATION_PR_IE_SGW_OVERLOAD_CI ((uint64_t) 1 << 7)
   static const uint8_t msg_id = GTP_DOWNLINK_DATA_NOTIFICATION;
   uint64_t ie_presence_mask;
 
@@ -6038,8 +6062,8 @@ class gtpv2c_downlink_data_notification_acknowledge
  public:
   gtpv2c_downlink_data_notification_acknowledge() {
     ie_presence_mask = 0;
-    cause = {};
-    imsi = {};
+    cause            = {};
+    imsi             = {};
   }
   gtpv2c_downlink_data_notification_acknowledge(
       const gtpv2c_downlink_data_notification_acknowledge& i)
@@ -6057,17 +6081,17 @@ class gtpv2c_downlink_data_notification_acknowledge
     return "DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE";
   };
 
-#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE ((uint64_t)1)
-#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_DATA_NOTIFICATION_DELAY \
-  ((uint64_t)1 << 1)
-#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_RECOVERY ((uint64_t)1 << 2)
+#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_CAUSE ((uint64_t) 1)
+#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_DATA_NOTIFICATION_DELAY           \
+  ((uint64_t) 1 << 1)
+#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_RECOVERY ((uint64_t) 1 << 2)
 #define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_DL_LOW_PRIORITY_TRAFFIC_THROTTLING \
-  ((uint64_t)1 << 3)
-#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI ((uint64_t)1 << 4)
-#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_DL_BUFFERING_DURATION \
-  ((uint64_t)1 << 5)
+  ((uint64_t) 1 << 3)
+#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_IMSI ((uint64_t) 1 << 4)
+#define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_DL_BUFFERING_DURATION             \
+  ((uint64_t) 1 << 5)
 #define DOWNLINK_DATA_NOTIFICATION_ACK_PR_IE_DL_BUFFERING_SUGGESTED_PACKET_COUNT \
-  ((uint64_t)1 << 6)
+  ((uint64_t) 1 << 6)
   static const uint8_t msg_id = GTP_DOWNLINK_DATA_NOTIFICATION_ACKNOWLEDGE;
   uint64_t ie_presence_mask;
 
@@ -6142,12 +6166,12 @@ class gtpv2c_downlink_data_notification_failure_indication
   node_type_t originating_node;
   imsi_t imsi;
   // Private Extension  ///< optional
-#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_CAUSE ((uint64_t)1)
-#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_ORIGINATING_NODE \
-  ((uint64_t)1 << 1)
-#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_IMSI ((uint64_t)1 << 2)
-#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_PRIVATE_EXTENSION \
-  ((uint64_t)1 << 3)
+#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_CAUSE ((uint64_t) 1)
+#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_ORIGINATING_NODE          \
+  ((uint64_t) 1 << 1)
+#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_IMSI ((uint64_t) 1 << 2)
+#define DOWNLINK_DATA_NOTIFICATION_FAILURE_IND_PR_IE_PRIVATE_EXTENSION         \
+  ((uint64_t) 1 << 3)
   static const uint8_t msg_id =
       GTP_DOWNLINK_DATA_NOTIFICATION_FAILURE_INDICATION;
 

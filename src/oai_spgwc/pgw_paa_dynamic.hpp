@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,7 +42,7 @@ class ipv6_pool {
   ipv6_pool() : prefix(), prefix_len(0) {}
 
   ipv6_pool(const struct in6_addr prfix, const int prfix_len) {
-    prefix = prfix;
+    prefix     = prfix;
     prefix_len = prfix_len;
   }
 
@@ -83,7 +83,7 @@ class ipv4_pool {
 
   bool free_bit(const int bit_pos) {
     if (bit_pos < num) {
-      int bit_pos32 = bit_pos >> 5;
+      int bit_pos32    = bit_pos >> 5;
       int word_bit_pos = bit_pos & 0x0000001F;
       std::bitset<32> bs(alloc[bit_pos32]);
       bs.reset(word_bit_pos);
@@ -98,9 +98,9 @@ class ipv4_pool {
 
   ipv4_pool(const struct in_addr first, const uint32_t range) : alloc() {
     start.s_addr = first.s_addr;
-    num = range;
-    int range32 = range >> 5;
-    int i = 0;
+    num          = range;
+    int range32  = range >> 5;
+    int i        = 0;
     for (i = 0; i < range32; ++i) {
       alloc[i] = 0;
     }
@@ -134,7 +134,7 @@ class ipv4_pool {
 
   bool in_pool(const struct in_addr& a) const {
     int addr_start = be32toh(start.s_addr);
-    int addr = be32toh(a.s_addr);
+    int addr       = be32toh(a.s_addr);
     return ((addr - addr_start) < num);
   }
 };
@@ -168,8 +168,9 @@ class paa_dynamic {
   paa_dynamic(paa_dynamic const&) = delete;
   void operator=(paa_dynamic const&) = delete;
 
-  void add_pool(const std::string& apn_label, const int pool_id,
-                const struct in_addr& first, const int range) {
+  void add_pool(
+      const std::string& apn_label, const int pool_id,
+      const struct in_addr& first, const int range) {
     if (pool_id >= 0) {
       uint32_t uint32pool_id = uint32_t(pool_id);
       if (!ipv4_pools.count(uint32pool_id)) {
@@ -184,8 +185,9 @@ class paa_dynamic {
     }
   }
 
-  void add_pool(const std::string& apn_label, const int pool_id,
-                const struct in6_addr& prefix, const int prefix_len) {
+  void add_pool(
+      const std::string& apn_label, const int pool_id,
+      const struct in6_addr& prefix, const int prefix_len) {
     if (pool_id >= 0) {
       uint32_t uint32pool_id = uint32_t(pool_id);
       if (!ipv6_pools.count(uint32pool_id)) {
@@ -211,11 +213,11 @@ class paa_dynamic {
             return true;
           }
         }
-        Logger::pgwc_app().warn("Could not get PAA PDN_TYPE_E_IPV4 for APN %s",
-                                apn_label.c_str());
+        Logger::pgwc_app().warn(
+            "Could not get PAA PDN_TYPE_E_IPV4 for APN %s", apn_label.c_str());
         return false;
       } else if (paa.pdn_type.pdn_type == PDN_TYPE_E_IPV4V6) {
-        bool success = false;
+        bool success                              = false;
         std::vector<uint32_t>::const_iterator it4 = {};
         for (it4 = apn_pool.ipv4_pool_ids.begin();
              it4 != apn_pool.ipv4_pool_ids.end(); ++it4) {
@@ -245,8 +247,8 @@ class paa_dynamic {
             return true;
           }
         }
-        Logger::pgwc_app().warn("Could not get PAA PDN_TYPE_E_IPV6 for APN %s",
-                                apn_label.c_str());
+        Logger::pgwc_app().warn(
+            "Could not get PAA PDN_TYPE_E_IPV6 for APN %s", apn_label.c_str());
         return false;
       }
     }
@@ -267,7 +269,7 @@ class paa_dynamic {
         }
         return false;
       } else if (paa.pdn_type.pdn_type == PDN_TYPE_E_IPV4V6) {
-        bool success = false;
+        bool success                              = false;
         std::vector<uint32_t>::const_iterator it4 = {};
         for (it4 = apn_pool.ipv4_pool_ids.begin();
              it4 != apn_pool.ipv4_pool_ids.end(); ++it4) {
@@ -280,13 +282,13 @@ class paa_dynamic {
         return true;
       }
     }
-    Logger::pgwc_app().warn("Could not release PAA for APN %s",
-                            apn_label.c_str());
+    Logger::pgwc_app().warn(
+        "Could not release PAA for APN %s", apn_label.c_str());
     return false;
   }
 
-  bool release_paa(const std::string& apn_label,
-                   const struct in_addr& ipv4_address) {
+  bool release_paa(
+      const std::string& apn_label, const struct in_addr& ipv4_address) {
     if (apns.count(apn_label)) {
       apn_dynamic_pools& apn_pool = apns[apn_label];
       for (std::vector<uint32_t>::const_iterator it4 =
@@ -297,8 +299,8 @@ class paa_dynamic {
         }
       }
     }
-    Logger::pgwc_app().warn("Could not release PAA for APN %s",
-                            apn_label.c_str());
+    Logger::pgwc_app().warn(
+        "Could not release PAA for APN %s", apn_label.c_str());
     return false;
   }
 };

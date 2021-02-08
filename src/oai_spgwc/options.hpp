@@ -22,19 +22,19 @@
 
 class Options {
  public:
-  static bool parse(int argc, char **argv);
-  static bool parseInputOptions(int argc, char **argv);
+  static bool parse(int argc, char** argv);
+  static bool parseInputOptions(int argc, char** argv);
   static bool parseJson();
   static bool validateOptions();
 
-  static const std::string &getlibconfigConfig() { return m_libconfigcfg; }
-  static const bool &getlogRotFilelog() { return m_log_rot_file_log; }
-  static const bool &getlogStdout() { return m_log_stdout; }
+  static const std::string& getlibconfigConfig() { return m_libconfigcfg; }
+  static const bool& getlogRotFilelog() { return m_log_rot_file_log; }
+  static const bool& getlogStdout() { return m_log_stdout; }
 
  private:
   enum OptionsSelected {
-    libconfigcfg = 0x01,
-    log_stdout = 0x02,
+    libconfigcfg     = 0x01,
+    log_stdout       = 0x02,
     log_rot_file_log = 0x04
   };
 

@@ -148,12 +148,13 @@ function main()
   mkdir -m 777 -p $dext
 
   if [ $var_check_install_min_deps -gt 0 ];then
-    disable_ipv6
     check_install_spgwc_min_deps  $force $debug
     if [[ $? -ne 0 ]]; then
         echo_error "Error: SPGW-C minimal deps installation failed"
         return 1
     else
+        # Done now after
+        disable_ipv6
         echo_success "SPGW-C minimal deps installation successful"
         echo_warning "SPGW-C not compiled, to compile it, re-run build_spgwc without -i option"
         return 0
@@ -161,16 +162,30 @@ function main()
   fi
 
   if [ $var_check_install_deps -gt 0 ];then
-    disable_ipv6
     check_install_spgwc_deps  $force $debug
     if [[ $? -ne 0 ]]; then
         echo_error "Error: SPGW-C deps installation failed"
         return 1
     else
+        # Done now after
+        disable_ipv6
         echo_success "SPGW-C deps installation successful"
         echo_warning "SPGW-C not compiled, to compile it, re-run build_spgwc without -I option"
         return 0
     fi
+  fi
+
+  # Taking care of the case we build from dockerfile within openair-epc-fed repository
+  if [ -f $OPENAIRCN_DIR/.git ] && [ $IS_CONTAINER -ne 0 ]; then
+    pushd $OPENAIRCN_DIR > /dev/null
+    rm -f .git
+    git init
+    git config --global user.email "dummy@dummy.org"
+    git config --global user.name "dummy"
+    echo "dummy" > dummy.txt
+    git add dummy.txt
+    git commit -m "dummy"
+    popd > /dev/null
   fi
 
   cmake_args="$cmake_args  -DBUILD_SHARED_LIBS=OFF"

@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -44,8 +44,8 @@ void sgw_pdn_connection::add_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb) {
         (sb->ebi.ebi <= EPS_BEARER_IDENTITY_LAST)) {
       sgw_eps_bearers.insert(
           std::pair<uint8_t, std::shared_ptr<sgw_eps_bearer>>(sb->ebi.ebi, sb));
-      Logger::sgwc_app().trace("sgw_pdn_connection::add_eps_bearer(%d) success",
-                               sb->ebi.ebi);
+      Logger::sgwc_app().trace(
+          "sgw_pdn_connection::add_eps_bearer(%d) success", sb->ebi.ebi);
     } else {
       Logger::sgwc_app().error(
           "sgw_pdn_connection::add_eps_bearer(%d) failed, invalid EBI",
@@ -54,8 +54,8 @@ void sgw_pdn_connection::add_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb) {
   }
 }
 //------------------------------------------------------------------------------
-bool sgw_pdn_connection::get_eps_bearer(const ebi_t& ebi,
-                                        std::shared_ptr<sgw_eps_bearer>& b) {
+bool sgw_pdn_connection::get_eps_bearer(
+    const ebi_t& ebi, std::shared_ptr<sgw_eps_bearer>& b) {
   if (sgw_eps_bearers.count(ebi.ebi)) {
     b = sgw_eps_bearers.at(ebi.ebi);
     return true;
@@ -95,7 +95,9 @@ void sgw_pdn_connection::remove_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb) {
   }
 }
 //------------------------------------------------------------------------------
-void sgw_pdn_connection::delete_bearers() { sgw_eps_bearers.clear(); }
+void sgw_pdn_connection::delete_bearers() {
+  sgw_eps_bearers.clear();
+}
 
 //------------------------------------------------------------------------------
 void sgw_pdn_connection::deallocate_ressources() {

@@ -31,6 +31,7 @@ source $THIS_SCRIPT_PATH/build_helper
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_fb_folly_from_source(){
+  echo_info "Starting to install folly from source"
   if [ $1 -eq 0 ]; then
     OPTION=""
     read -p "Do you want to install FaceBook folly (github)? <y/N> " prompt
@@ -143,6 +144,7 @@ install_fb_folly_from_source(){
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
   fi
+  echo_success "End of folly installation"
   return 0
 }
 

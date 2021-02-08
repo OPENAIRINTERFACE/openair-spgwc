@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -61,8 +61,10 @@ class sgwc_app {
   std::map<teid_t, std::shared_ptr<sgw_eps_bearer_context>>
       s11lteid2sgw_eps_bearer_context;
 
-  std::map<teid_t, std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-                             std::shared_ptr<sgw_pdn_connection>>>
+  std::map<
+      teid_t, std::pair<
+                  std::shared_ptr<sgw_eps_bearer_context>,
+                  std::shared_ptr<sgw_pdn_connection>>>
       s5s8lteid2sgw_contexts;
 
   teid_t generate_s11_cp_teid();
@@ -108,15 +110,15 @@ class sgwc_app {
   sgwc_app(sgwc_app const&) = delete;
   void operator=(sgwc_app const&) = delete;
 
-  void send_create_session_response_cause(const uint64_t gtpc_tx_id,
-                                          const teid_t teid,
-                                          const endpoint& r_endpoint,
-                                          const cause_t& cause) const;
+  void send_create_session_response_cause(
+      const uint64_t gtpc_tx_id, const teid_t teid, const endpoint& r_endpoint,
+      const cause_t& cause) const;
 
   fteid_t generate_s5s8_cp_fteid(const struct in_addr ipv4_address);
   fteid_t generate_s11_cp_fteid(const struct in_addr ipv4_address);
-  std::pair<std::shared_ptr<sgw_eps_bearer_context>,
-            std::shared_ptr<sgw_pdn_connection>>
+  std::pair<
+      std::shared_ptr<sgw_eps_bearer_context>,
+      std::shared_ptr<sgw_pdn_connection>>
   s5s8sgw_teid_2_sgw_contexts(const teid_t& sgw_teid) const;
   std::shared_ptr<sgw_eps_bearer_context> s11sgw_teid_2_sgw_eps_bearer_context(
       const teid_t& sgw_teid) const;

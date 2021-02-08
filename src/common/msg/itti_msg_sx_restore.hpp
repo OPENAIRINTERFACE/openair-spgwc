@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -39,10 +39,10 @@ class itti_sx_restore : public itti_msg {
       : itti_msg(RESTORE_SX_SESSIONS, origin, destination), sessions() {}
   itti_sx_restore(const itti_sx_restore& i)
       : itti_msg(i), sessions(i.sessions) {}
-  itti_sx_restore(const itti_sx_restore& i, const task_id_t orig,
-                  const task_id_t dest)
+  itti_sx_restore(
+      const itti_sx_restore& i, const task_id_t orig, const task_id_t dest)
       : itti_sx_restore(i) {
-    origin = orig;
+    origin      = orig;
     destination = dest;
   }
   const char* get_msg_name() { return "SX_RESTORE"; };

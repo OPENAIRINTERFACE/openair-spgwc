@@ -31,16 +31,16 @@
 #define BUFFER_SIZE 4096
 
 //------------------------------------------------------------------------------
-int get_gateway_and_iface(std::string *gw, std::string *iface) {
+int get_gateway_and_iface(std::string* gw, std::string* iface) {
   int received_bytes = 0, msg_len = 0, route_attribute_len = 0;
   int sock = -1, msgseq = 0;
   struct nlmsghdr *nlh, *nlmsg;
-  struct rtmsg *route_entry;
+  struct rtmsg* route_entry;
   // This struct contain route attributes (route type)
-  struct rtattr *route_attribute;
+  struct rtattr* route_attribute;
   char gateway_address[INET_ADDRSTRLEN], interface[IF_NAMESIZE];
   char msgbuf[BUFFER_SIZE], buffer[BUFFER_SIZE];
-  char *ptr = buffer;
+  char* ptr = buffer;
   struct timeval tv;
   int rv = RETURNok;
 
@@ -55,7 +55,7 @@ int get_gateway_and_iface(std::string *gw, std::string *iface) {
   memset(buffer, 0, sizeof(buffer));
 
   /* point the header and the msg structure pointers into the buffer */
-  nlmsg = (struct nlmsghdr *)msgbuf;
+  nlmsg = (struct nlmsghdr*) msgbuf;
 
   /* Fill in the nlmsg header*/
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
@@ -68,8 +68,9 @@ int get_gateway_and_iface(std::string *gw, std::string *iface) {
 
   /* 1 Sec Timeout to avoid stall */
   tv.tv_sec = 1;
-  setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&tv,
-             sizeof(struct timeval));
+  setsockopt(
+      sock, SOL_SOCKET, SO_RCVTIMEO, (struct timeval*) &tv,
+      sizeof(struct timeval));
   /* send msg */
   if (send(sock, nlmsg, nlmsg->nlmsg_len, 0) < 0) {
     Logger::system().error("send socket raw/NETLINK_ROUTE failed");
@@ -84,7 +85,7 @@ int get_gateway_and_iface(std::string *gw, std::string *iface) {
       return EXIT_FAILURE;
     }
 
-    nlh = (struct nlmsghdr *)ptr;
+    nlh = (struct nlmsghdr*) ptr;
 
     /* Check if the header is valid */
     if ((NLMSG_OK(nlmsg, received_bytes) == 0) ||
@@ -108,12 +109,12 @@ int get_gateway_and_iface(std::string *gw, std::string *iface) {
   /* parse response */
   for (; NLMSG_OK(nlh, received_bytes); nlh = NLMSG_NEXT(nlh, received_bytes)) {
     /* Get the route data */
-    route_entry = (struct rtmsg *)NLMSG_DATA(nlh);
+    route_entry = (struct rtmsg*) NLMSG_DATA(nlh);
 
     /* We are just interested in main routing table */
     if (route_entry->rtm_table != RT_TABLE_MAIN) continue;
 
-    route_attribute = (struct rtattr *)RTM_RTA(route_entry);
+    route_attribute     = (struct rtattr*) RTM_RTA(route_entry);
     route_attribute_len = RTM_PAYLOAD(nlh);
 
     /* Loop through all attributes */
@@ -121,11 +122,12 @@ int get_gateway_and_iface(std::string *gw, std::string *iface) {
          route_attribute = RTA_NEXT(route_attribute, route_attribute_len)) {
       switch (route_attribute->rta_type) {
         case RTA_OIF:
-          if_indextoname(*(int *)RTA_DATA(route_attribute), interface);
+          if_indextoname(*(int*) RTA_DATA(route_attribute), interface);
           break;
         case RTA_GATEWAY:
-          inet_ntop(AF_INET, RTA_DATA(route_attribute), gateway_address,
-                    sizeof(gateway_address));
+          inet_ntop(
+              AF_INET, RTA_DATA(route_attribute), gateway_address,
+              sizeof(gateway_address));
           break;
         default:
           break;
@@ -147,26 +149,28 @@ int get_gateway_and_iface(std::string *gw, std::string *iface) {
 }
 
 //------------------------------------------------------------------------------
-int get_inet_addr_from_iface(const std::string &if_name,
-                             struct in_addr &inet_addr) {
+int get_inet_addr_from_iface(
+    const std::string& if_name, struct in_addr& inet_addr) {
   struct ifreq ifr;
   char str[INET_ADDRSTRLEN];
 
   memset(&ifr, 0, sizeof(ifr));
-  int fd = socket(AF_INET, SOCK_DGRAM, 0);
+  int fd                 = socket(AF_INET, SOCK_DGRAM, 0);
   ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, (const char *)if_name.c_str(), IFNAMSIZ - 1);
+  strncpy(ifr.ifr_name, (const char*) if_name.c_str(), IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFADDR, &ifr)) {
     close(fd);
-    Logger::system().error("Failed to probe %s inet addr: error %s\n",
-                           if_name.c_str(), strerror(errno));
+    Logger::system().error(
+        "Failed to probe %s inet addr: error %s\n", if_name.c_str(),
+        strerror(errno));
     return RETURNerror;
   }
   close(fd);
-  struct sockaddr_in *ipaddr = (struct sockaddr_in *)&ifr.ifr_addr;
+  struct sockaddr_in* ipaddr = (struct sockaddr_in*) &ifr.ifr_addr;
   // check
-  if (inet_ntop(AF_INET, (const void *)&ipaddr->sin_addr, str,
-                INET_ADDRSTRLEN) == NULL) {
+  if (inet_ntop(
+          AF_INET, (const void*) &ipaddr->sin_addr, str, INET_ADDRSTRLEN) ==
+      NULL) {
     return RETURNerror;
   }
   inet_addr.s_addr = ipaddr->sin_addr.s_addr;
@@ -174,16 +178,16 @@ int get_inet_addr_from_iface(const std::string &if_name,
 }
 
 //------------------------------------------------------------------------------
-int get_mtu_from_iface(const std::string &if_name, uint32_t &mtu) {
+int get_mtu_from_iface(const std::string& if_name, uint32_t& mtu) {
   struct ifreq ifr;
   memset(&ifr, 0, sizeof(ifr));
-  int fd = socket(AF_INET, SOCK_DGRAM, 0);
+  int fd                 = socket(AF_INET, SOCK_DGRAM, 0);
   ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, (const char *)if_name.c_str(), IFNAMSIZ - 1);
+  strncpy(ifr.ifr_name, (const char*) if_name.c_str(), IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFMTU, &ifr)) {
     close(fd);
-    Logger::system().error("Failed to probe %s MTU: error %s\n",
-                           if_name.c_str(), strerror(errno));
+    Logger::system().error(
+        "Failed to probe %s MTU: error %s\n", if_name.c_str(), strerror(errno));
     return RETURNerror;
   }
   close(fd);
@@ -192,31 +196,32 @@ int get_mtu_from_iface(const std::string &if_name, uint32_t &mtu) {
 }
 
 //------------------------------------------------------------------------------
-int get_inet_addr_infos_from_iface(const std::string &if_name,
-                                   struct in_addr &inet_addr,
-                                   struct in_addr &inet_network,
-                                   unsigned int &mtu) {
+int get_inet_addr_infos_from_iface(
+    const std::string& if_name, struct in_addr& inet_addr,
+    struct in_addr& inet_network, unsigned int& mtu) {
   struct ifreq ifr;
   char str[INET_ADDRSTRLEN];
 
-  inet_addr.s_addr = INADDR_ANY;
+  inet_addr.s_addr    = INADDR_ANY;
   inet_network.s_addr = INADDR_ANY;
-  mtu = 0;
+  mtu                 = 0;
 
   memset(&ifr, 0, sizeof(ifr));
-  int fd = socket(AF_INET, SOCK_DGRAM, 0);
+  int fd                 = socket(AF_INET, SOCK_DGRAM, 0);
   ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, (const char *)if_name.c_str(), IFNAMSIZ - 1);
+  strncpy(ifr.ifr_name, (const char*) if_name.c_str(), IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFADDR, &ifr)) {
     close(fd);
-    Logger::system().error("Failed to probe %s inet addr: error %s\n",
-                           if_name.c_str(), strerror(errno));
+    Logger::system().error(
+        "Failed to probe %s inet addr: error %s\n", if_name.c_str(),
+        strerror(errno));
     return RETURNerror;
   }
-  struct sockaddr_in *ipaddr = (struct sockaddr_in *)&ifr.ifr_addr;
+  struct sockaddr_in* ipaddr = (struct sockaddr_in*) &ifr.ifr_addr;
   // check
-  if (inet_ntop(AF_INET, (const void *)&ipaddr->sin_addr, str,
-                INET_ADDRSTRLEN) == NULL) {
+  if (inet_ntop(
+          AF_INET, (const void*) &ipaddr->sin_addr, str, INET_ADDRSTRLEN) ==
+      NULL) {
     close(fd);
     return RETURNerror;
   }
@@ -224,17 +229,19 @@ int get_inet_addr_infos_from_iface(const std::string &if_name,
 
   memset(&ifr, 0, sizeof(ifr));
   ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, (const char *)if_name.c_str(), IFNAMSIZ - 1);
+  strncpy(ifr.ifr_name, (const char*) if_name.c_str(), IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFNETMASK, &ifr)) {
     close(fd);
-    Logger::system().error("Failed to probe %s inet netmask: error %s\n",
-                           if_name.c_str(), strerror(errno));
+    Logger::system().error(
+        "Failed to probe %s inet netmask: error %s\n", if_name.c_str(),
+        strerror(errno));
     return RETURNerror;
   }
-  ipaddr = (struct sockaddr_in *)&ifr.ifr_netmask;
+  ipaddr = (struct sockaddr_in*) &ifr.ifr_netmask;
   // check
-  if (inet_ntop(AF_INET, (const void *)&ipaddr->sin_addr, str,
-                INET_ADDRSTRLEN) == NULL) {
+  if (inet_ntop(
+          AF_INET, (const void*) &ipaddr->sin_addr, str, INET_ADDRSTRLEN) ==
+      NULL) {
     close(fd);
     return RETURNerror;
   }
@@ -242,10 +249,10 @@ int get_inet_addr_infos_from_iface(const std::string &if_name,
 
   memset(&ifr, 0, sizeof(ifr));
   ifr.ifr_addr.sa_family = AF_INET;
-  strncpy(ifr.ifr_name, (const char *)if_name.c_str(), IFNAMSIZ - 1);
+  strncpy(ifr.ifr_name, (const char*) if_name.c_str(), IFNAMSIZ - 1);
   if (ioctl(fd, SIOCGIFMTU, &ifr)) {
-    Logger::system().error("Failed to probe %s MTU: error %s\n",
-                           if_name.c_str(), strerror(errno));
+    Logger::system().error(
+        "Failed to probe %s MTU: error %s\n", if_name.c_str(), strerror(errno));
   } else {
     mtu = ifr.ifr_mtu;
   }

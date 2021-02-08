@@ -72,8 +72,6 @@ class deploySanityCheckTest():
         entrypoint = re.search('entrypoint', str(res))
         if entrypoint is not None:
             # TEMPORARY
-            #subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwc/dockerfile-improvements-2020-08/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwcConfigFiles.py')
-            #subprocess_run_w_echo('python3 ci-scripts/generateSpgwcConfigFiles.py --kind=SPGW-C --s11c=eth0 --sxc=eth1 --from_docker_file --env_for_entrypoint')
             subprocess_run_w_echo('python3 ci-scripts/generateConfigFiles.py --kind=SPGW-C --s11c=eth0 --sxc=eth1 --from_docker_file --env_for_entrypoint')
             # S11 to MME will be on `eth0`
             # SX to SPGWU will be on `eth1`
@@ -96,7 +94,7 @@ class deploySanityCheckTest():
             subprocess_run_w_echo('docker network connect --ip ' + CI_SPGWC_SXN_ADDR + ' ci-sx ci-oai-spgwc')
             subprocess_run_w_echo('python3 ci-scripts/generateConfigFiles.py --kind=SPGW-C --s11c=eth0 --sxc=eth1 --from_docker_file')
             subprocess_run_w_echo('docker cp ./spgwc-cfg.sh ci-oai-spgwc:/openair-spgwc')
-            subprocess_run_w_echo('docker exec -it ci-oai-spgwc /bin/bash -c "cd /openair-spgwc && chmod 777 spgwc-cfg.sh && ./spgwc-cfg.sh" >> archives/spgwc_config.log')
+            subprocess_run_w_echo('docker exec ci-oai-spgwc /bin/bash -c "cd /openair-spgwc && chmod 777 spgwc-cfg.sh && ./spgwc-cfg.sh" >> archives/spgwc_config.log')
 
     def deploySPGWU(self):
         res = ''
@@ -109,7 +107,6 @@ class deploySanityCheckTest():
         # check if there is an entrypoint
         entrypoint = re.search('entrypoint', str(res))
         if entrypoint is not None:
-            #subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwu-tiny/dockerfile-improvements-2020-08/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwuConfigFiles.py')
             subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwu-tiny/develop/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwuConfigFiles.py')
             subprocess_run_w_echo('python3 ci-scripts/generateSpgwuConfigFiles.py --kind=SPGW-U --sxc_ip_addr=' + CI_SPGWC_SXN_ADDR + ' --sxu=eth1 --s1u=eth0 --from_docker_file --env_for_entrypoint')
             # S1U to eNB will be on `eth0`
@@ -133,7 +130,7 @@ class deploySanityCheckTest():
             subprocess_run_w_echo('wget --quiet https://raw.githubusercontent.com/OPENAIRINTERFACE/openair-spgwu-tiny/develop/ci-scripts/generateConfigFiles.py -O ci-scripts/generateSpgwuConfigFiles.py')
             subprocess_run_w_echo('python3 ci-scripts/generateSpgwuConfigFiles.py --kind=SPGW-U --sxc_ip_addr=' + CI_SPGWC_SXN_ADDR + ' --sxu=eth1 --s1u=eth0 --from_docker_file')
             subprocess_run_w_echo('docker cp ./spgwu-cfg.sh ci-oai-spgwu:/openair-spgwu-tiny')
-            subprocess_run_w_echo('docker exec -it ci-oai-spgwu /bin/bash -c "cd /openair-spgwu-tiny && chmod 777 spgwu-cfg.sh && ./spgwu-cfg.sh" >> archives/spgwu_config.log')
+            subprocess_run_w_echo('docker exec ci-oai-spgwu /bin/bash -c "cd /openair-spgwu-tiny && chmod 777 spgwu-cfg.sh && ./spgwu-cfg.sh" >> archives/spgwu_config.log')
 
     def startSPGWC(self):
         res = ''
@@ -178,7 +175,7 @@ class deploySanityCheckTest():
         if entrypoint is not None:
             print('there is an entrypoint -- no need')
         else:
-            subprocess_run_w_echo('docker exec -it ci-oai-spgwc /bin/bash -c "killall oai_spgwc"')
+            subprocess_run_w_echo('docker exec ci-oai-spgwc /bin/bash -c "killall oai_spgwc"')
 
     def stopSPGWU(self):
         res = ''
@@ -193,7 +190,7 @@ class deploySanityCheckTest():
         if entrypoint is not None:
             print('there is an entrypoint')
         else:
-            subprocess_run_w_echo('docker exec -it ci-oai-spgwu /bin/bash -c "killall oai_spgwu"')
+            subprocess_run_w_echo('docker exec ci-oai-spgwu /bin/bash -c "killall oai_spgwu"')
 
     def logsSPGWC(self):
         res = ''

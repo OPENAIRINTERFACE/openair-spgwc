@@ -69,6 +69,7 @@ install_fmt() {
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_spdlog_from_git() {
+  echo_info "Starting to install spdlog from source"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install spdlog ? <y/N> " prompt
     OPTION=""
@@ -101,6 +102,7 @@ install_spdlog_from_git() {
     sed -i '/#define SPDLOG_ENABLE_SYSLOG/s/^\/\///g' include/spdlog/tweakme.h
     popd
   fi
+  echo_success "End of spdlog installation"
   return 0
 }
 
@@ -160,6 +162,7 @@ check_install_spgwc_deps() {
       bison \
       $CMAKE \
       flex \
+      procps-ng \
       gdb \
       git"
   else
@@ -197,12 +200,20 @@ check_install_spgwc_deps() {
       python \
       pkg-config"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
+    case "$(get_distribution_release)" in
+      "centos8")
+         specific_packages="libidn2-devel"
+         ;;
+      "rhel8.2")
+         specific_packages=""
+         ;;
+    esac
     PACKAGE_LIST="\
+      $specific_packages \
       guile-devel \
       libconfig-devel \
       libgcrypt-devel \
       gmp-devel \
-      libidn2-devel \
       libidn-devel \
       lksctp-tools \
       lksctp-tools-devel \
@@ -220,6 +231,8 @@ check_install_spgwc_deps() {
   echo "Install distro libs"
   $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
   ret=$?;[[ $ret -ne 0 ]] && return $ret
+
+  echo_info "Packages and Libraries installation finished!"
 
   # Use fmt lib included in spdlog
   #install_fmt $1

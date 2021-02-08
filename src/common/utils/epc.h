@@ -40,35 +40,35 @@
    MNC = [MNC digit 1][MNC digit 2][MNC digit 3]
 */
 
-#define LOW_NIBBLE(a) (((unsigned char)a) & 0x0f)
-#define HIGH_NIBBLE(a) ((((unsigned char)a) & 0xf0) >> 4)
+#define LOW_NIBBLE(a) (((unsigned char) a) & 0x0f)
+#define HIGH_NIBBLE(a) ((((unsigned char) a) & 0xf0) >> 4)
 
-#define PARSE_MNC(a, b)               \
-  {                                   \
-    if (HIGH_NIBBLE(b[1]) == 0x0f) {  \
-      a[0] = '0';                     \
-      a[1] = LOW_NIBBLE(b[2]) + '0';  \
-      a[2] = HIGH_NIBBLE(b[2]) + '0'; \
-      a[3] = '\0';                    \
-    } else {                          \
-      a[0] = LOW_NIBBLE(b[2]) + '0';  \
-      a[1] = HIGH_NIBBLE(b[2]) + '0'; \
-      a[2] = HIGH_NIBBLE(b[1]) + '0'; \
-      a[3] = '\0';                    \
-    }                                 \
+#define PARSE_MNC(a, b)                                                        \
+  {                                                                            \
+    if (HIGH_NIBBLE(b[1]) == 0x0f) {                                           \
+      a[0] = '0';                                                              \
+      a[1] = LOW_NIBBLE(b[2]) + '0';                                           \
+      a[2] = HIGH_NIBBLE(b[2]) + '0';                                          \
+      a[3] = '\0';                                                             \
+    } else {                                                                   \
+      a[0] = LOW_NIBBLE(b[2]) + '0';                                           \
+      a[1] = HIGH_NIBBLE(b[2]) + '0';                                          \
+      a[2] = HIGH_NIBBLE(b[1]) + '0';                                          \
+      a[3] = '\0';                                                             \
+    }                                                                          \
   }
 
-#define PARSE_MCC(a, b)             \
-  {                                 \
-    a[0] = LOW_NIBBLE(b[0]) + '0';  \
-    a[1] = HIGH_NIBBLE(b[0]) + '0'; \
-    a[2] = LOW_NIBBLE(b[1]) + '0';  \
-    a[3] = '\0';                    \
+#define PARSE_MCC(a, b)                                                        \
+  {                                                                            \
+    a[0] = LOW_NIBBLE(b[0]) + '0';                                             \
+    a[1] = HIGH_NIBBLE(b[0]) + '0';                                            \
+    a[2] = LOW_NIBBLE(b[1]) + '0';                                             \
+    a[3] = '\0';                                                               \
   }
 
-#define PARSE_PLMNID(a) \
-  char mnc[4], mcc[4];  \
-  PARSE_MNC(mnc, a);    \
+#define PARSE_PLMNID(a)                                                        \
+  char mnc[4], mcc[4];                                                         \
+  PARSE_MNC(mnc, a);                                                           \
   PARSE_MCC(mcc, a);
 
 #define APPEND_MNC(a) append("mnc").append(a).append(".")
@@ -262,89 +262,88 @@ enum DiameterProtocolEnum {
 
 class Utility {
  public:
-  static std::string home_network(const char *mnc, const char *mcc);
-  static std::string home_network(const unsigned char *plmnid);
-  static std::string home_network_gprs(const char *mnc, const char *mcc);
-  static std::string home_network_gprs(const unsigned char *plmnid);
-  static std::string tai_fqdn(const char *lb, const char *hb, const char *mnc,
-                              const char *mcc);
-  static std::string tai_fqdn(const char *lb, const char *hb,
-                              const unsigned char *plmnid);
-  static std::string mme_fqdn(const char *mmec, const char *mmegi,
-                              const char *mnc, const char *mcc);
-  static std::string mme_fqdn(const char *mmec, const char *mmegi,
-                              const unsigned char *plmnid);
-  static std::string mme_pool_fqdn(const char *mmegi, const char *mnc,
-                                   const char *mcc);
-  static std::string mme_pool_fqdn(const char *mmegi,
-                                   const unsigned char *plmnid);
-  static std::string rai_fqdn(const char *rac, const char *lac, const char *mnc,
-                              const char *mcc);
-  static std::string rai_fqdn(const char *rac, const char *lac,
-                              const unsigned char *plmnid);
-  static std::string rnc_fqdn(const char *rnc, const char *mnc,
-                              const char *mcc);
-  static std::string rnc_fqdn(const char *rnc, const unsigned char *plmnid);
-  static std::string sgsn_fqdn(const char *nri, const char *rac,
-                               const char *lac, const char *mnc,
-                               const char *mcc);
-  static std::string sgsn_fqdn(const char *nri, const char *rac,
-                               const char *lac, const unsigned char *plmnid);
-  static std::string epc_nodes_domain_fqdn(const char *mnc, const char *mcc);
-  static std::string epc_nodes_domain_fqdn(const unsigned char *plmnid);
-  static std::string epc_node_fqdn(const char *node, const char *mnc,
-                                   const char *mcc);
-  static std::string epc_node_fqdn(const char *node,
-                                   const unsigned char *plmnid);
-  static std::string nonemergency_epdg_oi_fqdn(const char *mnc,
-                                               const char *mcc);
-  static std::string nonemergency_epdg_oi_fqdn(const unsigned char *plmnid);
-  static std::string nonemergency_epdg_tai_fqdn(const char *lb, const char *hb,
-                                                const char *mnc,
-                                                const char *mcc);
-  static std::string nonemergency_epdg_tai_fqdn(const char *lb, const char *hb,
-                                                const unsigned char *plmnid);
-  static std::string nonemergency_epdg_lac_fqdn(const char *lac,
-                                                const char *mnc,
-                                                const char *mcc);
-  static std::string nonemergency_epdg_lac_fqdn(const char *lac,
-                                                const unsigned char *plmnid);
-  static std::string nonemergency_epdg_visitedcountry_fqdn(const char *mcc);
+  static std::string home_network(const char* mnc, const char* mcc);
+  static std::string home_network(const unsigned char* plmnid);
+  static std::string home_network_gprs(const char* mnc, const char* mcc);
+  static std::string home_network_gprs(const unsigned char* plmnid);
+  static std::string tai_fqdn(
+      const char* lb, const char* hb, const char* mnc, const char* mcc);
+  static std::string tai_fqdn(
+      const char* lb, const char* hb, const unsigned char* plmnid);
+  static std::string mme_fqdn(
+      const char* mmec, const char* mmegi, const char* mnc, const char* mcc);
+  static std::string mme_fqdn(
+      const char* mmec, const char* mmegi, const unsigned char* plmnid);
+  static std::string mme_pool_fqdn(
+      const char* mmegi, const char* mnc, const char* mcc);
+  static std::string mme_pool_fqdn(
+      const char* mmegi, const unsigned char* plmnid);
+  static std::string rai_fqdn(
+      const char* rac, const char* lac, const char* mnc, const char* mcc);
+  static std::string rai_fqdn(
+      const char* rac, const char* lac, const unsigned char* plmnid);
+  static std::string rnc_fqdn(
+      const char* rnc, const char* mnc, const char* mcc);
+  static std::string rnc_fqdn(const char* rnc, const unsigned char* plmnid);
+  static std::string sgsn_fqdn(
+      const char* nri, const char* rac, const char* lac, const char* mnc,
+      const char* mcc);
+  static std::string sgsn_fqdn(
+      const char* nri, const char* rac, const char* lac,
+      const unsigned char* plmnid);
+  static std::string epc_nodes_domain_fqdn(const char* mnc, const char* mcc);
+  static std::string epc_nodes_domain_fqdn(const unsigned char* plmnid);
+  static std::string epc_node_fqdn(
+      const char* node, const char* mnc, const char* mcc);
+  static std::string epc_node_fqdn(
+      const char* node, const unsigned char* plmnid);
+  static std::string nonemergency_epdg_oi_fqdn(
+      const char* mnc, const char* mcc);
+  static std::string nonemergency_epdg_oi_fqdn(const unsigned char* plmnid);
+  static std::string nonemergency_epdg_tai_fqdn(
+      const char* lb, const char* hb, const char* mnc, const char* mcc);
+  static std::string nonemergency_epdg_tai_fqdn(
+      const char* lb, const char* hb, const unsigned char* plmnid);
+  static std::string nonemergency_epdg_lac_fqdn(
+      const char* lac, const char* mnc, const char* mcc);
+  static std::string nonemergency_epdg_lac_fqdn(
+      const char* lac, const unsigned char* plmnid);
+  static std::string nonemergency_epdg_visitedcountry_fqdn(const char* mcc);
   static std::string nonemergency_epdg_visitedcountry_fqdn(
-      const unsigned char *plmnid);
-  static std::string emergency_epdg_oi_fqdn(const char *mnc, const char *mcc);
-  static std::string emergency_epdg_oi_fqdn(const unsigned char *plmnid);
-  static std::string emergency_epdg_tai_fqdn(const char *lb, const char *hb,
-                                             const char *mnc, const char *mcc);
-  static std::string emergency_epdg_tai_fqdn(const char *lb, const char *hb,
-                                             const unsigned char *plmnid);
-  static std::string emergency_epdg_lac_fqdn(const char *lac, const char *mnc,
-                                             const char *mcc);
-  static std::string emergency_epdg_lac_fqdn(const char *lac,
-                                             const unsigned char *plmnid);
-  static std::string emergency_epdg_visitedcountry_fqdn(const char *mcc);
+      const unsigned char* plmnid);
+  static std::string emergency_epdg_oi_fqdn(const char* mnc, const char* mcc);
+  static std::string emergency_epdg_oi_fqdn(const unsigned char* plmnid);
+  static std::string emergency_epdg_tai_fqdn(
+      const char* lb, const char* hb, const char* mnc, const char* mcc);
+  static std::string emergency_epdg_tai_fqdn(
+      const char* lb, const char* hb, const unsigned char* plmnid);
+  static std::string emergency_epdg_lac_fqdn(
+      const char* lac, const char* mnc, const char* mcc);
+  static std::string emergency_epdg_lac_fqdn(
+      const char* lac, const unsigned char* plmnid);
+  static std::string emergency_epdg_visitedcountry_fqdn(const char* mcc);
   static std::string emergency_epdg_visitedcountry_fqdn(
-      const unsigned char *plmnid);
-  static std::string global_enodeb_id_fqdn(const char *enb, const char *mcc);
-  static std::string global_enodeb_id_fqdn(const char *enb,
-                                           const unsigned char *plmnid);
-  static std::string local_homenetwork_fqdn(const char *lhn, const char *mcc);
-  static std::string local_homenetwork_fqdn(const char *lhn,
-                                            const unsigned char *plmnid);
-  static std::string epc(const char *mnc, const char *mcc);
-  static std::string epc(const unsigned char *plmnid);
-  static std::string apn_fqdn(const char *apnoi, const char *mnc,
-                              const char *mcc);
-  static std::string apn_fqdn(const char *apnoi, const unsigned char *plmnid);
-  static std::string apn(const char *apnoi, const char *mnc, const char *mcc);
-  static std::string apn(const char *apnoi, const unsigned char *plmnid);
-  static std::string apn_label(const std::string &apn);
+      const unsigned char* plmnid);
+  static std::string global_enodeb_id_fqdn(const char* enb, const char* mcc);
+  static std::string global_enodeb_id_fqdn(
+      const char* enb, const unsigned char* plmnid);
+  static std::string local_homenetwork_fqdn(const char* lhn, const char* mcc);
+  static std::string local_homenetwork_fqdn(
+      const char* lhn, const unsigned char* plmnid);
+  static std::string epc(const char* mnc, const char* mcc);
+  static std::string epc(const unsigned char* plmnid);
+  static std::string apn_fqdn(
+      const char* apnoi, const char* mnc, const char* mcc);
+  static std::string apn_fqdn(const char* apnoi, const unsigned char* plmnid);
+  static std::string apn(const char* apnoi, const char* mnc, const char* mcc);
+  static std::string apn(const char* apnoi, const unsigned char* plmnid);
+  static std::string apn_label(const std::string& apn);
 
-  static AppServiceEnum getAppService(const std::string &s);
-  static AppProtocolEnum getAppProtocol(const std::string &p);
+  static AppServiceEnum getAppService(const std::string& s);
+  static AppProtocolEnum getAppProtocol(const std::string& p);
 
-  static const char *getAppService(AppServiceEnum s);
-  static const char *getAppProtocol(AppProtocolEnum proto);
+  static const char* getAppService(AppServiceEnum s);
+  static const char* getAppProtocol(AppProtocolEnum proto);
 
   static AppProtocolEnum getAppProtocol(PGWAppProtocolEnum proto);
   static AppProtocolEnum getAppProtocol(SGWAppProtocolEnum proto);
@@ -353,14 +352,14 @@ class Utility {
   static AppProtocolEnum getAppProtocol(MMEAppProtocolEnum proto);
   static AppProtocolEnum getAppProtocol(MSCAppProtocolEnum proto);
 
-  static std::string diameter_fqdn(const char *mnc, const char *mcc);
-  static std::string diameter_fqdn(const unsigned char *plmnid);
+  static std::string diameter_fqdn(const char* mnc, const char* mcc);
+  static std::string diameter_fqdn(const unsigned char* plmnid);
 
   static uint32_t getDiameterApplication(DiameterApplicationEnum app);
-  static const char *getDiameterProtocol(DiameterProtocolEnum protocol);
+  static const char* getDiameterProtocol(DiameterProtocolEnum protocol);
 
-  static std::string getDiameterService(DiameterApplicationEnum app,
-                                        DiameterProtocolEnum protocol);
+  static std::string getDiameterService(
+      DiameterApplicationEnum app, DiameterProtocolEnum protocol);
 
  private:
   Utility() {}
