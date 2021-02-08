@@ -396,7 +396,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
   if (csreq.gtp_ies.get(imsi)) {
     // imsi not authenticated
     indication_t indication = {};
-    bool delete_pdn_flag = false;
+    bool delete_pdn_flag    = false;
     if ((csreq.gtp_ies.get(indication)) && (indication.uimsi)) {
       Logger::sgwc_app().debug(
           "TODO S11 CREATE_SESSION_REQUEST (no AUTHENTICATED IMSI) sender "
@@ -436,10 +436,10 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
           //       3) create DSR procedure, delete ctxt and send CSR
           // emulate reception by
           itti_s11_delete_session_request dsr{TASK_SGWC_APP, TASK_SGWC_APP};
-          dsr.gtp_ies.set(ebc->mme_fteid_s11, 0); // sender FTEID
+          dsr.gtp_ies.set(ebc->mme_fteid_s11, 0);  // sender FTEID
           dsr.gtp_ies.set(ebi);
           indication_t indication_flags = {};
-          indication_flags.oi = 1;
+          indication_flags.oi           = 1;
           dsr.gtp_ies.set(indication_flags);
           dsr.teid = ebc->sgw_fteid_s11_s4_cp.teid_gre_key;
           // send 'S11' DSR
