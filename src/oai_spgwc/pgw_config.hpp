@@ -236,7 +236,7 @@ class pgw_config {
     }
     force_push_pco = true;
     // Do not change this value unless you know what you are doing
-    ue_mtu         = 1358;
+    ue_mtu = 1358;
 
     itti.itti_timer_sched_params.sched_priority = 85;
     itti.sx_sched_params.sched_priority         = 84;
