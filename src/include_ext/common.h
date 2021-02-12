@@ -39,14 +39,14 @@
 #include <cstdint>
 #include <string>
 
-#if __cplusplus < 201703L // pre-C++17?
+#if __cplusplus < 201703L  // pre-C++17?
 #error Must be built with C++17
 #endif
 
 /* Hint for performance optimization. Same as _nDCHECK() of TI compilers */
-#define promise(cond)                     \
-  ({                                      \
-    if (!(cond)) __builtin_unreachable(); \
+#define promise(cond)                                                          \
+  ({                                                                           \
+    if (!(cond)) __builtin_unreachable();                                      \
   })
 #define promise_unreachable() __builtin_unreachable();
 
@@ -99,8 +99,8 @@ static inline uint64_t align_ceil_pow2(uint64_t v) {
 // A macro to disallow the copy constructor and operator= functions.
 // This should be used in the private: declarations for a class.
 #ifndef DISALLOW_COPY_AND_ASSIGN
-#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-  TypeName(const TypeName&) = delete;      \
+#define DISALLOW_COPY_AND_ASSIGN(TypeName)                                     \
+  TypeName(const TypeName&) = delete;                                          \
   void operator=(const TypeName&) = delete
 #endif
 // A macro to disallow all the implicit constructors, namely the
@@ -110,8 +110,8 @@ static inline uint64_t align_ceil_pow2(uint64_t v) {
 // that wants to prevent anyone from instantiating it. This is
 // especially useful for classes containing only static methods.
 #ifndef DISALLOW_IMPLICIT_CONSTRUCTORS
-#define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName) \
-  TypeName() = delete;                           \
+#define DISALLOW_IMPLICIT_CONSTRUCTORS(TypeName)                               \
+  TypeName() = delete;                                                         \
   DISALLOW_COPY_AND_ASSIGN(TypeName)
 #endif
 // Used to explicitly mark the return value of a function as unused. If you are
@@ -210,4 +210,4 @@ struct PairHasher {
   }
 };
 
-#endif // BESS_UTILS_COMMON_H_
+#endif  // BESS_UTILS_COMMON_H_

@@ -35,7 +35,7 @@ RAPIDJSON_NAMESPACE_BEGIN
 */
 class FileWriteStream {
  public:
-  typedef char Ch; //!< Character type. Only support char.
+  typedef char Ch;  //!< Character type. Only support char.
 
   FileWriteStream(std::FILE* fp, char* buffer, size_t bufferSize)
       : fp_(fp),
@@ -125,4 +125,4 @@ RAPIDJSON_NAMESPACE_END
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_FILESTREAM_H_
+#endif  // RAPIDJSON_FILESTREAM_H_

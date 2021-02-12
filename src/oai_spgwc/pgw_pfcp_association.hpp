@@ -42,13 +42,13 @@
 namespace pgwc {
 
 enum node_selection_criteria_e {
-  kNodeSelectionCriteriaBestMaxHeartBeatRtt   = 0,
-  kNodeSelectionCriteriaMinPfcpSessions       = 1,
-  kNodeSelectionCriteriaMinUpTime             = 2,
-  kNodeSelectionCriteriaMaxUpTime             = 3,
-  kNodeSelectionCriteriaMinRestart            = 4,
-  kNodeSelectionCriteriaMaxAvailableBw        = 5,
-  kNodeSelectionCriteriaNone                  = 6
+  kNodeSelectionCriteriaBestMaxHeartBeatRtt = 0,
+  kNodeSelectionCriteriaMinPfcpSessions     = 1,
+  kNodeSelectionCriteriaMinUpTime           = 2,
+  kNodeSelectionCriteriaMaxUpTime           = 3,
+  kNodeSelectionCriteriaMinRestart          = 4,
+  kNodeSelectionCriteriaMaxAvailableBw      = 5,
+  kNodeSelectionCriteriaNone                = 6
 };
 
 // Not PFCP retries, just Application retry over PFCP retries
@@ -60,7 +60,8 @@ class pfcp_association {
   std::string id;
   pfcp::recovery_time_stamp_t recovery_time_stamp;
   std::pair<bool, pfcp::up_function_features_s> function_features;
-  std::pair<bool, pfcp::user_plane_ip_resource_information_t> user_plane_ip_resource_information;
+  std::pair<bool, pfcp::user_plane_ip_resource_information_t>
+      user_plane_ip_resource_information;
   endpoint remote_endpoint;
   //
   mutable std::mutex m_sessions;
@@ -75,7 +76,8 @@ class pfcp_association {
   timer_id_t timer_association;
 
   explicit pfcp_association(const pfcp::node_id_t& node_id)
-      : node_id(node_id), id(),
+      : node_id(node_id),
+        id(),
         recovery_time_stamp(),
         function_features(),
         user_plane_ip_resource_information(),
@@ -94,14 +96,14 @@ class pfcp_association {
       std::pair<bool, pfcp::up_function_features_s>& uff,
       std::pair<bool, pfcp::user_plane_ip_resource_information_t>& upiri)
       : node_id(ni), recovery_time_stamp(rts), m_sessions(), sessions() {
-    hash_node_id                = std::hash<pfcp::node_id_t>{}(node_id);
-    function_features           = uff;
+    hash_node_id                       = std::hash<pfcp::node_id_t>{}(node_id);
+    function_features                  = uff;
     user_plane_ip_resource_information = upiri;
-    timer_heartbeat             = ITTI_INVALID_TIMER_ID;
-    num_retries_timer_heartbeat = 0;
-    trxn_id_heartbeat           = 0;
-    is_restore_sessions_pending = false;
-    timer_association           = ITTI_INVALID_TIMER_ID;
+    timer_heartbeat                    = ITTI_INVALID_TIMER_ID;
+    num_retries_timer_heartbeat        = 0;
+    trxn_id_heartbeat                  = 0;
+    is_restore_sessions_pending        = false;
+    timer_association                  = ITTI_INVALID_TIMER_ID;
   }
   pfcp_association(pfcp_association const& p)
       : node_id(p.node_id),
@@ -109,7 +111,8 @@ class pfcp_association {
         id(p.id),
         recovery_time_stamp(p.recovery_time_stamp),
         function_features(p.function_features),
-        user_plane_ip_resource_information(p.user_plane_ip_resource_information),
+        user_plane_ip_resource_information(
+            p.user_plane_ip_resource_information),
         timer_heartbeat(p.timer_heartbeat),
         num_retries_timer_heartbeat(p.num_retries_timer_heartbeat),
         trxn_id_heartbeat(p.trxn_id_heartbeat),
@@ -126,7 +129,6 @@ class pfcp_association {
     function_features.second = ff;
   };
 };
-
 
 #define PFCP_MAX_ASSOCIATIONS 16
 
@@ -150,10 +152,8 @@ class pfcp_associations {
   void operator=(pfcp_associations const&) = delete;
 
   bool add_association(
-      const uint64_t& trxn_id,
-      const endpoint& remote_endpoint,
-      pfcp::node_id_t &node_id,
-      std::string &id,
+      const uint64_t& trxn_id, const endpoint& remote_endpoint,
+      pfcp::node_id_t& node_id, std::string& id,
       pfcp::recovery_time_stamp_t& recovery_time_stamp,
       std::pair<bool, pfcp::up_function_features_s>& up_function_features,
       std::pair<bool, pfcp::user_plane_ip_resource_information_t>&
@@ -173,17 +173,18 @@ class pfcp_associations {
 
   void initiate_heartbeat_request(timer_id_t timer_id, uint64_t arg2_user);
   void timeout_heartbeat_request(timer_id_t timer_id, uint64_t arg2_user);
-  void handle_receive_heartbeat_response(const uint64_t trxn_id,
-      const endpoint& remote_endpoint,
+  void handle_receive_heartbeat_response(
+      const uint64_t trxn_id, const endpoint& remote_endpoint,
       const pfcp::recovery_time_stamp_t& recovery_time_stamp);
-  void handle_receive_heartbeat_request(const uint64_t trxn_id,
-      const endpoint& remote_endpoint,
+  void handle_receive_heartbeat_request(
+      const uint64_t trxn_id, const endpoint& remote_endpoint,
       const pfcp::recovery_time_stamp_t& recovery_time_stamp);
 
-  bool select_up_node(const apn_t& apn, const uli_t& uli,
+  bool select_up_node(
+      const apn_t& apn, const uli_t& uli,
       const serving_network_t& serving_network, const rat_type_t& rat_type,
-      const pdn_type_t& pdn_type, const paa_t& paa,
-      pfcp::node_id_t& node_id, const int node_selection_criteria);
+      const pdn_type_t& pdn_type, const paa_t& paa, pfcp::node_id_t& node_id,
+      const int node_selection_criteria);
 };
 }  // namespace pgwc
 

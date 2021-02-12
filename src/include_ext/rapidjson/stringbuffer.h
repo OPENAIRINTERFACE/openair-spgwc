@@ -23,7 +23,7 @@
 #include "stream.h"
 
 #if RAPIDJSON_HAS_CXX11_RVALUE_REFS
-#include <utility> // std::move
+#include <utility>  // std::move
 #endif
 
 #include "internal/stack.h"
@@ -127,4 +127,4 @@ RAPIDJSON_NAMESPACE_END
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_STRINGBUFFER_H_
+#endif  // RAPIDJSON_STRINGBUFFER_H_

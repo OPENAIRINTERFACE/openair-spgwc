@@ -129,9 +129,9 @@ class pfcp_ie : public stream_serializable {
     uint8_t* last_size;
     uint8_t word_length = 0;
 
-    uint8_t  value[str.length() + 1];
-    dotted = {};
-    last_size  = &value[0];
+    uint8_t value[str.length() + 1];
+    dotted    = {};
+    last_size = &value[0];
 
     while (str[offset]) {
       // We replace the . by the length of the word
@@ -148,15 +148,15 @@ class pfcp_ie : public stream_serializable {
     }
 
     *last_size = word_length;
-    dotted.assign((const char*)value, str.length() + 1);
+    dotted.assign((const char*) value, str.length() + 1);
     return true;
   };
 
   static bool dotted_to_string(const std::string& dot, std::string& no_dot) {
     // uint8_t should be enough, but uint16 if length > 255.
     uint16_t offset = 0;
-    bool result = true;
-    no_dot = {};
+    bool result     = true;
+    no_dot          = {};
 
     while (offset < dot.length()) {
       if (dot[offset] < 64) {
@@ -164,7 +164,7 @@ class pfcp_ie : public stream_serializable {
           if (offset) {
             no_dot.push_back('.');
           }
-          no_dot.append(&dot[offset+1], dot[offset]);
+          no_dot.append(&dot[offset + 1], dot[offset]);
         }
         offset = offset + 1 + dot[offset];
       } else {
@@ -3201,7 +3201,7 @@ class pfcp_node_id_ie : public pfcp_ie {
         ipv6_address = b.u1.ipv6_address;
         break;
       case pfcp::NODE_ID_TYPE_FQDN:
-        tlv.add_length(b.fqdn.length()+1);
+        tlv.add_length(b.fqdn.length() + 1);
         fqdn = b.fqdn;
         break;
       default:;
@@ -3244,13 +3244,11 @@ class pfcp_node_id_ie : public pfcp_ie {
       case pfcp::NODE_ID_TYPE_IPV6_ADDRESS:
         ipv6_address_dump_to(os, ipv6_address);
         break;
-      case pfcp::NODE_ID_TYPE_FQDN:
-        {
-          std::string dotted = {};
-          pfcp_ie::string_to_dotted(fqdn, dotted);
-          os << dotted;
-        }
-        break;
+      case pfcp::NODE_ID_TYPE_FQDN: {
+        std::string dotted = {};
+        pfcp_ie::string_to_dotted(fqdn, dotted);
+        os << dotted;
+      } break;
       default:;
     }
   }

@@ -25,7 +25,7 @@
 
 #include "diyfp.h"
 #include "ieee754.h"
-#include "itoa.h" // GetDigitsLut()
+#include "itoa.h"  // GetDigitsLut()
 
 RAPIDJSON_NAMESPACE_BEGIN
 namespace internal {
@@ -34,15 +34,15 @@ namespace internal {
 RAPIDJSON_DIAG_PUSH
 RAPIDJSON_DIAG_OFF(effc++)
 RAPIDJSON_DIAG_OFF(
-    array - bounds) // some gcc versions generate wrong warnings
-                    // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59124
+    array - bounds)  // some gcc versions generate wrong warnings
+                     // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59124
 #endif
 
 inline void GrisuRound(
     char* buffer, int len, uint64_t delta, uint64_t rest, uint64_t ten_kappa,
     uint64_t wp_w) {
   while (rest < wp_w && delta - rest >= ten_kappa &&
-         (rest + ten_kappa < wp_w || /// closer
+         (rest + ten_kappa < wp_w ||  /// closer
           wp_w - rest > rest + ten_kappa - wp_w)) {
     buffer[len - 1]--;
     rest += ten_kappa;
@@ -76,7 +76,7 @@ inline void DigitGen(
   const DiyFp wp_w = Mp - W;
   uint32_t p1      = static_cast<uint32_t>(Mp.f >> -one.e);
   uint64_t p2      = Mp.f & (one.f - 1);
-  int kappa        = CountDecimalDigit32(p1); // kappa in [0, 9]
+  int kappa        = CountDecimalDigit32(p1);  // kappa in [0, 9]
   *len             = 0;
 
   while (kappa > 0) {
@@ -189,7 +189,7 @@ inline char* WriteExponent(int K, char* buffer) {
 }
 
 inline char* Prettify(char* buffer, int length, int k, int maxDecimalPlaces) {
-  const int kk = length + k; // 10^(kk-1) <= v < 10^kk
+  const int kk = length + k;  // 10^(kk-1) <= v < 10^kk
 
   if (0 <= k && kk <= 21) {
     // 1234e7 -> 12340000000
@@ -207,7 +207,7 @@ inline char* Prettify(char* buffer, int length, int k, int maxDecimalPlaces) {
       // Remove extra trailing zeros (at least one) after truncation.
       for (int i = kk + maxDecimalPlaces; i > kk + 1; i--)
         if (buffer[i] != '0') return &buffer[i + 1];
-      return &buffer[kk + 2]; // Reserve one zero
+      return &buffer[kk + 2];  // Reserve one zero
     } else
       return &buffer[length + 1];
   } else if (-6 < kk && kk <= 0) {
@@ -222,7 +222,7 @@ inline char* Prettify(char* buffer, int length, int k, int maxDecimalPlaces) {
       // Remove extra trailing zeros (at least one) after truncation.
       for (int i = maxDecimalPlaces + 1; i > 2; i--)
         if (buffer[i] != '0') return &buffer[i + 1];
-      return &buffer[3]; // Reserve one zero
+      return &buffer[3];  // Reserve one zero
     } else
       return &buffer[length + offset];
   } else if (kk < -maxDecimalPlaces) {
@@ -248,7 +248,7 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
   RAPIDJSON_ASSERT(maxDecimalPlaces >= 1);
   Double d(value);
   if (d.IsZero()) {
-    if (d.Sign()) *buffer++ = '-'; // -0.0, Issue #289
+    if (d.Sign()) *buffer++ = '-';  // -0.0, Issue #289
     buffer[0] = '0';
     buffer[1] = '.';
     buffer[2] = '0';
@@ -268,7 +268,7 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 RAPIDJSON_DIAG_POP
 #endif
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_DTOA_
+#endif  // RAPIDJSON_DTOA_

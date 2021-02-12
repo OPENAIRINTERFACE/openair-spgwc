@@ -42,7 +42,7 @@ RAPIDJSON_NAMESPACE_BEGIN
 */
 template<typename Allocator = CrtAllocator>
 struct GenericMemoryBuffer {
-  typedef char Ch; // byte
+  typedef char Ch;  // byte
 
   GenericMemoryBuffer(
       Allocator* allocator = 0, size_t capacity = kDefaultCapacity)
@@ -75,4 +75,4 @@ inline void PutN(MemoryBuffer& memoryBuffer, char c, size_t n) {
 
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_MEMORYBUFFER_H_
+#endif  // RAPIDJSON_MEMORYBUFFER_H_

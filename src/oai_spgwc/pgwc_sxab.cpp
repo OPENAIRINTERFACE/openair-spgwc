@@ -348,8 +348,7 @@ void pgwc_sxab::handle_receive_association_setup_request(
       return;
     }
     PfcpUpNodes::Instance().AssociationSetupRequest(
-        trxn_id, remote_endpoint,
-        msg_ies_container.node_id.second,
+        trxn_id, remote_endpoint, msg_ies_container.node_id.second,
         msg_ies_container.recovery_time_stamp.second,
         msg_ies_container.up_function_features,
         msg_ies_container.user_plane_ip_resource_information);
@@ -469,14 +468,14 @@ void pgwc_sxab::handle_receive_session_report_request(
 
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_request& i) {
-  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
+  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
                                        (uint32_t) recovery_time_stamp};
   i.pfcp_ies.set(r);
   send_request(i.r_endpoint, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i) {
-  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
+  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
                                        (uint32_t) recovery_time_stamp};
   i.pfcp_ies.set(r);
   if (cp_function_features.has_features()) {
@@ -497,8 +496,7 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
 
   a->timer_heartbeat = itti_inst->timer_setup(
       pgw_config::pfcp_.t1_ms / 1000, (pgw_config::pfcp_.t1_ms % 1000) * 1000,
-      TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST,
-      a->hash_node_id);
+      TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST, a->hash_node_id);
 
   endpoint r_endpoint = a->remote_endpoint;
   r_endpoint.set_port(pfcp::default_port);

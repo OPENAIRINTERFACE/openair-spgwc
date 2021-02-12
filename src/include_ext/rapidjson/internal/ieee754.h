@@ -94,7 +94,7 @@ class Double {
   };
 };
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_IEEE754_
+#endif  // RAPIDJSON_IEEE754_

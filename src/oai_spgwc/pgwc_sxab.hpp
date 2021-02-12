@@ -36,7 +36,6 @@
 #include "pfcp.hpp"
 #include "pgw_pfcp_association.hpp"
 
-
 namespace pgwc {
 
 #define TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST (0)
@@ -116,10 +115,11 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
 
   void time_out_itti_event(const uint32_t timer_id);
 
-  uint16_t pfcp_registered_port_number() const {return udp_s_registered.get_port();}
+  uint16_t pfcp_registered_port_number() const {
+    return udp_s_registered.get_port();
+  }
 
   std::time_t get_recovery_time_stamp() const { return recovery_time_stamp; };
-
 };
 }  // namespace pgwc
 #endif /* FILE_PGWC_SXAB_HPP_SEEN */

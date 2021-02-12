@@ -106,7 +106,7 @@ class Stack {
   void ShrinkToFit() {
     if (Empty()) {
       // If the stack is empty, completely deallocate the memory.
-      Allocator::Free(stack_); // NOLINT (+clang-analyzer-unix.Malloc)
+      Allocator::Free(stack_);  // NOLINT (+clang-analyzer-unix.Malloc)
       stack_    = 0;
       stackTop_ = 0;
       stackEnd_ = 0;
@@ -213,7 +213,7 @@ class Stack {
   }
 
   void Resize(size_t newCapacity) {
-    const size_t size = GetSize(); // Backup the current size
+    const size_t size = GetSize();  // Backup the current size
     stack_            = static_cast<char*>(
         allocator_->Realloc(stack_, GetCapacity(), newCapacity));
     stackTop_ = stack_ + size;
@@ -222,7 +222,7 @@ class Stack {
 
   void Destroy() {
     Allocator::Free(stack_);
-    RAPIDJSON_DELETE(ownAllocator_); // Only delete if it is owned by the stack
+    RAPIDJSON_DELETE(ownAllocator_);  // Only delete if it is owned by the stack
   }
 
   // Prohibit copy constructor & assignment operator.
@@ -237,11 +237,11 @@ class Stack {
   size_t initialCapacity_;
 };
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
 #if defined(__clang__)
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_STACK_H_
+#endif  // RAPIDJSON_STACK_H_

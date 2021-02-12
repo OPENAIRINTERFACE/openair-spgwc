@@ -79,7 +79,7 @@ inline char* u32toa(uint32_t value, char* buffer) {
   } else {
     // value = aabbbbcccc in decimal
 
-    const uint32_t a = value / 100000000; // 1 to 42
+    const uint32_t a = value / 100000000;  // 1 to 42
     value %= 100000000;
 
     if (a >= 10) {
@@ -89,8 +89,8 @@ inline char* u32toa(uint32_t value, char* buffer) {
     } else
       *buffer++ = static_cast<char>('0' + static_cast<char>(a));
 
-    const uint32_t b = value / 10000; // 0 to 9999
-    const uint32_t c = value % 10000; // 0 to 9999
+    const uint32_t b = value / 10000;  // 0 to 9999
+    const uint32_t c = value % 10000;  // 0 to 9999
 
     const uint32_t d1 = (b / 100) << 1;
     const uint32_t d2 = (b % 100) << 1;
@@ -205,7 +205,7 @@ inline char* u64toa(uint64_t value, char* buffer) {
     *buffer++ = cDigitsLut[d8];
     *buffer++ = cDigitsLut[d8 + 1];
   } else {
-    const uint32_t a = static_cast<uint32_t>(value / kTen16); // 1 to 1844
+    const uint32_t a = static_cast<uint32_t>(value / kTen16);  // 1 to 1844
     value %= kTen16;
 
     if (a < 10)
@@ -282,7 +282,7 @@ inline char* i64toa(int64_t value, char* buffer) {
   return u64toa(u, buffer);
 }
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_ITOA_
+#endif  // RAPIDJSON_ITOA_

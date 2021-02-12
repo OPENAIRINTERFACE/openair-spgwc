@@ -130,7 +130,8 @@ void sgw_s11_task(void* args_p) {
 //------------------------------------------------------------------------------
 sgw_s11::sgw_s11()
     : gtpv2c_stack(
-          string(inet_ntoa(pgwc::pgw_config::s11_.iface.addr4)), pgwc::pgw_config::gtpv2c_.port,
+          string(inet_ntoa(pgwc::pgw_config::s11_.iface.addr4)),
+          pgwc::pgw_config::gtpv2c_.port,
           pgwc::pgw_config::gtpv2c_.sched_params) {
   Logger::sgwc_s11().startup("Starting...");
   if (itti_inst->create_task(TASK_SGWC_S11, sgw_s11_task, nullptr)) {

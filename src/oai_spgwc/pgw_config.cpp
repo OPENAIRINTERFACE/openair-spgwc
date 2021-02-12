@@ -53,7 +53,6 @@
 using namespace std;
 using namespace pgwc;
 
-
 extern pgw_app* pgw_app_inst;
 
 const int pgw_config::kJsonFileBuffer = 1024;
@@ -84,8 +83,8 @@ const bool pgw_config::Finalize() {
       tmp_hbo = tmp_hbo >> 1;
       nbits -= 1;
     }
-    uint32_t network_hbo = range_high_hbo & (UINT32_MAX << (32 - nbits));
-    uint32_t netmask_hbo = 0xFFFFFFFF << (32 - nbits);
+    uint32_t network_hbo     = range_high_hbo & (UINT32_MAX << (32 - nbits));
+    uint32_t netmask_hbo     = 0xFFFFFFFF << (32 - nbits);
     p.ue_pool_network.s_addr = htonl(network_hbo);
     p.ue_pool_netmask.s_addr = htonl(netmask_hbo);
     // TODO
@@ -184,13 +183,12 @@ const bool pgw_config::ParseInterface(
         } else {
           unsigned char buf_in_addr[sizeof(struct in6_addr)];
           memset(buf_in_addr, 0, sizeof(buf_in_addr));
-          if (inet_pton(
-                  AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
+          if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) ==
+              1) {
             memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
           } else {
             Logger::pgwc_app().error(
-                "Could not read %s IP address configuration",
-                address.c_str());
+                "Could not read %s IP address configuration", address.c_str());
             return false;
           }
         }
@@ -470,12 +468,12 @@ bool pgw_config::ParseJson() {
             return false;
           }
           pdn_cfg.apn = pdns_section[i]["apn_ni"].GetString();
-          //std::vector<PdnCfg>::iterator it = std::find_if(
+          // std::vector<PdnCfg>::iterator it = std::find_if(
           //    spgw_app_.pdns.begin(), spgw_app_.pdns.end(),
           //    [pdn_cfg](const PdnCfg& p) {
           //      return p.apn.compare(pdn_cfg.apn) == 0;
           //    });
-          //if (it != spgw_app_.pdns.end()) {
+          // if (it != spgw_app_.pdns.end()) {
           //  pdn_cfg = *it;
           //  spgw_app_.pdns.erase(it);
           //}
@@ -503,7 +501,7 @@ bool pgw_config::ParseJson() {
             if (inet_pton(
                     AF_INET, util::trim(ips.at(0)).c_str(), buf_in_addr) == 1) {
               memcpy(&in, buf_in_addr, sizeof(struct in_addr));
-              //pdn_cfg.ue_pool_range_low.push_back(in);
+              // pdn_cfg.ue_pool_range_low.push_back(in);
               pdn_cfg.ue_pool_range_low = in;
             } else {
               Logger::pgwc_app().error(
@@ -516,7 +514,7 @@ bool pgw_config::ParseJson() {
             if (inet_pton(
                     AF_INET, util::trim(ips.at(1)).c_str(), buf_in_addr) == 1) {
               memcpy(&in, buf_in_addr, sizeof(struct in_addr));
-              //pdn_cfg.ue_pool_range_high.push_back(in);
+              // pdn_cfg.ue_pool_range_high.push_back(in);
               pdn_cfg.ue_pool_range_high = in;
             } else {
               Logger::pgwc_app().error(
@@ -525,11 +523,8 @@ bool pgw_config::ParseJson() {
                   i);
               return false;
             }
-            if (htonl(
-                    pdn_cfg
-                        .ue_pool_range_low.s_addr) >=
-                htonl(pdn_cfg
-                          .ue_pool_range_high.s_addr)) {
+            if (htonl(pdn_cfg.ue_pool_range_low.s_addr) >=
+                htonl(pdn_cfg.ue_pool_range_high.s_addr)) {
               Logger::pgwc_app().error(
                   "config pool addr ipv4: bad range in "
                   "pdns/[dyn_ue_ipv4_range] %d nth item",
@@ -566,7 +561,7 @@ bool pgw_config::ParseJson() {
             util::trim(addr);
             if (inet_pton(AF_INET6, addr.c_str(), buf_in6_addr) == 1) {
               memcpy(&in6, buf_in6_addr, sizeof(struct in6_addr));
-              //pdn_cfg.paa_pool6_prefix.push_back(in6);
+              // pdn_cfg.paa_pool6_prefix.push_back(in6);
               pdn_cfg.paa_pool6_prefix = in6;
             } else {
               Logger::pgwc_app().error(
@@ -577,7 +572,7 @@ bool pgw_config::ParseJson() {
             }
             std::string prefix = ips6.at(1);
             util::trim(prefix);
-            //pdn_cfg.paa_pool6_prefix_len.push_back(std::stoi(prefix));
+            // pdn_cfg.paa_pool6_prefix_len.push_back(std::stoi(prefix));
             pdn_cfg.paa_pool6_prefix_len = std::stoi(prefix);
             if (pdn_cfg.pdn_type == PDN_TYPE_E_IPV4) {
               pdn_cfg.pdn_type = PDN_TYPE_E_IPV4V6;
@@ -632,9 +627,11 @@ bool pgw_config::ParseJson() {
           cups_section["feature_load_control"].GetBool();
     }
     if (cups_section.HasMember("up_nodes_selection")) {
-      const RAPIDJSON_NAMESPACE::Value& nodes_section = cups_section["up_nodes_selection"];
+      const RAPIDJSON_NAMESPACE::Value& nodes_section =
+          cups_section["up_nodes_selection"];
       if (!nodes_section.IsArray()) {
-        Logger::pgwc_app().error("Error parsing json value: up_nodes_selection");
+        Logger::pgwc_app().error(
+            "Error parsing json value: up_nodes_selection");
         return false;
       }
       for (RAPIDJSON_NAMESPACE::SizeType i = 0; i < nodes_section.Size(); i++) {
@@ -687,11 +684,11 @@ bool pgw_config::ParseJson() {
               return false;
             }*/
             up_node_cfg_t up_node = {};
-            up_node.mcc = nodes_section[i]["mcc"].GetString();
-            up_node.mnc = nodes_section[i]["mnc"].GetString();
-            up_node.tac = nodes_section[i]["tac"].GetInt();
-            up_node.pdn_index = nodes_section[i]["pdn_idx"].GetUint();
-            up_node.id  = nodes_section[i]["id"].GetString();
+            up_node.mcc           = nodes_section[i]["mcc"].GetString();
+            up_node.mnc           = nodes_section[i]["mnc"].GetString();
+            up_node.tac           = nodes_section[i]["tac"].GetInt();
+            up_node.pdn_index     = nodes_section[i]["pdn_idx"].GetUint();
+            up_node.id            = nodes_section[i]["id"].GetString();
             up_node.tai.from_items(up_node.mcc, up_node.mnc, up_node.tac);
             cups_.nodes.push_back(up_node);
           }
@@ -811,13 +808,13 @@ void pgw_config::Display() {
     std::string network(inet_ntoa(pdn.ue_pool_network));
     std::string netmask(inet_ntoa(pdn.ue_pool_netmask));
     inet_ntop(AF_INET6, &pdn.paa_pool6_prefix, str_addr6, sizeof(str_addr6));
-    Logger::pgwc_app().info("    - PDN %02u.: apn ni %s label %s "
+    Logger::pgwc_app().info(
+        "    - PDN %02u.: apn ni %s label %s "
         " IPv4 pool: %s - %s <=> %s/%s"
         "  IPv6 pool: %s / %u",
-        index++,
-        pdn.apn.c_str(), pdn.apn_label.c_str(),
-        range_low.c_str(), range_high.c_str(), network.c_str(), netmask.c_str(),
-        str_addr6, pdn.paa_pool6_prefix_len);
+        index++, pdn.apn.c_str(), pdn.apn_label.c_str(), range_low.c_str(),
+        range_high.c_str(), network.c_str(), netmask.c_str(), str_addr6,
+        pdn.paa_pool6_prefix_len);
   }
   //  Logger::pgwc_app().info("- PCEF support (in development)");
   //  Logger::pgwc_app().info("    APN AMBR UL ..........: %lu  (Kilo bits/s)",
@@ -826,12 +823,10 @@ void pgw_config::Display() {
   //                          pcef.apn_ambr_dl);
   Logger::pgwc_app().info("- CUPS:");
   Logger::pgwc_app().info(
-      "    Node association retry : %u ms",
-      cups_.association_retry_period_ms);
+      "    Node association retry : %u ms", cups_.association_retry_period_ms);
   Logger::pgwc_app().info(
       "    Echo Node period: %u ms", cups_.association_heartbeat_period_ms);
-  Logger::pgwc_app().info(
-      "    User Plane Nodes, network planning:");
+  Logger::pgwc_app().info("    User Plane Nodes, network planning:");
   for (auto it : cups_.nodes) {
     Logger::pgwc_app().info("        %s", it.toString().c_str());
   }
@@ -845,8 +840,9 @@ void pgw_config::Display() {
 bool pgw_config::IsDottedApnHandled(
     const std::string& t_apn, const pdn_type_t& pdn_type) {
   for (auto p : spgw_app_.pdns) {
-    Logger::pgwc_app().info("pgw_config::IsDottedApnHandled: %s / %s",
-        t_apn.c_str(), p.apn.c_str());
+    Logger::pgwc_app().info(
+        "pgw_config::IsDottedApnHandled: %s / %s", t_apn.c_str(),
+        p.apn.c_str());
     if (0 == t_apn.compare(p.apn)) {
       // TODO refine
       if (pdn_type.pdn_type == p.pdn_type.pdn_type) {
@@ -891,10 +887,10 @@ int pgw_config::GetPfcpFseid(pfcp::fseid_t& fseid) {
   return rc;
 }
 //------------------------------------------------------------------------------
-bool pgw_config::GetUpNodes(const apn_t& apn, const uli_t& uli,
-    const paa_t& paa, std::vector<up_node_cfg_t>& up_nodes) {
-
-  for (auto n = cups_.nodes.begin() ; n != cups_.nodes.end(); ++n) {
+bool pgw_config::GetUpNodes(
+    const apn_t& apn, const uli_t& uli, const paa_t& paa,
+    std::vector<up_node_cfg_t>& up_nodes) {
+  for (auto n = cups_.nodes.begin(); n != cups_.nodes.end(); ++n) {
     PdnCfg& pdncfg = pgw_config::spgw_app_.GetPdnCfg(n->pdn_index);
     if (paa.is_ip_assigned()) {
       if (not pdncfg.is_in_pool(paa)) {
@@ -904,7 +900,7 @@ bool pgw_config::GetUpNodes(const apn_t& apn, const uli_t& uli,
     if ((apn.access_point_name.compare(pdncfg.apn) == 0) &&
         (uli.is_tai(n->tai))) {
       up_nodes.push_back(*n);
-      //std::cout << "up_nodes.push_back( " << n->id << " )" << std::endl;
+      // std::cout << "up_nodes.push_back( " << n->id << " )" << std::endl;
     }
   }
 
@@ -913,19 +909,17 @@ bool pgw_config::GetUpNodes(const apn_t& apn, const uli_t& uli,
       up_nodes.begin(),
       [apn, uli, paa](up_node_cfg_t& n) {
         PdnCfg& pdncfg = pgw_config::spgw_app_.GetPdnCfg(n.pdn_index);
-        std::cout << "Eval PdnCfg id " << n.id << " pool " << n.pdn_index << std::endl;
-        if (paa.is_ip_assigned()) {
-          if (not pdncfg.is_in_pool(paa)) {
+        std::cout << "Eval PdnCfg id " << n.id << " pool " << n.pdn_index <<
+  std::endl; if (paa.is_ip_assigned()) { if (not pdncfg.is_in_pool(paa)) {
             return false;
           }
         }
-        std::cout << "apn.access_point_name " << apn.access_point_name << " / pdncfg.apn " << pdncfg.apn << std::endl;
-        std::cout << "uli " << uli.toString() << " / pdncfg.tai " << n.tai.toString() << std::endl;
-        return ((apn.access_point_name.compare(pdncfg.apn) == 0) &&
-            (uli.is_tai(n.tai)));
-      } );
+        std::cout << "apn.access_point_name " << apn.access_point_name << " /
+  pdncfg.apn " << pdncfg.apn << std::endl; std::cout << "uli " << uli.toString()
+  << " / pdncfg.tai " << n.tai.toString() << std::endl; return
+  ((apn.access_point_name.compare(pdncfg.apn) == 0) && (uli.is_tai(n.tai))); }
+  );
   // shrink container to new size
   up_nodes.resize(std::distance(up_nodes.begin(),it)); */
   return (up_nodes.size() > 0);
 }
-

@@ -110,8 +110,8 @@ int create_session_request_procedure::run(
   // TODO : default_bearer
   p->default_bearer =
       msg.gtp_ies.bearer_contexts_to_be_created.at(0).eps_bearer_id;
-  p->sgw_fteid_s5_s8_cp =
-      sgwc_app_inst->generate_s5s8_cp_fteid(pgwc::pgw_config::sgw_s5s8_.iface.addr4);
+  p->sgw_fteid_s5_s8_cp = sgwc_app_inst->generate_s5s8_cp_fteid(
+      pgwc::pgw_config::sgw_s5s8_.iface.addr4);
   sgwc_app_inst->set_s5s8sgw_teid_2_sgw_contexts(
       p->sgw_fteid_s5_s8_cp.teid_gre_key, c, spc);
 
@@ -215,7 +215,8 @@ int create_session_request_procedure::run(
   // s5s8_csr->gtp_ies = msg.gtp_ies;
   // s5s8_csr->l_endpoint = {};
   // TODO PGW address in HSS
-  s5s8_csr->r_endpoint = endpoint(pgwc::pgw_config::pgw_s5s8_.iface.addr4, pgwc::pgw_config::gtpv2c_.port);
+  s5s8_csr->r_endpoint = endpoint(
+      pgwc::pgw_config::pgw_s5s8_.iface.addr4, pgwc::pgw_config::gtpv2c_.port);
 
   std::shared_ptr<itti_s5s8_create_session_request> msg =
       std::shared_ptr<itti_s5s8_create_session_request>(s5s8_csr);
@@ -407,8 +408,9 @@ int delete_session_request_procedure::run(
     s5s8_dsr->gtpc_tx_id = get_trxn_id();
     s5s8_dsr->teid       = pdn_connection->pgw_fteid_s5_s8_cp.teid_gre_key;
     s5s8_dsr->l_teid     = pdn_connection->sgw_fteid_s5_s8_cp.teid_gre_key;
-    s5s8_dsr->r_endpoint =
-        endpoint(pgwc::pgw_config::pgw_s5s8_.iface.addr4, pgwc::pgw_config::gtpv2c_.port);
+    s5s8_dsr->r_endpoint = endpoint(
+        pgwc::pgw_config::pgw_s5s8_.iface.addr4,
+        pgwc::pgw_config::gtpv2c_.port);
 
     // transfer IEs from S11 msg to S5 msg
     // The SGW shall include this IE on S5/S8 if it receives the Cause from the
@@ -673,8 +675,9 @@ int modify_bearer_request_procedure::run(shared_ptr<sgw_eps_bearer_context> c) {
         s5s8_mbr->gtpc_tx_id = px->gtpc_tx_id;
         s5s8_mbr->teid       = px->pdn->pgw_fteid_s5_s8_cp.teid_gre_key;
         s5s8_mbr->l_teid     = px->pdn->sgw_fteid_s5_s8_cp.teid_gre_key;
-        s5s8_mbr->r_endpoint =
-            endpoint(pgwc::pgw_config::pgw_s5s8_.iface.addr4, pgwc::pgw_config::gtpv2c_.port);
+        s5s8_mbr->r_endpoint = endpoint(
+            pgwc::pgw_config::pgw_s5s8_.iface.addr4,
+            pgwc::pgw_config::gtpv2c_.port);
 
         mei_t mei;
         if (msg.gtp_ies.get(mei)) {

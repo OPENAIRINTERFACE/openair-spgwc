@@ -210,7 +210,8 @@ void gtpv2c_stack::start_msg_retry_timer(
     const task_id_t& task_id, const uint32_t& seq_num) {
   if (!p.retry_timer_id) {
     p.retry_timer_id = itti_inst->timer_setup(
-        time_out_milli_seconds / 1000, (time_out_milli_seconds % 1000) * 1000, task_id);
+        time_out_milli_seconds / 1000, (time_out_milli_seconds % 1000) * 1000,
+        task_id);
     msg_out_retry_timers.insert(
         std::pair<timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
 #if TRACE_IS_ON
@@ -251,7 +252,8 @@ void gtpv2c_stack::start_proc_cleanup_timer(
     const task_id_t& task_id, const uint32_t& seq_num) {
   if (!p.proc_cleanup_timer_id) {
     p.proc_cleanup_timer_id = itti_inst->timer_setup(
-        time_out_milli_seconds / 1000, (time_out_milli_seconds % 1000) * 1000, task_id);
+        time_out_milli_seconds / 1000, (time_out_milli_seconds % 1000) * 1000,
+        task_id);
     proc_cleanup_timers.insert(
         std::pair<timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
 #if TRACE_IS_ON

@@ -121,9 +121,9 @@ class gtpv2c_ie : public stream_serializable {
     uint8_t* last_size;
     uint8_t word_length = 0;
 
-    uint8_t  value[str.length() + 1];
-    dotted = {};
-    last_size  = &value[0];
+    uint8_t value[str.length() + 1];
+    dotted    = {};
+    last_size = &value[0];
 
     while (str[offset]) {
       // We replace the . by the length of the word
@@ -140,15 +140,15 @@ class gtpv2c_ie : public stream_serializable {
     }
 
     *last_size = word_length;
-    dotted.assign((const char*)value, str.length() + 1);
+    dotted.assign((const char*) value, str.length() + 1);
     return true;
   };
 
   static bool dotted_to_string(const std::string& dot, std::string& no_dot) {
     // uint8_t should be enough, but uint16 if length > 255.
     uint16_t offset = 0;
-    bool result = true;
-    no_dot = {};
+    bool result     = true;
+    no_dot          = {};
 
     while (offset < dot.length()) {
       if (dot[offset] < 64) {
@@ -156,7 +156,7 @@ class gtpv2c_ie : public stream_serializable {
           if (offset) {
             no_dot.push_back('.');
           }
-          no_dot.append(&dot[offset+1], dot[offset]);
+          no_dot.append(&dot[offset + 1], dot[offset]);
         }
         offset = offset + 1 + dot[offset];
       } else {

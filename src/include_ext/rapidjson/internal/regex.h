@@ -29,7 +29,7 @@ RAPIDJSON_DIAG_OFF(padded)
 RAPIDJSON_DIAG_OFF(switch - enum)
 #elif defined(_MSC_VER)
 RAPIDJSON_DIAG_PUSH
-RAPIDJSON_DIAG_OFF(4512) // assignment operator could not be generated
+RAPIDJSON_DIAG_OFF(4512)  // assignment operator could not be generated
 #endif
 
 #ifdef __GNUC__
@@ -54,7 +54,7 @@ class DecodedStream {
   unsigned Peek() { return codepoint_; }
   unsigned Take() {
     unsigned c = codepoint_;
-    if (c) // No further decoding when '\0'
+    if (c)  // No further decoding when '\0'
       Decode();
     return c;
   }
@@ -72,7 +72,7 @@ class DecodedStream {
 // GenericRegex
 
 static const SizeType kRegexInvalidState = ~SizeType(
-    0); //!< Represents an invalid index in GenericRegex::State::out, out1
+    0);  //!< Represents an invalid index in GenericRegex::State::out, out1
 static const SizeType kRegexInvalidRange = ~SizeType(0);
 
 template<typename Encoding, typename Allocator>
@@ -148,19 +148,19 @@ class GenericRegex {
     kLeftParenthesis
   };
 
-  static const unsigned kAnyCharacterClass   = 0xFFFFFFFF; //!< For '.'
+  static const unsigned kAnyCharacterClass   = 0xFFFFFFFF;  //!< For '.'
   static const unsigned kRangeCharacterClass = 0xFFFFFFFE;
   static const unsigned kRangeNegationFlag   = 0x80000000;
 
   struct Range {
-    unsigned start; //
+    unsigned start;  //
     unsigned end;
     SizeType next;
   };
 
   struct State {
-    SizeType out;  //!< Equals to kInvalid for matching state
-    SizeType out1; //!< Equals to non-kInvalid for split
+    SizeType out;   //!< Equals to kInvalid for matching state
+    SizeType out1;  //!< Equals to non-kInvalid for split
     SizeType rangeStart;
     unsigned codepoint;
   };
@@ -168,7 +168,7 @@ class GenericRegex {
   struct Frag {
     Frag(SizeType s, SizeType o, SizeType m) : start(s), out(o), minIndex(m) {}
     SizeType start;
-    SizeType out; //!< link-list of all output states
+    SizeType out;  //!< link-list of all output states
     SizeType minIndex;
   };
 
@@ -194,11 +194,11 @@ class GenericRegex {
 
   template<typename InputStream>
   void Parse(DecodedStream<InputStream, Encoding>& ds) {
-    Stack<Allocator> operandStack(allocator_, 256);  // Frag
-    Stack<Allocator> operatorStack(allocator_, 256); // Operator
+    Stack<Allocator> operandStack(allocator_, 256);   // Frag
+    Stack<Allocator> operatorStack(allocator_, 256);  // Operator
     Stack<Allocator> atomCountStack(
         allocator_,
-        256); // unsigned (Atom per parenthesis)
+        256);  // unsigned (Atom per parenthesis)
 
     *atomCountStack.template Push<unsigned>() = 0;
 
@@ -283,13 +283,13 @@ class GenericRegex {
           ImplicitConcatenation(atomCountStack, operatorStack);
           break;
 
-        case '\\': // Escape character
+        case '\\':  // Escape character
           if (!CharacterEscape(ds, &codepoint))
-            return; // Unsupported escape character
+            return;  // Unsupported escape character
           // fall through to default
           RAPIDJSON_DELIBERATE_FALLTHROUGH;
 
-        default: // Pattern character
+        default:  // Pattern character
           PushOperand(operandStack, codepoint);
           ImplicitConcatenation(atomCountStack, operatorStack);
       }
@@ -417,38 +417,38 @@ class GenericRegex {
     RAPIDJSON_ASSERT(operandStack.GetSize() >= sizeof(Frag));
 
     if (n == 0) {
-      if (m == 0) // a{0} not support
+      if (m == 0)  // a{0} not support
         return false;
       else if (m == kInfinityQuantifier)
-        Eval(operandStack, kZeroOrMore); // a{0,} -> a*
+        Eval(operandStack, kZeroOrMore);  // a{0,} -> a*
       else {
-        Eval(operandStack, kZeroOrOne); // a{0,5} -> a?
+        Eval(operandStack, kZeroOrOne);  // a{0,5} -> a?
         for (unsigned i = 0; i < m - 1; i++)
-          CloneTopOperand(operandStack); // a{0,5} -> a? a? a? a? a?
+          CloneTopOperand(operandStack);  // a{0,5} -> a? a? a? a? a?
         for (unsigned i = 0; i < m - 1; i++)
-          Eval(operandStack, kConcatenation); // a{0,5} -> a?a?a?a?a?
+          Eval(operandStack, kConcatenation);  // a{0,5} -> a?a?a?a?a?
       }
       return true;
     }
 
-    for (unsigned i = 0; i < n - 1; i++) // a{3} -> a a a
+    for (unsigned i = 0; i < n - 1; i++)  // a{3} -> a a a
       CloneTopOperand(operandStack);
 
     if (m == kInfinityQuantifier)
-      Eval(operandStack, kOneOrMore); // a{3,} -> a a a+
+      Eval(operandStack, kOneOrMore);  // a{3,} -> a a a+
     else if (m > n) {
-      CloneTopOperand(operandStack);  // a{3,5} -> a a a a
-      Eval(operandStack, kZeroOrOne); // a{3,5} -> a a a a?
+      CloneTopOperand(operandStack);   // a{3,5} -> a a a a
+      Eval(operandStack, kZeroOrOne);  // a{3,5} -> a a a a?
       for (unsigned i = n; i < m - 1; i++)
-        CloneTopOperand(operandStack); // a{3,5} -> a a a a? a?
+        CloneTopOperand(operandStack);  // a{3,5} -> a a a a? a?
       for (unsigned i = n; i < m; i++)
-        Eval(operandStack, kConcatenation); // a{3,5} -> a a aa?a?
+        Eval(operandStack, kConcatenation);  // a{3,5} -> a a aa?a?
     }
 
     for (unsigned i = 0; i < n - 1; i++)
       Eval(
           operandStack,
-          kConcatenation); // a{3} -> aaa, a{3,} -> aaa+, a{3.5} -> aaaa?a?
+          kConcatenation);  // a{3} -> aaa, a{3,} -> aaa+, a{3.5} -> aaaa?a?
 
     return true;
   }
@@ -458,10 +458,10 @@ class GenericRegex {
   void CloneTopOperand(Stack<Allocator>& operandStack) {
     const Frag src =
         *operandStack
-             .template Top<Frag>(); // Copy constructor to prevent invalidation
+             .template Top<Frag>();  // Copy constructor to prevent invalidation
     SizeType count =
-        stateCount_ - src.minIndex; // Assumes top operand contains states in
-                                    // [src->minIndex, stateCount_)
+        stateCount_ - src.minIndex;  // Assumes top operand contains states in
+                                     // [src->minIndex, stateCount_)
     State* s = states_.template Push<State>(count);
     memcpy(s, &GetState(src.minIndex), count * sizeof(State));
     for (SizeType j = 0; j < count; j++) {
@@ -478,8 +478,8 @@ class GenericRegex {
     unsigned r = 0;
     if (ds.Peek() < '0' || ds.Peek() > '9') return false;
     while (ds.Peek() >= '0' && ds.Peek() <= '9') {
-      if (r >= 429496729 && ds.Peek() > '5') // 2^32 - 1 = 4294967295
-        return false;                        // overflow
+      if (r >= 429496729 && ds.Peek() > '5')  // 2^32 - 1 = 4294967295
+        return false;                         // overflow
       r = r * 10 + (ds.Take() - '0');
     }
     *u = r;
@@ -506,8 +506,8 @@ class GenericRegex {
       switch (codepoint) {
         case ']':
           if (start == kRegexInvalidRange)
-            return false;  // Error: nothing inside []
-          if (step == 2) { // Add trailing '-'
+            return false;   // Error: nothing inside []
+          if (step == 2) {  // Add trailing '-'
             SizeType r = NewRange('-');
             RAPIDJSON_ASSERT(current != kRegexInvalidRange);
             GetRange(current).next = r;
@@ -519,7 +519,7 @@ class GenericRegex {
         case '\\':
           if (ds.Peek() == 'b') {
             ds.Take();
-            codepoint = 0x0008; // Escape backspace character
+            codepoint = 0x0008;  // Escape backspace character
           } else if (!CharacterEscape(ds, &codepoint))
             return false;
           // fall through to default
@@ -598,7 +598,7 @@ class GenericRegex {
         *escapedCodepoint = 0x000B;
         return true;
       default:
-        return false; // Unsupported escape character
+        return false;  // Unsupported escape character
     }
   }
 
@@ -706,7 +706,7 @@ class GenericRegexSearch {
     RAPIDJSON_ASSERT(index != kRegexInvalidState);
 
     const State& s = regex_.GetState(index);
-    if (s.out1 != kRegexInvalidState) { // Split
+    if (s.out1 != kRegexInvalidState) {  // Split
       bool matched = AddState(l, s.out);
       return AddState(l, s.out1) || matched;
     } else if (!(stateSet_[index >> 5] & (1u << (index & 31)))) {
@@ -714,8 +714,8 @@ class GenericRegexSearch {
       *l.template PushUnsafe<SizeType>() = index;
     }
     return s.out ==
-           kRegexInvalidState; // by using PushUnsafe() above, we can ensure s
-                               // is not validated due to reallocation.
+           kRegexInvalidState;  // by using PushUnsafe() above, we can ensure s
+                                // is not validated due to reallocation.
   }
 
   bool MatchRange(SizeType rangeIndex, unsigned codepoint) const {
@@ -742,7 +742,7 @@ class GenericRegexSearch {
 typedef GenericRegex<UTF8<> > Regex;
 typedef GenericRegexSearch<Regex> RegexSearch;
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
 #ifdef __GNUC__
@@ -753,4 +753,4 @@ RAPIDJSON_DIAG_POP
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_INTERNAL_REGEX_H_
+#endif  // RAPIDJSON_INTERNAL_REGEX_H_

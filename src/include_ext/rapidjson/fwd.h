@@ -170,4 +170,4 @@ typedef GenericSchemaValidator<
 
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_RAPIDJSONFWD_H_
+#endif  // RAPIDJSON_RAPIDJSONFWD_H_

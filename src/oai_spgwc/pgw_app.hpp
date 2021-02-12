@@ -42,9 +42,7 @@
 
 namespace pgwc {
 
-enum TimeOutType {
-  kTriggerAssociationUpNodes = 0
-};
+enum TimeOutType { kTriggerAssociationUpNodes = 0 };
 
 enum LivenessEventType {
   kEchoRequestResponded = 0,

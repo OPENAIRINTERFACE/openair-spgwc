@@ -93,7 +93,7 @@ typedef struct sx_cfg_s {
 } sx_cfg_t;
 
 class PdnCfg {
-public:
+ public:
   std::string apn;
   std::string apn_label;
   struct in_addr ue_pool_range_low;
@@ -107,13 +107,13 @@ public:
 
   bool is_in_pool(const paa_t& paa) const {
     switch (paa.pdn_type.pdn_type) {
-    case PDN_TYPE_E_IPV4:
-      return (paa.ipv4_address.s_addr >= ue_pool_range_low.s_addr) and
-          (paa.ipv4_address.s_addr <= ue_pool_range_high.s_addr);
-    case PDN_TYPE_E_IPV6:
-    case PDN_TYPE_E_IPV4V6:
-    default:
-      return false;
+      case PDN_TYPE_E_IPV4:
+        return (paa.ipv4_address.s_addr >= ue_pool_range_low.s_addr) and
+               (paa.ipv4_address.s_addr <= ue_pool_range_high.s_addr);
+      case PDN_TYPE_E_IPV6:
+      case PDN_TYPE_E_IPV4V6:
+      default:
+        return false;
     }
   }
 };
@@ -137,18 +137,16 @@ typedef struct pgw_app_cfg_s {
   std::vector<PdnCfg> pdns;
   uint32_t max_cached_users;
 
-  PdnCfg& GetPdnCfg(const uint pdn_index) {
-    return pdns.at(pdn_index);
-  }
+  PdnCfg& GetPdnCfg(const uint pdn_index) { return pdns.at(pdn_index); }
 } pgw_app_cfg_t;
 
 typedef struct up_node_cfg_s {
   std::string mcc;
   std::string mnc;
-  uint16_t    tac;
+  uint16_t tac;
   tai_field_t tai;
-  uint        pdn_index;
-  std::string id; // FQDN, IP address
+  uint pdn_index;
+  std::string id;  // FQDN, IP address
   std::string toString() const {
     std::string str = {};
     str.append(id).append(" <-> mcc:").append(mcc).append(" mnc:").append(mnc);
@@ -169,17 +167,16 @@ typedef struct cups_cfg_s {
 } cups_cfg_t;
 
 class pgw_config {
-private:
- static const bool ParseSchedParams(
-     const RAPIDJSON_NAMESPACE::Value& conf, util::thread_sched_params& cfg);
- static const bool ParseTimer(
-     const RAPIDJSON_NAMESPACE::Value& conf, timer_cfg_t& cfg);
- static const bool ParseInterface(
-     const RAPIDJSON_NAMESPACE::Value& conf, interface_cfg_t& cfg);
- static const bool Finalize();
- static const bool ParseItti(
-     const RAPIDJSON_NAMESPACE::Value& conf, itti_cfg_t& cfg);
-
+ private:
+  static const bool ParseSchedParams(
+      const RAPIDJSON_NAMESPACE::Value& conf, util::thread_sched_params& cfg);
+  static const bool ParseTimer(
+      const RAPIDJSON_NAMESPACE::Value& conf, timer_cfg_t& cfg);
+  static const bool ParseInterface(
+      const RAPIDJSON_NAMESPACE::Value& conf, interface_cfg_t& cfg);
+  static const bool Finalize();
+  static const bool ParseItti(
+      const RAPIDJSON_NAMESPACE::Value& conf, itti_cfg_t& cfg);
 
  public:
   /* Reader/writer lock for this configuration */
@@ -202,7 +199,7 @@ private:
   itti_cfg_t itti;
 
   static void Default() {
-    pid_dir_ = "/var/run";
+    pid_dir_  = "/var/run";
     instance_ = 0;
 
     timer_.sched_params.cpu_id         = -1;
@@ -273,11 +270,11 @@ private:
     spgw_app_.pdns.clear();
 
     cups_.nodes.clear();
-    cups_.association_retry_period_ms = 10000;
-    cups_.association_heartbeat_period_ms   = 10000;
-    cups_.max_associations                    = 8;
-    cups_.feature_overload_control            = false;
-    cups_.feature_load_control                = false;
+    cups_.association_retry_period_ms     = 10000;
+    cups_.association_heartbeat_period_ms = 10000;
+    cups_.max_associations                = 8;
+    cups_.feature_overload_control        = false;
+    cups_.feature_load_control            = false;
   };
   static bool ParseJson();
 
@@ -293,7 +290,8 @@ private:
   static int GetPfcpNodeId(pfcp::node_id_t& node_id);
   //------------------------------------------------------------------------------
   static int GetPfcpFseid(pfcp::fseid_t& fseid);
-  static bool GetUpNodes(const apn_t& apn, const uli_t& uli, const paa_t& paa,
+  static bool GetUpNodes(
+      const apn_t& apn, const uli_t& uli, const paa_t& paa,
       std::vector<up_node_cfg_t>& up_nodes);
 };
 

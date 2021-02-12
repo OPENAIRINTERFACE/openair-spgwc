@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
 
   // Config
   pgw_config::jsoncfg_ = Options::getConfig();
-  if (! pgw_config::ParseJson()) {
+  if (!pgw_config::ParseJson()) {
     std::cout << "pgw_config::ParseJson() failed" << std::endl;
     return 1;
   }
@@ -122,7 +122,8 @@ int main(int argc, char** argv) {
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
-  string pid_file_name = get_exe_absolute_path("/var/run", pgwc::pgw_config::instance_);
+  string pid_file_name =
+      get_exe_absolute_path("/var/run", pgwc::pgw_config::instance_);
   if (!is_pid_file_lock_success(pid_file_name.c_str())) {
     Logger::pgwc_app().error(
         "Lock PID file %s failed\n", pid_file_name.c_str());

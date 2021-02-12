@@ -22,7 +22,7 @@
 #include "../rapidjson.h"
 
 #if defined(_MSC_VER) && !defined(__INTEL_COMPILER) && defined(_M_AMD64)
-#include <intrin.h> // for _umul128
+#include <intrin.h>  // for _umul128
 #pragma intrinsic(_umul128)
 #endif
 
@@ -44,7 +44,7 @@ class BigInteger {
     digits_[0] = 0;
     size_t i   = 0;
     const size_t kMaxDigitPerIteration =
-        19; // 2^64 = 18446744073709551616 > 10^19
+        19;  // 2^64 = 18446744073709551616 > 10^19
     while (length >= kMaxDigitPerIteration) {
       AppendDecimal64(decimals + i, decimals + i + kMaxDigitPerIteration);
       length -= kMaxDigitPerIteration;
@@ -72,7 +72,7 @@ class BigInteger {
     Type backup = digits_[0];
     digits_[0] += u;
     for (size_t i = 0; i < count_ - 1; i++) {
-      if (digits_[i] >= backup) return *this; // no carry
+      if (digits_[i] >= backup) return *this;  // no carry
       backup = digits_[i + 1];
       digits_[i + 1] += 1;
     }
@@ -172,9 +172,9 @@ class BigInteger {
         5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5};
     if (exp == 0) return *this;
     for (; exp >= 27; exp -= 27)
-      *this *= RAPIDJSON_UINT64_C2(0X6765C793, 0XFA10079D); // 5^27
+      *this *= RAPIDJSON_UINT64_C2(0X6765C793, 0XFA10079D);  // 5^27
     for (; exp >= 13; exp -= 13)
-      *this *= static_cast<uint32_t>(1220703125u); // 5^13
+      *this *= static_cast<uint32_t>(1220703125u);  // 5^13
     if (exp > 0) *this *= kPow5[exp - 1];
     return *this;
   }
@@ -184,7 +184,7 @@ class BigInteger {
   bool Difference(const BigInteger& rhs, BigInteger* out) const {
     int cmp = Compare(rhs);
     RAPIDJSON_ASSERT(cmp != 0);
-    const BigInteger *a, *b; // Makes a > b
+    const BigInteger *a, *b;  // Makes a > b
     bool ret;
     if (cmp < 0) {
       a   = &rhs;
@@ -232,7 +232,7 @@ class BigInteger {
       *this = u;
     else {
       unsigned exp = static_cast<unsigned>(end - begin);
-      (MultiplyPow5(exp) <<= exp) += u; // *this = *this * 10^exp + u
+      (MultiplyPow5(exp) <<= exp) += u;  // *this = *this * 10^exp + u
     }
   }
 
@@ -257,7 +257,7 @@ class BigInteger {
     uint64_t low = _umul128(a, b, outHigh) + k;
     if (low < k) (*outHigh)++;
     return low;
-#elif (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)) && \
+#elif (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)) &&              \
     defined(__x86_64__)
     __extension__ typedef unsigned __int128 uint128;
     uint128 p = static_cast<uint128>(a) * static_cast<uint128>(b);
@@ -268,7 +268,7 @@ class BigInteger {
     const uint64_t a0 = a & 0xFFFFFFFF, a1 = a >> 32, b0 = b & 0xFFFFFFFF,
                    b1 = b >> 32;
     uint64_t x0 = a0 * b0, x1 = a0 * b1, x2 = a1 * b0, x3 = a1 * b1;
-    x1 += (x0 >> 32); // can't give carry
+    x1 += (x0 >> 32);  // can't give carry
     x1 += x2;
     if (x1 < x2) x3 += (static_cast<uint64_t>(1) << 32);
     uint64_t lo = (x1 << 32) + (x0 & 0xFFFFFFFF);
@@ -281,7 +281,7 @@ class BigInteger {
 #endif
   }
 
-  static const size_t kBitCount = 3328; // 64bit * 54 > 10^1000
+  static const size_t kBitCount = 3328;  // 64bit * 54 > 10^1000
   static const size_t kCapacity = kBitCount / sizeof(Type);
   static const size_t kTypeBit  = sizeof(Type) * 8;
 
@@ -289,7 +289,7 @@ class BigInteger {
   size_t count_;
 };
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_BIGINTEGER_H_
+#endif  // RAPIDJSON_BIGINTEGER_H_

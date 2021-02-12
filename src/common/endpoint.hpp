@@ -78,8 +78,9 @@ class endpoint {
 
   bool operator==(const endpoint& e) const {
     if ((addr_storage_len == e.addr_storage_len) &&
-        (memcmp((const void*)&addr_storage,
-            (const void*)&e.addr_storage, addr_storage_len) == 0)) {
+        (memcmp(
+             (const void*) &addr_storage, (const void*) &e.addr_storage,
+             addr_storage_len) == 0)) {
       return true;
     } else {
       return false;

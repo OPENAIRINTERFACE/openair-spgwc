@@ -156,7 +156,7 @@ class EncodedOutputStream {
   OutputByteStream& os_;
 };
 
-#define RAPIDJSON_ENCODINGS_FUNC(x) \
+#define RAPIDJSON_ENCODINGS_FUNC(x)                                            \
   UTF8<Ch>::x, UTF16LE<Ch>::x, UTF16BE<Ch>::x, UTF32LE<Ch>::x, UTF32BE<Ch>::x
 
 //! Input stream wrapper with dynamically bound encoding and automatic encoding
@@ -292,7 +292,7 @@ class AutoUTFInputStream {
           type_ = kUTF8;
           break;
         default:
-          break; // Use type defined by user.
+          break;  // Use type defined by user.
       }
     }
 
@@ -404,4 +404,4 @@ RAPIDJSON_DIAG_POP
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_FILESTREAM_H_
+#endif  // RAPIDJSON_FILESTREAM_H_

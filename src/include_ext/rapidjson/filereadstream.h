@@ -37,7 +37,7 @@ RAPIDJSON_NAMESPACE_BEGIN
 */
 class FileReadStream {
  public:
-  typedef char Ch; //!< Character type (byte).
+  typedef char Ch;  //!< Character type (byte).
 
   //! Constructor.
   /*!
@@ -110,7 +110,7 @@ class FileReadStream {
   Ch* bufferLast_;
   Ch* current_;
   size_t readCount_;
-  size_t count_; //!< Number of characters read
+  size_t count_;  //!< Number of characters read
   bool eof_;
 };
 
@@ -120,4 +120,4 @@ RAPIDJSON_NAMESPACE_END
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_FILESTREAM_H_
+#endif  // RAPIDJSON_FILESTREAM_H_

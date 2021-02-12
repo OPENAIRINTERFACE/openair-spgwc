@@ -126,7 +126,7 @@ inline bool StrtodFast(double d, int p, double* result) {
     p = 22;
   }
 
-  if (p >= -22 && p <= 22 && d <= 9007199254740991.0) { // 2^53 - 1
+  if (p >= -22 && p <= 22 && d <= 9007199254740991.0) {  // 2^53 - 1
     *result = FastPath(d, p);
     return true;
   } else
@@ -137,8 +137,8 @@ inline bool StrtodFast(double d, int p, double* result) {
 inline bool StrtodDiyFp(
     const char* decimals, int dLen, int dExp, double* result) {
   uint64_t significand = 0;
-  int i = 0; // 2^64 - 1 = 18446744073709551615, 1844674407370955161 =
-             // 0x1999999999999999
+  int i = 0;  // 2^64 - 1 = 18446744073709551615, 1844674407370955161 =
+              // 0x1999999999999999
   for (; i < dLen; i++) {
     if (significand > RAPIDJSON_UINT64_C2(0x19999999, 0x99999999) ||
         (significand == RAPIDJSON_UINT64_C2(0x19999999, 0x99999999) &&
@@ -147,7 +147,7 @@ inline bool StrtodDiyFp(
     significand = significand * 10u + static_cast<unsigned>(decimals[i] - '0');
   }
 
-  if (i < dLen && decimals[i] >= '5') // Rounding
+  if (i < dLen && decimals[i] >= '5')  // Rounding
     significand++;
 
   int remaining       = dLen - i;
@@ -165,18 +165,19 @@ inline bool StrtodDiyFp(
   DiyFp cachedPower = GetCachedPower10(dExp, &actualExp);
   if (actualExp != dExp) {
     static const DiyFp kPow10[] = {
-        DiyFp(RAPIDJSON_UINT64_C2(0xa0000000, 0x00000000), -60), // 10^1
-        DiyFp(RAPIDJSON_UINT64_C2(0xc8000000, 0x00000000), -57), // 10^2
-        DiyFp(RAPIDJSON_UINT64_C2(0xfa000000, 0x00000000), -54), // 10^3
-        DiyFp(RAPIDJSON_UINT64_C2(0x9c400000, 0x00000000), -50), // 10^4
-        DiyFp(RAPIDJSON_UINT64_C2(0xc3500000, 0x00000000), -47), // 10^5
-        DiyFp(RAPIDJSON_UINT64_C2(0xf4240000, 0x00000000), -44), // 10^6
-        DiyFp(RAPIDJSON_UINT64_C2(0x98968000, 0x00000000), -40)  // 10^7
+        DiyFp(RAPIDJSON_UINT64_C2(0xa0000000, 0x00000000), -60),  // 10^1
+        DiyFp(RAPIDJSON_UINT64_C2(0xc8000000, 0x00000000), -57),  // 10^2
+        DiyFp(RAPIDJSON_UINT64_C2(0xfa000000, 0x00000000), -54),  // 10^3
+        DiyFp(RAPIDJSON_UINT64_C2(0x9c400000, 0x00000000), -50),  // 10^4
+        DiyFp(RAPIDJSON_UINT64_C2(0xc3500000, 0x00000000), -47),  // 10^5
+        DiyFp(RAPIDJSON_UINT64_C2(0xf4240000, 0x00000000), -44),  // 10^6
+        DiyFp(RAPIDJSON_UINT64_C2(0x98968000, 0x00000000), -40)   // 10^7
     };
     int adjustment = dExp - actualExp;
     RAPIDJSON_ASSERT(adjustment >= 1 && adjustment < 8);
     v = v * kPow10[adjustment - 1];
-    if (dLen + adjustment > 19) // has more digits than decimal digits in 64-bit
+    if (dLen + adjustment >
+        19)  // has more digits than decimal digits in 64-bit
       error += kUlp / 2;
   }
 
@@ -206,7 +207,7 @@ inline bool StrtodDiyFp(
   if (precisionBits >= halfWay + static_cast<unsigned>(error)) {
     rounded.f++;
     if (rounded.f & (DiyFp::kDpHiddenBit
-                     << 1)) { // rounding overflows mantissa (issue #340)
+                     << 1)) {  // rounding overflows mantissa (issue #340)
       rounded.f >>= 1;
       rounded.e++;
     }
@@ -225,14 +226,14 @@ inline double StrtodBigInteger(
   Double a(approx);
   int cmp = CheckWithinHalfULP(a.Value(), dInt, dExp);
   if (cmp < 0)
-    return a.Value(); // within half ULP
+    return a.Value();  // within half ULP
   else if (cmp == 0) {
     // Round towards even
     if (a.Significand() & 1)
       return a.NextPositiveDouble();
     else
       return a.Value();
-  } else // adjustment
+  } else  // adjustment
     return a.NextPositiveDouble();
 }
 
@@ -270,7 +271,7 @@ inline double StrtodFullPrecision(
     dExp++;
   }
 
-  if (dLen == 0) { // Buffer only contains zeros.
+  if (dLen == 0) {  // Buffer only contains zeros.
     return 0.0;
   }
 
@@ -296,7 +297,7 @@ inline double StrtodFullPrecision(
   return StrtodBigInteger(result, decimals, dLen, dExp);
 }
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_STRTOD_
+#endif  // RAPIDJSON_STRTOD_

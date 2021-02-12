@@ -19,7 +19,7 @@
 #ifndef RAPIDJSON_WRITER_H_
 #define RAPIDJSON_WRITER_H_
 
-#include <new> // placement new
+#include <new>  // placement new
 #include "internal/clzll.h"
 #include "internal/dtoa.h"
 #include "internal/itoa.h"
@@ -48,7 +48,7 @@ RAPIDJSON_DIAG_OFF(unreachable - code)
 RAPIDJSON_DIAG_OFF(c++ 98 - compat)
 #elif defined(_MSC_VER)
 RAPIDJSON_DIAG_PUSH
-RAPIDJSON_DIAG_OFF(4127) // conditional expression is constant
+RAPIDJSON_DIAG_OFF(4127)  // conditional expression is constant
 #endif
 
 RAPIDJSON_NAMESPACE_BEGIN
@@ -68,13 +68,13 @@ RAPIDJSON_NAMESPACE_BEGIN
 
 //! Combination of writeFlags
 enum WriteFlag {
-  kWriteNoFlags              = 0, //!< No flags are set.
-  kWriteValidateEncodingFlag = 1, //!< Validate encoding of JSON strings.
-  kWriteNanAndInfFlag = 2, //!< Allow writing of Infinity, -Infinity and NaN.
+  kWriteNoFlags              = 0,  //!< No flags are set.
+  kWriteValidateEncodingFlag = 1,  //!< Validate encoding of JSON strings.
+  kWriteNanAndInfFlag = 2,  //!< Allow writing of Infinity, -Infinity and NaN.
   kWriteDefaultFlags =
-      RAPIDJSON_WRITE_DEFAULT_FLAGS //!< Default write flags. Can be customized
-                                    //!< by defining
-                                    //!< RAPIDJSON_WRITE_DEFAULT_FLAGS
+      RAPIDJSON_WRITE_DEFAULT_FLAGS  //!< Default write flags. Can be customized
+                                     //!< by defining
+                                     //!< RAPIDJSON_WRITE_DEFAULT_FLAGS
 };
 
 //! JSON writer
@@ -272,12 +272,12 @@ class Writer {
   bool EndObject(SizeType memberCount = 0) {
     (void) memberCount;
     RAPIDJSON_ASSERT(
-        level_stack_.GetSize() >= sizeof(Level)); // not inside an Object
+        level_stack_.GetSize() >= sizeof(Level));  // not inside an Object
     RAPIDJSON_ASSERT(!level_stack_.template Top<Level>()
-                          ->inArray); // currently inside an Array, not Object
+                          ->inArray);  // currently inside an Array, not Object
     RAPIDJSON_ASSERT(
         0 == level_stack_.template Top<Level>()->valueCount %
-                 2); // Object has a Key without a Value
+                 2);  // Object has a Key without a Value
     level_stack_.template Pop<Level>(1);
     return EndValue(WriteEndObject());
   }
@@ -332,8 +332,8 @@ class Writer {
   //! Information for each nested level
   struct Level {
     Level(bool inArray_) : valueCount(0), inArray(inArray_) {}
-    size_t valueCount; //!< number of values in this level
-    bool inArray;      //!< true if in array, otherwise in object
+    size_t valueCount;  //!< number of values in this level
+    bool inArray;       //!< true if in array, otherwise in object
   };
 
   static const size_t kDefaultLevelDepth = 32;
@@ -444,22 +444,22 @@ class Writer {
         // 0    1    2    3    4    5    6    7    8    9    A    B    C    D E
         // F
         'u', 'u', 'u',  'u', 'u', 'u', 'u', 'u', 'b', 't',
-        'n', 'u', 'f',  'r', 'u', 'u', // 00
+        'n', 'u', 'f',  'r', 'u', 'u',  // 00
         'u', 'u', 'u',  'u', 'u', 'u', 'u', 'u', 'u', 'u',
-        'u', 'u', 'u',  'u', 'u', 'u', // 10
+        'u', 'u', 'u',  'u', 'u', 'u',  // 10
         0,   0,   '"',  0,   0,   0,   0,   0,   0,   0,
-        0,   0,   0,    0,   0,   0, // 20
-        Z16, Z16,                    // 30~4F
+        0,   0,   0,    0,   0,   0,  // 20
+        Z16, Z16,                     // 30~4F
         0,   0,   0,    0,   0,   0,   0,   0,   0,   0,
-        0,   0,   '\\', 0,   0,   0,                      // 50
-        Z16, Z16, Z16,  Z16, Z16, Z16, Z16, Z16, Z16, Z16 // 60~FF
+        0,   0,   '\\', 0,   0,   0,                       // 50
+        Z16, Z16, Z16,  Z16, Z16, Z16, Z16, Z16, Z16, Z16  // 60~FF
 #undef Z16
     };
 
     if (TargetEncoding::supportUnicode)
-      PutReserve(*os_, 2 + length * 6); // "\uxxxx..."
+      PutReserve(*os_, 2 + length * 6);  // "\uxxxx..."
     else
-      PutReserve(*os_, 2 + length * 12); // "\uxxxx\uyyyy..."
+      PutReserve(*os_, 2 + length * 12);  // "\uxxxx\uyyyy..."
 
     PutUnsafe(*os_, '\"');
     GenericStringStream<SourceEncoding> is(str);
@@ -562,27 +562,27 @@ class Writer {
   void Prefix(Type type) {
     (void) type;
     if (RAPIDJSON_LIKELY(
-            level_stack_.GetSize() != 0)) { // this value is not at root
+            level_stack_.GetSize() != 0)) {  // this value is not at root
       Level* level = level_stack_.template Top<Level>();
       if (level->valueCount > 0) {
         if (level->inArray)
-          os_->Put(','); // add comma if it is not the first element in array
-        else             // in object
+          os_->Put(',');  // add comma if it is not the first element in array
+        else              // in object
           os_->Put((level->valueCount % 2 == 0) ? ',' : ':');
       }
       if (!level->inArray && level->valueCount % 2 == 0)
-        RAPIDJSON_ASSERT(type == kStringType); // if it's in object, then even
-                                               // number should be a name
+        RAPIDJSON_ASSERT(type == kStringType);  // if it's in object, then even
+                                                // number should be a name
       level->valueCount++;
     } else {
-      RAPIDJSON_ASSERT(!hasRoot_); // Should only has one and only one root.
+      RAPIDJSON_ASSERT(!hasRoot_);  // Should only has one and only one root.
       hasRoot_ = true;
     }
   }
 
   // Flush the value if it is the top level one.
   bool EndValue(bool ret) {
-    if (RAPIDJSON_UNLIKELY(level_stack_.Empty())) // end of json text
+    if (RAPIDJSON_UNLIKELY(level_stack_.Empty()))  // end of json text
       Flush();
     return ret;
   }
@@ -713,12 +713,12 @@ inline bool Writer<StringBuffer>::ScanWriteUnescapedString(
     const __m128i t2 = _mm_cmpeq_epi8(s, bs);
     const __m128i t3 = _mm_cmpeq_epi8(
         _mm_max_epu8(s, sp),
-        sp); // s < 0x20 <=> max(s, 0x1F) == 0x1F
+        sp);  // s < 0x20 <=> max(s, 0x1F) == 0x1F
     const __m128i x  = _mm_or_si128(_mm_or_si128(t1, t2), t3);
     unsigned short r = static_cast<unsigned short>(_mm_movemask_epi8(x));
-    if (RAPIDJSON_UNLIKELY(r != 0)) { // some of characters is escaped
+    if (RAPIDJSON_UNLIKELY(r != 0)) {  // some of characters is escaped
       SizeType len;
-#ifdef _MSC_VER // Find the index of first escaped
+#ifdef _MSC_VER  // Find the index of first escaped
       unsigned long offset;
       _BitScanForward(&offset, r);
       len = offset;
@@ -773,9 +773,9 @@ inline bool Writer<StringBuffer>::ScanWriteUnescapedString(
     x                  = vorrq_u8(x, vceqq_u8(s, s2));
     x                  = vorrq_u8(x, vcltq_u8(s, s3));
 
-    x             = vrev64q_u8(x);                              // Rev in 64
-    uint64_t low  = vgetq_lane_u64(vreinterpretq_u64_u8(x), 0); // extract
-    uint64_t high = vgetq_lane_u64(vreinterpretq_u64_u8(x), 1); // extract
+    x             = vrev64q_u8(x);                               // Rev in 64
+    uint64_t low  = vgetq_lane_u64(vreinterpretq_u64_u8(x), 0);  // extract
+    uint64_t high = vgetq_lane_u64(vreinterpretq_u64_u8(x), 1);  // extract
 
     SizeType len = 0;
     bool escaped = false;
@@ -790,7 +790,7 @@ inline bool Writer<StringBuffer>::ScanWriteUnescapedString(
       len         = lz >> 3;
       escaped     = true;
     }
-    if (RAPIDJSON_UNLIKELY(escaped)) { // some of characters is escaped
+    if (RAPIDJSON_UNLIKELY(escaped)) {  // some of characters is escaped
       char* q = reinterpret_cast<char*>(os_->PushUnsafe(len));
       for (size_t i = 0; i < len; i++) q[i] = p[i];
 
@@ -803,7 +803,7 @@ inline bool Writer<StringBuffer>::ScanWriteUnescapedString(
   is.src_ = p;
   return RAPIDJSON_LIKELY(is.Tell() < length);
 }
-#endif // RAPIDJSON_NEON
+#endif  // RAPIDJSON_NEON
 
 RAPIDJSON_NAMESPACE_END
 
@@ -811,4 +811,4 @@ RAPIDJSON_NAMESPACE_END
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_RAPIDJSON_H_
+#endif  // RAPIDJSON_RAPIDJSON_H_

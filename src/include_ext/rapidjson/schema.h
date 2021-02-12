@@ -19,7 +19,7 @@
 #ifndef RAPIDJSON_SCHEMA_H_
 #define RAPIDJSON_SCHEMA_H_
 
-#include <cmath> // abs, floor
+#include <cmath>  // abs, floor
 #include "document.h"
 #include "pointer.h"
 #include "stringbuffer.h"
@@ -30,8 +30,8 @@
 #define RAPIDJSON_SCHEMA_USE_INTERNALREGEX 0
 #endif
 
-#if !RAPIDJSON_SCHEMA_USE_INTERNALREGEX &&    \
-    defined(RAPIDJSON_SCHEMA_USE_STDREGEX) && \
+#if !RAPIDJSON_SCHEMA_USE_INTERNALREGEX &&                                     \
+    defined(RAPIDJSON_SCHEMA_USE_STDREGEX) &&                                  \
     (__cplusplus >= 201103L || (defined(_MSC_VER) && _MSC_VER >= 1800))
 #define RAPIDJSON_SCHEMA_USE_STDREGEX 1
 #else
@@ -70,7 +70,7 @@ RAPIDJSON_DIAG_OFF(exit - time - destructors)
 RAPIDJSON_DIAG_OFF(c++ 98 - compat - pedantic)
 RAPIDJSON_DIAG_OFF(variadic - macros)
 #elif defined(_MSC_VER)
-RAPIDJSON_DIAG_OFF(4512) // assignment operator could not be generated
+RAPIDJSON_DIAG_OFF(4512)  // assignment operator could not be generated
 #endif
 
 RAPIDJSON_NAMESPACE_BEGIN
@@ -109,25 +109,25 @@ inline void PrintValidatorPointers(
       L"S: %*ls%ls\nD: %*ls%ls\n\n", depth * 4, L" ", s, depth * 4, L" ", d);
 }
 
-} // namespace internal
+}  // namespace internal
 
-#endif // RAPIDJSON_SCHEMA_VERBOSE
+#endif  // RAPIDJSON_SCHEMA_VERBOSE
 
 ///////////////////////////////////////////////////////////////////////////////
 // RAPIDJSON_INVALID_KEYWORD_RETURN
 
 #if RAPIDJSON_SCHEMA_VERBOSE
-#define RAPIDJSON_INVALID_KEYWORD_VERBOSE(keyword) \
+#define RAPIDJSON_INVALID_KEYWORD_VERBOSE(keyword)                             \
   internal::PrintInvalidKeyword(keyword)
 #else
 #define RAPIDJSON_INVALID_KEYWORD_VERBOSE(keyword)
 #endif
 
-#define RAPIDJSON_INVALID_KEYWORD_RETURN(keyword)         \
-  RAPIDJSON_MULTILINEMACRO_BEGIN                          \
-  context.invalidKeyword = keyword.GetString();           \
-  RAPIDJSON_INVALID_KEYWORD_VERBOSE(keyword.GetString()); \
-  return false;                                           \
+#define RAPIDJSON_INVALID_KEYWORD_RETURN(keyword)                              \
+  RAPIDJSON_MULTILINEMACRO_BEGIN                                               \
+  context.invalidKeyword = keyword.GetString();                                \
+  RAPIDJSON_INVALID_KEYWORD_VERBOSE(keyword.GetString());                      \
+  return false;                                                                \
   RAPIDJSON_MULTILINEMACRO_END
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -301,7 +301,7 @@ class Hasher {
     for (SizeType i = 0; i < memberCount; i++)
       h ^= Hash(
           kv[i * 2],
-          kv[i * 2 + 1]); // Use xor to achieve member order insensitive
+          kv[i * 2 + 1]);  // Use xor to achieve member order insensitive
     *stack_.template Push<uint64_t>() = h;
     return true;
   }
@@ -311,7 +311,7 @@ class Hasher {
     uint64_t h  = Hash(0, kArrayType);
     uint64_t* e = stack_.template Pop<uint64_t>(elementCount);
     for (SizeType i = 0; i < elementCount; i++)
-      h = Hash(h, e[i]); // Use hash to achieve element order sensitive
+      h = Hash(h, e[i]);  // Use hash to achieve element order sensitive
     *stack_.template Push<uint64_t>() = h;
     return true;
   }
@@ -417,8 +417,8 @@ struct SchemaValidationContext {
   const SchemaType* schema;
   const SchemaType* valueSchema;
   const Ch* invalidKeyword;
-  void* hasher;                // Only validator access
-  void* arrayElementHashCodes; // Only validator access this
+  void* hasher;                 // Only validator access
+  void* arrayElementHashCodes;  // Only validator access this
   ISchemaValidator** validators;
   SizeType validatorCount;
   ISchemaValidator** patternPropertiesValidators;
@@ -462,7 +462,7 @@ class Schema {
         enum_(),
         enumCount_(),
         not_(),
-        type_((1 << kTotalSchemaType) - 1), // typeless
+        type_((1 << kTotalSchemaType) - 1),  // typeless
         validatorCount_(),
         notValidatorIndex_(),
         properties_(),
@@ -665,9 +665,9 @@ class Schema {
     // Array
     if (const ValueType* v = GetMember(value, GetItemsString())) {
       PointerType q = p.Append(GetItemsString(), allocator_);
-      if (v->IsObject()) // List validation
+      if (v->IsObject())  // List validation
         schemaDocument->CreateSchema(&itemsList_, q, *v, document);
-      else if (v->IsArray()) { // Tuple validation
+      else if (v->IsArray()) {  // Tuple validation
         itemsTuple_ = static_cast<const Schema**>(
             allocator_->Malloc(sizeof(const Schema*) * v->Size()));
         SizeType index = 0;
@@ -799,7 +799,7 @@ class Schema {
         }
       } else if (
           !patternValid &&
-          !otherValid) { // kPatternValidatorWithAdditionalProperty)
+          !otherValid) {  // kPatternValidatorWithAdditionalProperty)
         context.error_handler.PropertyViolations(
             context.patternPropertiesValidators, count + 1);
         RAPIDJSON_INVALID_KEYWORD_RETURN(GetPatternPropertiesString());
@@ -950,9 +950,9 @@ class Schema {
       std::memset(context.propertyExist, 0, sizeof(bool) * propertyCount_);
     }
 
-    if (patternProperties_) { // pre-allocate schema array
+    if (patternProperties_) {  // pre-allocate schema array
       SizeType count =
-          patternPropertyCount_ + 1; // extra for valuePatternValidatorType
+          patternPropertyCount_ + 1;  // extra for valuePatternValidatorType
       context.patternPropertiesSchemas = static_cast<const SchemaType**>(
           context.factory.MallocState(sizeof(const SchemaType*) * count));
       context.patternPropertiesSchemaCount = 0;
@@ -1011,7 +1011,7 @@ class Schema {
     }
 
     if (context.patternPropertiesSchemaCount ==
-        0) { // patternProperties are not additional properties
+        0) {  // patternProperties are not additional properties
       context.error_handler.DisallowedProperty(str, len);
       RAPIDJSON_INVALID_KEYWORD_RETURN(GetAdditionalPropertiesString());
     }
@@ -1100,12 +1100,12 @@ class Schema {
   }
 
   // Generate functions for string literal according to Ch
-#define RAPIDJSON_STRING_(name, ...)                           \
-  static const ValueType& Get##name##String() {                \
-    static const Ch s[] = {__VA_ARGS__, '\0'};                 \
-    static const ValueType v(                                  \
-        s, static_cast<SizeType>(sizeof(s) / sizeof(Ch) - 1)); \
-    return v;                                                  \
+#define RAPIDJSON_STRING_(name, ...)                                           \
+  static const ValueType& Get##name##String() {                                \
+    static const Ch s[] = {__VA_ARGS__, '\0'};                                 \
+    static const ValueType v(                                                  \
+        s, static_cast<SizeType>(sizeof(s) / sizeof(Ch) - 1));                 \
+    return v;                                                                  \
   }
 
   RAPIDJSON_STRING_(Null, 'n', 'u', 'l', 'l')
@@ -1187,7 +1187,7 @@ class Schema {
     SchemaArray() : schemas(), count() {}
     ~SchemaArray() { AllocatorType::Free(schemas); }
     const SchemaType** schemas;
-    SizeType begin; // begin index of context.validators
+    SizeType begin;  // begin index of context.validators
     SizeType count;
   };
 
@@ -1290,7 +1290,7 @@ class Schema {
   static bool IsPatternMatch(const RegexType*, const Ch*, SizeType) {
     return true;
   }
-#endif // RAPIDJSON_SCHEMA_USE_STDREGEX
+#endif  // RAPIDJSON_SCHEMA_USE_STDREGEX
 
   void AddType(const ValueType& type) {
     if (type == GetNullString())
@@ -1380,7 +1380,7 @@ class Schema {
       } else if (minimum_.IsUint64()) {
         context.error_handler.BelowMinimum(i, minimum_, exclusiveMinimum_);
         RAPIDJSON_INVALID_KEYWORD_RETURN(
-            GetMinimumString()); // i <= max(int64_t) < minimum.GetUint64()
+            GetMinimumString());  // i <= max(int64_t) < minimum.GetUint64()
       } else if (!CheckDoubleMinimum(context, static_cast<double>(i)))
         return false;
     }
@@ -1394,7 +1394,7 @@ class Schema {
         }
       } else if (maximum_.IsUint64()) {
       }
-      /* do nothing */ // i <= max(int64_t) < maximum_.GetUint64()
+      /* do nothing */  // i <= max(int64_t) < maximum_.GetUint64()
       else if (!CheckDoubleMaximum(context, static_cast<double>(i)))
         return false;
     }
@@ -1427,7 +1427,7 @@ class Schema {
           RAPIDJSON_INVALID_KEYWORD_RETURN(GetMinimumString());
         }
       } else if (minimum_.IsInt64())
-        /* do nothing */; // i >= 0 > minimum.Getint64()
+        /* do nothing */;  // i >= 0 > minimum.Getint64()
       else if (!CheckDoubleMinimum(context, static_cast<double>(i)))
         return false;
     }
@@ -1442,7 +1442,7 @@ class Schema {
       } else if (maximum_.IsInt64()) {
         context.error_handler.AboveMaximum(i, maximum_, exclusiveMaximum_);
         RAPIDJSON_INVALID_KEYWORD_RETURN(
-            GetMaximumString()); // i >= 0 > maximum_
+            GetMaximumString());  // i >= 0 > maximum_
       } else if (!CheckDoubleMaximum(context, static_cast<double>(i)))
         return false;
     }
@@ -1546,7 +1546,7 @@ class Schema {
   SchemaArray anyOf_;
   SchemaArray oneOf_;
   const SchemaType* not_;
-  unsigned type_; // bitmask of kSchemaType
+  unsigned type_;  // bitmask of kSchemaType
   SizeType validatorCount_;
   SizeType notValidatorIndex_;
 
@@ -1605,13 +1605,13 @@ struct TokenHelper<Stack, char> {
   RAPIDJSON_FORCEINLINE static void AppendIndexToken(
       Stack& documentStack, SizeType index) {
     if (sizeof(SizeType) == 4) {
-      char* buffer    = documentStack.template Push<char>(1 + 10); // '/' + uint
-      *buffer++       = '/';
+      char* buffer = documentStack.template Push<char>(1 + 10);  // '/' + uint
+      *buffer++    = '/';
       const char* end = internal::u32toa(index, buffer);
       documentStack.template Pop<char>(
           static_cast<size_t>(10 - (end - buffer)));
     } else {
-      char* buffer = documentStack.template Push<char>(1 + 20); // '/' + uint64
+      char* buffer = documentStack.template Push<char>(1 + 20);  // '/' + uint64
       *buffer++    = '/';
       const char* end = internal::u64toa(index, buffer);
       documentStack.template Pop<char>(
@@ -1620,7 +1620,7 @@ struct TokenHelper<Stack, char> {
   }
 };
 
-} // namespace internal
+}  // namespace internal
 
 ///////////////////////////////////////////////////////////////////////////////
 // IGenericRemoteSchemaDocumentProvider
@@ -1720,7 +1720,7 @@ class GenericSchemaDocument {
 
     RAPIDJSON_ASSERT(root_ != 0);
 
-    schemaRef_.ShrinkToFit(); // Deallocate all memory for ref
+    schemaRef_.ShrinkToFit();  // Deallocate all memory for ref
   }
 
 #if RAPIDJSON_HAS_CXX11_RVALUE_REFS
@@ -1837,10 +1837,10 @@ class GenericSchemaDocument {
       if (len > 0) {
         const Ch* s = itr->value.GetString();
         SizeType i  = 0;
-        while (i < len && s[i] != '#') // Find the first #
+        while (i < len && s[i] != '#')  // Find the first #
           i++;
 
-        if (i > 0) { // Remote reference, resolve immediately
+        if (i > 0) {  // Remote reference, resolve immediately
           if (remoteProvider_) {
             if (const GenericSchemaDocument* remoteDocument =
                     remoteProvider_->GetRemoteDocument(s, i)) {
@@ -1855,7 +1855,7 @@ class GenericSchemaDocument {
               }
             }
           }
-        } else if (s[i] == '#') { // Local reference, defer resolution
+        } else if (s[i] == '#') {  // Local reference, defer resolution
           PointerType pointer(&s[i], len - i, allocator_);
           if (pointer.IsValid()) {
             if (const ValueType* nv = pointer.Get(document))
@@ -1893,11 +1893,11 @@ class GenericSchemaDocument {
   IRemoteSchemaDocumentProviderType* remoteProvider_;
   Allocator* allocator_;
   Allocator* ownAllocator_;
-  const SchemaType* root_; //!< Root schema.
+  const SchemaType* root_;  //!< Root schema.
   SchemaType* typeless_;
-  internal::Stack<Allocator> schemaMap_; // Stores created Pointer -> Schemas
+  internal::Stack<Allocator> schemaMap_;  // Stores created Pointer -> Schemas
   internal::Stack<Allocator>
-      schemaRef_; // Stores Pointer from $ref and schema which holds the $ref
+      schemaRef_;  // Stores Pointer from $ref and schema which holds the $ref
   URIType uri_;
 };
 
@@ -2237,12 +2237,12 @@ class GenericSchemaValidator : public internal::ISchemaStateFactory<
     AddCurrentError(SchemaType::GetNotString());
   }
 
-#define RAPIDJSON_STRING_(name, ...)                           \
-  static const StringRefType& Get##name##String() {            \
-    static const Ch s[] = {__VA_ARGS__, '\0'};                 \
-    static const StringRefType v(                              \
-        s, static_cast<SizeType>(sizeof(s) / sizeof(Ch) - 1)); \
-    return v;                                                  \
+#define RAPIDJSON_STRING_(name, ...)                                           \
+  static const StringRefType& Get##name##String() {                            \
+    static const Ch s[] = {__VA_ARGS__, '\0'};                                 \
+    static const StringRefType v(                                              \
+        s, static_cast<SizeType>(sizeof(s) / sizeof(Ch) - 1));                 \
+    return v;                                                                  \
   }
 
   RAPIDJSON_STRING_(
@@ -2260,46 +2260,46 @@ class GenericSchemaValidator : public internal::ISchemaStateFactory<
 #undef RAPIDJSON_STRING_
 
 #if RAPIDJSON_SCHEMA_VERBOSE
-#define RAPIDJSON_SCHEMA_HANDLE_BEGIN_VERBOSE_()                        \
-  RAPIDJSON_MULTILINEMACRO_BEGIN                                        \
-  *documentStack_.template Push<Ch>() = '\0';                           \
-  documentStack_.template Pop<Ch>(1);                                   \
-  internal::PrintInvalidDocument(documentStack_.template Bottom<Ch>()); \
+#define RAPIDJSON_SCHEMA_HANDLE_BEGIN_VERBOSE_()                               \
+  RAPIDJSON_MULTILINEMACRO_BEGIN                                               \
+  *documentStack_.template Push<Ch>() = '\0';                                  \
+  documentStack_.template Pop<Ch>(1);                                          \
+  internal::PrintInvalidDocument(documentStack_.template Bottom<Ch>());        \
   RAPIDJSON_MULTILINEMACRO_END
 #else
 #define RAPIDJSON_SCHEMA_HANDLE_BEGIN_VERBOSE_()
 #endif
 
-#define RAPIDJSON_SCHEMA_HANDLE_BEGIN_(method, arg1)   \
-  if (!valid_) return false;                           \
-  if (!BeginValue() || !CurrentSchema().method arg1) { \
-    RAPIDJSON_SCHEMA_HANDLE_BEGIN_VERBOSE_();          \
-    return valid_ = false;                             \
+#define RAPIDJSON_SCHEMA_HANDLE_BEGIN_(method, arg1)                           \
+  if (!valid_) return false;                                                   \
+  if (!BeginValue() || !CurrentSchema().method arg1) {                         \
+    RAPIDJSON_SCHEMA_HANDLE_BEGIN_VERBOSE_();                                  \
+    return valid_ = false;                                                     \
   }
 
-#define RAPIDJSON_SCHEMA_HANDLE_PARALLEL_(method, arg2)                    \
-  for (Context* context = schemaStack_.template Bottom<Context>();         \
-       context != schemaStack_.template End<Context>(); context++) {       \
-    if (context->hasher)                                                   \
-      static_cast<HasherType*>(context->hasher)->method arg2;              \
-    if (context->validators)                                               \
-      for (SizeType i_ = 0; i_ < context->validatorCount; i_++)            \
-        static_cast<GenericSchemaValidator*>(context->validators[i_])      \
-            ->method arg2;                                                 \
-    if (context->patternPropertiesValidators)                              \
-      for (SizeType i_ = 0; i_ < context->patternPropertiesValidatorCount; \
-           i_++)                                                           \
-        static_cast<GenericSchemaValidator*>(                              \
-            context->patternPropertiesValidators[i_])                      \
-            ->method arg2;                                                 \
+#define RAPIDJSON_SCHEMA_HANDLE_PARALLEL_(method, arg2)                        \
+  for (Context* context = schemaStack_.template Bottom<Context>();             \
+       context != schemaStack_.template End<Context>(); context++) {           \
+    if (context->hasher)                                                       \
+      static_cast<HasherType*>(context->hasher)->method arg2;                  \
+    if (context->validators)                                                   \
+      for (SizeType i_ = 0; i_ < context->validatorCount; i_++)                \
+        static_cast<GenericSchemaValidator*>(context->validators[i_])          \
+            ->method arg2;                                                     \
+    if (context->patternPropertiesValidators)                                  \
+      for (SizeType i_ = 0; i_ < context->patternPropertiesValidatorCount;     \
+           i_++)                                                               \
+        static_cast<GenericSchemaValidator*>(                                  \
+            context->patternPropertiesValidators[i_])                          \
+            ->method arg2;                                                     \
   }
 
-#define RAPIDJSON_SCHEMA_HANDLE_END_(method, arg2) \
+#define RAPIDJSON_SCHEMA_HANDLE_END_(method, arg2)                             \
   return valid_ = EndValue() && (!outputHandler_ || outputHandler_->method arg2)
 
-#define RAPIDJSON_SCHEMA_HANDLE_VALUE_(method, arg1, arg2) \
-  RAPIDJSON_SCHEMA_HANDLE_BEGIN_(method, arg1);            \
-  RAPIDJSON_SCHEMA_HANDLE_PARALLEL_(method, arg2);         \
+#define RAPIDJSON_SCHEMA_HANDLE_VALUE_(method, arg1, arg2)                     \
+  RAPIDJSON_SCHEMA_HANDLE_BEGIN_(method, arg1);                                \
+  RAPIDJSON_SCHEMA_HANDLE_PARALLEL_(method, arg2);                             \
   RAPIDJSON_SCHEMA_HANDLE_END_(method, arg2)
 
   bool Null() { RAPIDJSON_SCHEMA_HANDLE_VALUE_(Null, (CurrentContext()), ()); }
@@ -2538,7 +2538,8 @@ class GenericSchemaValidator : public internal::ISchemaStateFactory<
 
   void AppendToken(const Ch* str, SizeType len) {
     documentStack_.template Reserve<Ch>(
-        1 + len * 2); // worst case all characters are escaped as two characters
+        1 +
+        len * 2);  // worst case all characters are escaped as two characters
     *documentStack_.template PushUnsafe<Ch>() = '/';
     for (SizeType i = 0; i < len; i++) {
       if (str[i] == '~') {
@@ -2663,11 +2664,11 @@ class GenericSchemaValidator : public internal::ISchemaStateFactory<
   StateAllocator* stateAllocator_;
   StateAllocator* ownStateAllocator_;
   internal::Stack<StateAllocator>
-      schemaStack_; //!< stack to store the current path of schema
-                    //!< (BaseSchemaType *)
+      schemaStack_;  //!< stack to store the current path of schema
+                     //!< (BaseSchemaType *)
   internal::Stack<StateAllocator>
-      documentStack_; //!< stack to store the current path of validating
-                      //!< document (Ch)
+      documentStack_;  //!< stack to store the current path of validating
+                       //!< document (Ch)
   OutputHandler* outputHandler_;
   ValueType error_;
   ValueType currentError_;
@@ -2768,4 +2769,4 @@ class SchemaValidatingReader {
 RAPIDJSON_NAMESPACE_END
 RAPIDJSON_DIAG_POP
 
-#endif // RAPIDJSON_SCHEMA_H_
+#endif  // RAPIDJSON_SCHEMA_H_

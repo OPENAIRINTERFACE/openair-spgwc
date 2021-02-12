@@ -117,8 +117,8 @@ inline void PutN(Stream& stream, Ch c, size_t n) {
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
 RAPIDJSON_DIAG_PUSH
-RAPIDJSON_DIAG_OFF(4702) // unreachable code
-RAPIDJSON_DIAG_OFF(4512) // assignment operator could not be generated
+RAPIDJSON_DIAG_OFF(4702)  // unreachable code
+RAPIDJSON_DIAG_OFF(4512)  // assignment operator could not be generated
 #endif
 
 template<typename InputStream, typename Encoding = UTF8<> >
@@ -177,8 +177,8 @@ struct GenericStringStream {
     return 0;
   }
 
-  const Ch* src_;  //!< Current read position.
-  const Ch* head_; //!< Original head of the string.
+  const Ch* src_;   //!< Current read position.
+  const Ch* head_;  //!< Original head of the string.
 };
 
 template<typename Encoding>
@@ -239,4 +239,4 @@ typedef GenericInsituStringStream<UTF8<> > InsituStringStream;
 
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_STREAM_H_
+#endif  // RAPIDJSON_STREAM_H_

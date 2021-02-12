@@ -687,20 +687,11 @@ struct up_function_features_s {
     frrt  = i.frrt;
     spare = i.spare;
   }
-  bool has_features() { return (bucp > 0) ||
-      (ddnd > 0) ||
-      (dlbd > 0) ||
-      (trst > 0) ||
-      (ftup > 0) ||
-      (pfdm > 0) ||
-      (heeu > 0) ||
-      (treu > 0) ||
-      (empu > 0) ||
-      (pdiu > 0) ||
-      (udbc > 0) ||
-      (quoac > 0) ||
-      (trace > 0) ||
-      (frrt > 0);}
+  bool has_features() {
+    return (bucp > 0) || (ddnd > 0) || (dlbd > 0) || (trst > 0) || (ftup > 0) ||
+           (pfdm > 0) || (heeu > 0) || (treu > 0) || (empu > 0) || (pdiu > 0) ||
+           (udbc > 0) || (quoac > 0) || (trace > 0) || (frrt > 0);
+  }
 };
 // typedef struct up_function_features_s up_function_features_t;
 
@@ -894,8 +885,7 @@ struct node_id_s {
     }
   };
   bool operator==(const std::string& f) const {
-    if ((NODE_ID_TYPE_FQDN == this->node_id_type) &&
-        (fqdn.compare(f) == 0)) {
+    if ((NODE_ID_TYPE_FQDN == this->node_id_type) && (fqdn.compare(f) == 0)) {
       return true;
     } else {
       return false;
@@ -1116,7 +1106,7 @@ struct cp_function_features_s {
   cp_function_features_s() : spare(0), ovrl(0), load(0) {}
   cp_function_features_s(const cp_function_features_s& i)
       : spare(i.spare), ovrl(i.ovrl), load(i.load) {}
-  bool has_features() { return (ovrl > 0) || (load > 0);}
+  bool has_features() { return (ovrl > 0) || (load > 0); }
 };
 typedef struct cp_function_features_s cp_function_features_t;
 //-------------------------------------

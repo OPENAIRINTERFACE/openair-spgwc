@@ -27,28 +27,28 @@ RAPIDJSON_DIAG_PUSH
 RAPIDJSON_DIAG_OFF(switch - enum)
 #elif defined(_MSC_VER)
 RAPIDJSON_DIAG_PUSH
-RAPIDJSON_DIAG_OFF(4512) // assignment operator could not be generated
+RAPIDJSON_DIAG_OFF(4512)  // assignment operator could not be generated
 #endif
 
 RAPIDJSON_NAMESPACE_BEGIN
 
 static const SizeType kPointerInvalidIndex =
-    ~SizeType(0); //!< Represents an invalid index in GenericPointer::Token
+    ~SizeType(0);  //!< Represents an invalid index in GenericPointer::Token
 
 //! Error code of parsing.
 /*! \ingroup RAPIDJSON_ERRORS
     \see GenericPointer::GenericPointer, GenericPointer::GetParseErrorCode
 */
 enum PointerParseErrorCode {
-  kPointerParseErrorNone = 0, //!< The parse is successful
+  kPointerParseErrorNone = 0,  //!< The parse is successful
 
-  kPointerParseErrorTokenMustBeginWithSolidus, //!< A token must begin with a
-                                               //!< '/'
-  kPointerParseErrorInvalidEscape,             //!< Invalid escape
-  kPointerParseErrorInvalidPercentEncoding,    //!< Invalid percent encoding in
-                                               //!< URI fragment
-  kPointerParseErrorCharacterMustPercentEncode //!< A character must percent
-                                               //!< encoded in URI fragment
+  kPointerParseErrorTokenMustBeginWithSolidus,  //!< A token must begin with a
+                                                //!< '/'
+  kPointerParseErrorInvalidEscape,              //!< Invalid escape
+  kPointerParseErrorInvalidPercentEncoding,     //!< Invalid percent encoding in
+                                                //!< URI fragment
+  kPointerParseErrorCharacterMustPercentEncode  //!< A character must percent
+                                                //!< encoded in URI fragment
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -89,8 +89,8 @@ template<typename ValueType, typename Allocator = CrtAllocator>
 class GenericPointer {
  public:
   typedef typename ValueType::EncodingType
-      EncodingType;                  //!< Encoding type from Value
-  typedef typename ValueType::Ch Ch; //!< Character type from Value
+      EncodingType;                   //!< Encoding type from Value
+  typedef typename ValueType::Ch Ch;  //!< Character type from Value
 
   //! A token is the basic units of internal representation.
   /*!
@@ -107,11 +107,11 @@ class GenericPointer {
      and allocation, using a special constructor.
   */
   struct Token {
-    const Ch* name;  //!< Name of the token. It has null character at the end
-                     //!< but it can contain null character.
-    SizeType length; //!< Length of the name.
-    SizeType index;  //!< A valid array index, if it is not equal to
-                     //!< kPointerInvalidIndex.
+    const Ch* name;   //!< Name of the token. It has null character at the end
+                      //!< but it can contain null character.
+    SizeType length;  //!< Length of the name.
+    SizeType index;   //!< A valid array index, if it is not equal to
+                      //!< kPointerInvalidIndex.
   };
 
   //!@name Constructors and destructor.
@@ -242,8 +242,8 @@ class GenericPointer {
 
   //! Destructor.
   ~GenericPointer() {
-    if (nameBuffer_) // If user-supplied tokens constructor is used,
-                     // nameBuffer_ is nullptr and tokens_ are not deallocated.
+    if (nameBuffer_)  // If user-supplied tokens constructor is used,
+                      // nameBuffer_ is nullptr and tokens_ are not deallocated.
       Allocator::Free(tokens_);
     RAPIDJSON_DELETE(ownAllocator_);
   }
@@ -259,9 +259,9 @@ class GenericPointer {
       parseErrorCode_   = rhs.parseErrorCode_;
 
       if (rhs.nameBuffer_)
-        CopyFromRaw(rhs); // Normally parsed tokens.
+        CopyFromRaw(rhs);  // Normally parsed tokens.
       else {
-        tokens_     = rhs.tokens_; // User supplied const tokens.
+        tokens_     = rhs.tokens_;  // User supplied const tokens.
         nameBuffer_ = 0;
       }
     }
@@ -547,10 +547,11 @@ class GenericPointer {
         v     = &((*v)[v->Size() - 1]);
         exist = false;
       } else {
-        if (t->index == kPointerInvalidIndex) { // must be object name
-          if (!v->IsObject()) v->SetObject();   // Change to Object
-        } else {                                // object name or array index
-          if (!v->IsArray() && !v->IsObject()) v->SetArray(); // Change to Array
+        if (t->index == kPointerInvalidIndex) {  // must be object name
+          if (!v->IsObject()) v->SetObject();    // Change to Object
+        } else {                                 // object name or array index
+          if (!v->IsArray() && !v->IsObject())
+            v->SetArray();  // Change to Array
         }
 
         if (v->IsArray()) {
@@ -570,7 +571,7 @@ class GenericPointer {
                 ValueType(t->name, t->length, allocator).Move(),
                 ValueType().Move(), allocator);
             m     = v->MemberEnd();
-            v     = &(--m)->value; // Assumes AddMember() appends at the end
+            v     = &(--m)->value;  // Assumes AddMember() appends at the end
             exist = false;
           } else
             v = &m->value;
@@ -929,7 +930,7 @@ class GenericPointer {
   */
   bool Erase(ValueType& root) const {
     RAPIDJSON_ASSERT(IsValid());
-    if (tokenCount_ == 0) // Cannot erase the root
+    if (tokenCount_ == 0)  // Cannot erase the root
       return false;
 
     ValueType* v      = &root;
@@ -978,10 +979,10 @@ class GenericPointer {
   Ch* CopyFromRaw(
       const GenericPointer& rhs, size_t extraToken = 0,
       size_t extraNameBufferSize = 0) {
-    if (!allocator_) // allocator is independently owned.
+    if (!allocator_)  // allocator is independently owned.
       ownAllocator_ = allocator_ = RAPIDJSON_NEW(Allocator)();
 
-    size_t nameBufferSize = rhs.tokenCount_; // null terminators for tokens
+    size_t nameBufferSize = rhs.tokenCount_;  // null terminators for tokens
     for (Token* t = rhs.tokens_; t != rhs.tokens_ + rhs.tokenCount_; ++t)
       nameBufferSize += t->length;
 
@@ -1017,15 +1018,15 @@ class GenericPointer {
   }
 
   //! Parse a JSON String or its URI fragment representation into tokens.
-#ifndef __clang__ // -Wdocumentation
-                  /*!
-                      \param source Either a JSON Pointer string, or its URI fragment
-                     representation. Not need to be null terminated.                  \param
-                     length Length of the                  source string.                  \note
-                     Source cannot be                  JSON String Representation of JSON
-                     Pointer, e.g. In
-                     "/\u0000", \u0000 will                  not be unescaped.
-                  */
+#ifndef __clang__  // -Wdocumentation
+                   /*!
+                       \param source Either a JSON Pointer string, or its URI fragment
+                      representation. Not need to be null terminated.                  \param
+                      length Length of the                  source string.                  \note
+                      Source cannot be                  JSON String Representation of JSON
+                      Pointer, e.g. In
+                      "/\u0000", \u0000 will                  not be unescaped.
+                   */
 #endif
   void Parse(const Ch* source, size_t length) {
     RAPIDJSON_ASSERT(source != NULL);
@@ -1059,7 +1060,7 @@ class GenericPointer {
 
     while (i < length) {
       RAPIDJSON_ASSERT(source[i] == '/');
-      i++; // consumes '/'
+      i++;  // consumes '/'
 
       token->name   = name;
       bool isNumber = true;
@@ -1121,7 +1122,7 @@ class GenericPointer {
       }
       token->length = static_cast<SizeType>(name - token->name);
       if (token->length == 0) isNumber = false;
-      *name++ = '\0'; // Null terminator
+      *name++ = '\0';  // Null terminator
 
       // Second check for index: more than one digit cannot have leading zero
       if (isNumber && token->length > 1 && token->name[0] == '0')
@@ -1132,7 +1133,7 @@ class GenericPointer {
       if (isNumber) {
         for (size_t j = 0; j < token->length; j++) {
           SizeType m = n * 10 + static_cast<SizeType>(token->name[j] - '0');
-          if (m < n) { // overflow detection
+          if (m < n) {  // overflow detection
             isNumber = false;
             break;
           }
@@ -1145,7 +1146,7 @@ class GenericPointer {
     }
 
     RAPIDJSON_ASSERT(
-        name <= nameBuffer_ + length); // Should not overflow buffer
+        name <= nameBuffer_ + length);  // Should not overflow buffer
     parseErrorCode_ = kPointerParseErrorNone;
     return;
 
@@ -1214,7 +1215,7 @@ class GenericPointer {
         : src_(source), head_(source), end_(end), valid_(true) {}
 
     Ch Take() {
-      if (*src_ != '%' || src_ + 3 > end_) { // %XY triplet
+      if (*src_ != '%' || src_ + 3 > end_) {  // %XY triplet
         valid_ = false;
         return 0;
       }
@@ -1242,10 +1243,10 @@ class GenericPointer {
     bool IsValid() const { return valid_; }
 
    private:
-    const Ch* src_;  //!< Current read position.
-    const Ch* head_; //!< Original head of the string.
-    const Ch* end_;  //!< Past-the-end position.
-    bool valid_;     //!< Whether the parsing is valid.
+    const Ch* src_;   //!< Current read position.
+    const Ch* head_;  //!< Original head of the string.
+    const Ch* end_;   //!< Past-the-end position.
+    bool valid_;      //!< Whether the parsing is valid.
   };
 
   //! A helper stream to encode character (UTF-8 code unit) into percent-encoded
@@ -1254,7 +1255,7 @@ class GenericPointer {
   class PercentEncodeStream {
    public:
     PercentEncodeStream(OutputStream& os) : os_(os) {}
-    void Put(char c) { // UTF-8 must be byte
+    void Put(char c) {  // UTF-8 must be byte
       unsigned char u                 = static_cast<unsigned char>(c);
       static const char hexDigits[16] = {'0', '1', '2', '3', '4', '5',
                                          '6', '7', '8', '9', 'A', 'B',
@@ -1268,14 +1269,14 @@ class GenericPointer {
     OutputStream& os_;
   };
 
-  Allocator* allocator_; //!< The current allocator. It is either user-supplied
-                         //!< or equal to ownAllocator_.
-  Allocator* ownAllocator_; //!< Allocator owned by this Pointer.
-  Ch* nameBuffer_;          //!< A buffer containing all names in tokens.
-  Token* tokens_;           //!< A list of tokens.
-  size_t tokenCount_;       //!< Number of tokens in tokens_.
-  size_t parseErrorOffset_; //!< Offset in code unit when parsing fail.
-  PointerParseErrorCode parseErrorCode_; //!< Parsing error code.
+  Allocator* allocator_;  //!< The current allocator. It is either user-supplied
+                          //!< or equal to ownAllocator_.
+  Allocator* ownAllocator_;  //!< Allocator owned by this Pointer.
+  Ch* nameBuffer_;           //!< A buffer containing all names in tokens.
+  Token* tokens_;            //!< A list of tokens.
+  size_t tokenCount_;        //!< Number of tokens in tokens_.
+  size_t parseErrorOffset_;  //!< Offset in code unit when parsing fail.
+  PointerParseErrorCode parseErrorCode_;  //!< Parsing error code.
 };
 
 //! GenericPointer for Value (UTF-8, default allocator).
@@ -1728,4 +1729,4 @@ RAPIDJSON_NAMESPACE_END
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_POINTER_H_
+#endif  // RAPIDJSON_POINTER_H_

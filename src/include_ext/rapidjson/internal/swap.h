@@ -40,11 +40,11 @@ inline void Swap(T& a, T& b) RAPIDJSON_NOEXCEPT {
   b     = tmp;
 }
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
 #if defined(__clang__)
 RAPIDJSON_DIAG_POP
 #endif
 
-#endif // RAPIDJSON_INTERNAL_SWAP_H_
+#endif  // RAPIDJSON_INTERNAL_SWAP_H_

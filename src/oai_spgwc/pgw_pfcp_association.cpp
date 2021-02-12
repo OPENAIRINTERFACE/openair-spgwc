@@ -43,7 +43,6 @@ using namespace std;
 extern itti_mw* itti_inst;
 extern pgwc_sxab* pgwc_sxab_inst;
 
-
 //------------------------------------------------------------------------------
 void pfcp_association::notify_add_session(const pfcp::fseid_t& cp_fseid) {
   std::unique_lock<std::mutex> l(m_sessions);
@@ -87,18 +86,15 @@ void pfcp_association::restore_sx_sessions() {
 
 //------------------------------------------------------------------------------
 bool pfcp_associations::add_association(
-    const uint64_t& trxn_id,
-    const endpoint& remote_endpoint,
-    pfcp::node_id_t &node_id,
-    std::string &id,
+    const uint64_t& trxn_id, const endpoint& remote_endpoint,
+    pfcp::node_id_t& node_id, std::string& id,
     pfcp::recovery_time_stamp_t& recovery_time_stamp,
     std::pair<bool, pfcp::up_function_features_s>& up_function_features,
     std::pair<bool, pfcp::user_plane_ip_resource_information_t>&
         user_plane_ip_resource_information) {
-
   std::shared_ptr<pfcp_association> sa =
       std::shared_ptr<pfcp_association>(nullptr);
-  bool is_restore_sx_sessions = false;
+  bool is_restore_sx_sessions                 = false;
   bool is_trigger_heartbeat_request_procedure = false;
   if (get_association(node_id, sa)) {
     itti_inst->timer_remove(sa->timer_heartbeat);
@@ -108,14 +104,15 @@ bool pfcp_associations::add_association(
     } else {
       is_restore_sx_sessions = true;
     }
-    sa->recovery_time_stamp      = recovery_time_stamp;
-    sa->function_features  = up_function_features;
-    sa->user_plane_ip_resource_information  = user_plane_ip_resource_information;
+    sa->recovery_time_stamp                = recovery_time_stamp;
+    sa->function_features                  = up_function_features;
+    sa->user_plane_ip_resource_information = user_plane_ip_resource_information;
   } else {
-    is_restore_sx_sessions = false;
-    pfcp_association* association =
-        new pfcp_association(node_id, recovery_time_stamp, up_function_features, user_plane_ip_resource_information);
-    sa                      = std::shared_ptr<pfcp_association>(association);
+    is_restore_sx_sessions        = false;
+    pfcp_association* association = new pfcp_association(
+        node_id, recovery_time_stamp, up_function_features,
+        user_plane_ip_resource_information);
+    sa     = std::shared_ptr<pfcp_association>(association);
     sa->id = id;
     associations.insert((int32_t) association->hash_node_id, sa);
     is_trigger_heartbeat_request_procedure = true;
@@ -132,7 +129,7 @@ bool pfcp_associations::add_association(
     a.r_endpoint = remote_endpoint;
     pgwc_sxab_inst->send_sx_msg(a);
     // !deadlock design
-    //PfcpUpNodes::Instance().NotifyNodeAssociated(node_id);
+    // PfcpUpNodes::Instance().NotifyNodeAssociated(node_id);
   } else {
     Logger::pgwc_sx().warn(
         "Received SX ASSOCIATION SETUP REQUEST could not set node id!, "
@@ -190,8 +187,8 @@ void pfcp_associations::trigger_heartbeat_request_procedure(
     std::shared_ptr<pfcp_association>& s) {
   s->timer_heartbeat = itti_inst->timer_setup(
       pgw_config::cups_.association_heartbeat_period_ms / 1000,
-      (pgw_config::cups_.association_heartbeat_period_ms % 1000) * 1000, TASK_PGWC_SX,
-      TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST, s->hash_node_id);
+      (pgw_config::cups_.association_heartbeat_period_ms % 1000) * 1000,
+      TASK_PGWC_SX, TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST, s->hash_node_id);
 }
 //------------------------------------------------------------------------------
 void pfcp_associations::initiate_heartbeat_request(
@@ -215,25 +212,24 @@ void pfcp_associations::timeout_heartbeat_request(
   if (pit == associations.end())
     return;
   else {
-//    if (pit->second->num_retries_timer_heartbeat <
-//        PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES) {
-//      Logger::pgwc_sx().info(
-//          "PFCP HEARTBEAT PROCEDURE hash %u TIMED OUT (retry %d)",
-//          hash_node_id, pit->second->num_retries_timer_heartbeat);
-//      pit->second->num_retries_timer_heartbeat++;
-//      pgwc_sxab_inst->send_heartbeat_request(pit->second);
-//    } else {
-//      Logger::pgwc_sx().warn(
-//          "PFCP HEARTBEAT PROCEDURE FAILED after %d retries!",
-//          PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES);
-//      PfcpUpNodes::Instance().NotifyNodeNotReachable(pit->second->node_id);
-//    }
+    //    if (pit->second->num_retries_timer_heartbeat <
+    //        PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES) {
+    //      Logger::pgwc_sx().info(
+    //          "PFCP HEARTBEAT PROCEDURE hash %u TIMED OUT (retry %d)",
+    //          hash_node_id, pit->second->num_retries_timer_heartbeat);
+    //      pit->second->num_retries_timer_heartbeat++;
+    //      pgwc_sxab_inst->send_heartbeat_request(pit->second);
+    //    } else {
+    //      Logger::pgwc_sx().warn(
+    //          "PFCP HEARTBEAT PROCEDURE FAILED after %d retries!",
+    //          PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES);
+    //      PfcpUpNodes::Instance().NotifyNodeNotReachable(pit->second->node_id);
+    //    }
   }
 }
 //------------------------------------------------------------------------------
 void pfcp_associations::handle_receive_heartbeat_response(
-    const uint64_t trxn_id,
-    const endpoint& remote_endpoint,
+    const uint64_t trxn_id, const endpoint& remote_endpoint,
     const pfcp::recovery_time_stamp_t& recovery_time_stamp) {
   folly::AtomicHashMap<int32_t, std::shared_ptr<pfcp_association>>::iterator it;
   FOR_EACH(it, associations) {
@@ -254,9 +250,8 @@ void pfcp_associations::handle_receive_heartbeat_response(
 }
 //------------------------------------------------------------------------------
 void pfcp_associations::handle_receive_heartbeat_request(
-    const uint64_t trxn_id,
-          const endpoint& remote_endpoint,
-          const pfcp::recovery_time_stamp_t& recovery_time_stamp) {
+    const uint64_t trxn_id, const endpoint& remote_endpoint,
+    const pfcp::recovery_time_stamp_t& recovery_time_stamp) {
   folly::AtomicHashMap<int32_t, std::shared_ptr<pfcp_association>>::iterator it;
   FOR_EACH(it, associations) {
     std::shared_ptr<pfcp_association> pit = it->second;
@@ -272,10 +267,11 @@ void pfcp_associations::handle_receive_heartbeat_request(
 }
 
 //------------------------------------------------------------------------------
-bool pfcp_associations::select_up_node(const apn_t& apn, const uli_t& uli,
+bool pfcp_associations::select_up_node(
+    const apn_t& apn, const uli_t& uli,
     const serving_network_t& serving_network, const rat_type_t& rat_type,
-    const pdn_type_t& pdn_type, const paa_t& paa,
-    pfcp::node_id_t& node_id, const int node_selection_criteria) {
+    const pdn_type_t& pdn_type, const paa_t& paa, pfcp::node_id_t& node_id,
+    const int node_selection_criteria) {
   node_id = {};
   if (associations.empty()) {
     Logger::pgwc_app().warn("No available UP node for selection");
@@ -284,10 +280,10 @@ bool pfcp_associations::select_up_node(const apn_t& apn, const uli_t& uli,
   // filter by apn, location, paa if already set
   std::vector<up_node_cfg_t> up_nodes = {};
   if (pgw_config::GetUpNodes(apn, uli, paa, up_nodes)) {
-
     std::set<std::shared_ptr<pfcp_association>> up_nodes_associated = {};
     for (auto node_it : up_nodes) {
-      folly::AtomicHashMap<int32_t, std::shared_ptr<pfcp_association>>::iterator it;
+      folly::AtomicHashMap<int32_t, std::shared_ptr<pfcp_association>>::iterator
+          it;
       FOR_EACH(it, associations) {
         std::shared_ptr<pfcp_association> a = it->second;
         if (a->id.compare(node_it.id) == 0) {
@@ -307,7 +303,8 @@ bool pfcp_associations::select_up_node(const apn_t& apn, const uli_t& uli,
         case kNodeSelectionCriteriaNone:
         default:
           node_id = up_nodes_associated.begin()->get()->node_id;
-          Logger::pgwc_app().debug("Select UP node: %s",
+          Logger::pgwc_app().debug(
+              "Select UP node: %s",
               up_nodes_associated.begin()->get()->node_id.toString().c_str());
           return true;
           break;

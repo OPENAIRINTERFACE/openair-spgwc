@@ -1106,19 +1106,15 @@ typedef struct gtpc2c_tai_field_s {
   uint8_t mnc_digit_2 : 4;
   uint8_t mnc_digit_1 : 4;
   uint16_t tracking_area_code;
-  bool operator==(
-      const struct gtpc2c_tai_field_s& f) const {
-    return (mcc_digit_2 == f.mcc_digit_2) and
-        (mcc_digit_1 == f.mcc_digit_1) and
-        (mnc_digit_3 == f.mnc_digit_3) and
-        (mcc_digit_3 == f.mcc_digit_3) and
-        (mnc_digit_2 == f.mnc_digit_2) and
-        (mnc_digit_1 == f.mnc_digit_1) and
-        (tracking_area_code == f.tracking_area_code);
+  bool operator==(const struct gtpc2c_tai_field_s& f) const {
+    return (mcc_digit_2 == f.mcc_digit_2) and (mcc_digit_1 == f.mcc_digit_1) and
+           (mnc_digit_3 == f.mnc_digit_3) and (mcc_digit_3 == f.mcc_digit_3) and
+           (mnc_digit_2 == f.mnc_digit_2) and (mnc_digit_1 == f.mnc_digit_1) and
+           (tracking_area_code == f.tracking_area_code);
   }
 
-  void from_items(const std::string& mcc, const std::string& mnc,
-      const uint16_t& tac) {
+  void from_items(
+      const std::string& mcc, const std::string& mnc, const uint16_t& tac) {
     mcc_digit_1 = mcc[0] - '0';
     mcc_digit_2 = mcc[1] - '0';
     mcc_digit_3 = mcc[2] - '0';

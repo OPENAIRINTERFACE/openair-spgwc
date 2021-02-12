@@ -59,12 +59,11 @@ bool Options::parseInputOptions(int argc, char** argv) {
   int option_index = 0;
   bool result      = true;
 
-  struct option long_options[] = {
-      {"help", no_argument, NULL, 'h'},
-      {"config", required_argument, NULL, 'c'},
-      {"stdoutlog", no_argument, NULL, 'o'},
-      {"rotatelog", no_argument, NULL, 'r'},
-      {NULL, 0, NULL, 0}};
+  struct option long_options[] = {{"help", no_argument, NULL, 'h'},
+                                  {"config", required_argument, NULL, 'c'},
+                                  {"stdoutlog", no_argument, NULL, 'o'},
+                                  {"rotatelog", no_argument, NULL, 'r'},
+                                  {NULL, 0, NULL, 0}};
 
   // Loop on arguments
   while (1) {

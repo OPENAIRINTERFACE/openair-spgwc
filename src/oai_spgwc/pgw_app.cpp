@@ -55,15 +55,13 @@ void pgw_app_task(void*);
 int pgw_app::apply_config() {
   Logger::pgwc_app().info("Apply config...");
   int pool_id = 0;
-  for (auto p :pgw_config::spgw_app_.pdns) {
-      int range  = be32toh(p.ue_pool_range_high.s_addr) -
-                  be32toh(p.ue_pool_range_low.s_addr);
-      paa_dynamic::get_instance().add_pool(
-          p.apn_label, pool_id++, p.ue_pool_range_low,
-          range);
-      paa_dynamic::get_instance().add_pool(
-          p.apn_label, pool_id++, p.paa_pool6_prefix,
-          p.paa_pool6_prefix_len);
+  for (auto p : pgw_config::spgw_app_.pdns) {
+    int range = be32toh(p.ue_pool_range_high.s_addr) -
+                be32toh(p.ue_pool_range_low.s_addr);
+    paa_dynamic::get_instance().add_pool(
+        p.apn_label, pool_id++, p.ue_pool_range_low, range);
+    paa_dynamic::get_instance().add_pool(
+        p.apn_label, pool_id++, p.paa_pool6_prefix, p.paa_pool6_prefix_len);
   }
   Logger::pgwc_app().info("Applied config");
   return RETURNok;
@@ -256,12 +254,12 @@ void pgw_app_task(void*) {
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
           Logger::pgwc_app().trace("TIME-OUT event timer id %d", to->timer_id);
           switch (to->arg1_user) {
-          case kTriggerAssociationUpNodes:
-            PfcpUpNodes::Instance().TriggerAssociations();
-            break;
-          default:
-            Logger::pgwc_app().error("TIME-OUT event timer id %d not handled",
-                to->timer_id);
+            case kTriggerAssociationUpNodes:
+              PfcpUpNodes::Instance().TriggerAssociations();
+              break;
+            default:
+              Logger::pgwc_app().error(
+                  "TIME-OUT event timer id %d not handled", to->timer_id);
           }
         }
         break;
@@ -537,8 +535,8 @@ void pgw_app::handle_itti_msg(
     }
   } else {
     if (csreq->teid) {
-      fteid_t l_fteid =
-          pgw_app_inst->build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, csreq->teid);
+      fteid_t l_fteid = pgw_app_inst->build_s5s8_cp_fteid(
+          pgw_config::pgw_s5s8_.iface.addr4, csreq->teid);
       if (is_s5s8c_teid_exist(csreq->teid)) {
         pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
       } else {
@@ -587,7 +585,8 @@ void pgw_app::handle_itti_msg(
       return;
     }
   }
-  fteid_t l_fteid = build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, mbreq->teid);
+  fteid_t l_fteid =
+      build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, mbreq->teid);
   std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
   if (pc.get()) {
     pc.get()->handle_itti_msg(smbreq);
@@ -617,7 +616,8 @@ void pgw_app::handle_itti_msg(
       "  gtpc_tx_id " PROC_ID_FMT " ",
       smbreq->teid, smbreq->gtpc_tx_id);
 
-  fteid_t l_fteid = build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, smbreq->teid);
+  fteid_t l_fteid =
+      build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, smbreq->teid);
   std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
   if (pc.get()) {
     pc.get()->handle_itti_msg(smbreq);
@@ -659,7 +659,8 @@ void pgw_app::handle_itti_msg(
       return;
     }
   }
-  fteid_t l_fteid = build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, dsreq->teid);
+  fteid_t l_fteid =
+      build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, dsreq->teid);
   std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
   if (pc.get()) {
     pc.get()->handle_itti_msg(sdsreq);
@@ -688,7 +689,8 @@ void pgw_app::handle_itti_msg(
 //------------------------------------------------------------------------------
 void pgw_app::handle_itti_msg(
     itti_s5s8_downlink_data_notification_acknowledge& m) {
-  fteid_t l_fteid = build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, m.teid);
+  fteid_t l_fteid =
+      build_s5s8_cp_fteid(pgw_config::pgw_s5s8_.iface.addr4, m.teid);
   std::shared_ptr<pgw_context> pc = s5s8cpgw_fteid_2_pgw_context(l_fteid);
   if (pc.get()) {
     Logger::pgwc_app().debug(

@@ -385,8 +385,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
   imsi_t imsi = {};
   if (csreq.gtp_ies.get(imsi)) {
     Logger::sgwc_app().debug(
-        "S11 CREATE_SESSION_REQUEST IMSI %s ",
-        imsi.toString());
+        "S11 CREATE_SESSION_REQUEST IMSI %s ", imsi.toString());
     // imsi not authenticated
     indication_t indication = {};
     bool delete_pdn_flag    = false;
@@ -446,7 +445,8 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
         }
       } else {
         Logger::sgwc_app().debug(
-            "S11 CREATE_SESSION_REQUEST IMSI %s sgw eps bearer context not found!",
+            "S11 CREATE_SESSION_REQUEST IMSI %s sgw eps bearer context not "
+            "found!",
             imsi.toString());
         ebc = std::shared_ptr<sgw_eps_bearer_context>(
             new sgw_eps_bearer_context());
@@ -454,8 +454,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
       }
     }
   } else {
-    Logger::sgwc_app().debug(
-        "S11 CREATE_SESSION_REQUEST no IMSI !");
+    Logger::sgwc_app().debug("S11 CREATE_SESSION_REQUEST no IMSI !");
     if (csreq.teid) {
       if (is_s11sgw_teid_2_sgw_eps_bearer_context(csreq.teid)) {
         ebc = s11sgw_teid_2_sgw_eps_bearer_context(csreq.teid);

@@ -68,7 +68,7 @@ bool CountStringCodePoint(
   return true;
 }
 
-} // namespace internal
+}  // namespace internal
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_INTERNAL_STRFUNC_H_
+#endif  // RAPIDJSON_INTERNAL_STRFUNC_H_

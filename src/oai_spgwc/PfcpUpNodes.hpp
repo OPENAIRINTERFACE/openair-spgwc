@@ -51,7 +51,6 @@ enum AssociationState {
   kAssocLost
 };
 
-
 class PfcpUpNode {
  public:
   std::string id_;
@@ -61,8 +60,8 @@ class PfcpUpNode {
   std::pair<bool, pfcp::up_function_features_s> peer_function_features_;
   endpoint remote_endpoint_;
   //
-  //mutable std::mutex m_sessions_;
-  //std::set<pfcp::fseid_t> sessions_;
+  // mutable std::mutex m_sessions_;
+  // std::set<pfcp::fseid_t> sessions_;
   //
   timer_id_t timer_heartbeat_;
   int num_retries_timer_heartbeat_;
@@ -72,14 +71,13 @@ class PfcpUpNode {
 
   int association_state_;
   timer_id_t timer_association_;
-  uint       consecutive_failed_echo_proc;
-  uint       consecutive_successful_echo_proc;
-  uint64_t   failed_echo_proc;
-  uint64_t   successful_echo_proc;
-  uint64_t   restarts;
+  uint consecutive_failed_echo_proc;
+  uint consecutive_successful_echo_proc;
+  uint64_t failed_echo_proc;
+  uint64_t successful_echo_proc;
+  uint64_t restarts;
 
-
-  explicit PfcpUpNode(const std::string& id )
+  explicit PfcpUpNode(const std::string& id)
       : id_(id),
         peer_recovery_time_stamp_(),
         peer_function_features_(),
@@ -140,8 +138,7 @@ class PfcpUpNodes {
   void TriggerAssociations();
 
   void AssociationSetupRequest(
-      const uint64_t& trxn_id,
-      const endpoint& remote_endpoint,
+      const uint64_t& trxn_id, const endpoint& remote_endpoint,
       pfcp::node_id_t& node_id,
       pfcp::recovery_time_stamp_t& recovery_time_stamp,
       std::pair<bool, pfcp::up_function_features_s>& up_function_features,
@@ -149,10 +146,10 @@ class PfcpUpNodes {
           user_plane_ip_resource_information);
 
   bool AddUpNode(const std::string t_up_ip, const std::string t_apn);
-  bool GetUpNode(const pfcp::node_id_t& node_id,
-      std::shared_ptr<PfcpUpNode>& su) const;
-  bool GetUpNode(const std::size_t hash_node_id,
-      std::shared_ptr<PfcpUpNode>& su) const;
+  bool GetUpNode(
+      const pfcp::node_id_t& node_id, std::shared_ptr<PfcpUpNode>& su) const;
+  bool GetUpNode(
+      const std::size_t hash_node_id, std::shared_ptr<PfcpUpNode>& su) const;
   void NotifyNodeNotResponding(const pfcp::node_id_t& node_id);
   void NotifyNodeNotResponding(const std::size_t hash_node_id);
   void NotifyNodeNotReachable(const pfcp::node_id_t& node_id);
@@ -161,7 +158,7 @@ class PfcpUpNodes {
   void NotifyNodeReachable(const std::size_t hash_node_id);
   void NotifyNodeRestarted(const pfcp::node_id_t& node_id);
   void NotifyNodeRestarted(const std::size_t hash_node_id);
-  void NotifyNodeAssociated(const pfcp::node_id_t &node_id);
+  void NotifyNodeAssociated(const pfcp::node_id_t& node_id);
 
   // implement TimerApplication interface
   void TimeOutNotification(
@@ -171,6 +168,6 @@ class PfcpUpNodes {
       std::unique_ptr<pfcp::pfcp_association_setup_response> t_msg,
       const endpoint& t_remote_endpoint, const uint64_t t_trxn_id);
 };
-} // namespace pgwc
+}  // namespace pgwc
 
 #endif /* FILE_PFCP_UP_NODES_HPP_SEEN */

@@ -88,9 +88,8 @@ int session_establishment_procedure::run(
   // TODO check if compatible with ongoing procedures if any
   pfcp::node_id_t up_node_id = {};
   if (not pfcp_associations::get_instance().select_up_node(
-      req->gtp_ies.apn, req->gtp_ies.uli,
-      req->gtp_ies.serving_network, req->gtp_ies.rat_type,
-      req->gtp_ies.pdn_type, req->gtp_ies.paa,
+          req->gtp_ies.apn, req->gtp_ies.uli, req->gtp_ies.serving_network,
+          req->gtp_ies.rat_type, req->gtp_ies.pdn_type, req->gtp_ies.paa,
           up_node_id, kNodeSelectionCriteriaMinPfcpSessions)) {
     // TODO
     ::cause_t cause   = {};
@@ -117,7 +116,7 @@ int session_establishment_procedure::run(
   sx_ser->trxn_id = this->trxn_id;
 
   sx_ser->r_endpoint = sa->remote_endpoint;
-  //sx_ser->r_endpoint =
+  // sx_ser->r_endpoint =
   //                   endpoint(up_node_id.u1.ipv4_address, pfcp::default_port);
   sx_triggered =
       std::shared_ptr<itti_sxab_session_establishment_request>(sx_ser);

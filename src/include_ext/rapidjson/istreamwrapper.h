@@ -28,8 +28,8 @@ RAPIDJSON_DIAG_PUSH
 RAPIDJSON_DIAG_OFF(padded)
 #elif defined(_MSC_VER)
 RAPIDJSON_DIAG_PUSH
-RAPIDJSON_DIAG_OFF(4351) // new behavior: elements of array 'array' will be
-                         // default initialized
+RAPIDJSON_DIAG_OFF(4351)  // new behavior: elements of array 'array' will be
+                          // default initialized
 #endif
 
 RAPIDJSON_NAMESPACE_BEGIN
@@ -145,7 +145,7 @@ class BasicIStreamWrapper {
   Ch* bufferLast_;
   Ch* current_;
   size_t readCount_;
-  size_t count_; //!< Number of characters read
+  size_t count_;  //!< Number of characters read
   bool eof_;
 };
 
@@ -158,4 +158,4 @@ RAPIDJSON_DIAG_POP
 
 RAPIDJSON_NAMESPACE_END
 
-#endif // RAPIDJSON_ISTREAMWRAPPER_H_
+#endif  // RAPIDJSON_ISTREAMWRAPPER_H_
