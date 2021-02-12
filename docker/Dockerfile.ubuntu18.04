@@ -78,12 +78,16 @@ COPY --from=oai-spgwc-builder /openair-spgwc/scripts/entrypoint.sh .
 # Copying template configuration files
 # The configuration folder will be flat
 WORKDIR /openair-spgwc/etc
-COPY --from=oai-spgwc-builder /openair-spgwc/etc/spgw_c.conf .
+COPY --from=oai-spgwc-builder /openair-spgwc/etc/spgw_c.json .
 
 WORKDIR /openair-spgwc
+
+# use this label for CI purpose
+LABEL use-json-file="true"
+LABEL support-multi-sgwu-instances="true"
 
 # expose ports
 EXPOSE 2123/udp 8805/udp
 
-CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.conf", "-o"]
+CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.json", "-o"]
 ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]
