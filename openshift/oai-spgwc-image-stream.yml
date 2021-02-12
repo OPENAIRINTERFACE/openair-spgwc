@@ -25,4 +25,7 @@ metadata:
     name: oai-spgwc
     namespace: oai
 status:
-    tag: onap-0.1.0
+    tag: ue-mtu-1358
+spec:
+    lookupPolicy:
+        local: true
