@@ -39,7 +39,7 @@ extern itti_mw* itti_inst;
 pfcp_l4_stack::pfcp_l4_stack(
     const string& ip_address, const unsigned short port_num,
     const util::thread_sched_params& sched_params)
-    : udp_s_8805(ip_address.c_str(), port_num),
+    : udp_s_registered(ip_address.c_str(), port_num),
       udp_s_allocated(ip_address.c_str(), 0) {
   Logger::pfcp().info(
       "pfcp_l4_stack created listening to %s:%d", ip_address.c_str(), port_num);
@@ -54,7 +54,7 @@ pfcp_l4_stack::pfcp_l4_stack(
   clock_gettime(CLOCK_REALTIME, &ts);
   seq_num         = (uint32_t) ts.tv_nsec & 0x7FFFFFFF;
   restart_counter = 0;
-  udp_s_8805.start_receive(this, sched_params);
+  udp_s_registered.start_receive(this, sched_params);
   udp_s_allocated.start_receive(this, sched_params);
 }
 //------------------------------------------------------------------------------
@@ -120,7 +120,8 @@ void pfcp_l4_stack::start_msg_retry_timer(
     pfcp_procedure& p, uint32_t time_out_milli_seconds,
     const task_id_t& task_id, const uint32_t& seq_num) {
   p.retry_timer_id = itti_inst->timer_setup(
-      time_out_milli_seconds / 1000, time_out_milli_seconds % 1000, task_id);
+      time_out_milli_seconds / 1000, (time_out_milli_seconds % 1000) * 1000,
+      task_id);
   msg_out_retry_timers.insert(
       std::pair<timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
   // Logger::pfcp().trace( "Started Msg retry timer %d, proc %" PRId64", seq
@@ -147,7 +148,8 @@ void pfcp_l4_stack::start_proc_cleanup_timer(
     pfcp_procedure& p, uint32_t time_out_milli_seconds,
     const task_id_t& task_id, const uint32_t& seq_num) {
   p.proc_cleanup_timer_id = itti_inst->timer_setup(
-      time_out_milli_seconds / 1000, time_out_milli_seconds % 1000, task_id);
+      time_out_milli_seconds / 1000, (time_out_milli_seconds % 1000) * 1000,
+      task_id);
   proc_cleanup_timers.insert(
       std::pair<timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
   // Logger::pfcp().trace( "Started proc cleanup timer %d, proc %" PRId64" t-out
@@ -617,7 +619,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d", pfcp_ies.get_msg_name(),
         msg.get_sequence_number());
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -650,7 +652,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d", pfcp_ies.get_msg_name(),
         msg.get_sequence_number());
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -684,7 +686,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d", pfcp_ies.get_msg_name(),
         msg.get_sequence_number());
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -720,7 +722,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(),
         msg.get_sequence_number(), seid);
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -755,7 +757,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(),
         msg.get_sequence_number(), seid);
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -790,7 +792,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d seid " SEID_FMT " ", pfcp_ies.get_msg_name(),
         msg.get_sequence_number(), seid);
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -825,7 +827,7 @@ void pfcp_l4_stack::send_response(
     Logger::pfcp().trace(
         "Sending %s, seq %d seid " SEID_FMT " to %s", pfcp_ies.get_msg_name(),
         msg.get_sequence_number(), seid, dest.toString().c_str());
-    udp_s_8805.async_send_to(
+    udp_s_registered.async_send_to(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
@@ -875,7 +877,7 @@ void pfcp_l4_stack::time_out_event(
         std::ostringstream oss(std::ostringstream::binary);
         it_proc->second.retry_msg->dump_to(oss);
         std::string bstream = oss.str();
-        udp_s_8805.async_send_to(
+        udp_s_registered.async_send_to(
             reinterpret_cast<const char*>(bstream.c_str()), bstream.length(),
             it_proc->second.remote_endpoint);
       } else {

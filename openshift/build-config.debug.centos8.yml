@@ -28,8 +28,8 @@ spec:
     runPolicy: "Serial"
     source:
         git:
-            uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "develop"
+            uri: "https://github.com/lionelgo/openair-spgwc.git"
+            ref: "multi-spgwu"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:
@@ -52,4 +52,4 @@ spec:
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:ue-mtu-1358"
+            name: "oai-spgwc:multi-spgwu"

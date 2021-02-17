@@ -30,7 +30,7 @@
 #include "common_defs.h"
 #include "itti.hpp"
 #include "logger.hpp"
-#include "sgwc_config.hpp"
+#include "pgw_config.hpp"
 
 #include <stdexcept>
 
@@ -39,7 +39,6 @@ using namespace sgwc;
 using namespace std;
 
 extern itti_mw* itti_inst;
-extern sgwc_config sgwc_cfg;
 extern sgw_s11* sgw_s11_inst;
 
 void sgw_s11_task(void*);
@@ -131,8 +130,9 @@ void sgw_s11_task(void* args_p) {
 //------------------------------------------------------------------------------
 sgw_s11::sgw_s11()
     : gtpv2c_stack(
-          string(inet_ntoa(sgwc_cfg.s11_cp.addr4)), sgwc_cfg.s11_cp.port,
-          sgwc_cfg.s11_cp.thread_rd_sched_params) {
+          string(inet_ntoa(pgwc::pgw_config::s11_.iface.addr4)),
+          pgwc::pgw_config::gtpv2c_.port,
+          pgwc::pgw_config::gtpv2c_.sched_params) {
   Logger::sgwc_s11().startup("Starting...");
   if (itti_inst->create_task(TASK_SGWC_S11, sgw_s11_task, nullptr)) {
     Logger::sgwc_s11().error("Cannot create task TASK_SGWC_S11");

@@ -116,6 +116,58 @@ class gtpv2c_ie : public stream_serializable {
         tlv.type); /* should not hapen of course*/
   };
 
+  static bool string_to_dotted(const std::string& str, std::string& dotted) {
+    uint8_t offset = 0;
+    uint8_t* last_size;
+    uint8_t word_length = 0;
+
+    uint8_t value[str.length() + 1];
+    dotted    = {};
+    last_size = &value[0];
+
+    while (str[offset]) {
+      // We replace the . by the length of the word
+      if (str[offset] == '.') {
+        *last_size  = word_length;
+        word_length = 0;
+        last_size   = &value[offset + 1];
+      } else {
+        word_length++;
+        value[offset + 1] = str[offset];
+      }
+
+      offset++;
+    }
+
+    *last_size = word_length;
+    dotted.assign((const char*) value, str.length() + 1);
+    return true;
+  };
+
+  static bool dotted_to_string(const std::string& dot, std::string& no_dot) {
+    // uint8_t should be enough, but uint16 if length > 255.
+    uint16_t offset = 0;
+    bool result     = true;
+    no_dot          = {};
+
+    while (offset < dot.length()) {
+      if (dot[offset] < 64) {
+        if ((offset + dot[offset]) <= dot.length()) {
+          if (offset) {
+            no_dot.push_back('.');
+          }
+          no_dot.append(&dot[offset + 1], dot[offset]);
+        }
+        offset = offset + 1 + dot[offset];
+      } else {
+        // should not happen, consume bytes
+        no_dot.push_back(dot[offset++]);
+        result = false;
+      }
+    }
+    return result;
+  };
+
   static gtpv2c_ie* new_gtpv2c_ie_from_stream(std::istream& is);
 };
 //------------------------------------------------------------------------------
@@ -763,7 +815,7 @@ class gtpv2c_access_point_name_ie : public gtpv2c_ie {
   explicit gtpv2c_access_point_name_ie(const apn_t& apn)
       : gtpv2c_ie(GTP_IE_ACCESS_POINT_NAME),
         access_point_name(apn.access_point_name) {
-    tlv.length = access_point_name.size();
+    tlv.length = access_point_name.size() + 1;
   };
   //--------
   gtpv2c_access_point_name_ie() : gtpv2c_ie(GTP_IE_ACCESS_POINT_NAME){};
@@ -773,16 +825,20 @@ class gtpv2c_access_point_name_ie : public gtpv2c_ie {
   void to_core_type(apn_t& a) { a.access_point_name = access_point_name; }
   //--------
   void dump_to(std::ostream& os) {
-    tlv.length = access_point_name.size();
+    std::string dotted = {};
+    gtpv2c_ie::string_to_dotted(access_point_name, dotted);
+    tlv.length = dotted.size();
     tlv.dump_to(os);
-    os << access_point_name;
+    os << dotted;
   }
   //--------
   void load_from(std::istream& is) {
     // tlv.load_from(is);
     char apn[tlv.length];
     is.read(apn, tlv.length);
-    access_point_name.assign(apn, tlv.length);
+    std::string dot = {};
+    dot.assign(apn, tlv.length);
+    gtpv2c_ie::dotted_to_string(dot, access_point_name);
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {
@@ -3360,59 +3416,59 @@ class gtpv2c_user_location_information_ie : public gtpv2c_ie {
   void dump_to(std::ostream& os) {
     tlv.dump_to(os);
     os.write(reinterpret_cast<const char*>(&u1.b), sizeof(u1.b));
-    if (u1.bf.extended_macro_enodeb_id) {
-      extended_macro_enodeb_id.dump_to(os);
-    };
-    if (u1.bf.macro_enodeb_id) {
-      macro_enodeb_id.dump_to(os);
-    }
-    if (u1.bf.lai) {
-      lai.dump_to(os);
-    }
-    if (u1.bf.ecgi) {
-      ecgi.dump_to(os);
-    }
-    if (u1.bf.tai) {
-      tai.dump_to(os);
-    }
-    if (u1.bf.rai) {
-      rai.dump_to(os);
+    if (u1.bf.cgi) {
+      cgi.dump_to(os);
     }
     if (u1.bf.sai) {
       sai.dump_to(os);
     }
-    if (u1.bf.cgi) {
-      cgi.dump_to(os);
+    if (u1.bf.rai) {
+      rai.dump_to(os);
     }
+    if (u1.bf.tai) {
+      tai.dump_to(os);
+    }
+    if (u1.bf.ecgi) {
+      ecgi.dump_to(os);
+    }
+    if (u1.bf.lai) {
+      lai.dump_to(os);
+    }
+    if (u1.bf.macro_enodeb_id) {
+      macro_enodeb_id.dump_to(os);
+    }
+    if (u1.bf.extended_macro_enodeb_id) {
+      extended_macro_enodeb_id.dump_to(os);
+    };
   }
   //--------
   void load_from(std::istream& is) {
     // tlv.load_from(is);
     is.read(reinterpret_cast<char*>(&u1.b), sizeof(u1.b));
-    if (u1.bf.extended_macro_enodeb_id) {
-      extended_macro_enodeb_id.load_from(is);
-    };
-    if (u1.bf.macro_enodeb_id) {
-      macro_enodeb_id.load_from(is);
-    }
-    if (u1.bf.lai) {
-      lai.load_from(is);
-    }
-    if (u1.bf.ecgi) {
-      ecgi.load_from(is);
-    }
-    if (u1.bf.tai) {
-      tai.load_from(is);
-    }
-    if (u1.bf.rai) {
-      rai.load_from(is);
+    if (u1.bf.cgi) {
+      cgi.load_from(is);
     }
     if (u1.bf.sai) {
       sai.load_from(is);
     }
-    if (u1.bf.cgi) {
-      cgi.load_from(is);
+    if (u1.bf.rai) {
+      rai.load_from(is);
     }
+    if (u1.bf.tai) {
+      tai.load_from(is);
+    }
+    if (u1.bf.ecgi) {
+      ecgi.load_from(is);
+    }
+    if (u1.bf.lai) {
+      lai.load_from(is);
+    }
+    if (u1.bf.macro_enodeb_id) {
+      macro_enodeb_id.load_from(is);
+    }
+    if (u1.bf.extended_macro_enodeb_id) {
+      extended_macro_enodeb_id.load_from(is);
+    };
   }
   //--------
   void to_core_type(gtpv2c_ies_container& s, const uint8_t instance) {

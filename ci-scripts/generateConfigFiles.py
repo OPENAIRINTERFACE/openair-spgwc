@@ -30,14 +30,16 @@ class spgwcConfigGen():
 		self.kind = ''
 		self.s11c_name = ''
 		self.sxc_name = ''
-		self.apn = 'apn.oai.svc.cluster.local'
+		self.apn1 = 'apn1.oai.svc.cluster.local'
+		self.apn2 = 'apn2.oai.svc.cluster.local'
 		self.dns1_ip = ipaddress.ip_address('192.168.18.129')
 		self.dns2_ip = ipaddress.ip_address('8.8.4.4')
 		self.uePoolRange = ipaddress.ip_network('12.1.1.0/24')
-		self.ue_pool_range = '12.1.1.2 - 12.1.1.254'
+		self.ue_pool1_range = '12.1.1.2 - 12.1.1.254'
+		self.ue_pool2_range = '192.168.21.2 - 192.168.21.254'
 		self.fromDockerFile = False
 		self.envForEntrypoint = False
-		self.pushProtocolOption = 'no'
+		self.pushProtocolOption = 'false'
 
 	def GenerateSpgwcConfigurer(self):
 		spgwcFile = open('./spgwc-cfg.sh', 'w')
@@ -53,7 +55,7 @@ class spgwcConfigGen():
 		else:
 			spgwcFile.write('PREFIX=\'/usr/local/etc/oai\'\n')
 		spgwcFile.write('\n')
-		spgwcFile.write('MY_APN=\'' + self.apn + '\'\n')
+		spgwcFile.write('MY_APN=\'' + self.apn1 + '\'\n')
 		spgwcFile.write('MY_PRIMARY_DNS=\'' + str(self.dns1_ip) + '\'\n')
 		spgwcFile.write('MY_SECONDARY_DNS=\'' + str(self.dns2_ip) + '\'\n')
 		spgwcFile.write('\n')
@@ -71,7 +73,7 @@ class spgwcConfigGen():
 		spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_IPV4_ADDRESS@]=$MY_PRIMARY_DNS\n')
 		spgwcFile.write('SPGWC_CONF[@DEFAULT_DNS_SEC_IPV4_ADDRESS@]=$MY_SECONDARY_DNS\n')
 		spgwcFile.write('SPGWC_CONF[@DEFAULT_APN@]=$MY_APN\n')
-		spgwcFile.write('SPGWC_CONF[@UE_IP_ADDRESS_POOL@]=\'' + self.ue_pool_range + '\'\n')
+		spgwcFile.write('SPGWC_CONF[@UE_IP_ADDRESS_POOL@]=\'' + self.ue_pool1_range + '\'\n')
 		spgwcFile.write('SPGWC_CONF[@PUSH_PROTOCOL_OPTION@]=\'' + self.pushProtocolOption + '\'\n')
 		spgwcFile.write('\n')
 		spgwcFile.write('for K in "${!SPGWC_CONF[@]}"; do \n')
@@ -84,16 +86,22 @@ class spgwcConfigGen():
 	def GenerateSpgwcEnvList(self):
 		spgwcFile = open('./spgwc-env.list', 'w')
 		spgwcFile.write('# Environment Variables used by the OAI-SPGW-C Entrypoint Script\n')
-		spgwcFile.write('PID_DIRECTORY=/var/run\n')
 		spgwcFile.write('SGW_INTERFACE_NAME_FOR_S11=' + self.s11c_name + '\n')
-		spgwcFile.write('SGW_IP_FOR_S5_S8_CP=127.0.0.11/8\n')
-		spgwcFile.write('PGW_IP_FOR_S5_S8_CP=127.0.0.12/8\n')
 		spgwcFile.write('PGW_INTERFACE_NAME_FOR_SX=' + self.sxc_name + '\n')
-		spgwcFile.write('DEFAULT_APN=' + self.apn + '\n')
 		spgwcFile.write('DEFAULT_DNS_IPV4_ADDRESS=' + str(self.dns1_ip) + '\n')
 		spgwcFile.write('DEFAULT_DNS_SEC_IPV4_ADDRESS=' + str(self.dns2_ip) + '\n')
-		spgwcFile.write('UE_IP_ADDRESS_POOL=' + self.ue_pool_range + '\n')
 		spgwcFile.write('PUSH_PROTOCOL_OPTION=' + self.pushProtocolOption + '\n')
+		spgwcFile.write('APN_NI_1=' + self.apn1 + '\n')
+		spgwcFile.write('APN_NI_2=' + self.apn2 + '\n')
+		spgwcFile.write('DEFAULT_APN_NI_1=' + self.apn1 + '\n')
+		spgwcFile.write('UE_IP_ADDRESS_POOL_1=' + self.ue_pool1_range + '\n')
+		spgwcFile.write('UE_IP_ADDRESS_POOL_2=' + self.ue_pool2_range + '\n')
+		spgwcFile.write('MCC=208\n')
+		spgwcFile.write('MNC=99\n')
+		spgwcFile.write('MNC03=099\n')
+		spgwcFile.write('TAC=1\n')
+		spgwcFile.write('GW_ID=1\n')
+		spgwcFile.write('REALM=openairinterface.org\n')
 		spgwcFile.close()
 
 #-----------------------------------------------------------
@@ -143,7 +151,7 @@ while len(argvs) > 1:
 		mySpgwcCfg.sxc_name = matchReg.group(1)
 	elif re.match('^\-\-apn=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-apn=(.+)$', myArgv, re.IGNORECASE)
-		mySpgwcCfg.apn = matchReg.group(1)
+		mySpgwcCfg.apn1 = matchReg.group(1)
 	elif re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE):
 		matchReg = re.match('^\-\-dns1_ip=(.+)$', myArgv, re.IGNORECASE)
 		mySpgwcCfg.dns1_ip = ipaddress.ip_address(matchReg.group(1))
@@ -176,7 +184,7 @@ if mySpgwcCfg.kind == 'SPGW-C':
 		initAddr = mySpgwcCfg.uePoolRange.network_address
 		endAddr  = initAddr + mySpgwcCfg.uePoolRange.num_addresses - 1
 		initAddr += 2
-		mySpgwcCfg.ue_pool_range = str(initAddr) + ' - ' + str(endAddr)
+		mySpgwcCfg.ue_pool1_range = str(initAddr) + ' - ' + str(endAddr)
 	if mySpgwcCfg.s11c_name == '':
 		Usage()
 		sys.exit('missing S11 Interface Name on SPGW-C container')

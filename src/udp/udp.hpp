@@ -110,6 +110,8 @@ class udp_server {
 
   ~udp_server() { close(socket_); }
 
+  uint16_t get_port() const { return port_; }
+
   void udp_read_loop(const util::thread_sched_params& thread_sched_params);
 
   void async_send_to(

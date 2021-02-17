@@ -25,7 +25,7 @@ metadata:
     name: oai-spgwc
     namespace: oai
 status:
-    tag: ue-mtu-1358
+    tag: multi-spgwu
 spec:
     lookupPolicy:
         local: true

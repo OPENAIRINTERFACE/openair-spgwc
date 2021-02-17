@@ -116,8 +116,8 @@ void pgw_s5s8_task(void* args_p) {
 //------------------------------------------------------------------------------
 pgw_s5s8::pgw_s5s8()
     : gtpv2c_stack(
-          string(inet_ntoa(pgw_cfg.s5s8_cp.addr4)), pgw_cfg.s5s8_cp.port,
-          pgw_cfg.s5s8_cp.thread_rd_sched_params) {
+          string(inet_ntoa(pgw_cfg.pgw_s5s8_.iface.addr4)),
+          pgw_cfg.gtpv2c_.port, pgw_cfg.gtpv2c_.sched_params) {
   Logger::pgwc_s5s8().startup("Starting...");
   if (itti_inst->create_task(TASK_PGWC_S5S8, pgw_s5s8_task, nullptr)) {
     Logger::pgwc_s5s8().error("Cannot create task TASK_PGWC_S5S8");

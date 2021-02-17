@@ -14,7 +14,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *-------------------------------------------------------------------------------
+ *------------------------------------------------------------------------------
  * For more information about the OpenAirInterface (OAI) Software Alliance:
  *      contact@openairinterface.org
  */
@@ -439,7 +439,7 @@ struct imsi_s {
     return s;
   }
 
-  //------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   imsi64_t to_imsi64() const {
     imsi64_t imsi64 = 0;
     for (int i = 0; i < IMSI_BCD8_SIZE; i++) {
@@ -903,9 +903,9 @@ typedef struct pdn_type_s {
   bool operator==(const struct pdn_type_s& p) const {
     return (p.pdn_type == pdn_type);
   }
-  //------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   bool operator==(const pdn_type_e& p) const { return (p == pdn_type); }
-  //------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   const std::string& toString() const { return pdn_type_e2str.at(pdn_type); }
 } pdn_type_t;
 
@@ -916,8 +916,8 @@ struct paa_s {
   uint8_t ipv6_prefix_length;
   struct in6_addr ipv6_address;
   struct in_addr ipv4_address;
-  //------------------------------------------------------------------------------
-  bool is_ip_assigned() {
+  //----------------------------------------------------------------------------
+  bool is_ip_assigned() const {
     switch (pdn_type.pdn_type) {
       case PDN_TYPE_E_IPV4:
         if (ipv4_address.s_addr) return true;
@@ -969,7 +969,7 @@ typedef struct bearer_qos_s {
         (q.label_qci == label_qci) && (q.pl == pl) && (q.pvi == pvi) &&
         (q.pci == pci));
   }
-  //------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   std::string toString() const {
     std::string s = {};
     s.append("MBR UL=").append(std::to_string(maximum_bit_rate_for_uplink));
@@ -1014,7 +1014,7 @@ struct rat_type_s {
   rat_type_s() : rat_type(RAT_TYPE_E_EUTRAN_WB_EUTRAN) {}
   rat_type_s(const rat_type_e r) : rat_type(r) {}
   rat_type_s(const rat_type_s& i) : rat_type(i.rat_type) {}
-  //------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   std::string toString() const {
     switch (rat_type) {
       case RAT_TYPE_E_EUTRAN_WB_EUTRAN:
@@ -1106,6 +1106,42 @@ typedef struct gtpc2c_tai_field_s {
   uint8_t mnc_digit_2 : 4;
   uint8_t mnc_digit_1 : 4;
   uint16_t tracking_area_code;
+  bool operator==(const struct gtpc2c_tai_field_s& f) const {
+    return (mcc_digit_2 == f.mcc_digit_2) and (mcc_digit_1 == f.mcc_digit_1) and
+           (mnc_digit_3 == f.mnc_digit_3) and (mcc_digit_3 == f.mcc_digit_3) and
+           (mnc_digit_2 == f.mnc_digit_2) and (mnc_digit_1 == f.mnc_digit_1) and
+           (tracking_area_code == f.tracking_area_code);
+  }
+
+  void from_items(
+      const std::string& mcc, const std::string& mnc, const uint16_t& tac) {
+    mcc_digit_1 = mcc[0] - '0';
+    mcc_digit_2 = mcc[1] - '0';
+    mcc_digit_3 = mcc[2] - '0';
+    mnc_digit_1 = mnc[0] - '0';
+    mnc_digit_2 = mnc[1] - '0';
+    if (mnc.length() == 3) {
+      mnc_digit_3 = mnc[2] - '0';
+    } else {
+      mnc_digit_3 = 0xF;
+    }
+    tracking_area_code = tac;
+  }
+  //----------------------------------------------------------------------------
+  std::string toString() const {
+    std::string s = {};
+    s.append(std::to_string(mcc_digit_1));
+    s.append(std::to_string(mcc_digit_2));
+    s.append(std::to_string(mcc_digit_3));
+    s.append(".");
+    s.append(std::to_string(mnc_digit_1));
+    s.append(std::to_string(mnc_digit_2));
+    if (mnc_digit_3 != 0xF) {
+      s.append(std::to_string(mnc_digit_3));
+    }
+    s.append(".").append(std::to_string(tracking_area_code));
+    return s;
+  }
 } tai_field_t;
 //-------------------------------------
 // 8.21.5 ECGI field
@@ -1120,7 +1156,7 @@ typedef struct gtpc2c_ecgi_field_s {
   uint8_t eci : 4;
   uint8_t e_utran_cell_identifier[3];
 
-  //------------------------------------------------------------------------------
+  //----------------------------------------------------------------------------
   std::string toString() const {
     std::string s    = {};
     std::string mccs = conv::mccToString(mcc_digit_1, mcc_digit_2, mcc_digit_3);
@@ -1197,6 +1233,22 @@ typedef struct user_location_information_s {
   lai_field_t lai1;
   macro_enodeb_id_field_t macro_enodeb_id1;
   extended_macro_enodeb_id_field_t extended_macro_enodeb_id1;
+
+  bool is_tai(const tai_field_t t) const {
+    return (user_location_information_ie_hdr.tai) and (tai1 == t);
+  }
+
+  //----------------------------------------------------------------------------
+  std::string toString() const {
+    std::string s = {};
+    s.append("ULI:");
+    if (user_location_information_ie_hdr.tai) {
+      s.append("tai:").append(tai1.toString());
+    }
+    // TODO other fields if needed for debug
+    return s;
+  }
+
 } user_location_information_t;
 
 typedef user_location_information_t uli_t;

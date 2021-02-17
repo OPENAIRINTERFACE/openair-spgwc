@@ -23,7 +23,7 @@
 
 int Options::options;
 
-std::string Options::m_libconfigcfg;
+std::string Options::m_config;
 bool Options::m_log_rot_file_log;
 bool Options::m_log_stdout;
 
@@ -31,7 +31,7 @@ void Options::help() {
   std::cout << std::endl
             << "Usage:  spgwc  [OPTIONS]..." << std::endl
             << "  -h, --help                   Print help and exit" << std::endl
-            << "  -c, --libconfigcfg filename  Read the application "
+            << "  -c, --config filename  Read the application "
                "configuration from this file."
             << std::endl
             << "  -o, --stdoutlog              Send the application logs to "
@@ -51,7 +51,7 @@ bool Options::parse(int argc, char** argv) {
 }
 
 bool Options::validateOptions() {
-  return ((options & libconfigcfg));
+  return ((options & config));
 }
 
 bool Options::parseInputOptions(int argc, char** argv) {
@@ -59,12 +59,11 @@ bool Options::parseInputOptions(int argc, char** argv) {
   int option_index = 0;
   bool result      = true;
 
-  struct option long_options[] = {
-      {"help", no_argument, NULL, 'h'},
-      {"libconfigcfg", required_argument, NULL, 'c'},
-      {"stdoutlog", no_argument, NULL, 'o'},
-      {"rotatelog", no_argument, NULL, 'r'},
-      {NULL, 0, NULL, 0}};
+  struct option long_options[] = {{"help", no_argument, NULL, 'h'},
+                                  {"config", required_argument, NULL, 'c'},
+                                  {"stdoutlog", no_argument, NULL, 'o'},
+                                  {"rotatelog", no_argument, NULL, 'r'},
+                                  {NULL, 0, NULL, 0}};
 
   // Loop on arguments
   while (1) {
@@ -78,8 +77,8 @@ bool Options::parseInputOptions(int argc, char** argv) {
         break;
       }
       case 'c': {
-        m_libconfigcfg = optarg;
-        options |= libconfigcfg;
+        m_config = optarg;
+        options |= config;
         break;
       }
       case 'o': {
@@ -96,7 +95,7 @@ bool Options::parseInputOptions(int argc, char** argv) {
       case '?': {
         switch (optopt) {
           case 'c': {
-            std::cout << "Option -c (libconfig config) requires an argument"
+            std::cout << "Option -c (config file) requires an argument"
                       << std::endl;
             break;
           }

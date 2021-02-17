@@ -23,7 +23,6 @@
 #include "pgw_config.hpp"
 #include "pid_file.hpp"
 #include "sgwc_app.hpp"
-#include "sgwc_config.hpp"
 
 #include <signal.h>
 #include <stdint.h>
@@ -42,8 +41,6 @@ itti_mw* itti_inst                    = nullptr;
 async_shell_cmd* async_shell_cmd_inst = nullptr;
 pgw_app* pgw_app_inst                 = nullptr;
 sgwc_app* sgwc_app_inst               = nullptr;
-pgw_config pgw_cfg;
-sgwc_config sgwc_cfg;
 
 void send_heartbeat_to_tasks(const uint32_t sequence);
 
@@ -85,6 +82,8 @@ void my_app_signal_handler(int s) {
 int main(int argc, char** argv) {
   srand(time(NULL));
 
+  pgw_config::Default();
+
   // Command line options
   if (!Options::parse(argc, argv)) {
     std::cout << "Options::parse() failed" << std::endl;
@@ -103,25 +102,28 @@ int main(int argc, char** argv) {
   sigaction(SIGINT, &sigIntHandler, NULL);
 
   // Config
-  sgwc_cfg.load(Options::getlibconfigConfig());
-  sgwc_cfg.display();
-  pgw_cfg.load(Options::getlibconfigConfig());
-  pgw_cfg.display();
+  pgw_config::jsoncfg_ = Options::getConfig();
+  if (!pgw_config::ParseJson()) {
+    std::cout << "pgw_config::ParseJson() failed" << std::endl;
+    return 1;
+  }
+  pgw_config::Display();
 
   // Inter task Interface
   itti_inst = new itti_mw();
-  itti_inst->start(pgw_cfg.itti.itti_timer_sched_params);
+  itti_inst->start(pgwc::pgw_config::timer_.sched_params);
 
   // system command
   async_shell_cmd_inst =
-      new async_shell_cmd(sgwc_cfg.itti.async_cmd_sched_params);
+      new async_shell_cmd(pgwc::pgw_config::spgw_app_.sched_params);
 
   // PGW application layer
-  pgw_app_inst = new pgw_app(Options::getlibconfigConfig());
+  pgw_app_inst = new pgw_app(Options::getConfig());
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
-  string pid_file_name = get_exe_absolute_path("/var/run", pgw_cfg.instance);
+  string pid_file_name =
+      get_exe_absolute_path("/var/run", pgwc::pgw_config::instance_);
   if (!is_pid_file_lock_success(pid_file_name.c_str())) {
     Logger::pgwc_app().error(
         "Lock PID file %s failed\n", pid_file_name.c_str());
@@ -129,7 +131,7 @@ int main(int argc, char** argv) {
   }
 
   // SGW application layer
-  sgwc_app_inst = new sgwc_app(Options::getlibconfigConfig());
+  sgwc_app_inst = new sgwc_app(Options::getConfig());
 
   FILE* fp             = NULL;
   std::string filename = fmt::format("/tmp/spgwc_{}.status", getpid());

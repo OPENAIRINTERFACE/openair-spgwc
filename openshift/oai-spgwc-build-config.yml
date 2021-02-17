@@ -52,4 +52,4 @@ spec:
     output:
         to:
             kind: "ImageStreamTag"
-            name: "oai-spgwc:ue-mtu-1358"
+            name: "oai-spgwc:develop"

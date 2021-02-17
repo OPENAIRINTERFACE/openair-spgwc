@@ -28,116 +28,95 @@
 
 #ifndef FILE_PGW_CONFIG_HPP_SEEN
 #define FILE_PGW_CONFIG_HPP_SEEN
-
+// C includes ------------------------------------------------------------------
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <sys/socket.h>
+//--C++ includes ---------------------------------------------------------------
+#include <mutex>
+#include <vector>
+//--Other includes -------------------------------------------------------------
 #include "3gpp_29.244.h"
 #include "3gpp_29.274.h"
 #include "gtpv2c.hpp"
 #include "pfcp.hpp"
+#include "rapidjson/document.h"
+#include "rapidjson/filereadstream.h"
 #include "thread_sched.hpp"
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <libconfig.h++>
-
-#include <mutex>
-#include <vector>
-
-#define PGW_CONFIG_STRING_PGW_CONFIG "P-GW"
-#define PGW_CONFIG_STRING_PID_DIRECTORY "PID_DIRECTORY"
-#define PGW_CONFIG_STRING_INSTANCE "INSTANCE"
-#define PGW_CONFIG_STRING_INTERFACES "INTERFACES"
-#define PGW_CONFIG_STRING_INTERFACE_NAME "INTERFACE_NAME"
-#define PGW_CONFIG_STRING_IPV4_ADDRESS "IPV4_ADDRESS"
-#define PGW_CONFIG_STRING_PORT "PORT"
-#define PGW_CONFIG_STRING_INTERFACE_S5_S8_CP "S5_S8_CP"
-#define PGW_CONFIG_STRING_INTERFACE_SX "SX"
-
-#define PGW_CONFIG_STRING_PGW_MASQUERADE_SGI "PGW_MASQUERADE_SGI"
-#define PGW_CONFIG_STRING_UE_TCP_MSS_CLAMPING "UE_TCP_MSS_CLAMPING"
-#define PGW_CONFIG_STRING_NAS_FORCE_PUSH_PCO                                   \
-  "FORCE_PUSH_PROTOCOL_CONFIGURATION_OPTIONS"
-
-#define PGW_CONFIG_STRING_IP_ADDRESS_POOL "IP_ADDRESS_POOL"
-#define PGW_CONFIG_STRING_ARP_UE "ARP_UE"
-#define PGW_CONFIG_STRING_ARP_UE_CHOICE_NO "NO"
-#define PGW_CONFIG_STRING_ARP_UE_CHOICE_LINUX "LINUX"
-#define PGW_CONFIG_STRING_ARP_UE_CHOICE_OAI "OAI"
-#define PGW_CONFIG_STRING_IPV4_ADDRESS_LIST "IPV4_LIST"
-#define PGW_CONFIG_STRING_IPV6_ADDRESS_LIST "IPV6_LIST"
-#define PGW_CONFIG_STRING_RANGE "RANGE"
-#define PGW_CONFIG_STRING_PREFIX "PREFIX"
-#define PGW_CONFIG_STRING_IPV4_ADDRESS_RANGE_DELIMITER "-"
-#define PGW_CONFIG_STRING_IPV6_ADDRESS_PREFIX_DELIMITER "/"
-#define PGW_CONFIG_STRING_DEFAULT_DNS_IPV4_ADDRESS "DEFAULT_DNS_IPV4_ADDRESS"
-#define PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV4_ADDRESS                         \
-  "DEFAULT_DNS_SEC_IPV4_ADDRESS"
-#define PGW_CONFIG_STRING_DEFAULT_DNS_IPV6_ADDRESS "DEFAULT_DNS_IPV6_ADDRESS"
-#define PGW_CONFIG_STRING_DEFAULT_DNS_SEC_IPV6_ADDRESS                         \
-  "DEFAULT_DNS_SEC_IPV6_ADDRESS"
-#define PGW_CONFIG_STRING_UE_MTU "UE_MTU"
-#define PGW_CONFIG_STRING_GTPV1U_REALIZATION "GTPV1U_REALIZATION"
-#define PGW_CONFIG_STRING_NO_GTP_KERNEL_AVAILABLE "NO_GTP_KERNEL_AVAILABLE"
-#define PGW_CONFIG_STRING_GTP_KERNEL_MODULE "GTP_KERNEL_MODULE"
-#define PGW_CONFIG_STRING_GTP_KERNEL "GTP_KERNEL"
-
-#define PGW_CONFIG_STRING_INTERFACE_DISABLED "none"
-
-#define PGW_CONFIG_STRING_APN_LIST "APN_LIST"
-#define PGW_CONFIG_STRING_APN_NI "APN_NI"
-#define PGW_CONFIG_STRING_PDN_TYPE "PDN_TYPE"
-#define PGW_CONFIG_STRING_IPV4_POOL "IPV4_POOL"
-#define PGW_CONFIG_STRING_IPV6_POOL "IPV6_POOL"
-
-#define PGW_CONFIG_STRING_PCEF "PCEF"
-#define PGW_CONFIG_STRING_PCEF_ENABLED "PCEF_ENABLED"
-#define PGW_CONFIG_STRING_TCP_ECN_ENABLED "TCP_ECN_ENABLED"
-#define PGW_CONFIG_STRING_AUTOMATIC_PUSH_DEDICATED_BEARER_PCC_RULE             \
-  "AUTOMATIC_PUSH_DEDICATED_BEARER_PCC_RULE"
-#define PGW_CONFIG_STRING_DEFAULT_BEARER_STATIC_PCC_RULE                       \
-  "DEFAULT_BEARER_STATIC_PCC_RULE"
-#define PGW_CONFIG_STRING_PUSH_STATIC_PCC_RULES "PUSH_STATIC_PCC_RULES"
-#define PGW_CONFIG_STRING_APN_AMBR_UL "APN_AMBR_UL"
-#define PGW_CONFIG_STRING_APN_AMBR_DL "APN_AMBR_DL"
-#define PGW_ABORT_ON_ERROR true
-#define PGW_WARN_ON_ERROR false
-
-#define PGW_CONFIG_STRING_OVS_CONFIG "OVS"
-#define PGW_CONFIG_STRING_OVS_BRIDGE_NAME "BRIDGE_NAME"
-#define PGW_CONFIG_STRING_OVS_EGRESS_PORT_NUM "EGRESS_PORT_NUM"
-#define PGW_CONFIG_STRING_OVS_GTP_PORT_NUM "GTP_PORT_NUM"
-#define PGW_CONFIG_STRING_OVS_L2_EGRESS_PORT "L2_EGRESS_PORT"
-#define PGW_CONFIG_STRING_OVS_UPLINK_MAC "UPLINK_MAC"
-#define PGW_CONFIG_STRING_OVS_SGI_ARP_CACHE "SGI_ARP_CACHE"
-#define PGW_CONFIG_STRING_IP "IP"
-#define PGW_CONFIG_STRING_MAC "MAC"
-
-#define PGW_CONFIG_STRING_SCHED_PARAMS "SCHED_PARAMS"
-#define PGW_CONFIG_STRING_THREAD_RD_CPU_ID "CPU_ID"
-#define PGW_CONFIG_STRING_THREAD_RD_SCHED_POLICY "SCHED_POLICY"
-#define PGW_CONFIG_STRING_THREAD_RD_SCHED_PRIORITY "SCHED_PRIORITY"
-
-#define PGW_CONFIG_STRING_ITTI_TASKS "ITTI_TASKS"
-#define PGW_CONFIG_STRING_ITTI_TIMER_SCHED_PARAMS "ITTI_TIMER_SCHED_PARAMS"
-#define PGW_CONFIG_STRING_S11_SCHED_PARAMS "S11_SCHED_PARAMS"
-#define PGW_CONFIG_STRING_S5S8_SCHED_PARAMS "S5S8_SCHED_PARAMS"
-#define PGW_CONFIG_STRING_SX_SCHED_PARAMS "SX_SCHED_PARAMS"
-#define PGW_CONFIG_STRING_PGW_APP_SCHED_PARAMS "PGW_APP_SCHED_PARAMS"
-#define PGW_CONFIG_STRING_ASYNC_CMD_SCHED_PARAMS "ASYNC_CMD_SCHED_PARAMS"
 
 #define PGW_MAX_ALLOCATED_PDN_ADDRESSES 1024
 
 namespace pgwc {
+
+typedef struct timer_cfg_s {
+  util::thread_sched_params sched_params;
+} timer_cfg_t;
+
+typedef struct gtpv2c_cfg_s {
+  uint16_t port;
+  uint16_t n3;
+  uint16_t t3_ms;
+  uint16_t worker_threads;
+  util::thread_sched_params sched_params;
+  uint16_t max_concurrent_procedures;
+} gtpv2c_cfg_t;
+
+typedef struct pfcp_cfg_s {
+  uint16_t port;
+  uint16_t n1;
+  uint16_t t1_ms;
+  uint16_t worker_threads;
+  util::thread_sched_params sched_params;
+  uint16_t max_concurrent_procedures;
+} pfcp_cfg_t;
 
 typedef struct interface_cfg_s {
   std::string if_name;
   struct in_addr addr4;
   struct in_addr network4;
   struct in6_addr addr6;
-  unsigned int mtu;
-  unsigned int port;
-  util::thread_sched_params thread_rd_sched_params;
+  uint mtu;
 } interface_cfg_t;
+
+typedef struct s11_cfg_s {
+  interface_cfg_t iface;
+} s11_cfg_t;
+
+typedef struct s5s8_cfg_s {
+  interface_cfg_t iface;
+} s5s8_cfg_t;
+
+typedef struct sx_cfg_s {
+  interface_cfg_t iface;
+} sx_cfg_t;
+
+class PdnCfg {
+ public:
+  std::string apn;
+  std::string apn_label;
+  struct in_addr ue_pool_range_low;
+  struct in_addr ue_pool_range_high;
+  struct in_addr ue_pool_network;
+  struct in_addr ue_pool_netmask;
+  struct in6_addr paa_pool6_prefix;
+  uint8_t paa_pool6_prefix_len;
+  pdn_type_t pdn_type;
+  uint ue_mtu;
+
+  bool is_in_pool(const paa_t& paa) const {
+    switch (paa.pdn_type.pdn_type) {
+      case PDN_TYPE_E_IPV4:
+        return (paa.ipv4_address.s_addr >= ue_pool_range_low.s_addr) and
+               (paa.ipv4_address.s_addr <= ue_pool_range_high.s_addr);
+      case PDN_TYPE_E_IPV6:
+      case PDN_TYPE_E_IPV4V6:
+      default:
+        return false;
+    }
+  }
+};
 
 typedef struct itti_cfg_s {
   util::thread_sched_params itti_timer_sched_params;
@@ -147,119 +126,173 @@ typedef struct itti_cfg_s {
   util::thread_sched_params async_cmd_sched_params;
 } itti_cfg_t;
 
-class pgw_config {
- private:
-  int load_itti(const libconfig::Setting& itti_cfg, itti_cfg_t& cfg);
-  int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
-  int load_thread_sched_params(
-      const libconfig::Setting& thread_sched_params_cfg,
-      util::thread_sched_params& cfg);
-
- public:
-  /* Reader/writer lock for this configuration */
-  std::mutex m_rw_lock;
-  std::string pid_dir;
-  unsigned int instance = 0;
-
-  interface_cfg_t s5s8_cp;
-  interface_cfg_t sx;
-  itti_cfg_t itti;
-
+typedef struct pgw_app_cfg_s {
+  util::thread_sched_params sched_params;
   struct in_addr default_dnsv4;
   struct in_addr default_dns_secv4;
   struct in6_addr default_dnsv6;
   struct in6_addr default_dns_secv6;
-
-#define PGW_NUM_APN_MAX 5
-  int num_apn;
-  struct {
-    std::string apn;
-    std::string apn_label;
-    int pool_id_iv4;
-    int pool_id_iv6;
-    pdn_type_t pdn_type;
-  } apn[PGW_NUM_APN_MAX];
-
-  int num_ue_pool;
-#define PGW_NUM_UE_POOL_MAX 96
-  struct in_addr ue_pool_range_low[PGW_NUM_UE_POOL_MAX];
-  struct in_addr ue_pool_range_high[PGW_NUM_UE_POOL_MAX];
-  struct in_addr ue_pool_network[PGW_NUM_UE_POOL_MAX];
-  struct in_addr ue_pool_netmask[PGW_NUM_UE_POOL_MAX];
-  // computed from config, UE IP adresses that matches
-  // ue_pool_network[]/ue_pool_netmask[] but do not match ue_pool_range_low[] -
-  // ue_pool_range_high[]
-  // The problem here is that OpenFlow do not deal with ip ranges but with
-  // netmasks
-  std::vector<struct in_addr> ue_pool_excluded[PGW_NUM_UE_POOL_MAX];
-
-  int num_paa6_pool;
-  struct in6_addr paa_pool6_prefix[PGW_NUM_UE_POOL_MAX];
-  uint8_t paa_pool6_prefix_len[PGW_NUM_UE_POOL_MAX];
-
+  uint default_ue_mtu;
   bool force_push_pco;
-  uint ue_mtu;
+  std::vector<PdnCfg> pdns;
+  uint32_t max_cached_users;
 
-  struct {
-    bool tcp_ecn_enabled = false;  // test for CoDel qdisc
-    unsigned int apn_ambr_ul;
-    unsigned int apn_ambr_dl;
-  } pcef;
+  PdnCfg& GetPdnCfg(const uint pdn_index) { return pdns.at(pdn_index); }
+} pgw_app_cfg_t;
 
-  pgw_config()
-      : m_rw_lock(),
-        pcef(),
-        num_apn(0),
-        pid_dir(),
-        instance(0),
-        s5s8_cp(),
-        sx(),
-        itti() {
-    for (int i = 0; i < PGW_NUM_APN_MAX; i++) {
-      apn[i] = {};
-    }
-    default_dnsv4.s_addr     = INADDR_ANY;
-    default_dns_secv4.s_addr = INADDR_ANY;
-    default_dnsv6            = in6addr_any;
-    default_dns_secv6        = in6addr_any;
+typedef struct up_node_cfg_s {
+  std::string mcc;
+  std::string mnc;
+  uint16_t tac;
+  tai_field_t tai;
+  uint pdn_index;
+  std::string id;  // FQDN, IP address
+  std::string toString() const {
+    std::string str = {};
+    str.append(id).append(" <-> mcc:").append(mcc).append(" mnc:").append(mnc);
+    str.append(" tac:").append(std::to_string(tac));
+    str.append(" pdn_index:").append(std::to_string(pdn_index));
+    return str;
+  }
 
-    num_ue_pool   = 0;
-    num_paa6_pool = 0;
-    for (int i = 0; i < PGW_NUM_UE_POOL_MAX; i++) {
-      ue_pool_range_low[i]    = {};
-      ue_pool_range_high[i]   = {};
-      ue_pool_network[i]      = {};
-      ue_pool_netmask[i]      = {};
-      paa_pool6_prefix[i]     = {};
-      paa_pool6_prefix_len[i] = {};
-      ue_pool_excluded[i]     = {};
-    }
-    force_push_pco = true;
-    // Do not change this value unless you know what you are doing
-    ue_mtu = 1358;
+} up_node_cfg_t;
 
-    itti.itti_timer_sched_params.sched_priority = 85;
-    itti.sx_sched_params.sched_priority         = 84;
-    itti.s5s8_sched_params.sched_priority       = 84;
-    itti.pgw_app_sched_params.sched_priority    = 84;
-    itti.async_cmd_sched_params.sched_priority  = 84;
+typedef struct cups_cfg_s {
+  uint16_t max_associations;
+  uint32_t association_retry_period_ms;
+  uint32_t association_heartbeat_period_ms;
+  std::vector<up_node_cfg_t> nodes;
+  bool feature_overload_control;
+  bool feature_load_control;
+} cups_cfg_t;
 
-    s5s8_cp.thread_rd_sched_params.sched_priority = 90;
-    s5s8_cp.port                                  = gtpv2c::default_port;
+class pgw_config {
+ private:
+  static const bool ParseSchedParams(
+      const RAPIDJSON_NAMESPACE::Value& conf, util::thread_sched_params& cfg);
+  static const bool ParseTimer(
+      const RAPIDJSON_NAMESPACE::Value& conf, timer_cfg_t& cfg);
+  static const bool ParseInterface(
+      const RAPIDJSON_NAMESPACE::Value& conf, interface_cfg_t& cfg);
+  static const bool Finalize();
+  static const bool ParseItti(
+      const RAPIDJSON_NAMESPACE::Value& conf, itti_cfg_t& cfg);
 
-    sx.thread_rd_sched_params.sched_priority = 90;
-    sx.port                                  = pfcp::default_port;
+ public:
+  /* Reader/writer lock for this configuration */
+  static const int kJsonFileBuffer;
+  static std::mutex rw_lock_;
+  static timer_cfg_t timer_;
+  static gtpv2c_cfg_t gtpv2c_;
+  static pfcp_cfg_t pfcp_;
+  static s11_cfg_t s11_;
+  static s5s8_cfg_t sgw_s5s8_;
+  static s5s8_cfg_t pgw_s5s8_;
+  static sx_cfg_t sx_;
+  static pgw_app_cfg_t spgw_app_;
+  static PdnCfg pdn_;
+  static cups_cfg_t cups_;
+  static std::string jsoncfg_;
+  static std::string pid_dir_;
+  static unsigned int instance_;
+
+  itti_cfg_t itti;
+
+  static void Default() {
+    pid_dir_  = "/var/run";
+    instance_ = 0;
+
+    timer_.sched_params.cpu_id         = -1;
+    timer_.sched_params.sched_policy   = SCHED_FIFO;
+    timer_.sched_params.sched_priority = 46;
+
+    gtpv2c_.port                        = gtpv2c::default_port;
+    gtpv2c_.n3                          = 3;
+    gtpv2c_.t3_ms                       = 1000;
+    gtpv2c_.worker_threads              = 1;
+    gtpv2c_.sched_params.cpu_id         = -1;
+    gtpv2c_.sched_params.sched_policy   = SCHED_FIFO;
+    gtpv2c_.sched_params.sched_priority = 40;
+    gtpv2c_.max_concurrent_procedures   = 256;
+
+    pfcp_.port                        = pfcp::default_port;
+    pfcp_.n1                          = 3;
+    pfcp_.t1_ms                       = 1000;
+    pfcp_.worker_threads              = 1;
+    pfcp_.sched_params.cpu_id         = -1;
+    pfcp_.sched_params.sched_policy   = SCHED_FIFO;
+    pfcp_.sched_params.sched_priority = 42;
+    pfcp_.max_concurrent_procedures   = 256;
+
+    s11_.iface.if_name         = "lo";
+    s11_.iface.addr4.s_addr    = INADDR_ANY;
+    s11_.iface.network4.s_addr = INADDR_ANY;
+    s11_.iface.addr6           = in6addr_any;
+
+    sgw_s5s8_.iface.if_name         = "lo";
+    sgw_s5s8_.iface.addr4.s_addr    = INADDR_ANY;
+    sgw_s5s8_.iface.network4.s_addr = INADDR_ANY;
+    sgw_s5s8_.iface.addr6           = in6addr_any;
+
+    pgw_s5s8_.iface.if_name         = "lo";
+    pgw_s5s8_.iface.addr4.s_addr    = INADDR_ANY;
+    pgw_s5s8_.iface.network4.s_addr = INADDR_ANY;
+    pgw_s5s8_.iface.addr6           = in6addr_any;
+
+    sx_.iface.if_name         = "lo";
+    sx_.iface.addr4.s_addr    = INADDR_ANY;
+    sx_.iface.network4.s_addr = INADDR_ANY;
+    sx_.iface.addr6           = in6addr_any;
+
+    spgw_app_.sched_params.cpu_id                      = -1;
+    spgw_app_.sched_params.sched_policy                = SCHED_FIFO;
+    spgw_app_.sched_params.sched_priority              = 44;
+    spgw_app_.default_dnsv4.s_addr                     = htonl(0x08080808);
+    spgw_app_.default_dns_secv4.s_addr                 = htonl(0x08080404);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[0]     = htonl(0x2001);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[1]     = htonl(0x4860);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[2]     = htonl(0x4860);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[3]     = htonl(0x0000);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[4]     = htonl(0x0000);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[5]     = htonl(0x0000);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[6]     = htonl(0x0000);
+    spgw_app_.default_dnsv6.__in6_u.__u6_addr16[7]     = htonl(0x8888);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[0] = htonl(0x2001);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[1] = htonl(0x4860);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[2] = htonl(0x4860);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[3] = htonl(0x0000);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[4] = htonl(0x0000);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[5] = htonl(0x0000);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[6] = htonl(0x0000);
+    spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[7] = htonl(0x8844);
+    spgw_app_.default_ue_mtu                           = 1358;
+    spgw_app_.force_push_pco                           = false;
+    spgw_app_.pdns.clear();
+
+    cups_.nodes.clear();
+    cups_.association_retry_period_ms     = 10000;
+    cups_.association_heartbeat_period_ms = 10000;
+    cups_.max_associations                = 8;
+    cups_.feature_overload_control        = false;
+    cups_.feature_load_control            = false;
   };
-  ~pgw_config();
-  void lock() { m_rw_lock.lock(); };
-  void unlock() { m_rw_lock.unlock(); };
-  int load(const std::string& config_file);
-  int finalize();
-  void display();
-  bool is_dotted_apn_handled(
+  static bool ParseJson();
+
+  static void Lock() { rw_lock_.lock(); };
+  static void Unlock() { rw_lock_.unlock(); };
+  static int Load(const std::string& config_file);
+  static int Execute();
+  static void Display();
+  //------------------------------------------------------------------------------
+  static bool IsDottedApnHandled(
       const std::string& apn, const pdn_type_t& pdn_type);
-  int get_pfcp_node_id(pfcp::node_id_t& node_id);
-  int get_pfcp_fseid(pfcp::fseid_t& fseid);
+  //------------------------------------------------------------------------------
+  static int GetPfcpNodeId(pfcp::node_id_t& node_id);
+  //------------------------------------------------------------------------------
+  static int GetPfcpFseid(pfcp::fseid_t& fseid);
+  static bool GetUpNodes(
+      const apn_t& apn, const uli_t& uli, const paa_t& paa,
+      std::vector<up_node_cfg_t>& up_nodes);
 };
 
 }  // namespace pgwc

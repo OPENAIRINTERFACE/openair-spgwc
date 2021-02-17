@@ -28,8 +28,8 @@ spec:
     runPolicy: "Serial"
     source:
         git:
-            uri: "https://github.com/OPENAIRINTERFACE/openair-spgwc.git"
-            ref: "develop"
+            uri: "https://github.com/lionelgo/openair-spgwc.git"
+            ref: "multi-spgwu"
             httpProxy: http://proxy.eurecom.fr:8080
             httpsProxy: https://proxy.eurecom.fr:8080
         secrets:

@@ -28,7 +28,7 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM oai-spgwc:debug-3rd-party as centos8-spgwc-debug
+FROM oai-spgwc:centos8-spgwc-debug-3rd-party as oai-spgwc-builder
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
@@ -48,12 +48,18 @@ RUN cp /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc \
     && cp /openair-spgwc/scripts/entrypoint.sh . \
     && cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.deb
 
+# WORKDIR /openair-spgwc/build/scripts
+# RUN ./build_spgwc --clean --build-type Release --jobs --Verbose && \
+#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.rel && \
+#    ./build_spgwu --clean --build-type RelWithDebInfo --jobs --Verbose && \
+#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.red && \
+#    ./build_spgwu --clean --build-type MinSizeRel --jobs --Verbose && \
+#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.min
+
 WORKDIR /openair-spgwc
 
 # expose ports
 EXPOSE 2123/udp 8805/udp
 
-
-CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.conf", "-o"]
+CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.json", "-o"]
 ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]
-
