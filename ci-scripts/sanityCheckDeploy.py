@@ -103,6 +103,7 @@ class deploySanityCheckTest():
             res = subprocess.check_output('docker inspect --format="{{.Config.Labels}}" ci-oai-spgwc', shell=True, universal_newlines=True)
         except:
             sys.exit(-1)
+        branch = 'develop'
         multi_supported = re.search('support-multi-sgwu-instances:true', str(res))
         if multi_supported is not None:
             res = ''
@@ -114,8 +115,6 @@ class deploySanityCheckTest():
             if multi_supported is None:
                 self.tag = 'multi-spgwu'
                 branch = 'multi-spgwu'
-        else:
-            branch = 'develop'
 
         res = ''
         # Then check if tag exists
