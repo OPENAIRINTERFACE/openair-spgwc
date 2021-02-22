@@ -44,6 +44,7 @@ RUN yum update -y \
     glog \
     double-conversion \
     libevent \
+    liblsan \
     boost-system \
     # debugging
     gdb \
