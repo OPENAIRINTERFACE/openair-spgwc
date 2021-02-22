@@ -81,12 +81,11 @@ class pfcp_procedure {
 enum pfcp_transaction_action { DELETE_TX = 0, CONTINUE_TX };
 
 class pfcp_l4_stack : public udp_application {
-#define PFCP_T1_RESPONSE_MS 1000
-#define PFCP_N1_REQUESTS 3
-#define PFCP_PROC_TIME_OUT_MS                                                  \
-  ((PFCP_T1_RESPONSE_MS) * (PFCP_N1_REQUESTS + 1 + 1))
+#define PFCP_PROC_TIME_OUT_MS(T,N) ((T) * (N + 1 + 1))
 
  protected:
+  uint32_t t1_ms;
+  uint32_t n1;
   uint32_t id;
   udp_server udp_s_registered;
   udp_server udp_s_allocated;
@@ -94,10 +93,11 @@ class pfcp_l4_stack : public udp_application {
   // seems no need for std::atomic_uint32_t
   uint32_t seq_num;
   uint32_t restart_counter;
-
+  // key is transaction id
   std::map<uint64_t, uint32_t> trxn_id2seq_num;
   std::map<timer_id_t, uint32_t> proc_cleanup_timers;
   std::map<timer_id_t, uint32_t> msg_out_retry_timers;
+  // key is message sequence number,
   std::map<uint32_t, pfcp_procedure> pending_procedures;
 
   static const char* msg_type2cstr[256];
@@ -106,6 +106,9 @@ class pfcp_l4_stack : public udp_application {
 
   static uint64_t generate_trxn_id() {
     return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
+  }
+  static void free_trxn_id(uint64_t trxn_id) {
+    util::uint_uid_generator<uint64_t>::get_instance().free_uid(trxn_id);
   }
 
   static bool check_request_type(const uint8_t initial);
@@ -120,11 +123,15 @@ class pfcp_l4_stack : public udp_application {
   void stop_msg_retry_timer(pfcp_procedure& p);
   void stop_msg_retry_timer(timer_id_t& t);
   void stop_proc_cleanup_timer(pfcp_procedure& p);
-  void notify_ul_error(const pfcp_procedure& p, const ::cause_value_e cause);
+  virtual void notify_ul_error(const endpoint & remote_endpoint,
+      const uint8_t message_type,
+      const uint32_t  message_sequence_number,
+      const uint64_t trxn_id, const ::cause_value_e cause);
 
  public:
   static const uint8_t version = 2;
   pfcp_l4_stack(
+      const uint32_t t1_milli_seconds, const uint32_t n1_retransmit,
       const std::string& ip_address, const unsigned short port_num,
       const util::thread_sched_params& sched_params);
   virtual void handle_receive(

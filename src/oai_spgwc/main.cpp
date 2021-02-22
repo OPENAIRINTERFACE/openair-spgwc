@@ -24,7 +24,7 @@
 #include "pid_file.hpp"
 #include "sgwc_app.hpp"
 
-#include <signal.h>
+#include <csignal>
 #include <stdint.h>
 #include <stdlib.h>  // srand
 #include <unistd.h>  // get_pid(), pause()
@@ -57,26 +57,37 @@ void send_heartbeat_to_tasks(const uint32_t sequence) {
 }
 
 //------------------------------------------------------------------------------
-void my_app_signal_handler(int s) {
-  std::cout << "Caught signal " << s << std::endl;
+void term_signal_handler(int signum) {
+  std::cout << "Caught signal " << signum << std::endl;
   Logger::system().startup("exiting");
-  itti_inst->send_terminate_msg(TASK_SGWC_APP);
-  itti_inst->wait_tasks_end();
+  if (itti_inst) {
+    itti_inst->send_terminate_msg(TASK_SGWC_APP);
+    itti_inst->wait_tasks_end();
+  }
   std::cout << "Freeing Allocated memory..." << std::endl;
-  if (async_shell_cmd_inst) delete async_shell_cmd_inst;
-  async_shell_cmd_inst = nullptr;
-  std::cout << "Async Shell CMD memory done." << std::endl;
-  if (itti_inst) delete itti_inst;
-  itti_inst = nullptr;
-  std::cout << "ITTI memory done." << std::endl;
-  if (sgwc_app_inst) delete sgwc_app_inst;
-  sgwc_app_inst = nullptr;
-  std::cout << "SGW APP memory done." << std::endl;
-  if (pgw_app_inst) delete pgw_app_inst;
-  pgw_app_inst = nullptr;
-  std::cout << "PGW APP memory done." << std::endl;
+  if (async_shell_cmd_inst) {
+    delete async_shell_cmd_inst;
+    async_shell_cmd_inst = nullptr;
+    std::cout << "Async Shell CMD memory done." << std::endl;
+  }
+  if (sgwc_app_inst) {
+    delete sgwc_app_inst;
+    sgwc_app_inst = nullptr;
+    std::cout << "SGW APP memory done." << std::endl;
+  }
+  if (pgw_app_inst) {
+    delete pgw_app_inst;
+    pgw_app_inst = nullptr;
+    std::cout << "PGW APP memory done." << std::endl;
+  }
+  //exit(signum);
+  if (itti_inst) {
+    delete itti_inst;
+    itti_inst = nullptr;
+    std::cout << "ITTI memory done." << std::endl;
+  }
   std::cout << "Freeing Allocated memory done" << std::endl;
-  exit(0);
+  exit(signum);
 }
 //------------------------------------------------------------------------------
 int main(int argc, char** argv) {
@@ -84,62 +95,72 @@ int main(int argc, char** argv) {
 
   pgw_config::Default();
 
-  // Command line options
-  if (!Options::parse(argc, argv)) {
-    std::cout << "Options::parse() failed" << std::endl;
-    return 1;
+  try {
+    // Command line options
+    if (!Options::parse(argc, argv)) {
+      std::cout << "Options::parse() failed" << std::endl;
+      return 1;
+    }
+
+    // Logger
+    Logger::init("spgwc", Options::getlogStdout(), Options::getlogRotFilelog());
+
+    Logger::sgwc_app().startup("Options parsed");
+
+    // Config
+    pgw_config::jsoncfg_ = Options::getConfig();
+    if (!pgw_config::ParseJson()) {
+      std::cout << "pgw_config::ParseJson() failed" << std::endl;
+      return 1;
+    }
+    pgw_config::Display();
+
+    // Inter task Interface
+    itti_inst = new itti_mw();
+    itti_inst->start(pgwc::pgw_config::timer_.sched_params);
+
+    // system command
+    async_shell_cmd_inst =
+        new async_shell_cmd(pgwc::pgw_config::spgw_app_.sched_params);
+
+    // PGW application layer
+    pgw_app_inst = new pgw_app(Options::getConfig());
+
+    // PID file
+    // Currently hard-coded value. TODO: add as config option.
+    string pid_file_name =
+        get_exe_absolute_path("/var/run", pgwc::pgw_config::instance_);
+    if (!is_pid_file_lock_success(pid_file_name.c_str())) {
+      Logger::pgwc_app().error(
+          "Lock PID file %s failed\n", pid_file_name.c_str());
+      exit(-EDEADLK);
+    }
+
+    // SGW application layer
+    sgwc_app_inst = new sgwc_app(Options::getConfig());
+
+    {
+      FILE* fp             = NULL;
+      std::string filename = fmt::format("/tmp/spgwc_{}.status", getpid());
+      fp                   = fopen(filename.c_str(), "w+");
+      fprintf(fp, "STARTED\n");
+      fflush(fp);
+      fclose(fp);
+    }
+
+    signal(SIGINT, term_signal_handler);
+    signal(SIGTERM, term_signal_handler);
+    // Debugging with gdb: testing SIGINT, SIGTERM : gdb will catch those signals
+    // We can ask gdb not to stop on SIGUSR1:
+    // handle SIGUSR1 pass
+    // kill -USR1 pid
+    signal(SIGUSR1, term_signal_handler);
+
+    pause();
+  } catch (std::exception& e) {
+    std::cerr << "Caught " << e.what() << std::endl;
+    std::cerr << "Emulating SIGTERM" << std::endl;
+    term_signal_handler(SIGTERM);
   }
-
-  // Logger
-  Logger::init("spgwc", Options::getlogStdout(), Options::getlogRotFilelog());
-
-  Logger::sgwc_app().startup("Options parsed");
-
-  struct sigaction sigIntHandler;
-  sigIntHandler.sa_handler = my_app_signal_handler;
-  sigemptyset(&sigIntHandler.sa_mask);
-  sigIntHandler.sa_flags = 0;
-  sigaction(SIGINT, &sigIntHandler, NULL);
-
-  // Config
-  pgw_config::jsoncfg_ = Options::getConfig();
-  if (!pgw_config::ParseJson()) {
-    std::cout << "pgw_config::ParseJson() failed" << std::endl;
-    return 1;
-  }
-  pgw_config::Display();
-
-  // Inter task Interface
-  itti_inst = new itti_mw();
-  itti_inst->start(pgwc::pgw_config::timer_.sched_params);
-
-  // system command
-  async_shell_cmd_inst =
-      new async_shell_cmd(pgwc::pgw_config::spgw_app_.sched_params);
-
-  // PGW application layer
-  pgw_app_inst = new pgw_app(Options::getConfig());
-
-  // PID file
-  // Currently hard-coded value. TODO: add as config option.
-  string pid_file_name =
-      get_exe_absolute_path("/var/run", pgwc::pgw_config::instance_);
-  if (!is_pid_file_lock_success(pid_file_name.c_str())) {
-    Logger::pgwc_app().error(
-        "Lock PID file %s failed\n", pid_file_name.c_str());
-    exit(-EDEADLK);
-  }
-
-  // SGW application layer
-  sgwc_app_inst = new sgwc_app(Options::getConfig());
-
-  FILE* fp             = NULL;
-  std::string filename = fmt::format("/tmp/spgwc_{}.status", getpid());
-  fp                   = fopen(filename.c_str(), "w+");
-  fprintf(fp, "STARTED\n");
-  fflush(fp);
-  fclose(fp);
-
-  pause();
   return 0;
 }

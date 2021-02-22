@@ -38,9 +38,9 @@
 
 namespace pgwc {
 
-#define TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST (0)
-#define TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST (1)
-#define TASK_PGWC_SX_TIMEOUT_ASSOCIATION_REQUEST (2)
+// Values different from 0
+#define TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST (11)
+#define TASK_PGWC_SX_TIMEOUT_ASSOCIATION_REQUEST (13)
 
 class pgwc_sxab : public pfcp::pfcp_l4_stack {
  private:
@@ -120,6 +120,12 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
   }
 
   std::time_t get_recovery_time_stamp() const { return recovery_time_stamp; };
+
+ protected:
+  void notify_ul_error(const endpoint & remote_endpoint,
+      const uint8_t message_type,
+      const uint32_t  message_sequence_number,
+      const uint64_t trxn_id, const ::cause_value_e cause);
 };
 }  // namespace pgwc
 #endif /* FILE_PGWC_SXAB_HPP_SEEN */

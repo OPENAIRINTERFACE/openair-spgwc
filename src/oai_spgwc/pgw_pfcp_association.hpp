@@ -51,6 +51,15 @@ enum node_selection_criteria_e {
   kNodeSelectionCriteriaNone                = 6
 };
 
+enum AssociationState {
+  kAssocNullState = 0,
+  kAssocKnownPossible,
+  kAssocInitiatedState,
+  kAssocSetupState,
+  kAssocUnstable,
+  kAssocLost
+};
+
 // Not PFCP retries, just Application retry over PFCP retries
 #define PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES 2
 class pfcp_association {
@@ -72,8 +81,10 @@ class pfcp_association {
   uint64_t trxn_id_heartbeat;
 
   bool is_restore_sessions_pending;
+  bool is_trigger_heartbeat_request_procedure;
 
   timer_id_t timer_association;
+  int state_;
 
   explicit pfcp_association(const pfcp::node_id_t& node_id)
       : node_id(node_id),
@@ -88,7 +99,9 @@ class pfcp_association {
     num_retries_timer_heartbeat = 0;
     trxn_id_heartbeat           = 0;
     is_restore_sessions_pending = false;
+    is_trigger_heartbeat_request_procedure = true;
     timer_association           = ITTI_INVALID_TIMER_ID;
+    state_ = kAssocNullState;
   }
 
   pfcp_association(
@@ -104,7 +117,9 @@ class pfcp_association {
     trxn_id_heartbeat                  = 0;
     is_restore_sessions_pending        = false;
     timer_association                  = ITTI_INVALID_TIMER_ID;
-  }
+    is_trigger_heartbeat_request_procedure = true;
+    state_ = kAssocNullState;
+}
   pfcp_association(pfcp_association const& p)
       : node_id(p.node_id),
         hash_node_id(p.hash_node_id),
@@ -117,7 +132,10 @@ class pfcp_association {
         num_retries_timer_heartbeat(p.num_retries_timer_heartbeat),
         trxn_id_heartbeat(p.trxn_id_heartbeat),
         is_restore_sessions_pending(p.is_restore_sessions_pending),
-        timer_association(0) {}
+        timer_association(0),
+        is_trigger_heartbeat_request_procedure
+          (p.is_trigger_heartbeat_request_procedure),
+          state_(p.state_) {}
 
   void notify_add_session(const pfcp::fseid_t& cp_fseid);
   bool has_session(const pfcp::fseid_t& cp_fseid);
@@ -172,7 +190,8 @@ class pfcp_associations {
   void restore_sx_sessions(const pfcp::node_id_t& node_id);
 
   void initiate_heartbeat_request(timer_id_t timer_id, uint64_t arg2_user);
-  void timeout_heartbeat_request(timer_id_t timer_id, uint64_t arg2_user);
+  void timeout_heartbeat_request(
+      const uint64_t trxn_id, const endpoint& remote_endpoint);
   void handle_receive_heartbeat_response(
       const uint64_t trxn_id, const endpoint& remote_endpoint,
       const pfcp::recovery_time_stamp_t& recovery_time_stamp);
@@ -185,6 +204,9 @@ class pfcp_associations {
       const serving_network_t& serving_network, const rat_type_t& rat_type,
       const pdn_type_t& pdn_type, const paa_t& paa, pfcp::node_id_t& node_id,
       const int node_selection_criteria);
+
+  // interface with PfcpUpNodes
+  void notify_node_unreachable(const std::size_t hash_node_id);
 };
 }  // namespace pgwc
 

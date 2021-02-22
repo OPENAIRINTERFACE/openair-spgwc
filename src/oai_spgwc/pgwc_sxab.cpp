@@ -164,17 +164,15 @@ void pgwc_sxab_task(void* args_p) {
 
       case TIME_OUT:
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
-          Logger::pgwc_sx().trace("TIME-OUT event timer id %d", to->timer_id);
+          Logger::pgwc_sx().trace("TIME-OUT event timer id %d arg1 %d",
+              to->timer_id, to->arg1_user);
           switch (to->arg1_user) {
             case TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST:
               pfcp_associations::get_instance().initiate_heartbeat_request(
                   to->timer_id, to->arg2_user);
               break;
-            case TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST:
-              pfcp_associations::get_instance().timeout_heartbeat_request(
-                  to->timer_id, to->arg2_user);
-              break;
-            default:;
+            default:
+              pgwc_sxab_inst->time_out_itti_event(to->timer_id);
           }
         }
         break;
@@ -198,7 +196,7 @@ void pgwc_sxab_task(void* args_p) {
 
 //------------------------------------------------------------------------------
 pgwc_sxab::pgwc_sxab()
-    : pfcp_l4_stack(
+    : pfcp_l4_stack(pgw_cfg.pfcp_.t1_ms, pgw_cfg.pfcp_.n1,
           string(inet_ntoa(pgw_cfg.sx_.iface.addr4)), pgw_cfg.pfcp_.port,
           pgw_cfg.pfcp_.sched_params) {
   Logger::pgwc_sx().startup("Starting...");
@@ -481,11 +479,11 @@ void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i) {
   if (cp_function_features.has_features()) {
     i.pfcp_ies.set(cp_function_features);
   }
-  send_response(i.r_endpoint, i.pfcp_ies, i.trxn_id);
+  send_response(i.r_endpoint, i.pfcp_ies, i.trxn_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_session_report_response& i) {
-  send_response(i.r_endpoint, i.seid, i.pfcp_ies, i.trxn_id);
+  send_response(i.r_endpoint, i.seid, i.pfcp_ies, i.trxn_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
@@ -493,11 +491,6 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
   pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
                                        (uint32_t) recovery_time_stamp};
   h.set(r);
-
-  a->timer_heartbeat = itti_inst->timer_setup(
-      pgw_config::pfcp_.t1_ms / 1000, (pgw_config::pfcp_.t1_ms % 1000) * 1000,
-      TASK_PGWC_SX, TASK_PGWC_SX_TIMEOUT_HEARTBEAT_REQUEST, a->hash_node_id);
-
   endpoint r_endpoint = a->remote_endpoint;
   r_endpoint.set_port(pfcp::default_port);
   a->trxn_id_heartbeat = generate_trxn_id();
@@ -510,7 +503,7 @@ void pgwc_sxab::send_heartbeat_response(
   pfcp::recovery_time_stamp_t r   = {.recovery_time_stamp =
                                        (uint32_t) recovery_time_stamp};
   h.set(r);
-  send_response(r_endpoint, h, trxn_id);
+  send_response(r_endpoint, h, trxn_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_session_establishment_request& i) {
@@ -547,5 +540,25 @@ void pgwc_sxab::time_out_itti_event(const uint32_t timer_id) {
   time_out_event(timer_id, TASK_PGWC_SX, handled);
   if (!handled) {
     Logger::pgwc_sx().error("Timer %d not Found", timer_id);
+  }
+}
+//------------------------------------------------------------------------------
+void pgwc_sxab::notify_ul_error(const endpoint & remote_endpoint,
+    const uint8_t message_type, const uint32_t  message_sequence_number,
+    const uint64_t trxn_id, const ::cause_value_e cause) {
+  Logger::pgwc_sx().trace(
+      "notify_ul_error proc %" PRId64 " cause %d", trxn_id, cause);
+  // TODO if needed: collection registering subscribers for events.
+  // Specific error case, others can be handled
+  if (cause == REMOTE_PEER_NOT_RESPONDING) {
+    switch (message_type) {
+      case PFCP_HEARTBEAT_REQUEST:
+        pfcp_associations::get_instance().timeout_heartbeat_request(
+            trxn_id, remote_endpoint);
+        break;
+      default:
+        // TODO later, for stats, etc
+        ;
+    }
   }
 }
