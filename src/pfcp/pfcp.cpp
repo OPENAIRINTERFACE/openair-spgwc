@@ -40,7 +40,8 @@ pfcp_l4_stack::pfcp_l4_stack(
     const uint32_t t1_milli_seconds, const uint32_t n1_retransmit,
     const string& ip_address, const unsigned short port_num,
     const util::thread_sched_params& sched_params)
-    : t1_ms(t1_milli_seconds), n1(n1_retransmit),
+    : t1_ms(t1_milli_seconds),
+      n1(n1_retransmit),
       udp_s_registered(ip_address.c_str(), port_num),
       udp_s_allocated(ip_address.c_str(), 0) {
   Logger::pfcp().info(
@@ -127,11 +128,13 @@ void pfcp_l4_stack::start_msg_retry_timer(
   if (p.retry_timer_id != ITTI_INVALID_TIMER_ID) {
     msg_out_retry_timers.insert(
         std::pair<timer_id_t, uint32_t>(p.retry_timer_id, seq_num));
-    Logger::pfcp().trace( "Started Msg retry timer %d, proc %" PRId64
-        ", seq %d",p.retry_timer_id, p.trxn_id, seq_num);
+    Logger::pfcp().trace(
+        "Started Msg retry timer %d, proc %" PRId64 ", seq %d",
+        p.retry_timer_id, p.trxn_id, seq_num);
   } else {
-    Logger::pfcp().error( "Could not start Msg retry timer for proc %" PRId64
-        ", seq %d", p.trxn_id, seq_num);
+    Logger::pfcp().error(
+        "Could not start Msg retry timer for proc %" PRId64 ", seq %d",
+        p.trxn_id, seq_num);
   }
 }
 //------------------------------------------------------------------------------
@@ -139,9 +142,9 @@ void pfcp_l4_stack::stop_msg_retry_timer(pfcp_procedure& p) {
   if (p.retry_timer_id != ITTI_INVALID_TIMER_ID) {
     itti_inst->timer_remove(p.retry_timer_id);
     msg_out_retry_timers.erase(p.retry_timer_id);
-    Logger::pfcp().trace( "Stopped Msg retry timer %d, proc %" PRId64
-        ", seq %d",p.retry_timer_id, p.trxn_id,
-        p.retry_msg->get_sequence_number());
+    Logger::pfcp().trace(
+        "Stopped Msg retry timer %d, proc %" PRId64 ", seq %d",
+        p.retry_timer_id, p.trxn_id, p.retry_msg->get_sequence_number());
     p.retry_timer_id = ITTI_INVALID_TIMER_ID;
   }
 }
@@ -149,7 +152,7 @@ void pfcp_l4_stack::stop_msg_retry_timer(pfcp_procedure& p) {
 void pfcp_l4_stack::stop_msg_retry_timer(timer_id_t& t) {
   itti_inst->timer_remove(t);
   msg_out_retry_timers.erase(t);
-  Logger::pfcp().trace( "Stopped Msg retry timer %d",t);
+  Logger::pfcp().trace("Stopped Msg retry timer %d", t);
 }
 //------------------------------------------------------------------------------
 void pfcp_l4_stack::start_proc_cleanup_timer(
@@ -160,15 +163,16 @@ void pfcp_l4_stack::start_proc_cleanup_timer(
       task_id);
   proc_cleanup_timers.insert(
       std::pair<timer_id_t, uint32_t>(p.proc_cleanup_timer_id, seq_num));
-  Logger::pfcp().trace( "Started proc cleanup timer %d, proc %" PRId64
-      " t-out %" PRIu32" ms",p.proc_cleanup_timer_id,p.trxn_id,
-      time_out_milli_seconds);
+  Logger::pfcp().trace(
+      "Started proc cleanup timer %d, proc %" PRId64 " t-out %" PRIu32 " ms",
+      p.proc_cleanup_timer_id, p.trxn_id, time_out_milli_seconds);
 }
 //------------------------------------------------------------------------------
 void pfcp_l4_stack::stop_proc_cleanup_timer(pfcp_procedure& p) {
   itti_inst->timer_remove(p.proc_cleanup_timer_id);
-  Logger::pfcp().trace( "Stopped proc cleanup timer %d, proc %"
-     PRId64"",p.proc_cleanup_timer_id, p.trxn_id);
+  Logger::pfcp().trace(
+      "Stopped proc cleanup timer %d, proc %" PRId64 "",
+      p.proc_cleanup_timer_id, p.trxn_id);
   msg_out_retry_timers.erase(p.proc_cleanup_timer_id);
   proc_cleanup_timers.erase(p.proc_cleanup_timer_id);
   p.proc_cleanup_timer_id = 0;
@@ -192,17 +196,16 @@ void pfcp_l4_stack::handle_receive_message_cb(
       // at the originating entity if (msg_has_timestamp()) {
       // start_proc_cleanup_timer(proc, (N3+1) x T3, task_id,
       // msg.get_sequence_number()); } else
-      start_proc_cleanup_timer(
-          proc, t1_ms, task_id, msg.get_sequence_number());
+      start_proc_cleanup_timer(proc, t1_ms, task_id, msg.get_sequence_number());
       pending_procedures.insert(
           std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
       trxn_id2seq_num.insert(std::pair<uint64_t, uint32_t>(
           proc.trxn_id, msg.get_sequence_number()));
       error   = false;
       trxn_id = proc.trxn_id;
-       Logger::pfcp().info( "Received Initial PFCP msg type %d, seq %d, proc %"
-           PRId64"", msg.get_message_type(), msg.get_sequence_number(),
-           proc.trxn_id);
+      Logger::pfcp().info(
+          "Received Initial PFCP msg type %d, seq %d, proc %" PRId64 "",
+          msg.get_message_type(), msg.get_sequence_number(), proc.trxn_id);
     } else {
       Logger::pfcp().info(
           "Failed to check Initial message type, Silently discarding PFCP msg "
@@ -244,9 +247,9 @@ void pfcp_l4_stack::handle_receive_message_cb(
       trxn_id2seq_num.erase(trxn_id);
       free_trxn_id(trxn_id);
       pending_procedures.erase(it->first);
-      Logger::pfcp().info( "Received Triggered PFCP msg type %d, seq %d, proc %"
-          PRId64"", msg.get_message_type(), msg.get_sequence_number(),
-          trxn_id);
+      Logger::pfcp().info(
+          "Received Triggered PFCP msg type %d, seq %d, proc %" PRId64 "",
+          msg.get_message_type(), msg.get_sequence_number(), trxn_id);
     } else {
       Logger::pfcp().info(
           "Failed to check Triggered message type, Silently discarding PFCP "
@@ -277,10 +280,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -310,10 +313,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -343,10 +346,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -437,10 +440,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -473,10 +476,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -509,10 +512,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -575,10 +578,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -611,10 +614,10 @@ uint32_t pfcp_l4_stack::send_request(
   proc.trxn_id          = trxn_id;
   proc.retry_msg        = std::make_shared<pfcp_msg>(msg);
   proc.remote_endpoint  = dest;
-  start_msg_retry_timer(
-      proc, t1_ms, task_id, msg.get_sequence_number());
+  start_msg_retry_timer(proc, t1_ms, task_id, msg.get_sequence_number());
   start_proc_cleanup_timer(
-      proc, PFCP_PROC_TIME_OUT_MS(t1_ms,n1), task_id, msg.get_sequence_number());
+      proc, PFCP_PROC_TIME_OUT_MS(t1_ms, n1), task_id,
+      msg.get_sequence_number());
   pending_procedures.insert(
       std::pair<uint32_t, pfcp_procedure>(msg.get_sequence_number(), proc));
   trxn_id2seq_num.insert(
@@ -875,10 +878,10 @@ void pfcp_l4_stack::send_response(
 }
 
 //------------------------------------------------------------------------------
-void pfcp_l4_stack::notify_ul_error(const endpoint & remote_endpoint,
-    const uint8_t message_type,
-    const uint32_t  message_sequence_number,
-    const uint64_t trxn_id, const ::cause_value_e cause) {
+void pfcp_l4_stack::notify_ul_error(
+    const endpoint& remote_endpoint, const uint8_t message_type,
+    const uint32_t message_sequence_number, const uint64_t trxn_id,
+    const ::cause_value_e cause) {
   Logger::pfcp().trace(
       "notify_ul_error proc %" PRId64 " cause %d", trxn_id, cause);
 }
@@ -912,7 +915,8 @@ void pfcp_l4_stack::time_out_event(
             it_proc->second.remote_endpoint);
       } else {
         // abort procedure
-        notify_ul_error(it_proc->second.remote_endpoint,
+        notify_ul_error(
+            it_proc->second.remote_endpoint,
             it_proc->second.retry_msg->get_message_type(),
             it_proc->second.retry_msg->get_sequence_number(),
             it_proc->second.trxn_id,

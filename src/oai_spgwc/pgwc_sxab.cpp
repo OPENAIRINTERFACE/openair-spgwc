@@ -164,8 +164,9 @@ void pgwc_sxab_task(void* args_p) {
 
       case TIME_OUT:
         if (itti_msg_timeout* to = dynamic_cast<itti_msg_timeout*>(msg)) {
-          Logger::pgwc_sx().trace("TIME-OUT event timer id %d arg1 %d",
-              to->timer_id, to->arg1_user);
+          Logger::pgwc_sx().trace(
+              "TIME-OUT event timer id %d arg1 %d", to->timer_id,
+              to->arg1_user);
           switch (to->arg1_user) {
             case TASK_PGWC_SX_TRIGGER_HEARTBEAT_REQUEST:
               pfcp_associations::get_instance().initiate_heartbeat_request(
@@ -196,7 +197,8 @@ void pgwc_sxab_task(void* args_p) {
 
 //------------------------------------------------------------------------------
 pgwc_sxab::pgwc_sxab()
-    : pfcp_l4_stack(pgw_cfg.pfcp_.t1_ms, pgw_cfg.pfcp_.n1,
+    : pfcp_l4_stack(
+          pgw_cfg.pfcp_.t1_ms, pgw_cfg.pfcp_.n1,
           string(inet_ntoa(pgw_cfg.sx_.iface.addr4)), pgw_cfg.pfcp_.port,
           pgw_cfg.pfcp_.sched_params) {
   Logger::pgwc_sx().startup("Starting...");
@@ -543,9 +545,10 @@ void pgwc_sxab::time_out_itti_event(const uint32_t timer_id) {
   }
 }
 //------------------------------------------------------------------------------
-void pgwc_sxab::notify_ul_error(const endpoint & remote_endpoint,
-    const uint8_t message_type, const uint32_t  message_sequence_number,
-    const uint64_t trxn_id, const ::cause_value_e cause) {
+void pgwc_sxab::notify_ul_error(
+    const endpoint& remote_endpoint, const uint8_t message_type,
+    const uint32_t message_sequence_number, const uint64_t trxn_id,
+    const ::cause_value_e cause) {
   Logger::pgwc_sx().trace(
       "notify_ul_error proc %" PRId64 " cause %d", trxn_id, cause);
   // TODO if needed: collection registering subscribers for events.
@@ -557,8 +560,8 @@ void pgwc_sxab::notify_ul_error(const endpoint & remote_endpoint,
             trxn_id, remote_endpoint);
         break;
       default:
-        // TODO later, for stats, etc
-        ;
+          // TODO later, for stats, etc
+          ;
     }
   }
 }

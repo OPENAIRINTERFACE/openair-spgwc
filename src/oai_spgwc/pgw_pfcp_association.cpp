@@ -94,13 +94,20 @@ bool pfcp_associations::add_association(
         user_plane_ip_resource_information) {
   std::shared_ptr<pfcp_association> sa =
       std::shared_ptr<pfcp_association>(nullptr);
-  bool is_restore_sx_sessions                 = false;
+  bool is_restore_sx_sessions = false;
   if (get_association(node_id, sa)) {
     itti_inst->timer_remove(sa->timer_heartbeat);
     if (sa->recovery_time_stamp == recovery_time_stamp) {
+      Logger::pgwc_app().info(
+          "UP node %u state %u, "
+          "No need to restore sessions",
+          (uint32_t) sa->hash_node_id, sa->state_);
       is_restore_sx_sessions = false;
       return true;
     } else {
+      Logger::pgwc_app().info(
+          "UP node %u state %u, Sessions to be restored",
+          (uint32_t) sa->hash_node_id, sa->state_);
       is_restore_sx_sessions = true;
     }
     sa->recovery_time_stamp                = recovery_time_stamp;
@@ -117,7 +124,10 @@ bool pfcp_associations::add_association(
     sa->id = id;
     associations.insert((int32_t) association->hash_node_id, sa);
   }
-  sa->state_ == kAssocSetupState;
+  sa->state_ = kAssocSetupState;
+  Logger::pgwc_app().info(
+      "UP node %u state -> kAssocSetupState (%u)", (uint32_t) sa->hash_node_id,
+      sa->state_);
   sa->remote_endpoint = remote_endpoint;
   // always yes (for the time being)
   itti_sxab_association_setup_response a(TASK_SPGWU_SX, TASK_SPGWU_SX);
@@ -199,14 +209,14 @@ void pfcp_associations::initiate_heartbeat_request(
   if (pit == associations.end())
     return;
   else {
-    if(pit->second->is_trigger_heartbeat_request_procedure) {
+    if (pit->second->is_trigger_heartbeat_request_procedure) {
       Logger::pgwc_sx().info(
           "PFCP HEARTBEAT PROCEDURE hash %u starting", hash_node_id);
       pit->second->num_retries_timer_heartbeat = 0;
       pgwc_sxab_inst->send_heartbeat_request(pit->second);
     } else {
       Logger::pgwc_sx().info(
-                "PFCP HEARTBEAT PROCEDURE hash %u disabled", hash_node_id);
+          "PFCP HEARTBEAT PROCEDURE hash %u disabled", hash_node_id);
     }
   }
 }
@@ -286,8 +296,10 @@ bool pfcp_associations::select_up_node(
       FOR_EACH(it, associations) {
         std::shared_ptr<pfcp_association> a = it->second;
         if ((a->id.compare(node_it.id) == 0) &&
-            (a->state_ == kAssocSetupState)){
+            (a->state_ == kAssocSetupState)) {
           up_nodes_associated.insert(a);
+          Logger::pgwc_app().trace(
+              "UP node for selection, add %s", a->id.c_str());
         }
       }
     }
@@ -315,13 +327,15 @@ bool pfcp_associations::select_up_node(
   return false;
 }
 //------------------------------------------------------------------------------
-void pfcp_associations::notify_node_unreachable(const std::size_t hash_node_id)
-{
+void pfcp_associations::notify_node_unreachable(
+    const std::size_t hash_node_id) {
   auto pit = associations.find((int32_t) hash_node_id);
   if (pit == associations.end())
     return;
   else {
     std::shared_ptr<pfcp_association> sa = pit->second;
+    Logger::pgwc_app().info(
+        "UP node %u state %u -> kAssocLost", hash_node_id, sa->state_);
     sa->state_ == kAssocLost;
   }
 }

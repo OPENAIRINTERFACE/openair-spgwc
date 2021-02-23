@@ -81,7 +81,7 @@ class pfcp_procedure {
 enum pfcp_transaction_action { DELETE_TX = 0, CONTINUE_TX };
 
 class pfcp_l4_stack : public udp_application {
-#define PFCP_PROC_TIME_OUT_MS(T,N) ((T) * (N + 1 + 1))
+#define PFCP_PROC_TIME_OUT_MS(T, N) ((T) * (N + 1 + 1))
 
  protected:
   uint32_t t1_ms;
@@ -123,10 +123,10 @@ class pfcp_l4_stack : public udp_application {
   void stop_msg_retry_timer(pfcp_procedure& p);
   void stop_msg_retry_timer(timer_id_t& t);
   void stop_proc_cleanup_timer(pfcp_procedure& p);
-  virtual void notify_ul_error(const endpoint & remote_endpoint,
-      const uint8_t message_type,
-      const uint32_t  message_sequence_number,
-      const uint64_t trxn_id, const ::cause_value_e cause);
+  virtual void notify_ul_error(
+      const endpoint& remote_endpoint, const uint8_t message_type,
+      const uint32_t message_sequence_number, const uint64_t trxn_id,
+      const ::cause_value_e cause);
 
  public:
   static const uint8_t version = 2;

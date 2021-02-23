@@ -116,6 +116,7 @@ void pgw_s5s8_task(void* args_p) {
 //------------------------------------------------------------------------------
 pgw_s5s8::pgw_s5s8()
     : gtpv2c_stack(
+          pgwc::pgw_config::gtpv2c_.t3_ms, pgwc::pgw_config::gtpv2c_.n3,
           string(inet_ntoa(pgw_cfg.pgw_s5s8_.iface.addr4)),
           pgw_cfg.gtpv2c_.port, pgw_cfg.gtpv2c_.sched_params) {
   Logger::pgwc_s5s8().startup("Starting...");
@@ -128,19 +129,23 @@ pgw_s5s8::pgw_s5s8()
 
 //------------------------------------------------------------------------------
 void pgw_s5s8::send_msg(itti_s5s8_create_session_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgw_s5s8::send_msg(itti_s5s8_delete_session_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgw_s5s8::send_msg(itti_s5s8_modify_bearer_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgw_s5s8::send_msg(itti_s5s8_release_access_bearers_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void pgw_s5s8::send_msg(itti_s5s8_downlink_data_notification& i) {

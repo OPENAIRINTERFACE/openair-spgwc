@@ -385,7 +385,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
   imsi_t imsi = {};
   if (csreq.gtp_ies.get(imsi)) {
     Logger::sgwc_app().debug(
-        "S11 CREATE_SESSION_REQUEST IMSI %s ", imsi.toString());
+        "S11 CREATE_SESSION_REQUEST IMSI %s ", imsi.toString().c_str());
     // imsi not authenticated
     indication_t indication = {};
     bool delete_pdn_flag    = false;
@@ -400,7 +400,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
       if (is_imsi64_2_sgw_eps_bearer_context(imsi64)) {
         Logger::sgwc_app().debug(
             "S11 CREATE_SESSION_REQUEST IMSI %s found sgw eps bearer context",
-            imsi.toString());
+            imsi.toString().c_str());
         ebc = imsi64_2_sgw_eps_bearer_context(imsi64);
 
         // case identified in: the existing PDN connection context locally,
@@ -447,7 +447,7 @@ void sgwc_app::handle_itti_msg(itti_s11_create_session_request& csreq) {
         Logger::sgwc_app().debug(
             "S11 CREATE_SESSION_REQUEST IMSI %s sgw eps bearer context not "
             "found!",
-            imsi.toString());
+            imsi.toString().c_str());
         ebc = std::shared_ptr<sgw_eps_bearer_context>(
             new sgw_eps_bearer_context());
         set_imsi64_2_sgw_eps_bearer_context(imsi64, ebc);

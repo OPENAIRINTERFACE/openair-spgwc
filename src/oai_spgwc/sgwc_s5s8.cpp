@@ -116,6 +116,7 @@ void sgw_s5s8_task(void* args_p) {
 //------------------------------------------------------------------------------
 sgw_s5s8::sgw_s5s8()
     : gtpv2c_stack(
+          pgwc::pgw_config::gtpv2c_.t3_ms, pgwc::pgw_config::gtpv2c_.n3,
           string(inet_ntoa(pgwc::pgw_config::sgw_s5s8_.iface.addr4)),
           pgwc::pgw_config::gtpv2c_.port,
           pgwc::pgw_config::gtpv2c_.sched_params) {
@@ -148,7 +149,8 @@ void sgw_s5s8::send_msg(itti_s5s8_release_access_bearers_request& i) {
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::send_msg(itti_s5s8_downlink_data_notification_acknowledge& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void sgw_s5s8::handle_receive_create_session_response(

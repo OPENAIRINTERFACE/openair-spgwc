@@ -115,10 +115,22 @@ itti_mw::itti_mw()
 //------------------------------------------------------------------------------
 itti_mw::~itti_mw() {
   std::cout << "~itti()" << std::endl;
+  terminate = true;
+  timer_setup(0, 1, TASK_ITTI_TIMER, 0, 0);
   timer_thread.detach();
   // wake up thread timer if necessary
-  std::unique_lock<std::mutex> l2(m_timeout);
-  c_timeout.notify_one();
+
+  std::unique_lock<std::mutex> l(m_timers, std::defer_lock);
+  if (l.try_lock()) {
+    c_timers.notify_one();
+    std::cout << "~itti() c_timers notified!" << std::endl;
+  }
+  // wake up thread timer if necessary
+  std::unique_lock<std::mutex> l2(m_timeout, std::defer_lock);
+  if (l2.try_lock()) {
+    c_timeout.notify_one();
+    std::cout << "~itti() c_timeout notified!" << std::endl;
+  }
 
   for (int t = TASK_FIRST; t < TASK_MAX; t++) {
     if (itti_task_ctxts[t]) {

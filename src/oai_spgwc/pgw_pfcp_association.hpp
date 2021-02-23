@@ -100,8 +100,8 @@ class pfcp_association {
     trxn_id_heartbeat           = 0;
     is_restore_sessions_pending = false;
     is_trigger_heartbeat_request_procedure = true;
-    timer_association           = ITTI_INVALID_TIMER_ID;
-    state_ = kAssocNullState;
+    timer_association                      = ITTI_INVALID_TIMER_ID;
+    state_                                 = kAssocNullState;
   }
 
   pfcp_association(
@@ -118,8 +118,8 @@ class pfcp_association {
     is_restore_sessions_pending        = false;
     timer_association                  = ITTI_INVALID_TIMER_ID;
     is_trigger_heartbeat_request_procedure = true;
-    state_ = kAssocNullState;
-}
+    state_                                 = kAssocNullState;
+  }
   pfcp_association(pfcp_association const& p)
       : node_id(p.node_id),
         hash_node_id(p.hash_node_id),
@@ -133,9 +133,9 @@ class pfcp_association {
         trxn_id_heartbeat(p.trxn_id_heartbeat),
         is_restore_sessions_pending(p.is_restore_sessions_pending),
         timer_association(0),
-        is_trigger_heartbeat_request_procedure
-          (p.is_trigger_heartbeat_request_procedure),
-          state_(p.state_) {}
+        is_trigger_heartbeat_request_procedure(
+            p.is_trigger_heartbeat_request_procedure),
+        state_(p.state_) {}
 
   void notify_add_session(const pfcp::fseid_t& cp_fseid);
   bool has_session(const pfcp::fseid_t& cp_fseid);

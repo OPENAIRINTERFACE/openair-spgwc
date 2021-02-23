@@ -80,7 +80,7 @@ void term_signal_handler(int signum) {
     pgw_app_inst = nullptr;
     std::cout << "PGW APP memory done." << std::endl;
   }
-  //exit(signum);
+  // exit(signum);
   if (itti_inst) {
     delete itti_inst;
     itti_inst = nullptr;
@@ -150,9 +150,10 @@ int main(int argc, char** argv) {
 
     signal(SIGINT, term_signal_handler);
     signal(SIGTERM, term_signal_handler);
-    // Debugging with gdb: testing SIGINT, SIGTERM : gdb will catch those signals
-    // We can ask gdb not to stop on SIGUSR1:
-    // handle SIGUSR1 pass
+    // Debugging with gdb: testing SIGINT, SIGTERM : gdb will catch those
+    // signals
+    // We can ask gdb not to stop on SIGUSR1: 
+    // handle SIGUSR1 pass 
     // kill -USR1 pid
     signal(SIGUSR1, term_signal_handler);
 

@@ -111,6 +111,7 @@ class PfcpUpNodes {
 
   mutable std::mutex m_pending_nodes;
   std::list<std::shared_ptr<PfcpUpNode>> pending_nodes_;
+  // key is hash_node_id 32 bits
   folly::AtomicHashMap<int32_t, std::shared_ptr<PfcpUpNode>> up_nodes_;
 
   PfcpUpNodes();

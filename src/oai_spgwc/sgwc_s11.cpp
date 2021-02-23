@@ -130,6 +130,7 @@ void sgw_s11_task(void* args_p) {
 //------------------------------------------------------------------------------
 sgw_s11::sgw_s11()
     : gtpv2c_stack(
+          pgwc::pgw_config::gtpv2c_.t3_ms, pgwc::pgw_config::gtpv2c_.n3,
           string(inet_ntoa(pgwc::pgw_config::s11_.iface.addr4)),
           pgwc::pgw_config::gtpv2c_.port,
           pgwc::pgw_config::gtpv2c_.sched_params) {
@@ -143,19 +144,23 @@ sgw_s11::sgw_s11()
 
 //------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_create_session_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_delete_session_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_modify_bearer_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_release_access_bearers_response& i) {
-  send_triggered_message(i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id);
+  send_triggered_message(
+      i.r_endpoint, i.teid, i.gtp_ies, i.gtpc_tx_id, CONTINUE_TX);
 }
 //------------------------------------------------------------------------------
 void sgw_s11::send_msg(itti_s11_downlink_data_notification& i) {

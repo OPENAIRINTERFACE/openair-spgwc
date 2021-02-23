@@ -122,10 +122,10 @@ class pgwc_sxab : public pfcp::pfcp_l4_stack {
   std::time_t get_recovery_time_stamp() const { return recovery_time_stamp; };
 
  protected:
-  void notify_ul_error(const endpoint & remote_endpoint,
-      const uint8_t message_type,
-      const uint32_t  message_sequence_number,
-      const uint64_t trxn_id, const ::cause_value_e cause);
+  void notify_ul_error(
+      const endpoint& remote_endpoint, const uint8_t message_type,
+      const uint32_t message_sequence_number, const uint64_t trxn_id,
+      const ::cause_value_e cause);
 };
 }  // namespace pgwc
 #endif /* FILE_PGWC_SXAB_HPP_SEEN */
