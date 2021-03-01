@@ -934,7 +934,8 @@ pfcp_ie* pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
 }
 //------------------------------------------------------------------------------
 pfcp_msg::pfcp_msg(const pfcp_heartbeat_request& pfcp_ies) : pfcp_msg_header() {
-  ies = {};
+  ies         = {};
+  remote_port = 0;
   set_message_type(PFCP_HEARTBEAT_REQUEST);
   if (pfcp_ies.recovery_time_stamp.first) {
     std::shared_ptr<pfcp_recovery_time_stamp_ie> sie(
