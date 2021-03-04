@@ -33,11 +33,13 @@ FROM ubuntu:bionic as oai-spgwc-builder
 ARG EURECOM_PROXY
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe
+ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
-    psmisc \
-    git
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+      psmisc \
+      git
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v EURECOM_PROXY ]]; then git config --global http.proxy $EURECOM_PROXY; fi"
@@ -58,17 +60,19 @@ RUN ./build_spgwc --clean --build-type Release --jobs --Verbose
 #---------------------------------------------------------------------
 FROM ubuntu:bionic as oai-spgwc
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV TZ=Europe/Paris
 # We install some debug tools for the moment in addition of mandatory libraries
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
-    psmisc \
-    net-tools \
-    tshark \
-    libgoogle-glog0v5 \
-    libdouble-conversion1 \
-    libconfig++9v5 \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+      psmisc \
+      tzdata \
+      net-tools \
+      tshark \
+      libgoogle-glog0v5 \
+      libdouble-conversion1 \
+      libconfig++9v5 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copying executable and generated libraries
 WORKDIR /openair-spgwc/bin
