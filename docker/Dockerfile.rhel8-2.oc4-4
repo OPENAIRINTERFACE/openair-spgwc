@@ -66,13 +66,14 @@ RUN ./build_spgwc --clean --build-type Release --jobs --Verbose
 # TARGET IMAGE
 #---------------------------------------------------------------------
 FROM registry.access.redhat.com/ubi8/ubi:latest as oai-spgwc
-
+ENV TZ=Europe/Paris
 # We install some debug tools for the moment in addition of mandatory libraries
 RUN yum update -y && \
     yum -y install --enablerepo="ubi-8-codeready-builder" \
-    psmisc \
-    net-tools \
-    libevent \
+      tzdata \
+      psmisc \
+      net-tools \
+      libevent \
   && yum clean all -y \
   && rm -rf /var/cache/yum
 
