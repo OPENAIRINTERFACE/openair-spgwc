@@ -168,7 +168,7 @@ class HtmlReport():
 			buildSummaryDone = True
 			with open(cwd + '/test_results_oai_epc.html', 'r') as originalEpcReport:
 				for line in originalEpcReport:
-					result = re.search('DS Tester Summary', line)
+					result = re.search('Deployment Summary', line)
 					if (result is not None) and buildSummaryDone:
 						newEpcReport.write(buildSummary)
 						buildSummaryDone = False
