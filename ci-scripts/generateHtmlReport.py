@@ -368,12 +368,13 @@ class HtmlReport():
 			self.file.write('  </div>\n')
 
 	def buildSummaryHeader(self):
-		self.file.write('  <h2>Docker Image Build Summary</h2>\n')
+		self.file.write('  <h2>Docker / Podman Image Build Summary</h2>\n')
 		self.file.write('  <table class="table-bordered" width = "100%" align = "center" border = "1">\n')
 		self.file.write('	  <tr bgcolor="#33CCFF" >\n')
 		self.file.write('		<th>Stage Name</th>\n')
 		self.file.write('		<th>Image Kind</th>\n')
-		self.file.write('		<th>OAI SPGW-C cNF</th>\n')
+		self.file.write('		<th>OAI SPGW-C <font color="Gold">Ubuntu18</font> Image</th>\n')
+		self.file.write('		<th>OAI SPGW-C <font color="Gold">RHEL8</font> Image</th>\n')
 		self.file.write('	  </tr>\n')
 
 	def buildSummaryFooter(self):
@@ -389,42 +390,42 @@ class HtmlReport():
 	def analyze_docker_build_git_part(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Builder Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			status = False
-			section_start_pattern = 'git config --global http'
-			section_end_pattern = 'WORKDIR /openair-spgwc/build/scripts'
-			section_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-						status = True
-				logfile.close()
 
-			if status:
-				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
-				cell_msg += ' -- All Git Operations went successfully</b></pre></td>\n'
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				status = False
+				section_start_pattern = 'git config --global http'
+				section_end_pattern = 'WORKDIR /openair-spgwc/build/scripts'
+				section_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+							status = True
+					logfile.close()
+				if status:
+					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+					cell_msg += ' -- All Git Operations went successfully</b></pre></td>\n'
+				else:
+					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO::\n'
+					cell_msg += ' -- Some Git Operations went WRONG</b></pre></td>\n'
 			else:
-				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO::\n'
-				cell_msg += ' -- Some Git Operations went WRONG</b></pre></td>\n'
-		else:
-			cell_msg = '      <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
-
-		self.file.write(cell_msg)
+				cell_msg = '      <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def installLibsPackagesRow(self):
 		self.file.write('	 <tr>\n')
@@ -435,80 +436,81 @@ class HtmlReport():
 	def analyze_install_log(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Builder Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			status = False
-			section_start_pattern = 'build_spgwc --install-deps --force'
-			section_end_pattern = 'build_spgwc --clean --build-type Release --job --Verbose'
-			section_status = False
-			package_install = False
-			folly_build_start = False
-			folly_build = False
-			spdlog_build_start = False
-			spdlog_build = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						result = re.search('SPGW-C deps installation successful', line)
+
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				status = False
+				section_start_pattern = 'build_spgwc --install-deps --force'
+				section_end_pattern = 'build_spgwc --clean --build-type Release --job --Verbose'
+				section_status = False
+				package_install = False
+				folly_build_start = False
+				folly_build = False
+				spdlog_build_start = False
+				spdlog_build = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							status = True
-						result = re.search('Packages and Libraries installation finished!', line)
+							section_status = True
+						result = re.search(section_end_pattern, line)
 						if result is not None:
-							package_install = True
-						result = re.search('Starting to install folly from source', line)
-						if result is not None:
-							folly_build_start = True
-						if folly_build_start:
-							result = re.search('End of folly installation', line)
+							section_status = False
+						if section_status:
+							result = re.search('SPGW-C deps installation successful', line)
 							if result is not None:
-								folly_build_start = False
-								folly_build = True
-						result = re.search('Starting to install spdlog from source', line)
-						if result is not None:
-							spdlog_build_start = True
-						if spdlog_build_start:
-							result = re.search('End of spdlog installation', line)
+								status = True
+							result = re.search('Packages and Libraries installation finished!', line)
 							if result is not None:
-								spdlog_build_start = False
-								spdlog_build = True
-				logfile.close()
-			if status:
-				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
+								package_install = True
+							result = re.search('Starting to install folly from source', line)
+							if result is not None:
+								folly_build_start = True
+							if folly_build_start:
+								result = re.search('End of folly installation', line)
+								if result is not None:
+									folly_build_start = False
+									folly_build = True
+							result = re.search('Starting to install spdlog from source', line)
+							if result is not None:
+								spdlog_build_start = True
+							if spdlog_build_start:
+								result = re.search('End of spdlog installation', line)
+								if result is not None:
+									spdlog_build_start = False
+									spdlog_build = True
+					logfile.close()
+				if status:
+					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += ' -- build_spgwc --install-deps --force\n'
+				if package_install:
+					cell_msg += '   ** Packages Installation: OK\n'
+				else:
+					cell_msg += '   ** Packages Installation: KO\n'
+				if folly_build:
+					cell_msg += '   ** Folly Installation: OK\n'
+				else:
+					cell_msg += '   ** Folly Installation: KO\n'
+				if spdlog_build:
+					cell_msg += '   ** spdlog Installation: OK\n'
+				else:
+					cell_msg += '   ** spdlog Installation: KO\n'
+				cell_msg += '</b></pre></td>\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += ' -- build_spgwc --install-deps --force\n'
-			if package_install:
-				cell_msg += '   ** Packages Installation: OK\n'
-			else:
-				cell_msg += '   ** Packages Installation: KO\n'
-			if folly_build:
-				cell_msg += '   ** Folly Installation: OK\n'
-			else:
-				cell_msg += '   ** Folly Installation: KO\n'
-			if spdlog_build:
-				cell_msg += '   ** spdlog Installation: OK\n'
-			else:
-				cell_msg += '   ** spdlog Installation: KO\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
-
-		self.file.write(cell_msg)
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def buildCompileRows(self):
 		self.file.write('	 <tr>\n')
@@ -522,91 +524,92 @@ class HtmlReport():
 	def analyze_build_log(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Builder Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			status = False
-			section_start_pattern = 'build_spgwc --clean --build-type Release --jobs --Verbose'
-			section_end_pattern = 'git log -n1 > version.txt'
-			section_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						result = re.search('spgwc installed', line)
+
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				status = False
+				section_start_pattern = 'build_spgwc --clean --build-type Release --jobs --Verbose'
+				section_end_pattern = 'git log -n1 > version.txt'
+				section_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							status = True
-				logfile.close()
-			if status:
-				cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+						if section_status:
+							result = re.search('spgwc installed', line)
+							if result is not None:
+								status = True
+					logfile.close()
+				if status:
+					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += ' -- build_spgwc --clean --build-type Release --jobs</b></pre></td>\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += ' -- build_spgwc --clean --build-type Release --jobs</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
-
-		self.file.write(cell_msg)
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def analyze_compile_log(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Builder Image</td>\n')
-
 		cwd = os.getcwd()
-		nb_errors = 0
-		nb_warnings = 0
 
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'build_spgwc --clean --build-type Release --jobs --Verbose'
-			section_end_pattern = 'git log -n1 > version.txt'
-			section_status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						result = re.search('error:', line)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			nb_errors = 0
+			nb_warnings = 0
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				section_start_pattern = 'build_spgwc --clean --build-type Release --jobs --Verbose'
+				section_end_pattern = 'git log -n1 > version.txt'
+				section_status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
 						if result is not None:
-							nb_errors += 1
-						result = re.search('warning:', line)
+							section_status = True
+						result = re.search(section_end_pattern, line)
 						if result is not None:
-							nb_warnings += 1
-				logfile.close()
-			if nb_warnings == 0 and nb_errors == 0:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-			elif nb_warnings < 20 and nb_errors == 0:
-				cell_msg = '	   <td bgcolor="Orange"><pre style="border:none; background-color:Orange"><b>'
+							section_status = False
+						if section_status:
+							result = re.search('error:', line)
+							if result is not None:
+								nb_errors += 1
+							result = re.search('warning:', line)
+							if result is not None:
+								nb_warnings += 1
+					logfile.close()
+				if nb_warnings == 0 and nb_errors == 0:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+				elif nb_warnings < 20 and nb_errors == 0:
+					cell_msg = '	   <td bgcolor="Orange"><pre style="border:none; background-color:Orange"><b>'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				if nb_errors > 0:
+					cell_msg += str(nb_errors) + ' errors found in compile log\n'
+				cell_msg += str(nb_warnings) + ' warnings found in compile log</b></pre></td>\n'
 			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			if nb_errors > 0:
-				cell_msg += str(nb_errors) + ' errors found in compile log\n'
-			cell_msg += str(nb_warnings) + ' warnings found in compile log</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
-
-		self.file.write(cell_msg)
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def copyToTargetImage(self):
 		self.file.write('	 <tr>\n')
@@ -617,40 +620,41 @@ class HtmlReport():
 	def analyze_copy_log(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Target Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'FROM ubuntu:bionic as oai-spgwc$'
-			section_end_pattern = 'WORKDIR /openair-spgwc/etc'
-			section_status = False
-			status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-						status = True
-				logfile.close()
-			if status:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
-			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				section_start_pattern = 'FROM ubuntu:bionic as oai-spgwc$'
+				section_end_pattern = 'WORKDIR /openair-spgwc/etc'
+				section_status = False
+				status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+							status = True
+					logfile.close()
+				if status:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += '</b></pre></td>\n'
+			else:
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def copyConfToolsToTargetImage(self):
 		self.file.write('	 <tr>\n')
@@ -661,40 +665,44 @@ class HtmlReport():
 	def analyze_copy_conf_tool_log(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Target Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'WORKDIR /openair-spgwc/etc'
-			section_end_pattern = 'Successfully tagged oai-spgwc'
-			section_status = False
-			status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-						status = True
-				logfile.close()
-			if status:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:\n'
-			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				section_start_pattern = 'WORKDIR /openair-spgwc/etc'
+				if variant == 'docker':
+					section_end_pattern = 'Successfully tagged oai-spgwc'
+				else:
+					section_end_pattern = 'COMMIT oai-spgwc:'
+				section_status = False
+				status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+							status = True
+					logfile.close()
+				if status:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:\n'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += '</b></pre></td>\n'
+			else:
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def imageSizeRow(self):
 		self.file.write('	 <tr>\n')
@@ -705,52 +713,56 @@ class HtmlReport():
 	def analyze_image_size_log(self, nfType):
 		if nfType != 'SPGW-C':
 			self.file.write('      <td>N/A</td>\n')
-			self.file.write('	   <td>Wrong NF Type for this Report</td>\n')
+			self.file.write('	   <td colspan="2">Wrong NF Type for this Report</td>\n')
 			return
 
-		logFileName = 'spgwc_docker_image_build.log'
 		self.file.write('      <td>Target Image</td>\n')
-
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/archives/' + logFileName):
-			section_start_pattern = 'Successfully tagged oai-spgwc'
-			section_end_pattern = 'OAI-SPGW-C DOCKER IMAGE BUILD'
-			section_status = False
-			status = False
-			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
-				for line in logfile:
-					result = re.search(section_start_pattern, line)
-					if result is not None:
-						section_status = True
-					result = re.search(section_end_pattern, line)
-					if result is not None:
-						section_status = False
-					if section_status:
-						if self.git_pull_request:
-							result = re.search('oai-spgwc *ci-temp', line)
-						else:
-							result = re.search('oai-spgwc *develop', line)
-						if result is not None:
-							result = re.search('ago *([0-9A-Z]+)', line)
-							if result is not None:
-								size = result.group(1)
-								status = True
-				logfile.close()
-			if status:
-				cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
-				cell_msg += 'OK:  ' + size + '\n'
-			else:
-				cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-				cell_msg += 'KO:\n'
-			cell_msg += '</b></pre></td>\n'
-		else:
-			cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
-			cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
 
-		self.file.write(cell_msg)
+		variants = ['docker', 'podman']
+		for variant in variants:
+			logFileName = 'spgwc_' + variant + '_image_build.log'
+			if os.path.isfile(cwd + '/archives/' + logFileName):
+				if variant == 'docker':
+					section_start_pattern = 'Successfully tagged oai-spgwc'
+				else:
+					section_start_pattern = 'COMMIT oai-spgwc:'
+				section_end_pattern = 'OAI-SPGW-C DOCKER IMAGE BUILD'
+				section_status = False
+				status = False
+				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
+					for line in logfile:
+						result = re.search(section_start_pattern, line)
+						if result is not None:
+							section_status = True
+						result = re.search(section_end_pattern, line)
+						if result is not None:
+							section_status = False
+						if section_status:
+							if self.git_pull_request:
+								result = re.search('oai-spgwc *ci-temp', line)
+							else:
+								result = re.search('oai-spgwc *develop', line)
+							if result is not None:
+								result = re.search('ago *([0-9 A-Z]+)', line)
+								if result is not None:
+									size = result.group(1)
+									status = True
+					logfile.close()
+				if status:
+					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
+					cell_msg += 'OK:  ' + size + '\n'
+				else:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+				cell_msg += '</b></pre></td>\n'
+			else:
+				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+				cell_msg += 'KO: logfile (' + logFileName + ') not found</b></pre></td>\n'
+			self.file.write(cell_msg)
 
 	def sanityCheckSummaryHeader(self):
-		self.file.write('  <h2>Sanity Check Deployment Summary</h2>\n')
+		self.file.write('  <h2>Ubuntu18 Sanity Check Deployment Summary</h2>\n')
 		self.file.write('  <table class="table-bordered" width = "100%" align = "center" border = "1">\n')
 		self.file.write('	  <tr bgcolor="#33CCFF" >\n')
 		self.file.write('		<th>Stage Name</th>\n')
