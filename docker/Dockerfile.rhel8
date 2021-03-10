@@ -21,7 +21,7 @@
 #---------------------------------------------------------------------
 #
 # Dockerfile for the Open-Air-Interface SPGW-C service
-#   Valid for RHEL8.2 in the OpenShift context (v4.4)
+#   Valid for RHEL8
 #
 #---------------------------------------------------------------------
 
@@ -32,13 +32,10 @@ FROM registry.access.redhat.com/ubi8/ubi:latest as oai-spgwc-builder
 
 # Entitlements and RHSM configurations are Open-Shift Secret and ConfigMaps
 # It is pre-requisite
-RUN rm -Rf /etc/rhsm/ca /etc/pki/entitlement
 # Copy the entitlements
-COPY ./etc-pki-entitlement /etc/pki/entitlement
-
+COPY tmp/entitlement/*.pem /etc/pki/entitlement
 # Copy the subscription manager configurations
-COPY ./rhsm-conf /etc/rhsm
-COPY ./rhsm-ca /etc/rhsm/ca
+COPY tmp/ca/redhat-uep.pem /etc/rhsm/ca
 
 RUN rm /etc/rhsm-host && \
     # Initialize /etc/yum.repos.d/redhat.repo
@@ -50,7 +47,7 @@ RUN rm /etc/rhsm-host && \
        # diff, cmp and file are not in the ubi???
        diffutils \
        file \
-    psmisc \
+       psmisc \
        git
 
 # Copy the workspace as is

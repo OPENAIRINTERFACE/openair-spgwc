@@ -37,10 +37,16 @@ def cn_ci_host = params.Host_CN_CI_Server
 // for lock
 def cn_ci_resource = params.DockerContainers
 
-// Location of the 2nd CN executor
-def new_host_flag = false
-def new_host = ""
-def new_host_user = ""
+// Location of the Remote Ubuntu18 CN executor
+def rem_u18_host_flag = false
+def rem_u18_host = ""
+def rem_u18_host_user = ""
+
+// Location of the Remote RHEL CN executor
+def rem_rhel_host_flag = false
+def rem_rhel_host = ""
+def rem_rhel_host_user = ""
+def rem_rhel8_resource = params.PodmanContainers
 
 // Variables to pass to the FED Test job
 def spgwc_tag = 'develop'
@@ -69,17 +75,25 @@ pipeline {
           JOB_TIMESTAMP = JOB_TIMESTAMP.trim()
 
           if (params.Host_CN_CI_2nd_Server_Flag != null) {
-            new_host_flag = params.Host_CN_CI_2nd_Server_Flag
-            if (new_host_flag) {
-              new_host = params.Host_CN_CI_2nd_Server
-              new_host_user = params.Host_CN_CI_2nd_Server_Login
+            rem_u18_host_flag = params.Host_CN_CI_2nd_Server_Flag
+            if (rem_u18_host_flag) {
+              rem_u18_host = params.Host_CN_CI_2nd_Server
+              rem_u18_host_user = params.Host_CN_CI_2nd_Server_Login
               echo "1st Node   is ${NODE_NAME}"
-              echo "2nd Node   is ${new_host}"
+              echo "2nd Node   is ${rem_u18_host}"
             } else {
-              echo "Node       is ${NODE_NAME}"
+              echo "U18 Node   is ${NODE_NAME}"
             }
           } else {
             echo "Node       is ${NODE_NAME}"
+          }
+          if (params.Remote_RHEL_Server_Flag != null) {
+            rem_rhel_host_flag = params.Remote_RHEL_Server_Flag
+            if (rem_rhel_host_flag) {
+              rem_rhel_host = params.Remote_RHEL_Server_Name
+              rem_rhel_host_user = params.Remote_RHEL_Server_Login
+              echo "RHEL Node  is ${rem_rhel_host}"
+            }
           }
           echo "Git URL    is ${GIT_URL}"
 
@@ -90,10 +104,14 @@ pipeline {
             echo "PR LINK    is ${env.ghprbPullLink}"
             echo "PR TITLE   is ${env.ghprbPullTitle}"
             sh "git fetch --prune --unshallow"
+            shortenShaOne = sh returnStdout: true, script: 'git log -1 --pretty=format:"%h" ' + env.ghprbActualCommit
+            shortenShaOne = shortenShaOne.trim()
             sh "./ci-scripts/doGitHubPullRequestTempMerge.sh --src-branch ${env.ghprbSourceBranch} --src-commit ${env.ghprbActualCommit} --target-branch ${env.ghprbTargetBranch} --target-commit ${GIT_COMMIT}"
             sh "sleep 10"
             spgwc_tag = 'ci-temp'
+            rhel_spgwc_tag = 'ci-temp-pr-' + env.ghprbPullId + '-' + shortenShaOne
             spgwc_branch = env.ghprbSourceBranch
+            echo "PR TAG     is ${rhel_spgwc_tag}"
           } else {
             echo "======= THIS IS A PUSH EVENT ======"
             echo "Git Branch is ${GIT_BRANCH}"
@@ -110,33 +128,31 @@ pipeline {
           sh "git clean -x -d -f > /dev/null 2>&1"
           sh "tar -cjhf /tmp/openair-spgwc.tar.bz2 ."
           sh "mv /tmp/openair-spgwc.tar.bz2 ."
-          copyTo2ndServer('openair-spgwc.tar.bz2', new_host_flag, new_host_user, new_host)
-          sh "mkdir -p archives"
-          if (new_host_flag) {
-            sh "mkdir -p archives/oai-spgwc-cfg"
-          }
+          copyTo2ndServer('openair-spgwc.tar.bz2', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+          copyTo2ndServer('openair-spgwc.tar.bz2', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+          sh "mkdir -p archives/oai-spgwc-cfg"
         }
       }
     }
     stage('Build Core Network Function') {
       parallel {
-        stage ('Build SPGW-C Image') {
+        stage ('Build U18 SPGW-U Image') {
           steps {
             script {
               if (env.ghprbPullId == null) {
                 // Currently this pipeline only runs for pushes to `develop` branch
                 // First clean image registry
-                myShCmd('docker image rm oai-spgwc:develop', new_host_flag, new_host_user, new_host)
+                myShCmd('docker image rm oai-spgwc:develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
-              myShCmd('docker image prune --force', new_host_flag, new_host_user, new_host)
-              myShCmd('docker build --no-cache --target oai-spgwc --tag oai-spgwc:' + spgwc_tag + ' --file docker/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" . > archives/spgwc_docker_image_build.log 2>&1', new_host_flag, new_host_user, new_host)
-              myShCmd('docker image ls >> archives/spgwc_docker_image_build.log', new_host_flag, new_host_user, new_host)
+              myShCmd('docker image prune --force', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker build --no-cache --target oai-spgwc --tag oai-spgwc:' + spgwc_tag + ' --file docker/Dockerfile.ubuntu18.04 --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" . > archives/spgwc_docker_image_build.log 2>&1', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker image ls >> archives/spgwc_docker_image_build.log', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
           post {
             always {
               script {
-                copyFrom2ndServer('archives/spgwc_docker_image_build.log', 'archives', new_host_flag, new_host_user, new_host)
+                copyFrom2ndServer('archives/spgwc_docker_image_build.log', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
             }
             success {
@@ -147,30 +163,70 @@ pipeline {
             }
           }
         }
-        // Running CPPCHECK in parallel to gain time
-        stage ('Static Code Analysis') {
+        stage ('Build RHEL8 SPGW-C Image') {
+          when { expression {rem_rhel_host_flag} }
           steps {
-            script {
-              // Running on xenial to have 1.72 version of cppcheck
-              myShCmd('docker run --name ci-cn-cppcheck -d ubuntu:xenial /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "apt-get update && apt-get upgrade --yes" > archives/cppcheck_install.log', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "apt-get install --yes cppcheck bzip2" >> archives/cppcheck_install.log', new_host_flag, new_host_user, new_host)
-
-              myShCmd('docker cp ./openair-spgwc.tar.bz2 ci-cn-cppcheck:/home', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "cd /home && tar -xjf openair-spgwc.tar.bz2"', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "rm -f /home/openair-spgwc.tar.bz2"', new_host_flag, new_host_user, new_host)
-
-              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "cd /home && cppcheck --enable=warning --force --xml --xml-version=2 src 2> cppcheck.xml 1> cppcheck_build.log"', new_host_flag, new_host_user, new_host)
+            lock (rem_rhel8_resource) {
+              script {
+                if (env.ghprbPullId == null) {
+                  // Currently this pipeline only runs for pushes to `develop` branch
+                  // First clean image registry
+                  myShCmd('sudo podman image rm oai-spgwc:develop || true', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                } else {
+                  // In case we forgot during a previous run
+                  myShCmd('sudo podman image rm oai-spgwc:' + spgwc_tag + ' || true', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                }
+                myShCmd('sudo podman image prune --force', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                // Copy the RHEL Host certificates for building
+                myShCmd('mkdir -p tmp/ca tmp/entitlement', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                myShCmd('cp /etc/pki/entitlement/*pem tmp/entitlement', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                myShCmd('sudo cp /etc/rhsm/ca/redhat-uep.pem tmp/ca', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                myShCmd('sudo podman build --no-cache --target oai-spgwc --tag oai-spgwc:' + spgwc_tag + ' --file docker/Dockerfile.rhel8  --build-arg EURECOM_PROXY="http://proxy.eurecom.fr:8080" . > archives/spgwc_podman_image_build.log 2>&1', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                myShCmd('sudo podman image ls >> archives/spgwc_podman_image_build.log', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                if (env.ghprbPullId != null) {
+                  myShCmd('sudo podman image tag oai-spgwc:' + spgwc_tag + ' oai-spgwc:' + rhel_spgwc_tag, rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+                }
+              }
             }
           }
           post {
             always {
               script {
-                myShCmd('docker cp ci-cn-cppcheck:/home/cppcheck.xml archives', new_host_flag, new_host_user, new_host)
-                myShCmd('docker cp ci-cn-cppcheck:/home/cppcheck_build.log archives', new_host_flag, new_host_user, new_host)
-                copyFrom2ndServer('archives/cppcheck*.*', 'archives', new_host_flag, new_host_user, new_host)
+                copyFrom2ndServer('archives/spgwc_podman_image_build.log', 'archives', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+              }
+            }
+            success {
+              sh "echo 'OAI-SPGW-C PODMAN RHEL8 IMAGE BUILD: OK' >> archives/spgwc_podman_image_build.log"
+            }
+            unsuccessful {
+              sh "echo 'OAI-SPGW-C PODMAN RHEL8 IMAGE BUILD: KO' >> archives/spgwc_podman_image_build.log"
+            }
+          }
+        }
+        // Running CPPCHECK in parallel to gain time
+        stage ('Static Code Analysis') {
+          steps {
+            script {
+              // Running on xenial to have 1.72 version of cppcheck
+              myShCmd('docker run --name ci-cn-cppcheck -d ubuntu:xenial /bin/bash -c "sleep infinity"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "apt-get update && apt-get upgrade --yes" > archives/cppcheck_install.log', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "apt-get install --yes cppcheck bzip2" >> archives/cppcheck_install.log', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+
+              myShCmd('docker cp ./openair-spgwc.tar.bz2 ci-cn-cppcheck:/home', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "cd /home && tar -xjf openair-spgwc.tar.bz2"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "rm -f /home/openair-spgwc.tar.bz2"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+
+              myShCmd('docker exec ci-cn-cppcheck /bin/bash -c "cd /home && cppcheck --enable=warning --force --xml --xml-version=2 src 2> cppcheck.xml 1> cppcheck_build.log"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+            }
+          }
+          post {
+            always {
+              script {
+                myShCmd('docker cp ci-cn-cppcheck:/home/cppcheck.xml archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+                myShCmd('docker cp ci-cn-cppcheck:/home/cppcheck_build.log archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+                copyFrom2ndServer('archives/cppcheck*.*', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
                 // no need to keep the cppcheck container
-                myShCmd('docker rm -f ci-cn-cppcheck', new_host_flag, new_host_user, new_host)
+                myShCmd('docker rm -f ci-cn-cppcheck', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
             }
             success {
@@ -185,37 +241,37 @@ pipeline {
         stage ('Code Formatting Checker') {
           steps {
             script {
-              myShCmd('docker run --name ci-cn-clang-formatter -d ubuntu:bionic /bin/bash -c "sleep infinity"', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "apt-get update && apt-get upgrade --yes" > archives/clang_format_install.log', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "apt-get install --yes git tree bzip2" >> archives/clang_format_install.log', new_host_flag, new_host_user, new_host)
+              myShCmd('docker run --name ci-cn-clang-formatter -d ubuntu:bionic /bin/bash -c "sleep infinity"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "apt-get update && apt-get upgrade --yes" > archives/clang_format_install.log', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "apt-get install --yes git tree bzip2" >> archives/clang_format_install.log', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
 
-              myShCmd('docker cp ./openair-spgwc.tar.bz2 ci-cn-clang-formatter:/home', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "cd /home && tar -xjf openair-spgwc.tar.bz2"', new_host_flag, new_host_user, new_host)
-              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "rm -f /home/openair-spgwc.tar.bz2"', new_host_flag, new_host_user, new_host)
+              myShCmd('docker cp ./openair-spgwc.tar.bz2 ci-cn-clang-formatter:/home', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "cd /home && tar -xjf openair-spgwc.tar.bz2"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "rm -f /home/openair-spgwc.tar.bz2"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
 
               // We install a dedicated version (installed on our CI server).
-              myShCmd('docker cp /opt/clang-format/9.0.0/bin/clang-format ci-cn-clang-formatter:/usr/local/bin', new_host_flag, new_host_user, new_host)
+              myShCmd('docker cp /opt/clang-format/9.0.0/bin/clang-format ci-cn-clang-formatter:/usr/local/bin', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               if (env.ghprbPullId != null) {
-                myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "cd /home && ./ci-scripts/checkCodingFormattingRules.sh --src-branch ' + env.ghprbSourceBranch +' --target-branch ' + env.ghprbTargetBranch + '"', new_host_flag, new_host_user, new_host)
+                myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "cd /home && ./ci-scripts/checkCodingFormattingRules.sh --src-branch ' + env.ghprbSourceBranch +' --target-branch ' + env.ghprbTargetBranch + '"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               } else {
-                myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "cd /home && ./ci-scripts/checkCodingFormattingRules.sh"', new_host_flag, new_host_user, new_host)
+                myShCmd('docker exec ci-cn-clang-formatter /bin/bash -c "cd /home && ./ci-scripts/checkCodingFormattingRules.sh"', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
             }
           }
           post {
             always {
               script {
-                myShCmd('docker cp ci-cn-clang-formatter:/home/src/oai_rules_result.txt src', new_host_flag, new_host_user, new_host)
+                myShCmd('docker cp ci-cn-clang-formatter:/home/src/oai_rules_result.txt src', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
                 // May not have been generated
                 try {
-                  myShCmd('docker cp ci-cn-clang-formatter:/home/src/oai_rules_result_list.txt src', new_host_flag, new_host_user, new_host)
+                  myShCmd('docker cp ci-cn-clang-formatter:/home/src/oai_rules_result_list.txt src', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
                 } catch (Exception e) {
                   echo "Failed to copy src/oai_rules_result_list.txt! It may not have been generated. That's OK!"
                 }
-                copyFrom2ndServer('archives/clang_format*.*', 'archives', new_host_flag, new_host_user, new_host)
-                copyFrom2ndServer('src/oai_rules*.*', 'src', new_host_flag, new_host_user, new_host)
+                copyFrom2ndServer('archives/clang_format*.*', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+                copyFrom2ndServer('src/oai_rules*.*', 'src', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
                 // no need to keep the clang-formatter container
-                myShCmd('docker rm -f ci-cn-clang-formatter', new_host_flag, new_host_user, new_host)
+                myShCmd('docker rm -f ci-cn-clang-formatter', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
             }
           }
@@ -227,22 +283,22 @@ pipeline {
         stage('Create Docker Networks') {
           steps {
             script {
-              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=CreateNetworks', new_host_flag, new_host_user, new_host)
+              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=CreateNetworks', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
         }
         stage('Deploy OAI-SPGW-C') {
           steps {
             script {
-              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=DeploySPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
+              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=DeploySPGWC --tag=' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
           post {
             always {
               script {
-                myShCmd('docker cp ci-oai-spgwc:/openair-spgwc/etc/. archives/oai-spgwc-cfg', new_host_flag, new_host_user, new_host)
-                copyFrom2ndServer('archives/spgwc_config.log', 'archives', new_host_flag, new_host_user, new_host)
-                copyFrom2ndServer('archives/oai-spgwc-cfg/*.*', 'archives/oai-spgwc-cfg', new_host_flag, new_host_user, new_host)
+                myShCmd('docker cp ci-oai-spgwc:/openair-spgwc/etc/. archives/oai-spgwc-cfg', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+                copyFrom2ndServer('archives/spgwc_config.log', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+                copyFrom2ndServer('archives/oai-spgwc-cfg/*.*', 'archives/oai-spgwc-cfg', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
             }
             success {
@@ -256,13 +312,13 @@ pipeline {
         stage('Deploy OAI-SPGWU-TINY') {
           steps {
             script {
-              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=DeploySPGWU --tag=develop', new_host_flag, new_host_user, new_host)
+              myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=DeploySPGWU --tag=develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
           post {
             always {
               script {
-                copyFrom2ndServer('archives/spgwu_config.log', 'archives', new_host_flag, new_host_user, new_host)
+                copyFrom2ndServer('archives/spgwu_config.log', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
             }
             success {
@@ -278,16 +334,16 @@ pipeline {
     stage ('Start-Check-Stop OAI cNFs') {
       steps {
         script {
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StartSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StartSPGWC --tag=' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           sh "sleep 2"
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StartSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StartSPGWU --tag=develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           sh "sleep 40"
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StopSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StopSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StopSPGWC --tag=' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=StopSPGWU --tag=develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           sh "sleep 2"
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
-          copyFrom2ndServer('archives/*_check_run.log', 'archives', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWC --tag=' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWU --tag=develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+          copyFrom2ndServer('archives/*_check_run.log', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           sh "python3 ./ci-scripts/verifySanityCheckDeployment.py --job_name=${JOB_NAME} --job_id=${BUILD_ID}"
         }
       }
@@ -298,9 +354,9 @@ pipeline {
         }
         unsuccessful {
           // If anything wrong occurs, we still try to copy
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWC --tag=' + spgwc_tag, new_host_flag, new_host_user, new_host)
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWU --tag=develop', new_host_flag, new_host_user, new_host)
-          copyFrom2ndServer('archives/*_check_run.log', 'archives', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWC --tag=' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RetrieveLogsSPGWU --tag=develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+          copyFrom2ndServer('archives/*_check_run.log', 'archives', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           sh "echo 'OAI-SPGW-C CHECK START/STOP: KO' > archives/spgwc_cnf_check_start.log"
           sh "echo 'OAI-SPGW-U CHECK START/STOP: KO' > archives/spgwu_cnf_check_start.log"
         }
@@ -310,9 +366,9 @@ pipeline {
       steps {
         script {
           // Killing all containers
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveAllContainers', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveAllContainers', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           // Removing all intermediate networks
-          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveNetworks', new_host_flag, new_host_user, new_host)
+          myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveNetworks', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
         }
       }
     }
@@ -381,23 +437,37 @@ pipeline {
     cleanup {
       script {
         // Killing all containers
-        myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveAllContainers', new_host_flag, new_host_user, new_host)
+        myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveAllContainers', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
         // Removing the networks
-        myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveNetworks', new_host_flag, new_host_user, new_host)
+        myShCmd('python3 ./ci-scripts/sanityCheckDeploy.py --action=RemoveNetworks', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
         // In case of build failure, we might have temporary containers still running. TBD!
 
         // Removing temporary / intermediate images
         try {
           if (env.ghprbPullId != null) {
-            myShCmd('docker image rm --force oai-spgwc:ci-temp', new_host_flag, new_host_user, new_host)
+            myShCmd('docker image rm --force oai-spgwc:ci-temp', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
           }
         } catch (Exception e) {
           echo "We failed to delete the OAI-SPGWC temp image"
         }
         try {
-          myShCmd('docker image prune --force', new_host_flag, new_host_user, new_host)
+          if (env.ghprbPullId != null) {
+            myShCmd('sudo podman image rm oai-spgwc:ci-temp', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+          }
+        } catch (Exception e) {
+          echo "We failed to delete the OAI-SPGWC temp image"
+        }
+        try {
+          myShCmd('docker image prune --force', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
         } catch (Exception e) {
           echo "We failed to prune all unneeded intermediate images"
+        }
+        if (rem_rhel_host_flag) {
+          try {
+            myShCmd('sudo podman image prune --force', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
+          } catch (Exception e) {
+            echo "We failed to prune all unneeded intermediate images"
+          }
         }
 
         // Zipping all archived log files
@@ -514,8 +584,8 @@ def copyTo2ndServer(filename, flag, user, host) {
     sh "scp ${filename} ${user}@${host}:/tmp/CI-CN-SPGWC"
     if ("openair-spgwc.tar.bz2".equals(filename)) {
       sh "ssh ${user}@${host} 'cd /tmp/CI-CN-SPGWC && tar -xjf ${filename}'"
-      sh "ssh ${user}@${host} 'mkdir -p /tmp/CI-CN-SPGWC/archives'"
       sh "ssh ${user}@${host} 'mkdir -p /tmp/CI-CN-SPGWC/archives/oai-spgwc-cfg'"
+      sh "ssh ${user}@${host} 'rm -Rf /tmp/CI-CN-SPGWC/${filename}'"
     }
   }
 }
