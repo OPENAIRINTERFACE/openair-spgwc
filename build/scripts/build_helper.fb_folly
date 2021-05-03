@@ -129,7 +129,14 @@ install_fb_folly_from_source(){
       echo '     message(STATUS "Found gflags from package config ${gflags_CONFIG}")' >> patch.diff
       git apply patch.diff
     else
-        git checkout -f v2019.11.11.00
+      case "$(get_distribution_release)" in
+        "ubuntu20.04")
+          git checkout -f v2021.04.26.00
+        ;;
+        *)
+          git checkout -f v2019.11.11.00
+        ;;
+      esac
     fi
     mkdir _build && cd _build
     if [[ "$OS_BASEDISTRO" == "fedora" ]]; then

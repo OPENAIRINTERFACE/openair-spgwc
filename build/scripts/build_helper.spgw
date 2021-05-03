@@ -68,6 +68,53 @@ install_fmt() {
 #-------------------------------------------------------------------------------
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
+install_pistache_from_git() {
+  if [ $1 -eq 0 ]; then
+    read -p "Do you want to install Pistache ? <y/N> " prompt
+    OPTION="-y"
+  else
+    prompt='y'
+    OPTION="-y"
+  fi
+  if [ $2 -eq 0 ]; then
+    debug=0
+  else
+    debug=1
+  fi
+
+  if [[ $prompt =~ [yY](es)* ]]
+  then
+    GIT_URL=https://github.com/oktal/pistache.git
+    echo "Install Pistache from $GIT_URL"
+    pushd $OPENAIRCN_DIR/build/ext
+    echo "Downloading Pistache"
+    if [[ $OPTION =~ -[yY](es)* ]]
+    then
+      $SUDO rm -rf pistache
+    fi
+
+    git clone $GIT_URL
+    git submodule update --init
+    cd pistache && git checkout e18ed9baeb2145af6f9ea41246cf48054ffd9907
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    mkdir _build && cd _build
+    $CMAKE -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release \
+        -DPISTACHE_BUILD_EXAMPLES=false \
+        -DPISTACHE_BUILD_TESTS=false \
+        -DPISTACHE_BUILD_DOCS=false \
+        .. 
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    make -j `nproc`
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    $SUDO make install
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    popd
+  fi
+  return 0
+}
+#-------------------------------------------------------------------------------
+#arg1 is force (0 or 1) (no interactive script)
+#arg2 is debug (0 or 1) (install debug libraries)
 install_spdlog_from_git() {
   echo_info "Starting to install spdlog from source"
   if [ $1 -eq 0 ]; then
@@ -105,9 +152,6 @@ install_spdlog_from_git() {
   echo_success "End of spdlog installation"
   return 0
 }
-
-
-
 #-------------------------------------------------------------------------------
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
@@ -177,7 +221,10 @@ check_install_spgwc_deps() {
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     case "$(get_distribution_release)" in
       "ubuntu18.04")
-        specific_packages="libconfig++-dev libasio-dev libboost-all-dev"
+        specific_packages="libconfig++-dev libasio-dev libboost-all-dev libgcrypt11-dev"
+      ;;
+  "ubuntu20.04")
+      specific_packages="libconfig++-dev libasio-dev libboost-all-dev libgcrypt20-dev"
       ;;
     esac
     # removed libspdlog-dev
@@ -186,7 +233,6 @@ check_install_spgwc_deps() {
       guile-2.0-dev \
       libcurl4-gnutls-dev \
       libevent-dev \
-      libgcrypt11-dev \
       libgmp-dev \
       libhogweed? \
       libidn2-0-dev \
@@ -197,6 +243,7 @@ check_install_spgwc_deps() {
       libxml2 \
       libxml2-dev \
       openssl \
+      rapidjson-dev \
       python \
       pkg-config"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
@@ -222,6 +269,7 @@ check_install_spgwc_deps() {
       libxml2 \
       libxml2-devel \
       openssl \
+      rapidjson \
       check \
       python2 \
       pkgconfig"
@@ -242,6 +290,9 @@ check_install_spgwc_deps() {
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
   install_spdlog_from_git $1 $2
+  ret=$?;[[ $ret -ne 0 ]] && return $ret
+
+  install_pistache_from_git $1 $2
   ret=$?;[[ $ret -ne 0 ]] && return $ret
 
   return 0

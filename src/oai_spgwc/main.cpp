@@ -22,6 +22,7 @@
 #include "pgw_app.hpp"
 #include "pgw_config.hpp"
 #include "pid_file.hpp"
+#include "rest_handler.h"
 #include "sgwc_app.hpp"
 
 #include <csignal>
@@ -41,6 +42,7 @@ itti_mw* itti_inst                    = nullptr;
 async_shell_cmd* async_shell_cmd_inst = nullptr;
 pgw_app* pgw_app_inst                 = nullptr;
 sgwc_app* sgwc_app_inst               = nullptr;
+Pistache::Http::Endpoint* rest_endpoint  = nullptr;
 
 void send_heartbeat_to_tasks(const uint32_t sequence);
 
@@ -138,6 +140,28 @@ int main(int argc, char** argv) {
 
     // SGW application layer
     sgwc_app_inst = new sgwc_app(Options::getConfig());
+
+    try {
+      Pistache::Address addr(
+          Pistache::Ipv4::any(), Pistache::Port(pgwc::pgw_config::rest_port_));
+      auto opts = Pistache::Http::Endpoint::options().threads(1).flags(
+          Pistache::Tcp::Options::ReuseAddr);
+      //      .flags( Pistache::Tcp::Options::InstallSignalHandler |
+      //      Pistache::Tcp::Options::ReuseAddr );
+
+      rest_endpoint = new Pistache::Http::Endpoint(addr);
+      rest_endpoint->init(opts);
+      rest_endpoint->setHandler(Pistache::Http::make_handler<RestHandler>());
+      rest_endpoint->serveThreaded();
+
+
+
+      Logger::system().startup(
+          "Started REST server on port [%i]", pgwc::pgw_config::rest_port_);
+    } catch (std::runtime_error& e) {
+      std::cout << "Exception starting REST server - " << e.what() << std::endl;
+      return 1;
+    }
 
     {
       FILE* fp             = NULL;

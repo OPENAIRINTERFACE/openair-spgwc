@@ -301,6 +301,7 @@ add_library (SPGWC STATIC
   ${SRC_TOP_DIR}/oai_spgwc/pgw_s5s8.cpp
   ${SRC_TOP_DIR}/oai_spgwc/pgwc_procedure.cpp
   ${SRC_TOP_DIR}/oai_spgwc/pgwc_sxab.cpp
+  ${SRC_TOP_DIR}/oai_spgwc/rest_handler.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_app.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_eps_bearer_context.cpp
   ${SRC_TOP_DIR}/oai_spgwc/sgwc_pdn_connection.cpp
@@ -327,5 +328,5 @@ if(${SGW_AUTOTEST})
   SET(GTPV1U_LIB GTPV1U)
 endif(${SGW_AUTOTEST})
 
-target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SPGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system )
+target_link_libraries (spgwc ${ASAN} -Wl,--start-group CN_UTILS SPGWC UDP ${GTPV1U_LIB} GTPV2C PFCP 3GPP_COMMON_TYPES gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system pistache)
 

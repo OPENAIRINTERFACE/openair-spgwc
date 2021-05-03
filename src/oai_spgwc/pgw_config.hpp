@@ -195,12 +195,14 @@ class pgw_config {
   static std::string jsoncfg_;
   static std::string pid_dir_;
   static unsigned int instance_;
+  static unsigned int rest_port_;
 
   itti_cfg_t itti;
 
   static void Default() {
     pid_dir_  = "/var/run";
     instance_ = 0;
+    rest_port_ = 9081;
 
     timer_.sched_params.cpu_id         = -1;
     timer_.sched_params.sched_policy   = SCHED_FIFO;
