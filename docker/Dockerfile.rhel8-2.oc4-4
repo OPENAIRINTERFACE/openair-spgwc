@@ -72,6 +72,7 @@ RUN yum update -y && \
     yum -y install --enablerepo="ubi-8-codeready-builder" \
       tzdata \
       psmisc \
+      procps-ng \
       net-tools \
       libevent \
   && yum clean all -y \
