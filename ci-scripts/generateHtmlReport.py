@@ -163,19 +163,21 @@ class HtmlReport():
 		self.file.write(buildSummary)
 
 		cwd = os.getcwd()
-		if os.path.isfile(cwd + '/test_results_oai_epc.html'):
-			newEpcReport = open(cwd + '/test_results_oai_epc_new.html', 'w')
-			buildSummaryDone = True
-			with open(cwd + '/test_results_oai_epc.html', 'r') as originalEpcReport:
-				for line in originalEpcReport:
-					result = re.search('Deployment Summary', line)
-					if (result is not None) and buildSummaryDone:
-						newEpcReport.write(buildSummary)
-						buildSummaryDone = False
-					newEpcReport.write(line)
-				originalEpcReport.close()
-			newEpcReport.close()
-			os.rename(cwd + '/test_results_oai_epc_new.html', cwd + '/test_results_oai_epc.html')
+		test_reports = ['test_results_oai_epc', 'test_results_magma_epc_rhel8']
+		for test in test_reports:
+			if os.path.isfile(cwd + '/' + test + '.html'):
+				newEpcReport = open(cwd + '/' + test + '_new.html', 'w')
+				buildSummaryDone = True
+				with open(cwd + '/' + test + '.html', 'r') as originalEpcReport:
+					for line in originalEpcReport:
+						result = re.search('Deployment Summary', line)
+						if (result is not None) and buildSummaryDone:
+							newEpcReport.write(buildSummary)
+							buildSummaryDone = False
+						newEpcReport.write(line)
+					originalEpcReport.close()
+				newEpcReport.close()
+				os.rename(cwd + '/' + test + '_new.html', cwd + '/' + test + '.html')
 
 	def generateFooter(self):
 		self.file.write('  <div class="well well-lg">End of Build Report -- Copyright <span class="glyphicon glyphicon-copyright-mark"></span> 2020 <a href="http://www.openairinterface.org/">OpenAirInterface</a>. All Rights Reserved.</div>\n')

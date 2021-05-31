@@ -372,30 +372,63 @@ pipeline {
         }
       }
     }
-    stage ('Testing in FED environment') {
-      steps {
-        script {
-          localStatus = build job: params.CN_EPC_FED_PipelineName,
-            parameters: [
-              string(name: 'SPGWC_TAG', value: String.valueOf(spgwc_tag)),
-              string(name: 'SPGWC_BRANCH', value: String.valueOf(spgwc_branch))
-            ], propagate: false
-          localResult = localStatus.getResult()
+    stage ('Testing Images') {
+      parallel {
+        stage ('Testing in FED environment') {
+          steps {
+            script {
+              localStatus = build job: params.CN_EPC_FED_PipelineName,
+                parameters: [
+                  string(name: 'SPGWC_TAG', value: String.valueOf(spgwc_tag)),
+                  string(name: 'SPGWC_BRANCH', value: String.valueOf(spgwc_branch))
+                ], propagate: false
+              localResult = localStatus.getResult()
 
-          if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
-            echo "Federation Test Job is OK"
-          } else {
-            echo "Federation Test Job is KO"
-            sh "ci-scripts/fail.sh"
+              if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
+                echo "Federation Test Job is OK"
+              } else {
+                echo "Federation Test Job is KO"
+                sh "ci-scripts/fail.sh"
+              }
+            }
+          }
+          post {
+            always {
+              script {
+                copyArtifacts(projectName: params.CN_EPC_FED_PipelineName,
+                              filter: 'test_results_oai_epc.html',
+                              selector: lastCompleted())
+              }
+            }
           }
         }
-      }
-      post {
-        always {
-          script {
-            copyArtifacts(projectName: params.CN_EPC_FED_PipelineName,
-                          filter: 'test_results_oai_epc.html',
-                          selector: lastCompleted())
+        stage ('RHEL8 Sanity Check Deployment') {
+          when { expression {rem_rhel_host_flag} }
+          steps {
+            script {
+              localStatus = build job: params.RHEL8_SanityCheck_PipelineName,
+                parameters: [
+                  string(name: 'SPGWC_TAG', value: String.valueOf(spgwc_tag)),
+                  string(name: 'SPGWC_BRANCH', value: String.valueOf(spgwc_branch))
+                ], propagate: false
+              localResult = localStatus.getResult()
+
+              if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
+                echo "RHEL8 Sanity Check Deployment Test Job is OK"
+              } else {
+                echo "RHEL8 Sanity Check Deployment Test Job is KO"
+                sh "ci-scripts/fail.sh"
+              }
+            }
+          }
+          post {
+            always {
+              script {
+                copyArtifacts(projectName: params.RHEL8_SanityCheck_PipelineName,
+                              filter: 'test_results_magma_epc_rhel8.html',
+                              selector: lastCompleted())
+              }
+            }
           }
         }
       }
@@ -486,6 +519,10 @@ pipeline {
             sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_epc.html"
             sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_epc.html"
           }
+          if (fileExists('test_results_magma_epc_rhel8.html')) {
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_magma_epc_rhel8.html"
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_magma_epc_rhel8.html"
+          }
         } else {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${GIT_BRANCH} --git_src_commit=${GIT_COMMIT}"
         }
@@ -496,6 +533,10 @@ pipeline {
         if (fileExists('test_results_oai_epc.html')) {
           sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_epc.html"
           archiveArtifacts artifacts: 'test_results_oai_epc.html'
+        }
+        if (fileExists('test_results_magma_epc_rhel8.html')) {
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_magma_epc_rhel8.html"
+          archiveArtifacts artifacts: 'test_results_magma_epc_rhel8.html'
         }
         // Sending an email to the last committer. Maybe not the Pull Request's author.
         if (params.sendToCommitterEmail != null) {
