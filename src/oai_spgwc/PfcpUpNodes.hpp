@@ -143,7 +143,8 @@ class PfcpUpNodes {
       pfcp::recovery_time_stamp_t& recovery_time_stamp,
       std::pair<bool, pfcp::up_function_features_s>& up_function_features,
       std::pair<bool, pfcp::user_plane_ip_resource_information_t>&
-          user_plane_ip_resource_information);
+          user_plane_ip_resource_information,
+      std::pair<bool, pfcp::enterprise_specific_s>& enterprise_specific);
 
   bool AddUpNode(const std::string t_up_ip, const std::string t_apn);
   bool GetUpNode(
