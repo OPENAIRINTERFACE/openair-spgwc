@@ -198,6 +198,13 @@ int session_establishment_procedure::run(
     // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
     source_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS;
     local_fteid.ch                   = 1;
+    // TS 29.244 R15.05 8.2.3 -> At least one of the V4 and V6 flags shall be set
+    // to "1", and both may be set to "1" for scenarios
+    // when the UP function is requested to allocate the F-TEID, i.e. when
+    // CHOOSE bit is set to "1", and the IPv4 address and IPv6 address fields
+    // are not present.
+    local_fteid.v4 = 1;
+
     // local_fteid.chid = 1;
     xgpp_conv::paa_to_pfcp_ue_ip_address(
         s5_triggered_pending->gtp_ies.paa.second, ue_ip_address);
@@ -1075,8 +1082,8 @@ void downlink_data_report_procedure::handle_itti_msg(
     itti_s5s8_downlink_data_notification_acknowledge& ack) {
   ::cause_t gtp_cause = {};
 
-  pfcp::cause_t pfcp_cause = {.cause_value =
-                                  pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
+  pfcp::cause_t pfcp_cause = {
+      .cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
   if (ack.gtp_ies.get(gtp_cause)) {
     switch (gtp_cause.cause_value) {
       case REQUEST_ACCEPTED:
