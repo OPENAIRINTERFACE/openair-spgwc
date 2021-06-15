@@ -687,6 +687,9 @@ class pfcp_fteid_ie : public pfcp_ie {
       if (u1.bf.v6) {
         tlv.add_length(16);
       }
+    }
+    if (u1.bf.ch & b.v4) {
+      u1.bf.v4 = b.v4;
     } else {
       ipv4_address.s_addr = INADDR_ANY;
       ipv6_address        = in6addr_any;
