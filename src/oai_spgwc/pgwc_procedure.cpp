@@ -1076,8 +1076,8 @@ void downlink_data_report_procedure::handle_itti_msg(
     itti_s5s8_downlink_data_notification_acknowledge& ack) {
   ::cause_t gtp_cause = {};
 
-  pfcp::cause_t pfcp_cause = {.cause_value =
-                                  pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
+  pfcp::cause_t pfcp_cause = {
+      .cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
   if (ack.gtp_ies.get(gtp_cause)) {
     switch (gtp_cause.cause_value) {
       case REQUEST_ACCEPTED:
