@@ -472,15 +472,15 @@ void pgwc_sxab::handle_receive_session_report_request(
 
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_request& i) {
-  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   i.pfcp_ies.set(r);
   send_request(i.r_endpoint, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i) {
-  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   i.pfcp_ies.set(r);
   if (cp_function_features.has_features()) {
     i.pfcp_ies.set(cp_function_features);
@@ -494,8 +494,8 @@ void pgwc_sxab::send_sx_msg(itti_sxab_session_report_response& i) {
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
   pfcp::pfcp_heartbeat_request h = {};
-  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r  = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   h.set(r);
 
   a->timer_heartbeat = itti_inst->timer_setup(
@@ -511,8 +511,8 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
 void pgwc_sxab::send_heartbeat_response(
     const endpoint& r_endpoint, const uint64_t trxn_id) {
   pfcp::pfcp_heartbeat_response h = {};
-  pfcp::recovery_time_stamp_t r   = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r   = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   h.set(r);
   send_response(r_endpoint, h, trxn_id);
 }

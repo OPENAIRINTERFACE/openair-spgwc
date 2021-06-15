@@ -608,35 +608,33 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
   uint16_t enterprise_id;
   std::string proprietary_data;
 
-    //--------
+  //--------
   explicit pfcp_enterprise_specific_ie(const pfcp::enterprise_specific_t& b)
       : pfcp_ie(PFCP_IE_ENTERPRISE_SPECIFIC) {
-    enterprise_id = b.enterprise_id;
+    enterprise_id    = b.enterprise_id;
     proprietary_data = b.proprietary_data;
     tlv.set_length(2 + proprietary_data.size());
   }
   //--------
   pfcp_enterprise_specific_ie() : pfcp_ie(PFCP_IE_ENTERPRISE_SPECIFIC) {
-    enterprise_id = 0;
+    enterprise_id    = 0;
     proprietary_data = {};
     tlv.set_length(2);
   }
   //  --------
-  explicit pfcp_enterprise_specific_ie(const pfcp_tlv& t) 
-  : pfcp_ie(t),
-   enterprise_id(0),
-   proprietary_data(){};
+  explicit pfcp_enterprise_specific_ie(const pfcp_tlv& t)
+      : pfcp_ie(t), enterprise_id(0), proprietary_data(){};
 
   //--------
   void to_core_type(pfcp::enterprise_specific_t& b) {
-    b.enterprise_id = enterprise_id;
+    b.enterprise_id    = enterprise_id;
     b.proprietary_data = proprietary_data;
   }
   //--------
   void dump_to(std::ostream& os) {
     tlv.dump_to(os);
-    os.write(reinterpret_cast<const char*>(&enterprise_id),
-        sizeof(enterprise_id));
+    os.write(
+        reinterpret_cast<const char*>(&enterprise_id), sizeof(enterprise_id));
     os << enterprise_id;
   }
   //--------
@@ -646,9 +644,8 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
       throw pfcp_tlv_bad_length_exception(
           tlv.type, tlv.get_length(), __FILE__, __LINE__);
     }
-    is.read(reinterpret_cast<char*>(&enterprise_id),
-        sizeof(enterprise_id));
-        
+    is.read(reinterpret_cast<char*>(&enterprise_id), sizeof(enterprise_id));
+
     char e[tlv.get_length() - 2];
     is.read(e, tlv.get_length() - 2);
     proprietary_data.assign(e, tlv.get_length() - 2);

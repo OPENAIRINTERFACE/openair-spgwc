@@ -99,7 +99,7 @@ class pfcp_ies_container {
     throw pfcp_msg_illegal_ie_exception(
         0, PFCP_IE_ENTERPRISE_SPECIFIC, __FILE__, __LINE__);
   }
-  
+
   //  PFCP_IE_CREATE_PDR
   virtual bool get(pfcp::create_pdr& v) const {
     throw pfcp_msg_illegal_ie_exception(
@@ -5586,7 +5586,7 @@ class pfcp_association_setup_request : public pfcp_ies_container {
         up_function_features(),
         cp_function_features(),
         user_plane_ip_resource_information(),
-        enterprise_specific () {}
+        enterprise_specific() {}
 
   pfcp_association_setup_request(const pfcp_association_setup_request& i) {
     node_id                            = i.node_id;
@@ -5688,7 +5688,7 @@ class pfcp_association_setup_response : public pfcp_ies_container {
         up_function_features(),
         cp_function_features(),
         user_plane_ip_resource_information(),
-        enterprise_specific () {}
+        enterprise_specific() {}
 
   pfcp_association_setup_response(const pfcp_association_setup_response& i) {
     node_id                            = i.node_id;
