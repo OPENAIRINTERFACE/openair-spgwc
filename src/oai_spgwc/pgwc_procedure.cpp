@@ -491,6 +491,7 @@ int modify_bearer_procedure::run(
         // local_fteid.from_core_fteid(peb.sgw_fteid_s5_s8_up);
         if (ppc->ipv4) {
           ue_ip_address.v4                  = 1;
+          ue_ip_address.sd                  = 1;
           ue_ip_address.ipv4_address.s_addr = ppc->ipv4_address.s_addr;
         }
         if (ppc->ipv6) {
@@ -1075,8 +1076,8 @@ void downlink_data_report_procedure::handle_itti_msg(
     itti_s5s8_downlink_data_notification_acknowledge& ack) {
   ::cause_t gtp_cause = {};
 
-  pfcp::cause_t pfcp_cause = {.cause_value =
-                                  pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
+  pfcp::cause_t pfcp_cause = {
+      .cause_value = pfcp::CAUSE_VALUE_REQUEST_ACCEPTED};
   if (ack.gtp_ies.get(gtp_cause)) {
     switch (gtp_cause.cause_value) {
       case REQUEST_ACCEPTED:
