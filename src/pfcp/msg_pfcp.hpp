@@ -5578,13 +5578,15 @@ class pfcp_association_setup_request : public pfcp_ies_container {
   std::pair<bool, pfcp::cp_function_features_t> cp_function_features;
   std::pair<bool, pfcp::user_plane_ip_resource_information_t>
       user_plane_ip_resource_information;
+  std::pair<bool, pfcp::enterprise_specific_t> enterprise_specific;
 
   pfcp_association_setup_request()
       : node_id(),
         recovery_time_stamp(),
         up_function_features(),
         cp_function_features(),
-        user_plane_ip_resource_information() {}
+        user_plane_ip_resource_information(),
+        enterprise_specific () {}
 
   pfcp_association_setup_request(const pfcp_association_setup_request& i) {
     node_id                            = i.node_id;
@@ -5592,6 +5594,7 @@ class pfcp_association_setup_request : public pfcp_ies_container {
     up_function_features               = i.up_function_features;
     cp_function_features               = i.cp_function_features;
     user_plane_ip_resource_information = i.user_plane_ip_resource_information;
+    enterprise_specific                = i.enterprise_specific;
   }
   const char* get_msg_name() const { return "PFCP_ASSOCIATION_SETUP_REQUEST"; };
 
@@ -5630,6 +5633,13 @@ class pfcp_association_setup_request : public pfcp_ies_container {
     }
     return false;
   }
+  bool get(pfcp::enterprise_specific_t& v) const {
+    if (enterprise_specific.first) {
+      v = enterprise_specific.second;
+      return true;
+    }
+    return false;
+  }
 
   void set(const pfcp::node_id_t& v) {
     node_id.first  = true;
@@ -5651,6 +5661,10 @@ class pfcp_association_setup_request : public pfcp_ies_container {
     user_plane_ip_resource_information.first  = true;
     user_plane_ip_resource_information.second = v;
   }
+  void set(const pfcp::enterprise_specific_t& v) {
+    enterprise_specific.first  = true;
+    enterprise_specific.second = v;
+  }
 };
 
 //------------------------------------------------------------------------------
@@ -5665,6 +5679,7 @@ class pfcp_association_setup_response : public pfcp_ies_container {
   std::pair<bool, pfcp::cp_function_features_t> cp_function_features;
   std::pair<bool, pfcp::user_plane_ip_resource_information_t>
       user_plane_ip_resource_information;
+  std::pair<bool, pfcp::enterprise_specific_t> enterprise_specific;
 
   pfcp_association_setup_response()
       : node_id(),
@@ -5672,7 +5687,8 @@ class pfcp_association_setup_response : public pfcp_ies_container {
         recovery_time_stamp(),
         up_function_features(),
         cp_function_features(),
-        user_plane_ip_resource_information() {}
+        user_plane_ip_resource_information(),
+        enterprise_specific () {}
 
   pfcp_association_setup_response(const pfcp_association_setup_response& i) {
     node_id                            = i.node_id;
@@ -5681,6 +5697,7 @@ class pfcp_association_setup_response : public pfcp_ies_container {
     up_function_features               = i.up_function_features;
     cp_function_features               = i.cp_function_features;
     user_plane_ip_resource_information = i.user_plane_ip_resource_information;
+    enterprise_specific                = i.enterprise_specific;
   }
   const char* get_msg_name() const {
     return "PFCP_ASSOCIATION_SETUP_RESPONSE";
@@ -5728,6 +5745,13 @@ class pfcp_association_setup_response : public pfcp_ies_container {
     }
     return false;
   }
+  bool get(pfcp::enterprise_specific_t& v) const {
+    if (enterprise_specific.first) {
+      v = enterprise_specific.second;
+      return true;
+    }
+    return false;
+  }
 
   void set(const pfcp::node_id_t& v) {
     node_id.first  = true;
@@ -5752,6 +5776,10 @@ class pfcp_association_setup_response : public pfcp_ies_container {
   void set(const pfcp::user_plane_ip_resource_information_t& v) {
     user_plane_ip_resource_information.first  = true;
     user_plane_ip_resource_information.second = v;
+  }
+  void set(const pfcp::enterprise_specific_t& v) {
+    enterprise_specific.first  = true;
+    enterprise_specific.second = v;
   }
 };
 

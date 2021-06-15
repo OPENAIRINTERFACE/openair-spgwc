@@ -347,11 +347,15 @@ void pgwc_sxab::handle_receive_association_setup_request(
           "IE!, ignore message");
       return;
     }
+    if (msg_ies_container.enterprise_specific.first) {
+      // Do nothing for now
+    }
     PfcpUpNodes::Instance().AssociationSetupRequest(
         trxn_id, remote_endpoint, msg_ies_container.node_id.second,
         msg_ies_container.recovery_time_stamp.second,
         msg_ies_container.up_function_features,
-        msg_ies_container.user_plane_ip_resource_information);
+        msg_ies_container.user_plane_ip_resource_information,
+        msg_ies_container.enterprise_specific);
   }
 }
 
