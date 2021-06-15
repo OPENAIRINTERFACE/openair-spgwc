@@ -40,6 +40,11 @@
 
 namespace pfcp {
 
+typedef struct enterprise_specific_s {
+  uint16_t enterprise_id;
+  std::string proprietary_data;
+} enterprise_specific_t;
+
 struct pfcp_exception : public std::exception {
   pfcp_exception() throw() {
     cause = 0;
@@ -334,6 +339,7 @@ struct pfcp_ie_value_exception : public pfcp_ie_exception {
 #define PFCP_SESSION_DELETION_RESPONSE (55)
 #define PFCP_SESSION_REPORT_REQUEST (56)
 #define PFCP_SESSION_REPORT_RESPONSE (57)
+#define PFCP_IE_ENTERPRISE_SPECIFIC (32770)
 }  // namespace pfcp
 
 namespace pfcp {

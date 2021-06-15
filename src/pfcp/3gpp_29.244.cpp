@@ -38,6 +38,11 @@ pfcp_ie* pfcp_ie::new_pfcp_ie_from_stream(std::istream& is) {
   tlv.load_from(is);
   if (tlv.length) {
     switch (tlv.type) {
+      case PFCP_IE_ENTERPRISE_SPECIFIC: {
+        pfcp_enterprise_specific_ie* ie = new pfcp_enterprise_specific_ie(tlv);
+        ie->load_from(is);
+        return ie;
+      } break;
       case PFCP_IE_CREATE_PDR: {
         pfcp_create_pdr_ie* ie = new pfcp_create_pdr_ie(tlv);
         ie->load_from(is);
