@@ -645,7 +645,38 @@ struct up_function_features_s {
   uint16_t quoac : 1;
   uint16_t trace : 1;
   uint16_t frrt : 1;
-  uint16_t spare : 2;
+  uint16_t pfde : 1;
+  uint16_t epfar : 1;
+
+  uint16_t dpdra : 1;
+  uint16_t adpdp : 1;
+  uint16_t ueip : 1;
+  uint16_t sset : 1;
+  uint8_t mnop : 1;
+  uint8_t mte : 1;
+  uint8_t bundl : 1;
+  uint8_t gcom : 1;
+
+  uint8_t mpas : 1;
+  uint8_t rttl : 1;
+  uint8_t vtime : 1;
+  uint8_t norp : 1;
+  uint8_t iptv : 1;
+  uint8_t ip6pl : 1;
+  uint8_t tscu : 1;
+  uint8_t mptcp : 1;
+
+  uint8_t atsss_ll : 1;
+  uint8_t qfqm : 1;
+  uint8_t gpqm : 1;
+  uint8_t mt_edt : 1;
+  uint8_t ciot : 1;
+  uint8_t ethar : 1;
+  uint8_t ddds : 1;
+  uint8_t rds : 1;
+
+  uint8_t rttwp : 1;
+  uint8_t spare : 7;
 
   // up_function_features_s& operator=(up_function_features_s i)
   //{
@@ -661,12 +692,44 @@ struct up_function_features_s {
         pfdm(0),
         heeu(0),
         treu(0),
+
         empu(0),
         pdiu(0),
         udbc(0),
         quoac(0),
         trace(0),
         frrt(0),
+        pfde(0),
+        epfar(0),
+
+        dpdra(0),
+        adpdp(0),
+        ueip(0),
+        sset(0),
+        mnop(0),
+        mte(0),
+        bundl(0),
+        gcom(0),
+
+        mpas(0),
+        rttl(0),
+        vtime(0),
+        norp(0),
+        iptv(0),
+        ip6pl(0),
+        tscu(0),
+        mptcp(0),
+
+        atsss_ll(0),
+        qfqm(0),
+        gpqm(0),
+        mt_edt(0),
+        ciot(0),
+        ethar(0),
+        ddds(0),
+        rds(0),
+
+        rttwp(0),
         spare(0) {}
 
   up_function_features_s(const up_function_features_s& i) {
@@ -685,7 +748,37 @@ struct up_function_features_s {
     quoac = i.quoac;
     trace = i.trace;
     frrt  = i.frrt;
-    spare = i.spare;
+    epfar = i.epfar;
+    pfde  = i.pfde;
+
+    dpdra = i.dpdra;
+    adpdp = i.adpdp;
+    ueip  = i.ueip;
+    sset  = i.sset;
+    mnop  = i.mnop;
+    mte   = i.mte;
+    bundl = i.bundl;
+    gcom  = i.gcom;
+
+    mpas  = i.mpas;
+    rttl  = i.rttl;
+    vtime = i.vtime;
+    norp  = i.norp;
+    iptv  = i.iptv;
+    ip6pl = i.ip6pl;
+    tscu  = i.tscu;
+    mptcp = i.mptcp;
+
+    atsss_ll = i.atsss_ll;
+    qfqm     = i.qfqm;
+    gpqm     = i.gpqm;
+    mt_edt   = i.mt_edt;
+    ciot     = i.ciot;
+    ethar    = i.ethar;
+    ddds     = i.ddds;
+    rds      = i.rds;
+
+    rttwp = i.rttwp;
   }
   bool has_features() {
     return (bucp > 0) || (ddnd > 0) || (dlbd > 0) || (trst > 0) || (ftup > 0) ||
