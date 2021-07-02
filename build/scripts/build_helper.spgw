@@ -69,6 +69,7 @@ install_fmt() {
 #arg1 is force (0 or 1) (no interactive script)
 #arg2 is debug (0 or 1) (install debug libraries)
 install_pistache_from_git() {
+  echo_info "Starting to install pistache from source"
   if [ $1 -eq 0 ]; then
     read -p "Do you want to install Pistache ? <y/N> " prompt
     OPTION="-y"
@@ -110,6 +111,7 @@ install_pistache_from_git() {
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
   fi
+  echo_success "End of pistache installation"
   return 0
 }
 #-------------------------------------------------------------------------------

@@ -79,6 +79,10 @@ WORKDIR /openair-spgwc/bin
 COPY --from=oai-spgwc-builder /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc
 COPY --from=oai-spgwc-builder /openair-spgwc/scripts/entrypoint.sh .
 
+WORKDIR /usr/local/lib
+COPY --from=oai-spgwc-builder /usr/local/lib/libpistache.so.0 .
+RUN ldconfig
+
 # Copying template configuration files
 # The configuration folder will be flat
 WORKDIR /openair-spgwc/etc
