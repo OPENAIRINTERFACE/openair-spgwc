@@ -80,7 +80,7 @@ class pfcp_procedure {
 
 enum pfcp_transaction_action { DELETE_TX = 0, CONTINUE_TX };
 
-class pfcp_l4_stack : public udp_application {
+class pfcp_l4_stack : public UdpApplication {
 #define PFCP_PROC_TIME_OUT_MS(T, N) ((T) * (N + 1 + 1))
 
  protected:

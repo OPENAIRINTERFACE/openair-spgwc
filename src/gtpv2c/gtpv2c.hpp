@@ -35,12 +35,13 @@
 #include "uint_generator.hpp"
 
 #include <iostream>
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 #include "msg_gtpv2c.hpp"
+
+#include <folly/AtomicHashMap.h>
 
 namespace gtpv2c {
 
@@ -88,7 +89,7 @@ class gtpv2c_procedure {
 
 enum gtpv2c_transaction_action { DELETE_TX = 0, CONTINUE_TX };
 
-class gtpv2c_stack : public udp_application {
+class gtpv2c_stack : public UdpApplication {
 #define GTPV2C_PROC_TIME_OUT_MS(T, N) ((T) * (N + 1 + 1))
 
  protected:
@@ -104,11 +105,11 @@ class gtpv2c_stack : public udp_application {
   uint32_t restart_counter;
 
   // key is transaction id
-  std::map<uint64_t, uint32_t> gtpc_tx_id2seq_num;
-  std::map<timer_id_t, uint32_t> proc_cleanup_timers;
-  std::map<timer_id_t, uint32_t> msg_out_retry_timers;
+  folly::AtomicHashMap<uint64_t, uint32_t> gtpc_tx_id2seq_num;
+  folly::AtomicHashMap<timer_id_t, uint32_t> proc_cleanup_timers;
+  folly::AtomicHashMap<timer_id_t, uint32_t> msg_out_retry_timers;
   // key is message sequence number
-  std::map<uint32_t, gtpv2c_procedure> pending_procedures;
+  folly::AtomicHashMap<uint32_t, gtpv2c_procedure> pending_procedures;
 
   static const char* msg_type2cstr[256];
 

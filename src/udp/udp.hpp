@@ -47,13 +47,13 @@
 #include <utility>
 #include <vector>
 
-class udp_application {
+class UdpApplication {
  public:
   virtual void handle_receive(
       char* recv_buffer, const std::size_t bytes_transferred,
       const endpoint& r_endpoint);
   virtual void start_receive(
-      udp_application* gtp_stack,
+      UdpApplication* gtp_stack,
       const util::thread_sched_params& sched_params);
 };
 
@@ -149,7 +149,7 @@ class udp_server {
   }
 
   void start_receive(
-      udp_application* gtp_stack,
+      UdpApplication* gtp_stack,
       const util::thread_sched_params& sched_params);
 
  protected:
@@ -163,7 +163,7 @@ class udp_server {
       const char*, /*buffer*/
       const int& /*error*/, std::size_t /*bytes_transferred*/) {}
 
-  udp_application* app_;
+  UdpApplication* app_;
   std::thread thread_;
   int socket_;
   uint16_t port_;

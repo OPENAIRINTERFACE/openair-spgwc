@@ -31,15 +31,15 @@
 #include <cstdlib>
 
 //------------------------------------------------------------------------------
-void udp_application::handle_receive(
+void UdpApplication::handle_receive(
     char* recv_buffer, const std::size_t bytes_transferred,
     const endpoint& r_endpoint) {
   Logger::udp().warn("Missing implementation of interface udp_application\n");
 }
 
 //------------------------------------------------------------------------------
-void udp_application::start_receive(
-    udp_application* gtp_stack, const util::thread_sched_params& sched_params) {
+void UdpApplication::start_receive(
+    UdpApplication* gtp_stack, const util::thread_sched_params& sched_params) {
   Logger::udp().warn("Missing implementation of interface udp_application\n");
 }
 
@@ -174,7 +174,7 @@ int udp_server::create_socket(const char* address, const uint16_t port_num) {
 }
 //------------------------------------------------------------------------------
 void udp_server::start_receive(
-    udp_application* app, const util::thread_sched_params& sched_params) {
+    UdpApplication* app, const util::thread_sched_params& sched_params) {
   app_ = app;
   Logger::udp().trace("udp_server::start_receive");
   thread_ = std::thread(&udp_server::udp_read_loop, this, sched_params);

@@ -59,7 +59,11 @@ gtpv2c_stack::gtpv2c_stack(
       n3(n3_retransmit),
       udp_s(udp_server(ip_address.c_str(), port_num)),
       udp_s_allocated(ip_address.c_str(), 0),
-      m_seq_num() {
+      m_seq_num(),
+      gtpc_tx_id2seq_num(512),
+      proc_cleanup_timers(1024),
+      msg_out_retry_timers(512),
+      pending_procedures(512) {
   timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);
   seq_num = (uint32_t) ts.tv_nsec & 0x7FFFFFFF;
@@ -67,11 +71,6 @@ gtpv2c_stack::gtpv2c_stack(
   Logger::gtpv2_c().info(
       "gtpv2c_stack created listening to %s:%d initial seq num %d",
       ip_address.c_str(), port_num, seq_num);
-
-  gtpc_tx_id2seq_num   = {};
-  proc_cleanup_timers  = {};
-  msg_out_retry_timers = {};
-  pending_procedures   = {};
 
   id              = 0;
   restart_counter = 0;
@@ -289,8 +288,7 @@ void gtpv2c_stack::handle_receive_message_cb(
     bool& error, uint64_t& gtpc_tx_id) {
   gtpc_tx_id = 0;
   error      = true;
-  std::map<uint32_t, gtpv2c_procedure>::iterator it;
-  it = pending_procedures.find(msg.get_sequence_number());
+  auto it = pending_procedures.find(msg.get_sequence_number());
   // If no procedure found concerning this message
   if (it == pending_procedures.end()) {
     // If procedure type is a request-like procedure
@@ -585,8 +583,7 @@ uint32_t gtpv2c_stack::send_initial_message(
 void gtpv2c_stack::send_triggered_message(
     const endpoint& dest, const gtpv2c_echo_response& gtp_ies,
     const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a) {
-  std::map<uint64_t, uint32_t>::iterator it;
-  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  auto it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
@@ -601,14 +598,13 @@ void gtpv2c_stack::send_triggered_message(
         reinterpret_cast<const char*>(bstream.c_str()), bstream.length(), dest);
 
     if (a == DELETE_TX) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       if (it_proc != pending_procedures.end()) {
         stop_proc_cleanup_timer(it_proc->second);
         free_gtpc_tx_id(gtp_tx_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
-      gtpc_tx_id2seq_num.erase(it);
+      gtpc_tx_id2seq_num.erase(it->first);
     }
   } else {
     Logger::gtpv2_c().error(
@@ -621,8 +617,7 @@ void gtpv2c_stack::send_triggered_message(
     const endpoint& r_endpoint, const teid_t r_teid,
     const gtpv2c_create_session_response& gtp_ies, const uint64_t gtp_tx_id,
     const gtpv2c_transaction_action& a) {
-  std::map<uint64_t, uint32_t>::iterator it;
-  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  auto it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
@@ -639,14 +634,13 @@ void gtpv2c_stack::send_triggered_message(
         r_endpoint);
 
     if (a == DELETE_TX) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       if (it_proc != pending_procedures.end()) {
         stop_proc_cleanup_timer(it_proc->second);
         free_gtpc_tx_id(gtp_tx_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
-      gtpc_tx_id2seq_num.erase(it);
+      gtpc_tx_id2seq_num.erase(it->first);
     }
   } else {
     Logger::gtpv2_c().error(
@@ -659,8 +653,7 @@ void gtpv2c_stack::send_triggered_message(
     const endpoint& r_endpoint, const teid_t r_teid,
     const gtpv2c_delete_session_response& gtp_ies, const uint64_t gtp_tx_id,
     const gtpv2c_transaction_action& a) {
-  std::map<uint64_t, uint32_t>::iterator it;
-  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  auto it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
@@ -677,14 +670,13 @@ void gtpv2c_stack::send_triggered_message(
         r_endpoint);
 
     if (a == DELETE_TX) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       if (it_proc != pending_procedures.end()) {
         stop_proc_cleanup_timer(it_proc->second);
         free_gtpc_tx_id(gtp_tx_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
-      gtpc_tx_id2seq_num.erase(it);
+      gtpc_tx_id2seq_num.erase(it->first);
     }
   } else {
     Logger::gtpv2_c().error(
@@ -697,8 +689,7 @@ void gtpv2c_stack::send_triggered_message(
     const endpoint& r_endpoint, const teid_t r_teid,
     const gtpv2c_modify_bearer_response& gtp_ies, const uint64_t gtp_tx_id,
     const gtpv2c_transaction_action& a) {
-  std::map<uint64_t, uint32_t>::iterator it;
-  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  auto it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
@@ -715,14 +706,13 @@ void gtpv2c_stack::send_triggered_message(
         r_endpoint);
 
     if (a == DELETE_TX) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       if (it_proc != pending_procedures.end()) {
         stop_proc_cleanup_timer(it_proc->second);
         free_gtpc_tx_id(gtp_tx_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
-      gtpc_tx_id2seq_num.erase(it);
+      gtpc_tx_id2seq_num.erase(it->first);
     }
   } else {
     Logger::gtpv2_c().error(
@@ -735,8 +725,7 @@ void gtpv2c_stack::send_triggered_message(
     const endpoint& r_endpoint, const teid_t r_teid,
     const gtpv2c_release_access_bearers_response& gtp_ies,
     const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a) {
-  std::map<uint64_t, uint32_t>::iterator it;
-  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  auto it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
@@ -753,14 +742,13 @@ void gtpv2c_stack::send_triggered_message(
         r_endpoint);
 
     if (a == DELETE_TX) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       if (it_proc != pending_procedures.end()) {
         stop_proc_cleanup_timer(it_proc->second);
         free_gtpc_tx_id(gtp_tx_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
-      gtpc_tx_id2seq_num.erase(it);
+      gtpc_tx_id2seq_num.erase(it->first);
     }
   } else {
     Logger::gtpv2_c().error(
@@ -773,8 +761,7 @@ void gtpv2c_stack::send_triggered_message(
     const endpoint& r_endpoint, const teid_t r_teid,
     const gtpv2c_downlink_data_notification_acknowledge& gtp_ies,
     const uint64_t gtp_tx_id, const gtpv2c_transaction_action& a) {
-  std::map<uint64_t, uint32_t>::iterator it;
-  it = gtpc_tx_id2seq_num.find(gtp_tx_id);
+  auto it = gtpc_tx_id2seq_num.find(gtp_tx_id);
   if (it != gtpc_tx_id2seq_num.end()) {
     std::ostringstream oss(std::ostringstream::binary);
     gtpv2c_msg msg(gtp_ies);
@@ -791,14 +778,13 @@ void gtpv2c_stack::send_triggered_message(
         r_endpoint);
 
     if (a == DELETE_TX) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       if (it_proc != pending_procedures.end()) {
         stop_proc_cleanup_timer(it_proc->second);
         free_gtpc_tx_id(gtp_tx_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
-      gtpc_tx_id2seq_num.erase(it);
+      gtpc_tx_id2seq_num.erase(it->first);
     }
   } else {
     Logger::gtpv2_c().error(
@@ -811,12 +797,10 @@ void gtpv2c_stack::send_triggered_message(
 void gtpv2c_stack::time_out_event(
     const uint32_t timer_id, const task_id_t& task_id, bool& handled) {
   handled = false;
-  std::map<timer_id_t, uint32_t>::iterator it =
-      msg_out_retry_timers.find(timer_id);
+  auto it = msg_out_retry_timers.find(timer_id);
   if (it != msg_out_retry_timers.end()) {
-    std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-        pending_procedures.find(it->second);
-    msg_out_retry_timers.erase(it);
+    auto it_proc = pending_procedures.find(it->second);
+    msg_out_retry_timers.erase(it->first);
     handled = true;
     if (it_proc != pending_procedures.end()) {
       if (it_proc->second.retry_count < n3) {
@@ -848,17 +832,16 @@ void gtpv2c_stack::time_out_event(
             "Delete proc " PROC_ID_FMT " Retry %d seq %d timer id %u",
             it_proc->second.gtpc_tx_id, it_proc->second.retry_count,
             it_proc->first, timer_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
     }
   } else {
     it = proc_cleanup_timers.find(timer_id);
     if (it != proc_cleanup_timers.end()) {
-      std::map<uint32_t, gtpv2c_procedure>::iterator it_proc =
-          pending_procedures.find(it->second);
+      auto it_proc = pending_procedures.find(it->second);
       gtpc_tx_id2seq_num.erase(it_proc->second.gtpc_tx_id);
       free_gtpc_tx_id(it_proc->second.gtpc_tx_id);
-      proc_cleanup_timers.erase(it);
+      proc_cleanup_timers.erase(it->first);
       handled = true;
       if (it_proc != pending_procedures.end()) {
         it_proc->second.proc_cleanup_timer_id = 0;
@@ -866,7 +849,7 @@ void gtpv2c_stack::time_out_event(
             "Delete proc " PROC_ID_FMT " Retry %d seq %d timer id %u",
             it_proc->second.gtpc_tx_id, it_proc->second.retry_count,
             it_proc->first, timer_id);
-        pending_procedures.erase(it_proc);
+        pending_procedures.erase(it_proc->first);
       }
     }
   }
