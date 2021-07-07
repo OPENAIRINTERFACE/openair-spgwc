@@ -457,6 +457,8 @@ class HtmlReport():
 				folly_build = False
 				spdlog_build_start = False
 				spdlog_build = False
+				pistache_build_start = False
+				pistache_build = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
 						result = re.search(section_start_pattern, line)
@@ -488,6 +490,14 @@ class HtmlReport():
 								if result is not None:
 									spdlog_build_start = False
 									spdlog_build = True
+							result = re.search('Starting to install pistache from source', line)
+							if result is not None:
+								pistache_build_start = True
+							if pistache_build_start:
+								result = re.search('End of pistache installation', line)
+								if result is not None:
+									pistache_build_start = False
+									pistache_build = True
 					logfile.close()
 				if status:
 					cell_msg = '	  <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
@@ -508,6 +518,10 @@ class HtmlReport():
 					cell_msg += '   ** spdlog Installation: OK\n'
 				else:
 					cell_msg += '   ** spdlog Installation: KO\n'
+				if pistache_build:
+					cell_msg += '   ** pistache Installation: OK\n'
+				else:
+					cell_msg += '   ** pistache Installation: KO\n'
 				cell_msg += '</b></pre></td>\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'

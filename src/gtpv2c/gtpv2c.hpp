@@ -35,12 +35,13 @@
 #include "uint_generator.hpp"
 
 #include <iostream>
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 #include "msg_gtpv2c.hpp"
+
+#include <folly/AtomicHashMap.h>
 
 namespace gtpv2c {
 
@@ -88,13 +89,12 @@ class gtpv2c_procedure {
 
 enum gtpv2c_transaction_action { DELETE_TX = 0, CONTINUE_TX };
 
-class gtpv2c_stack : public udp_application {
-#define GTPV2C_T3_RESPONSE_MS 1000
-#define GTPV2C_N3_REQUESTS 3
-#define GTPV2C_PROC_TIME_OUT_MS                                                \
-  ((GTPV2C_T3_RESPONSE_MS) * (GTPV2C_N3_REQUESTS + 1) + 1000)
+class gtpv2c_stack : public UdpApplication {
+#define GTPV2C_PROC_TIME_OUT_MS(T, N) ((T) * (N + 1 + 1))
 
  protected:
+  uint32_t t3_ms;
+  uint32_t n3;
   uint32_t id;
   udp_server udp_s;
   udp_server udp_s_allocated;
@@ -104,10 +104,12 @@ class gtpv2c_stack : public udp_application {
   std::mutex m_seq_num;
   uint32_t restart_counter;
 
-  std::map<uint64_t, uint32_t> gtpc_tx_id2seq_num;
-  std::map<timer_id_t, uint32_t> proc_cleanup_timers;
-  std::map<timer_id_t, uint32_t> msg_out_retry_timers;
-  std::map<uint32_t, gtpv2c_procedure> pending_procedures;
+  // key is transaction id
+  folly::AtomicHashMap<uint64_t, uint32_t> gtpc_tx_id2seq_num;
+  folly::AtomicHashMap<timer_id_t, uint32_t> proc_cleanup_timers;
+  folly::AtomicHashMap<timer_id_t, uint32_t> msg_out_retry_timers;
+  // key is message sequence number
+  folly::AtomicHashMap<uint32_t, gtpv2c_procedure> pending_procedures;
 
   static const char* msg_type2cstr[256];
 
@@ -115,6 +117,10 @@ class gtpv2c_stack : public udp_application {
 
   static uint64_t generate_gtpc_tx_id() {
     return util::uint_uid_generator<uint64_t>::get_instance().get_uid();
+  }
+
+  static void free_gtpc_tx_id(const uint64_t gtpc_tx_id) {
+    util::uint_uid_generator<uint64_t>::get_instance().free_uid(gtpc_tx_id);
   }
 
   static bool check_initial_message_type(const uint8_t initial);
@@ -134,6 +140,7 @@ class gtpv2c_stack : public udp_application {
  public:
   static const uint8_t version = 2;
   gtpv2c_stack(
+      const uint32_t t1_milli_seconds, const uint32_t n1_retransmit,
       const std::string& ip_address, const unsigned short port_num,
       const util::thread_sched_params& sched_param);
   virtual void handle_receive(

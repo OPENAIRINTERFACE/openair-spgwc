@@ -43,14 +43,6 @@ namespace pgwc {
 
 #define PFCP_ASSOCIATION_HEARTBEAT_MAX_RETRIES 2
 
-enum AssociationState {
-  kAssocNullState = 0,
-  kAssocInitiatedState,
-  kAssocSetupState,
-  kAssocUnstable,
-  kAssocLost
-};
-
 class PfcpUpNode {
  public:
   std::string id_;
@@ -79,13 +71,15 @@ class PfcpUpNode {
 
   explicit PfcpUpNode(const std::string& id)
       : id_(id),
+        node_id_(),
         peer_recovery_time_stamp_(),
         peer_function_features_(),
+        remote_endpoint_(),
         timer_heartbeat_(ITTI_INVALID_TIMER_ID),
         num_retries_timer_heartbeat_(0),
         trxn_id_heartbeat_(0),
         is_restore_sessions_pending_(false),
-        association_state_(kAssocNullState),
+        association_state_(0),
         timer_association_(ITTI_INVALID_TIMER_ID),
         hash_node_id_(0),
         consecutive_failed_echo_proc(0),
@@ -117,6 +111,7 @@ class PfcpUpNodes {
 
   mutable std::mutex m_pending_nodes;
   std::list<std::shared_ptr<PfcpUpNode>> pending_nodes_;
+  // key is hash_node_id 32 bits
   folly::AtomicHashMap<int32_t, std::shared_ptr<PfcpUpNode>> up_nodes_;
 
   PfcpUpNodes();

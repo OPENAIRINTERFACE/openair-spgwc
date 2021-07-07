@@ -28,7 +28,7 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM centos:8 as centos8-spgwc-debug-3rd-party
+FROM centos:8 
 
 ARG HTTP_PROXY
 
@@ -44,6 +44,9 @@ RUN yum update -y \
     glog \
     double-conversion \
     libevent \
+    libasan \
+    liblsan \
+    libubsan \
     boost-system \
     # debugging
     gdb \
@@ -57,7 +60,9 @@ RUN yum update -y \
     openssh-server \
     procps-ng \  
   && yum clean all -y \
-  && rm -rf /var/cache/yum
+  && rm -rf /var/cache/yum \
+  && echo "/usr/local/lib" > /etc/ld.so.conf.d/local-lib.conf \
+  && echo "/usr/local/lib64" >> /etc/ld.so.conf.d/local-lib.conf 
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
@@ -69,4 +74,9 @@ COPY ./ /openair-spgwc
 
 # Installing and Building SPGW-C
 WORKDIR /openair-spgwc/build/scripts
-RUN ./build_spgwc --install-deps --force
+RUN ./build_spgwc --install-deps --force && ldconfig 
+
+# For docker-compose
+WORKDIR /
+RUN git clone https://github.com/vishnubob/wait-for-it.git
+

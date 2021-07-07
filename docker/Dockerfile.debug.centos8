@@ -28,7 +28,7 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM oai-spgwc:centos8-spgwc-debug-3rd-party as oai-spgwc-builder
+FROM oai-spgwc:centos8-spgwc-debug-3rd-party
 
 # Some GIT configuration command quite useful
 RUN /bin/bash -c "if [[ -v HTTP_PROXY ]]; then git config --global http.proxy $HTTP_PROXY; fi"
@@ -38,28 +38,34 @@ RUN git config --global http.sslverify false
 
 COPY ./ /openair-spgwc
 
-# Installing and Building SPGW-U
+# Installing and Building SPGW-C
 WORKDIR /openair-spgwc/build/scripts
-RUN ./build_spgwc --clean --build-type Debug --jobs --Verbose
-
+RUN ./build_spgwc --clean --build-type Debug --jobs --Verbose && \
+    mkdir /openair-spgwc/bin && \
+    cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc && \
+    cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.deb
+    
 # Copying executable and generated libraries
 WORKDIR /openair-spgwc/bin
 RUN cp /openair-spgwc/build/spgw_c/build/spgwc oai_spgwc \
-    && cp /openair-spgwc/scripts/entrypoint.sh . \
     && cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.deb
 
+#    && cp /openair-spgwc/scripts/entrypoint.sh . \
+
 # WORKDIR /openair-spgwc/build/scripts
+# RUN ./build_spgwc --clean --build-type Debug --jobs --Verbose && \
+#    cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.deb && \
 # RUN ./build_spgwc --clean --build-type Release --jobs --Verbose && \
-#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.rel && \
-#    ./build_spgwu --clean --build-type RelWithDebInfo --jobs --Verbose && \
-#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.red && \
-#    ./build_spgwu --clean --build-type MinSizeRel --jobs --Verbose && \
-#    cp /openair-spgwu-tiny/build/spgw_u/build/spgwu /openair-spgwu-tiny/bin/oai_spgwu.min
+#    cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.rel && \
+#    ./build_spgwc --clean --build-type RelWithDebInfo --jobs --Verbose && \
+#    cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.red && \
+#    ./build_spgwc --clean --build-type MinSizeRel --jobs --Verbose && \
+#    cp /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/bin/oai_spgwc.min
 
 WORKDIR /openair-spgwc
 
 # expose ports
 EXPOSE 2123/udp 8805/udp
 
-CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.json", "-o"]
-ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]
+# CMD ["/openair-spgwc/bin/oai_spgwc", "-c", "/openair-spgwc/etc/spgw_c.json", "-o"]
+# ENTRYPOINT ["/openair-spgwc/bin/entrypoint.sh"]

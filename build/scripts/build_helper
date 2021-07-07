@@ -121,6 +121,7 @@ get_distribution_release() {
 check_supported_distribution() {
     local distribution=$(get_distribution_release)
     case "$distribution" in
+        "ubuntu20.04") return 0 ;;
         "ubuntu18.04") return 0 ;;
         "rhel8")       return 0 ;;
         "rhel8.2")     return 0 ;;

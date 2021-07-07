@@ -70,6 +70,8 @@ PdnCfg pgw_config::pdn_;
 cups_cfg_t pgw_config::cups_;
 std::string pgw_config::pid_dir_;
 unsigned int pgw_config::instance_;
+unsigned int pgw_config::rest_port_;
+
 //------------------------------------------------------------------------------
 const bool pgw_config::Finalize() {
   Logger::pgwc_app().info("Finalize config...");
@@ -222,6 +224,15 @@ bool pgw_config::ParseJson() {
   if (!doc.IsObject()) {
     std::cout << "Error parsing the json config file" << std::endl;
     return false;
+  }
+
+  const RAPIDJSON_NAMESPACE::Value& gtpv2c_section = doc["rest_port"];
+  if (doc.HasMember("rest_port")) {
+    if (!doc["rest_port"].IsInt()) {
+      Logger::pgwc_app().error("Error parsing json value: rest_port");
+      return false;
+    }
+    rest_port_ = doc["rest_port"].GetUint();
   }
 
   if (doc.HasMember("timer")) {
@@ -710,6 +721,7 @@ void pgw_config::Display() {
   Logger::pgwc_app().info(
       "==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
   Logger::pgwc_app().info("Configuration SPGW-C:");
+  Logger::pgwc_app().info("    REST port ........: %u", rest_port_);
   Logger::pgwc_app().info("- S11-C Networking:");
   Logger::pgwc_app().info(
       "    iface ............: %s", s11_.iface.if_name.c_str());

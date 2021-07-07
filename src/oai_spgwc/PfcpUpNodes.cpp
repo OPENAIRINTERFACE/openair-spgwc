@@ -136,7 +136,7 @@ void pgwc::PfcpUpNode::NotifyNodeNotReachable() {
 //------------------------------------------------------------------------------
 void pgwc::PfcpUpNode::NotifyNodeReachable() {
   if (association_state_ == kAssocLost) {
-    association_state_ = kAssocUnstable;
+    association_state_ = kAssocKnownPossible;
   } else if (
       (association_state_ == kAssocUnstable) &&
       (consecutive_successful_echo_proc > 10)) {
@@ -291,6 +291,13 @@ void pgwc::PfcpUpNodes::NotifyNodeNotReachable(const pfcp::node_id_t& node_id) {
       pending_nodes_.push_back(su);
     }
   } else {
+    std::unique_lock<std::mutex> l(m_pending_nodes);
+    for (auto it = pending_nodes_.begin(); it != pending_nodes_.end(); ++it) {
+      if ((*it)->node_id_ == node_id) {
+        (*it)->NotifyNodeNotReachable();
+        return;
+      }
+    }
     Logger::pgwc_app().error(
         "User Plane Node %s detected not reachable, unknown!",
         node_id_.toString().c_str());
@@ -301,7 +308,20 @@ void pgwc::PfcpUpNodes::NotifyNodeNotReachable(const std::size_t hash_node_id) {
   std::shared_ptr<PfcpUpNode> su = {};
   if (GetUpNode(hash_node_id, su)) {
     su->NotifyNodeNotReachable();
+    if (su->association_state_ == kAssocLost) {
+      up_nodes_.erase((int32_t) su->hash_node_id_);
+      std::unique_lock<std::mutex> l(m_pending_nodes);
+      pending_nodes_.push_back(su);
+      pfcp_associations::get_instance().notify_node_unreachable(hash_node_id);
+    }
   } else {
+    std::unique_lock<std::mutex> l(m_pending_nodes);
+    for (auto it = pending_nodes_.begin(); it != pending_nodes_.end(); ++it) {
+      if ((*it)->hash_node_id_ == hash_node_id) {
+        (*it)->NotifyNodeNotReachable();
+        return;
+      }
+    }
     Logger::pgwc_app().error(
         "User Plane Node %ld detected not reachable, unknown!", hash_node_id);
   }
@@ -312,6 +332,13 @@ void pgwc::PfcpUpNodes::NotifyNodeReachable(const pfcp::node_id_t& node_id) {
   if (GetUpNode(node_id, su)) {
     su->NotifyNodeReachable();
   } else {
+    std::unique_lock<std::mutex> l(m_pending_nodes);
+    for (auto it = pending_nodes_.begin(); it != pending_nodes_.end(); ++it) {
+      if ((*it)->node_id_ == node_id) {
+        (*it)->NotifyNodeReachable();
+        return;
+      }
+    }
     Logger::pgwc_app().error(
         "User Plane Node %s detected reachable, unknown!",
         node_id_.toString().c_str());
@@ -323,6 +350,13 @@ void pgwc::PfcpUpNodes::NotifyNodeReachable(const std::size_t hash_node_id) {
   if (GetUpNode(hash_node_id, su)) {
     su->NotifyNodeReachable();
   } else {
+    std::unique_lock<std::mutex> l(m_pending_nodes);
+    for (auto it = pending_nodes_.begin(); it != pending_nodes_.end(); ++it) {
+      if ((*it)->hash_node_id_ == hash_node_id) {
+        (*it)->NotifyNodeReachable();
+        return;
+      }
+    }
     Logger::pgwc_app().error(
         "User Plane Node %ld detected reachable, unknown!", hash_node_id);
   }

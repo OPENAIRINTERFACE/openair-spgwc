@@ -240,7 +240,7 @@ class itti_mw {
    *  \param task_id task id of the task that requested the timer
    *  @returns -1 on failure, 0 otherwise
    **/
-  int timer_remove(timer_id_t& timer_id);
+  int timer_remove(const timer_id_t& timer_id);
 
   static void signal_handler(int signum);
 };

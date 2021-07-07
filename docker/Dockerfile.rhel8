@@ -87,6 +87,7 @@ COPY --from=oai-spgwc-builder /lib64/libglog.so.0 /lib64/
 COPY --from=oai-spgwc-builder /lib64/libdouble-conversion.so.1 /lib64/
 COPY --from=oai-spgwc-builder /lib64/libconfig++.so.9 /lib64/
 COPY --from=oai-spgwc-builder /lib64/libboost_system.so.1.66.0 /lib64/
+COPY --from=oai-spgwc-builder /usr/local/lib64/libpistache.so.0 /lib64/
 RUN ldconfig
 
 # Copying template configuration files

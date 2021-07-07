@@ -51,9 +51,11 @@ void itti_mw::timer_manager_task(
       while (itti_inst->timers.empty()) {
         itti_inst->c_timers.wait(lx);
       }
-      std::set<itti_timer>::iterator it = itti_inst->timers.begin();
-      itti_inst->current_timer          = std::ref(*it);
-      itti_inst->timers.erase(it);
+      if (not itti_inst->timers.empty()) {
+        std::set<itti_timer>::iterator it = itti_inst->timers.begin();
+        itti_inst->current_timer          = std::ref(*it);
+        itti_inst->timers.erase(it);
+      }
       lx.unlock();
 
       // check time-out
@@ -113,10 +115,22 @@ itti_mw::itti_mw()
 //------------------------------------------------------------------------------
 itti_mw::~itti_mw() {
   std::cout << "~itti()" << std::endl;
+  terminate = true;
+  timer_setup(0, 1, TASK_ITTI_TIMER, 0, 0);
   timer_thread.detach();
   // wake up thread timer if necessary
-  std::unique_lock<std::mutex> l2(m_timeout);
-  c_timeout.notify_one();
+
+  std::unique_lock<std::mutex> l(m_timers, std::defer_lock);
+  if (l.try_lock()) {
+    c_timers.notify_one();
+    std::cout << "~itti() c_timers notified!" << std::endl;
+  }
+  // wake up thread timer if necessary
+  std::unique_lock<std::mutex> l2(m_timeout, std::defer_lock);
+  if (l2.try_lock()) {
+    c_timeout.notify_one();
+    std::cout << "~itti() c_timeout notified!" << std::endl;
+  }
 
   for (int t = TASK_FIRST; t < TASK_MAX; t++) {
     if (itti_task_ctxts[t]) {
@@ -338,7 +352,7 @@ timer_id_t itti_mw::timer_setup(
 }
 
 //------------------------------------------------------------------------------
-int itti_mw::timer_remove(timer_id_t& timer_id) {
+int itti_mw::timer_remove(const timer_id_t& timer_id) {
   std::lock_guard<std::mutex> lk(m_timers);
   if (current_timer.id == timer_id) {
     // cout << "timer_remove() current_timer.id == timer_id" << endl;
@@ -347,14 +361,12 @@ int itti_mw::timer_remove(timer_id_t& timer_id) {
     // wake up thread timer if necessary
     std::unique_lock<std::mutex> l2(m_timeout);
     c_timeout.notify_one();
-    timer_id = ITTI_INVALID_TIMER_ID;
     return RETURNok;
   } else {
     std::set<itti_timer>::iterator it = itti_inst->timers.begin();
     while (it != itti_inst->timers.end()) {
       if (it->id == timer_id) {
         itti_inst->timers.erase(it);
-        timer_id = ITTI_INVALID_TIMER_ID;
         return RETURNok;
       }
       ++it;
