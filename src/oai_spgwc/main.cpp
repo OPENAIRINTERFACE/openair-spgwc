@@ -38,11 +38,11 @@ using namespace sgwc;
 using namespace util;
 using namespace std;
 
-itti_mw* itti_inst                    = nullptr;
-async_shell_cmd* async_shell_cmd_inst = nullptr;
-pgw_app* pgw_app_inst                 = nullptr;
-sgwc_app* sgwc_app_inst               = nullptr;
-Pistache::Http::Endpoint* rest_endpoint  = nullptr;
+itti_mw* itti_inst                      = nullptr;
+async_shell_cmd* async_shell_cmd_inst   = nullptr;
+pgw_app* pgw_app_inst                   = nullptr;
+sgwc_app* sgwc_app_inst                 = nullptr;
+Pistache::Http::Endpoint* rest_endpoint = nullptr;
 
 void send_heartbeat_to_tasks(const uint32_t sequence);
 
@@ -154,8 +154,6 @@ int main(int argc, char** argv) {
       rest_endpoint->setHandler(Pistache::Http::make_handler<RestHandler>());
       rest_endpoint->serveThreaded();
 
-
-
       Logger::system().startup(
           "Started REST server on port [%i]", pgwc::pgw_config::rest_port_);
     } catch (std::runtime_error& e) {
@@ -176,8 +174,8 @@ int main(int argc, char** argv) {
     signal(SIGTERM, term_signal_handler);
     // Debugging with gdb: testing SIGINT, SIGTERM : gdb will catch those
     // signals
-    // We can ask gdb not to stop on SIGUSR1: 
-    // handle SIGUSR1 pass 
+    // We can ask gdb not to stop on SIGUSR1:
+    // handle SIGUSR1 pass
     // kill -USR1 pid
     signal(SIGUSR1, term_signal_handler);
 

@@ -288,7 +288,7 @@ void gtpv2c_stack::handle_receive_message_cb(
     bool& error, uint64_t& gtpc_tx_id) {
   gtpc_tx_id = 0;
   error      = true;
-  auto it = pending_procedures.find(msg.get_sequence_number());
+  auto it    = pending_procedures.find(msg.get_sequence_number());
   // If no procedure found concerning this message
   if (it == pending_procedures.end()) {
     // If procedure type is a request-like procedure

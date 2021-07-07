@@ -200,8 +200,8 @@ class pgw_config {
   itti_cfg_t itti;
 
   static void Default() {
-    pid_dir_  = "/var/run";
-    instance_ = 0;
+    pid_dir_   = "/var/run";
+    instance_  = 0;
     rest_port_ = 9081;
 
     timer_.sched_params.cpu_id         = -1;

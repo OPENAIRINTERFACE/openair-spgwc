@@ -721,8 +721,7 @@ void pgw_config::Display() {
   Logger::pgwc_app().info(
       "==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
   Logger::pgwc_app().info("Configuration SPGW-C:");
-  Logger::pgwc_app().info(
-      "    REST port ........: %u", rest_port_);
+  Logger::pgwc_app().info("    REST port ........: %u", rest_port_);
   Logger::pgwc_app().info("- S11-C Networking:");
   Logger::pgwc_app().info(
       "    iface ............: %s", s11_.iface.if_name.c_str());
