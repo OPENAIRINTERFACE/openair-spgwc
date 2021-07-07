@@ -53,8 +53,7 @@ class UdpApplication {
       char* recv_buffer, const std::size_t bytes_transferred,
       const endpoint& r_endpoint);
   virtual void start_receive(
-      UdpApplication* gtp_stack,
-      const util::thread_sched_params& sched_params);
+      UdpApplication* gtp_stack, const util::thread_sched_params& sched_params);
 };
 
 class udp_server {
@@ -149,8 +148,7 @@ class udp_server {
   }
 
   void start_receive(
-      UdpApplication* gtp_stack,
-      const util::thread_sched_params& sched_params);
+      UdpApplication* gtp_stack, const util::thread_sched_params& sched_params);
 
  protected:
   int create_socket(const struct in_addr& address, const uint16_t port);
