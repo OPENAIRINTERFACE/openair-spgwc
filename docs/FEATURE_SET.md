@@ -39,10 +39,10 @@
 *  Security Functions
 *  Radio Resource Management Functions
 *  Network Management Functions (O&M)
-   -  GTP C signaling based Load and Overload Control
-   -  Load balancing between MME instances
-   -  MME control of overload
-   -  PDN GW control of overload
+   -  `GTP` C signaling based Load and Overload Control
+   -  Load balancing between `MME` instances
+   -  `MME` control of overload
+   -  PDN Gateway control of overload
 
 # 3. OAI Core Network Deployment #
 
@@ -60,6 +60,8 @@
    -  Container
    -  Virtual Machine
 
+**We strongly recommend a container-based deployment (either in a `docker-compose` fashion, or in a `Kubernetes`-like cluster).**
+
 # 4. OAI SPGW-CUPS Fundamentals #
 
 CUPS = Control-User Planes Separation
@@ -69,6 +71,8 @@ So SPGW is composed of almost 2 network functions:
 *  1 SPGW-C
 *  1 SPGW-U
 
+Multiple instances of `SPGW-U` may be connected to a single instance of `SPGW-C`.
+
 Fully written in C++ (-std=c++17)
 
 *  Internal design still asynchronous (ITTI based API)
@@ -76,8 +80,8 @@ Fully written in C++ (-std=c++17)
 
 Main differences with previous SPGW (tag `v0.7.0`)
 
-*  Handles GTP fragmentation
-*  Enables Network Address Translation (NAT), based on iptables
+*  Handles `GTP` fragmentation
+*  Enables Network Address Translation (`NAT`), based on iptables
 *  Easier to install (no kernel dependencies)
 *  Switch-talking natively PFCP
 *  Data is copied/handled in user space
