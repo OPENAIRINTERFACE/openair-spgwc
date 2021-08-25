@@ -67,7 +67,6 @@ install_fb_folly_from_source(){
       $SUDO $INSTALLER install $OPTION \
         g++ \
         cmake \
-        libboost-all-dev \
         libevent-dev \
         libdouble-conversion-dev \
         libgoogle-glog-dev \

@@ -39,6 +39,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
     DEBIAN_FRONTEND=noninteractive apt-get install --yes \
       psmisc \
+      software-properties-common \
       git
 
 # Some GIT configuration command quite useful
@@ -69,6 +70,7 @@ RUN apt-get update && \
       tzdata \
       net-tools \
       tshark \
+      perl \
       libgoogle-glog0v5 \
       libdouble-conversion1 \
       libconfig++9v5 && \
@@ -81,6 +83,7 @@ COPY --from=oai-spgwc-builder /openair-spgwc/scripts/entrypoint.sh .
 
 WORKDIR /usr/local/lib
 COPY --from=oai-spgwc-builder /usr/local/lib/libpistache.so.0 .
+COPY --from=oai-spgwc-builder /usr/lib/libboost_system.so.1.67.0 .
 RUN ldconfig
 
 # Copying template configuration files
