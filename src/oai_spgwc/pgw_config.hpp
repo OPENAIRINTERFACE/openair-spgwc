@@ -164,6 +164,7 @@ typedef struct cups_cfg_s {
   std::vector<up_node_cfg_t> nodes;
   bool feature_overload_control;
   bool feature_load_control;
+  bool trigger_association;
 } cups_cfg_t;
 
 class pgw_config {
@@ -277,6 +278,7 @@ class pgw_config {
     cups_.max_associations                = 8;
     cups_.feature_overload_control        = false;
     cups_.feature_load_control            = false;
+    cups_.trigger_association             = false;
   };
   static bool ParseJson();
 

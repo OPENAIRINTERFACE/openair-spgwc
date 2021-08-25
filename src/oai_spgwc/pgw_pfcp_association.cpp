@@ -158,6 +158,54 @@ bool pfcp_associations::add_association(
   return true;
 }
 //------------------------------------------------------------------------------
+bool pfcp_associations::add_association(
+    const endpoint& remote_endpoint, pfcp::node_id_t& node_id,
+    pfcp::recovery_time_stamp_t& recovery_time_stamp,
+    std::pair<bool, pfcp::up_function_features_s>& up_function_features,
+    bool& is_restore_sx_sessions) {
+  std::shared_ptr<pfcp_association> sa =
+      std::shared_ptr<pfcp_association>(nullptr);
+  if (get_association(node_id, sa)) {
+    itti_inst->timer_remove(sa->timer_heartbeat);
+    if (sa->recovery_time_stamp == recovery_time_stamp) {
+      Logger::pgwc_app().info(
+          "UP node %u state %u, "
+          "No need to restore sessions",
+          (uint32_t) sa->hash_node_id, sa->state_);
+      is_restore_sx_sessions = false;
+      return true;
+    } else {
+      Logger::pgwc_app().info(
+          "UP node %u state %u, Sessions to be restored",
+          (uint32_t) sa->hash_node_id, sa->state_);
+      is_restore_sx_sessions = true;
+    }
+    sa->recovery_time_stamp = recovery_time_stamp;
+    sa->function_features   = up_function_features;
+    // restart monitoring up node reachability
+    sa->is_trigger_heartbeat_request_procedure = true;
+  } else {
+    is_restore_sx_sessions        = false;
+    pfcp_association* association = new pfcp_association(
+        node_id, recovery_time_stamp, up_function_features);
+    sa = std::shared_ptr<pfcp_association>(association);
+    associations.insert((int32_t) association->hash_node_id, sa);
+  }
+  sa->state_ = kAssocInitiatedState;
+  Logger::pgwc_app().info(
+      "UP node %u state -> kAssocInitiatedState (%u)",
+      (uint32_t) sa->hash_node_id, sa->state_);
+  sa->remote_endpoint = remote_endpoint;
+  if (sa->is_trigger_heartbeat_request_procedure) {
+    trigger_heartbeat_request_procedure(sa);
+  }
+  if (is_restore_sx_sessions) {
+    pfcp_associations::get_instance().restore_sx_sessions(node_id);
+  }
+
+  return true;
+}
+//------------------------------------------------------------------------------
 bool pfcp_associations::get_association(
     const pfcp::node_id_t& node_id,
     std::shared_ptr<pfcp_association>& sa) const {
@@ -353,4 +401,24 @@ void pfcp_associations::notify_del_session(const pfcp::fseid_t& cp_fseid) {
   if (get_association(cp_fseid, sa)) {
     sa->notify_del_session(cp_fseid);
   }
+}
+
+//------------------------------------------------------------------------------
+bool pfcp_associations::add_peer_candidate_node(
+    const pfcp::node_id_t& node_id) {
+  for (std::vector<std::shared_ptr<pfcp_association>>::iterator it =
+           pending_associations.begin();
+       it < pending_associations.end(); ++it) {
+    if ((*it)->node_id == node_id) {
+      // TODO purge sessions of this node
+      Logger::pgwc_sx().info("TODO purge sessions of this node");
+      pending_associations.erase(it);
+      break;
+    }
+  }
+  pfcp_association* association = new pfcp_association(node_id);
+  std::shared_ptr<pfcp_association> s =
+      std::shared_ptr<pfcp_association>(association);
+  pending_associations.push_back(s);
+  return true;
 }

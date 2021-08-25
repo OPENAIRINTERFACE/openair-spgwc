@@ -62,6 +62,7 @@
      "association_heartbeat_period_ms" : 2000,
      "feature_overload_control" : false,
      "feature_load_control" : false,
+     "trigger_association" : @TRIGGER_ASSOCIATION@,
      "up_nodes_selection" : [
          { "mcc" : "@MCC@", "mnc" : "@MNC@", "tac" : @TAC@, "apn_ni" : "@DEFAULT_APN_NI_1@", "pdn_idx" : 0, "id" : "gw@GW_ID@.spgw.node.epc.mnc@MNC03@.mcc@MCC@.@REALM@" }
      ]

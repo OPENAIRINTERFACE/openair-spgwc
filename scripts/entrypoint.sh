@@ -4,6 +4,7 @@ set -uo pipefail
 
 CONFIG_DIR="/openair-spgwc/etc"
 PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
+TRIGGER_ASSOCIATION=${TRIGGER_ASSOCIATION:-false}
 
 for c in ${CONFIG_DIR}/*.json; do
     # grep variable names (format: ${VAR}) from template to be rendered
