@@ -636,6 +636,10 @@ class pfcp_enterprise_specific_ie : public pfcp_ie {
     os.write(
         reinterpret_cast<const char*>(&enterprise_id), sizeof(enterprise_id));
     os << enterprise_id;
+    os.write(
+        reinterpret_cast<const char*>(&proprietary_data),
+        sizeof(proprietary_data));
+    os << proprietary_data;
   }
   //--------
   void load_from(std::istream& is) {
