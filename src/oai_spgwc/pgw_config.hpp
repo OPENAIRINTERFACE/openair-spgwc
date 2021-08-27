@@ -140,11 +140,17 @@ typedef struct pgw_app_cfg_s {
   PdnCfg& GetPdnCfg(const uint pdn_index) { return pdns.at(pdn_index); }
 } pgw_app_cfg_t;
 
+typedef struct up_node_nwi_s {
+  std::string access_nwi;
+  std::string core_nwi;
+} up_node_nwi_t;
+
 typedef struct up_node_cfg_s {
   std::string mcc;
   std::string mnc;
   uint16_t tac;
   tai_field_t tai;
+  up_node_nwi_t nwi;
   uint pdn_index;
   std::string id;  // FQDN, IP address
   std::string toString() const {
