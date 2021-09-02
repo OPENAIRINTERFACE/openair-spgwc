@@ -491,6 +491,7 @@ int modify_bearer_procedure::run(
         // local_fteid.from_core_fteid(peb.sgw_fteid_s5_s8_up);
         if (ppc->ipv4) {
           ue_ip_address.v4                  = 1;
+          ue_ip_address.sd                  = 1;
           ue_ip_address.ipv4_address.s_addr = ppc->ipv4_address.s_addr;
         }
         if (ppc->ipv6) {
