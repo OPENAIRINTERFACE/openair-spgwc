@@ -132,7 +132,7 @@ typedef struct pgw_app_cfg_s {
   struct in_addr default_dns_secv4;
   struct in6_addr default_dnsv6;
   struct in6_addr default_dns_secv6;
-  uint default_ue_mtu;
+  uint default_ue_mtu_ipv4;
   bool force_push_pco;
   std::vector<PdnCfg> pdns;
   uint32_t max_cached_users;
@@ -267,7 +267,7 @@ class pgw_config {
     spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[5] = htonl(0x0000);
     spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[6] = htonl(0x0000);
     spgw_app_.default_dns_secv6.__in6_u.__u6_addr16[7] = htonl(0x8844);
-    spgw_app_.default_ue_mtu                           = 1358;
+    spgw_app_.default_ue_mtu_ipv4                      = 1464;
     spgw_app_.force_push_pco                           = false;
     spgw_app_.pdns.clear();
 
