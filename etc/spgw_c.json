@@ -51,7 +51,8 @@
      "default_dns_sec_ipv4_address" : "@DEFAULT_DNS_SEC_IPV4_ADDRESS@",
      "default_dns_ipv6_address"     : "2001:4860:4860::8888",
      "default_dns_sec_ipv6_address" : "2001:4860:4860::8844",
-     "force_push_protocol_configuration_options" : @PUSH_PROTOCOL_OPTION@
+     "force_push_protocol_configuration_options" : @PUSH_PROTOCOL_OPTION@,
+     "ue_mtu_ipv4": @UE_MTU_IPV4@
  },
  "pdns" : [
     { "apn_ni" : "@APN_NI_1@", "dyn_ue_ipv4_range" : "@UE_IP_ADDRESS_POOL_1@" },
