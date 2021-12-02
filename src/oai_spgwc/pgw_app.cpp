@@ -38,12 +38,14 @@
 #include "PfcpUpNodes.hpp"
 #include "string.hpp"
 #include "fqdn.hpp"
+#include "pgw_pfcp_association.hpp"
 
 #include <stdexcept>
 
 using namespace pgwc;
 
 #define SYSTEM_CMD_MAX_STR_SIZE 512
+#define PFCP_ASSOC_RETRY_COUNT 10
 extern util::async_shell_cmd* async_shell_cmd_inst;
 extern pgw_app* pgw_app_inst;
 pgw_s5s8* pgw_s5s8_inst   = nullptr;
@@ -312,7 +314,17 @@ pgw_app::pgw_app(const std::string& config_file)
       pfcp::node_id_t node_id = {};
       node_id.node_id_type    = pfcp::NODE_ID_TYPE_FQDN;
       node_id.fqdn            = it.id;
-      start_up_association(node_id);
+
+      for (int i = 0; i < PFCP_ASSOC_RETRY_COUNT; i++) {
+        std::shared_ptr<pfcp_association> sa = {};
+        start_up_association(node_id);
+        sleep(2);
+        if (not pfcp_associations::get_instance().get_association(node_id, sa))
+          Logger::pgwc_app().warn(
+              "Failed to receive PFCP Association Response, Retrying .....!!");
+        else
+          break;
+      }
     }
   }
   Logger::pgwc_app().startup("Started");
