@@ -465,6 +465,15 @@ bool pgw_config::ParseJson() {
           spgw_app_section["force_push_protocol_configuration_options"]
               .GetBool();
     }
+    if (spgw_app_section.HasMember("ue_mtu_ipv4")) {
+      if (!spgw_app_section["ue_mtu_ipv4"].IsInt()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: spgw_app/ue_mtu_ipv4");
+        return false;
+      }
+      spgw_app_.default_ue_mtu_ipv4 =
+          spgw_app_section["ue_mtu_ipv4"].GetUint();
+    }
     if (doc.HasMember("pdns")) {
       const RAPIDJSON_NAMESPACE::Value& pdns_section = doc["pdns"];
       if (!pdns_section.IsArray()) {
