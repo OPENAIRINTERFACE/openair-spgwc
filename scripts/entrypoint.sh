@@ -7,6 +7,13 @@ PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
 TRIGGER_ASSOCIATION=${TRIGGER_ASSOCIATION:-false}
 UE_MTU_IPV4=${UE_MTU_IPV4:-1464}
 
+
+CUSTOM_UPF_FQDN=${CUSTOM_UPF_FQDN:-false}
+UPF_FQDN=${UPF_FQDN:-upf-5g.kaloom.io}
+if [[ $CUSTOM_UPF_FQDN == true ]]; then
+        sed -i "s/gw@GW_ID@.spgw.node.epc.mnc@MNC03@.mcc@MCC@.@REALM@/$UPF_FQDN/g" ${CONFIG_DIR}/*.json
+fi
+
 for c in ${CONFIG_DIR}/*.json; do
     # grep variable names (format: ${VAR}) from template to be rendered
     VARS=$(grep -oP '@[a-zA-Z0-9_]+@' ${c} | sort | uniq | xargs)
