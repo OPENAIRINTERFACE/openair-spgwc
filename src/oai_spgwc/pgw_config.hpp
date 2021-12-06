@@ -158,6 +158,9 @@ typedef struct up_node_cfg_s {
     str.append(id).append(" <-> mcc:").append(mcc).append(" mnc:").append(mnc);
     str.append(" tac:").append(std::to_string(tac));
     str.append(" pdn_index:").append(std::to_string(pdn_index));
+    if (!nwi.access_nwi.empty())
+      str.append(" nwi_access: ").append(nwi.access_nwi);
+    if (!nwi.core_nwi.empty()) str.append(" nwi_core: ").append(nwi.core_nwi);
     return str;
   }
 
@@ -170,6 +173,7 @@ typedef struct cups_cfg_s {
   std::vector<up_node_cfg_t> nodes;
   bool feature_overload_control;
   bool feature_load_control;
+  bool use_nwi;
 } cups_cfg_t;
 
 class pgw_config {
@@ -283,6 +287,7 @@ class pgw_config {
     cups_.max_associations                = 8;
     cups_.feature_overload_control        = false;
     cups_.feature_load_control            = false;
+    cups_.use_nwi                         = false;
   };
   static bool ParseJson();
 

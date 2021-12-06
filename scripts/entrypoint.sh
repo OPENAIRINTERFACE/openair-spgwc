@@ -4,6 +4,9 @@ set -uo pipefail
 
 CONFIG_DIR="/openair-spgwc/etc"
 PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
+USE_NWI=${USE_NWI:-no}
+ACCESS_NWI=${ACCESS_NWI:-access.oai.org}
+CORE_NWI=${CORE_NWI:-core.oai.org}
 
 for c in ${CONFIG_DIR}/*.json; do
     # grep variable names (format: ${VAR}) from template to be rendered

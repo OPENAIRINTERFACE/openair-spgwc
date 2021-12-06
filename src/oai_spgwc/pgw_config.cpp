@@ -637,6 +637,13 @@ bool pgw_config::ParseJson() {
       cups_.feature_load_control =
           cups_section["feature_load_control"].GetBool();
     }
+    if (cups_section.HasMember("use_nwi")) {
+      if (!cups_section["use_nwi"].IsBool()) {
+        Logger::pgwc_app().error("Error parsing json value: cups/use_nwi");
+        return false;
+      }
+      cups_.use_nwi = cups_section["use_nwi"].GetBool();
+    }
     if (cups_section.HasMember("up_nodes_selection")) {
       const RAPIDJSON_NAMESPACE::Value& nodes_section =
           cups_section["up_nodes_selection"];
@@ -680,27 +687,21 @@ bool pgw_config::ParseJson() {
                   "Error parsing json value: cup_nodes_selection/[id]");
               return false;
             }
-            if (nodes_section[i].HasMember("nwi_list")) {
-              if (nodes_section[i]["nwi_list"].IsString()) {
-                Logger::pgwc_app().info(
-                    "Network instance is enabled for UP Node with id %s is "
-                    "usning",
-                    nodes_section[i]["id"]);
-                const RAPIDJSON_NAMESPACE::Value& nwi_section =
-                    cups_section["nwi_list"];
-                for (RAPIDJSON_NAMESPACE::SizeType i = 0;
-                     i < nwi_section.Size(); i++) {
-                  if (nwi_section[i].HasMember("access_nwi")) {
-                    if (nwi_section[i]["access_nwi"].IsString()) {
-                      up_node.nwi.access_nwi =
-                          nwi_section[i]["access_nwi"].GetString();
-                    }
+            if (cups_.use_nwi & nodes_section[i].HasMember("nwi_list")) {
+              const RAPIDJSON_NAMESPACE::Value& nwi_section =
+                  nodes_section[i]["nwi_list"];
+              for (RAPIDJSON_NAMESPACE::SizeType i = 0; i < nwi_section.Size();
+                   i++) {
+                if (nwi_section[i].HasMember("access_nwi")) {
+                  if (nwi_section[i]["access_nwi"].IsString()) {
+                    up_node.nwi.access_nwi =
+                        nwi_section[i]["access_nwi"].GetString();
                   }
-                  if (nwi_section[i].HasMember("core_nwi")) {
-                    if (!nwi_section[i]["core_nwi"].IsString()) {
-                      up_node.nwi.access_nwi =
-                          nwi_section[i]["core_nwi"].GetString();
-                    }
+                }
+                if (nwi_section[i].HasMember("core_nwi")) {
+                  if (nwi_section[i]["core_nwi"].IsString()) {
+                    up_node.nwi.core_nwi =
+                        nwi_section[i]["core_nwi"].GetString();
                   }
                 }
               }
