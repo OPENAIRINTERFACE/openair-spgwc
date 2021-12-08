@@ -136,7 +136,7 @@ pipeline {
     }
     stage('Build Core Network Function') {
       parallel {
-        stage ('Build U18 SPGW-U Image') {
+        stage ('Build U18 SPGW-C Image') {
           steps {
             script {
               if (env.ghprbPullId == null) {

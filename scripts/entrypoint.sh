@@ -7,6 +7,7 @@ PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
 USE_NWI=${USE_NWI:-no}
 ACCESS_NWI=${ACCESS_NWI:-access.oai.org}
 CORE_NWI=${CORE_NWI:-core.oai.org}
+UE_MTU_IPV4=${UE_MTU_IPV4:-1464}
 
 for c in ${CONFIG_DIR}/*.json; do
     # grep variable names (format: ${VAR}) from template to be rendered
