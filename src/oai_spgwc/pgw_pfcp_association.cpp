@@ -189,16 +189,17 @@ bool pfcp_associations::add_association(
     pfcp_association* association = new pfcp_association(
         node_id, recovery_time_stamp, up_function_features);
     sa = std::shared_ptr<pfcp_association>(association);
+    sa->is_trigger_heartbeat_request_procedure = true;
     associations.insert((int32_t) association->hash_node_id, sa);
   }
-  sa->state_ = kAssocInitiatedState;
+  sa->state_ = kAssocSetupState;
   Logger::pgwc_app().info(
-      "UP node %u state -> kAssocInitiatedState (%u)",
-      (uint32_t) sa->hash_node_id, sa->state_);
+      "UP node %u state -> kAssocSetupState (%u)", (uint32_t) sa->hash_node_id,
+      sa->state_);
   sa->remote_endpoint = remote_endpoint;
-  if (sa->is_trigger_heartbeat_request_procedure) {
-    trigger_heartbeat_request_procedure(sa);
-  }
+  // if (sa->is_trigger_heartbeat_request_procedure) {
+  trigger_heartbeat_request_procedure(sa);
+  //}
   if (is_restore_sx_sessions) {
     pfcp_associations::get_instance().restore_sx_sessions(node_id);
   }
