@@ -471,8 +471,7 @@ bool pgw_config::ParseJson() {
             "Error parsing json value: spgw_app/ue_mtu_ipv4");
         return false;
       }
-      spgw_app_.default_ue_mtu_ipv4 =
-          spgw_app_section["ue_mtu_ipv4"].GetUint();
+      spgw_app_.default_ue_mtu_ipv4 = spgw_app_section["ue_mtu_ipv4"].GetUint();
     }
     if (doc.HasMember("pdns")) {
       const RAPIDJSON_NAMESPACE::Value& pdns_section = doc["pdns"];
