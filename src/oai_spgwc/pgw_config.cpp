@@ -471,8 +471,7 @@ bool pgw_config::ParseJson() {
             "Error parsing json value: spgw_app/ue_mtu_ipv4");
         return false;
       }
-      spgw_app_.default_ue_mtu_ipv4 =
-          spgw_app_section["ue_mtu_ipv4"].GetUint();
+      spgw_app_.default_ue_mtu_ipv4 = spgw_app_section["ue_mtu_ipv4"].GetUint();
     }
     if (doc.HasMember("pdns")) {
       const RAPIDJSON_NAMESPACE::Value& pdns_section = doc["pdns"];
@@ -646,6 +645,13 @@ bool pgw_config::ParseJson() {
       cups_.feature_load_control =
           cups_section["feature_load_control"].GetBool();
     }
+    if (cups_section.HasMember("use_nwi")) {
+      if (!cups_section["use_nwi"].IsBool()) {
+        Logger::pgwc_app().error("Error parsing json value: cups/use_nwi");
+        return false;
+      }
+      cups_.use_nwi = cups_section["use_nwi"].GetBool();
+    }
     if (cups_section.HasMember("up_nodes_selection")) {
       const RAPIDJSON_NAMESPACE::Value& nodes_section =
           cups_section["up_nodes_selection"];
@@ -654,6 +660,7 @@ bool pgw_config::ParseJson() {
             "Error parsing json value: up_nodes_selection");
         return false;
       }
+      up_node_cfg_t up_node = {};
       for (RAPIDJSON_NAMESPACE::SizeType i = 0; i < nodes_section.Size(); i++) {
         if (nodes_section[i].HasMember("mcc")) {
           if (!nodes_section[i]["mcc"].IsString()) {
@@ -688,6 +695,25 @@ bool pgw_config::ParseJson() {
                   "Error parsing json value: cup_nodes_selection/[id]");
               return false;
             }
+            if (cups_.use_nwi & nodes_section[i].HasMember("nwi_list")) {
+              const RAPIDJSON_NAMESPACE::Value& nwi_section =
+                  nodes_section[i]["nwi_list"];
+              for (RAPIDJSON_NAMESPACE::SizeType i = 0; i < nwi_section.Size();
+                   i++) {
+                if (nwi_section[i].HasMember("access_nwi")) {
+                  if (nwi_section[i]["access_nwi"].IsString()) {
+                    up_node.nwi.access_nwi =
+                        nwi_section[i]["access_nwi"].GetString();
+                  }
+                }
+                if (nwi_section[i].HasMember("core_nwi")) {
+                  if (nwi_section[i]["core_nwi"].IsString()) {
+                    up_node.nwi.core_nwi =
+                        nwi_section[i]["core_nwi"].GetString();
+                  }
+                }
+              }
+            }
             /*unsigned char buf_in_addr[sizeof(struct in6_addr)];
             std::string up_ip_addr = nodes_section[i]["id"].GetString();
             memset(buf_in_addr, 0, sizeof(buf_in_addr));
@@ -703,12 +729,12 @@ bool pgw_config::ParseJson() {
                   i);
               return false;
             }*/
-            up_node_cfg_t up_node = {};
-            up_node.mcc           = nodes_section[i]["mcc"].GetString();
-            up_node.mnc           = nodes_section[i]["mnc"].GetString();
-            up_node.tac           = nodes_section[i]["tac"].GetInt();
-            up_node.pdn_index     = nodes_section[i]["pdn_idx"].GetUint();
-            up_node.id            = nodes_section[i]["id"].GetString();
+            // up_node_cfg_t up_node = {};
+            up_node.mcc       = nodes_section[i]["mcc"].GetString();
+            up_node.mnc       = nodes_section[i]["mnc"].GetString();
+            up_node.tac       = nodes_section[i]["tac"].GetInt();
+            up_node.pdn_index = nodes_section[i]["pdn_idx"].GetUint();
+            up_node.id        = nodes_section[i]["id"].GetString();
             up_node.tai.from_items(up_node.mcc, up_node.mnc, up_node.tac);
             cups_.nodes.push_back(up_node);
           }

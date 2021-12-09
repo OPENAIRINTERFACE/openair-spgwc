@@ -63,8 +63,9 @@
      "association_heartbeat_period_ms" : 2000,
      "feature_overload_control" : false,
      "feature_load_control" : false,
+     "use_nwi" : @USE_NWI@,
      "up_nodes_selection" : [
-         { "mcc" : "@MCC@", "mnc" : "@MNC@", "tac" : @TAC@, "apn_ni" : "@DEFAULT_APN_NI_1@", "pdn_idx" : 0, "id" : "gw@GW_ID@.spgw.node.epc.mnc@MNC03@.mcc@MCC@.@REALM@" }
+         { "mcc" : "@MCC@", "mnc" : "@MNC@", "tac" : @TAC@, "apn_ni" : "@DEFAULT_APN_NI_1@", "pdn_idx" : 0, "id" : "gw@GW_ID@.spgw.node.epc.mnc@MNC03@.mcc@MCC@.@REALM@", "nwi_list" : [{"access_nwi":"@ACCESS_NWI@", "core_nwi":"@CORE_NWI@"}]}
      ]
  },
  "pcef" : {

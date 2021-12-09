@@ -168,6 +168,12 @@ int session_establishment_procedure::run(
         pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for uplink
     forwarding_parameters.set(destination_interface);
 
+    if (pgw_cfg.cups_.use_nwi) {
+      pfcp::network_instance_t network_instance;
+      network_instance.network_instance = pgw_cfg.cups_.nodes[0].nwi.core_nwi;
+      forwarding_parameters.set(network_instance);
+    }
+
     create_far.set(far_id);
     create_far.set(apply_action);
     create_far.set(forwarding_parameters);
@@ -197,7 +203,14 @@ int session_establishment_procedure::run(
     // pfcp::framed_routing_t           framed_routing = {};
     // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
     source_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS;
-    local_fteid.ch                   = 1;
+
+    if (pgw_cfg.cups_.use_nwi) {
+      pfcp::network_instance_t network_instance;
+      network_instance.network_instance = pgw_cfg.cups_.nodes[0].nwi.access_nwi;
+      pdi.set(network_instance);
+    }
+
+    local_fteid.ch = 1;
     // local_fteid.chid = 1;
     xgpp_conv::paa_to_pfcp_ue_ip_address(
         s5_triggered_pending->gtp_ies.paa.second, ue_ip_address);
@@ -440,6 +453,13 @@ int modify_bearer_procedure::run(
         destination_interface.interface_value =
             pfcp::INTERFACE_VALUE_ACCESS;  // ACCESS is for downlink, CORE for
                                            // uplink
+        if (pgw_cfg.cups_.use_nwi) {
+          pfcp::network_instance_t network_instance;
+          network_instance.network_instance =
+              pgw_cfg.cups_.nodes[0].nwi.access_nwi;
+          forwarding_parameters.set(network_instance);
+        }
+
         forwarding_parameters.set(destination_interface);
         outer_header_creation.outer_header_creation_description =
             OUTER_HEADER_CREATION_GTPU_UDP_IPV4;
@@ -487,6 +507,13 @@ int modify_bearer_procedure::run(
         // pfcp::framed_routing_t           framed_routing = {};
         // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
         source_interface.interface_value = pfcp::INTERFACE_VALUE_CORE;
+
+        if (pgw_cfg.cups_.use_nwi) {
+          pfcp::network_instance_t network_instance;
+          network_instance.network_instance =
+              pgw_cfg.cups_.nodes[0].nwi.core_nwi;
+          pdi.set(network_instance);
+        }
 
         // local_fteid.from_core_fteid(peb.sgw_fteid_s5_s8_up);
         if (ppc->ipv4) {
@@ -570,6 +597,13 @@ int modify_bearer_procedure::run(
         destination_interface.interface_value =
             pfcp::INTERFACE_VALUE_CORE;  // ACCESS is for downlink, CORE for
                                          // uplink
+        if (pgw_cfg.cups_.use_nwi) {
+          pfcp::network_instance_t network_instance;
+          network_instance.network_instance =
+              pgw_cfg.cups_.nodes[0].nwi.core_nwi;
+          forwarding_parameters.set(network_instance);
+        }
+
         forwarding_parameters.set(destination_interface);
 
         create_far.set(far_id);
@@ -611,7 +645,13 @@ int modify_bearer_procedure::run(
         // pfcp::framed_routing_t           framed_routing = {};
         // pfcp::framed_ipv6_route_t        framed_ipv6_route = {};
         source_interface.interface_value = pfcp::INTERFACE_VALUE_ACCESS;
-        local_fteid.ch                   = 1;
+        if (pgw_cfg.cups_.use_nwi) {
+          pfcp::network_instance_t network_instance;
+          network_instance.network_instance =
+              pgw_cfg.cups_.nodes[0].nwi.access_nwi;
+          pdi.set(network_instance);
+        }
+        local_fteid.ch = 1;
         // local_fteid.chid = 1;
         xgpp_conv::pdn_ip_to_pfcp_ue_ip_address(
             ppc->pdn_type, ppc->ipv4_address, ppc->ipv6_address, ue_ip_address);

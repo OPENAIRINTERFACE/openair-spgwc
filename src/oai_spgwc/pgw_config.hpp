@@ -140,11 +140,17 @@ typedef struct pgw_app_cfg_s {
   PdnCfg& GetPdnCfg(const uint pdn_index) { return pdns.at(pdn_index); }
 } pgw_app_cfg_t;
 
+typedef struct up_node_nwi_s {
+  std::string access_nwi;
+  std::string core_nwi;
+} up_node_nwi_t;
+
 typedef struct up_node_cfg_s {
   std::string mcc;
   std::string mnc;
   uint16_t tac;
   tai_field_t tai;
+  up_node_nwi_t nwi;
   uint pdn_index;
   std::string id;  // FQDN, IP address
   std::string toString() const {
@@ -152,6 +158,9 @@ typedef struct up_node_cfg_s {
     str.append(id).append(" <-> mcc:").append(mcc).append(" mnc:").append(mnc);
     str.append(" tac:").append(std::to_string(tac));
     str.append(" pdn_index:").append(std::to_string(pdn_index));
+    if (!nwi.access_nwi.empty())
+      str.append(" nwi_access: ").append(nwi.access_nwi);
+    if (!nwi.core_nwi.empty()) str.append(" nwi_core: ").append(nwi.core_nwi);
     return str;
   }
 
@@ -164,6 +173,7 @@ typedef struct cups_cfg_s {
   std::vector<up_node_cfg_t> nodes;
   bool feature_overload_control;
   bool feature_load_control;
+  bool use_nwi;
 } cups_cfg_t;
 
 class pgw_config {
@@ -277,6 +287,7 @@ class pgw_config {
     cups_.max_associations                = 8;
     cups_.feature_overload_control        = false;
     cups_.feature_load_control            = false;
+    cups_.use_nwi                         = false;
   };
   static bool ParseJson();
 
