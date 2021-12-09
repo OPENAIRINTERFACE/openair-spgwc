@@ -4,7 +4,7 @@ set -uo pipefail
 
 CONFIG_DIR="/openair-spgwc/etc"
 PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
-USE_NWI=${USE_NWI:-no}
+USE_NWI=${USE_NWI:-false}
 ACCESS_NWI=${ACCESS_NWI:-access.oai.org}
 CORE_NWI=${CORE_NWI:-core.oai.org}
 UE_MTU_IPV4=${UE_MTU_IPV4:-1464}
