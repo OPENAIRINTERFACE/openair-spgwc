@@ -120,6 +120,18 @@ class pfcp_association {
     is_trigger_heartbeat_request_procedure = true;
     state_                                 = kAssocNullState;
   }
+  pfcp_association(
+      const pfcp::node_id_t& ni, pfcp::recovery_time_stamp_t& rts,
+      std::pair<bool, pfcp::up_function_features_s>& uff)
+      : node_id(ni), recovery_time_stamp(rts), m_sessions(), sessions() {
+    hash_node_id                = std::hash<pfcp::node_id_t>{}(node_id);
+    function_features           = uff;
+    timer_heartbeat             = ITTI_INVALID_TIMER_ID;
+    num_retries_timer_heartbeat = 0;
+    trxn_id_heartbeat           = 0;
+    is_restore_sessions_pending = false;
+    timer_association           = ITTI_INVALID_TIMER_ID;
+  }
   pfcp_association(pfcp_association const& p)
       : node_id(p.node_id),
         hash_node_id(p.hash_node_id),
@@ -176,6 +188,11 @@ class pfcp_associations {
       std::pair<bool, pfcp::up_function_features_s>& up_function_features,
       std::pair<bool, pfcp::user_plane_ip_resource_information_t>&
           user_plane_ip_resource_information);
+  bool add_association(
+      const endpoint& remote_endpoint, pfcp::node_id_t& node_id,
+      pfcp::recovery_time_stamp_t& recovery_time_stamp,
+      std::pair<bool, pfcp::up_function_features_s>& up_function_features,
+      bool& restore_sx_sessions);
   bool get_association(
       const pfcp::node_id_t& node_id,
       std::shared_ptr<pfcp_association>& sa) const;
@@ -207,6 +224,8 @@ class pfcp_associations {
 
   // interface with PfcpUpNodes
   void notify_node_unreachable(const std::size_t hash_node_id);
+
+  bool add_peer_candidate_node(const pfcp::node_id_t& node_id);
 };
 }  // namespace pgwc
 

@@ -173,6 +173,7 @@ class pgw_app {
   void handle_itti_msg(itti_sxab_association_setup_request& m);
 
   void restore_sx_sessions(const seid_t& seid) const;
+  void start_up_association(const pfcp::node_id_t& node_id);
 };
 }  // namespace pgwc
 #include "pgw_config.hpp"

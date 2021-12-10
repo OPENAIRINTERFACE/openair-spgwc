@@ -37,12 +37,15 @@
 #include "pgwc_sxab.hpp"
 #include "PfcpUpNodes.hpp"
 #include "string.hpp"
+#include "fqdn.hpp"
+#include "pgw_pfcp_association.hpp"
 
 #include <stdexcept>
 
 using namespace pgwc;
 
 #define SYSTEM_CMD_MAX_STR_SIZE 512
+#define PFCP_ASSOC_RETRY_COUNT 10
 extern util::async_shell_cmd* async_shell_cmd_inst;
 extern pgw_app* pgw_app_inst;
 pgw_s5s8* pgw_s5s8_inst   = nullptr;
@@ -306,7 +309,99 @@ pgw_app::pgw_app(const std::string& config_file)
     throw;
   }
 
+  if (pgw_config::cups_.trigger_association) {
+    for (auto it : pgw_config::cups_.nodes) {
+      pfcp::node_id_t node_id = {};
+      node_id.node_id_type    = pfcp::NODE_ID_TYPE_FQDN;
+      node_id.fqdn            = it.id;
+
+      for (int i = 0; i < PFCP_ASSOC_RETRY_COUNT; i++) {
+        std::shared_ptr<pfcp_association> sa = {};
+        start_up_association(node_id);
+        sleep(2);
+        if (not pfcp_associations::get_instance().get_association(node_id, sa))
+          Logger::pgwc_app().warn(
+              "Failed to receive PFCP Association Response, Retrying .....!!");
+        else
+          break;
+      }
+    }
+  }
   Logger::pgwc_app().startup("Started");
+}
+//------------------------------------------------------------------------------
+// From SPGWU
+void pgw_app::start_up_association(const pfcp::node_id_t& node_id) {
+  std::time_t time_epoch = std::time(nullptr);
+  uint64_t tv_ntp        = time_epoch + SECONDS_SINCE_FIRST_EPOCH;
+
+  pfcp_associations::get_instance().add_peer_candidate_node(node_id);
+  std::shared_ptr<itti_sxab_association_setup_request> sxa_asc =
+      std::shared_ptr<itti_sxab_association_setup_request>(
+          new itti_sxab_association_setup_request(TASK_PGWC_APP, TASK_PGWC_SX));
+  pfcp::cp_function_features_s cp_function_features;
+  cp_function_features      = {};
+  cp_function_features.load = 1;
+  cp_function_features.ovrl = 1;
+
+  pfcp::node_id_t this_node_id = {};
+
+  if (pgw_config::GetPfcpNodeId(this_node_id) == RETURNok) {
+    sxa_asc->pfcp_ies.set(this_node_id);
+    pfcp::recovery_time_stamp_t r = {.recovery_time_stamp = (uint32_t) tv_ntp};
+    sxa_asc->pfcp_ies.set(r);
+
+    sxa_asc->pfcp_ies.set(cp_function_features);
+    if (node_id.node_id_type == pfcp::NODE_ID_TYPE_IPV4_ADDRESS) {
+      Logger::pgwc_app().info(
+          "start_up_association for %s:%d", inet_ntoa(node_id.u1.ipv4_address),
+          pfcp::default_port);
+      sxa_asc->r_endpoint =
+          endpoint(node_id.u1.ipv4_address, pfcp::default_port);
+      int ret = itti_inst->send_msg(sxa_asc);
+      if (RETURNok != ret) {
+        Logger::pgwc_app().error(
+            "Could not send ITTI message %s to task TASK_PGWC_SX ",
+            sxa_asc.get()->get_msg_name());
+      }
+    }
+    if (node_id.node_id_type == pfcp::NODE_ID_TYPE_FQDN) {
+      Logger::pgwc_app().info(
+          "start_up_association for %s", node_id.fqdn.c_str(),
+          pfcp::default_port);
+
+      // Resolve UP Node FQDN
+      uint8_t addr_type           = {0};
+      std::string address         = {};
+      uint32_t up_port            = {0};
+      struct in_addr up_ipv4_addr = {};
+
+      fqdn::resolve(node_id.fqdn, address, up_port, addr_type);
+      if (addr_type != 0) {  // IPv6
+        // TODO:
+        Logger::pgwc_app().debug("Do not support IPv6 addr for UP node");
+        return;
+      } else {  // IPv4
+
+        if (inet_aton(util::trim(address).c_str(), &up_ipv4_addr) == 0) {
+          Logger::pgwc_app().debug("Bad IPv4 Addr format for UP node");
+          return;
+        }
+      }
+      //--------------------
+      sxa_asc->r_endpoint = endpoint(up_ipv4_addr, pfcp::default_port);
+      int ret             = itti_inst->send_msg(sxa_asc);
+      if (RETURNok != ret) {
+        Logger::pgwc_app().error(
+            "Could not send ITTI message %s to task TASK_PGWC_SX ",
+            sxa_asc.get()->get_msg_name());
+      } else {
+        Logger::pgwc_app().debug("Association request sent");
+      }
+    } else {
+      Logger::pgwc_app().warn("TODO start_association() node_id IPV6");
+    }
+  }
 }
 //------------------------------------------------------------------------------
 void pgw_app::send_create_session_response_cause(

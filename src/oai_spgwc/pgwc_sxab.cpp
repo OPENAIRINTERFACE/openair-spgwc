@@ -74,7 +74,8 @@ void pgwc_sxab_task(void* args_p) {
       case SXAB_ASSOCIATION_SETUP_REQUEST:
         if (itti_sxab_association_setup_request* m =
                 dynamic_cast<itti_sxab_association_setup_request*>(msg)) {
-          pgwc_sxab_inst->handle_itti_msg(ref(*m));
+          // pgwc_sxab_inst->handle_itti_msg(ref(*m));
+          pgwc_sxab_inst->send_sx_msg(ref(*m));
         }
         break;
 
@@ -257,6 +258,8 @@ void pgwc_sxab::handle_receive_pfcp_msg(
     case PFCP_PFCP_PFD_MANAGEMENT_REQUEST:
     case PFCP_PFCP_PFD_MANAGEMENT_RESPONSE:
     case PFCP_ASSOCIATION_SETUP_RESPONSE:
+      handle_receive_association_setup_response(msg, remote_endpoint);
+      break;
     case PFCP_ASSOCIATION_UPDATE_REQUEST:
     case PFCP_ASSOCIATION_UPDATE_RESPONSE:
     case PFCP_ASSOCIATION_RELEASE_REQUEST:
@@ -354,7 +357,42 @@ void pgwc_sxab::handle_receive_association_setup_request(
         msg_ies_container.user_plane_ip_resource_information);
   }
 }
+//------------------------------------------------------------------------------
+void pgwc_sxab::handle_receive_association_setup_response(
+    pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {
+  // TODO: To be completed
+  Logger::pgwc_sx().info(
+      "Received SX ASSOCIATION SETUP RESPONSE from an UP NODE");
+  bool error                                        = true;
+  uint64_t trxn_id                                  = 0;
+  pfcp_association_setup_response msg_ies_container = {};
+  msg.to_core_type(msg_ies_container);
 
+  handle_receive_message_cb(
+      msg, remote_endpoint, TASK_SPGWU_SX, error, trxn_id);
+  if (!error) {
+    if (not msg_ies_container.node_id.first) {
+      // Should be detected by lower layers
+      Logger::pgwc_sx().warn(
+          "Received Sx ASSOCIATION SETUP RESPONSE without node id IE!, ignore "
+          "message");
+      return;
+    }
+    if (not msg_ies_container.recovery_time_stamp.first) {
+      // Should be detected by lower layers
+      Logger::pgwc_sx().warn(
+          "Received Sx ASSOCIATION SETUP RESPONSE without recovery time stamp "
+          "IE!, ignore message");
+      return;
+    }
+    Logger::pgwc_sx().info("Received Sx ASSOCIATION SETUP RESPONSE");
+
+    PfcpUpNodes::Instance().AssociationSetupResp(
+        remote_endpoint, msg_ies_container.node_id.second,
+        msg_ies_container.recovery_time_stamp.second,
+        msg_ies_container.up_function_features);
+  }
+}
 //------------------------------------------------------------------------------
 void pgwc_sxab::handle_receive_session_establishment_response(
     pfcp::pfcp_msg& msg, const endpoint& remote_endpoint) {

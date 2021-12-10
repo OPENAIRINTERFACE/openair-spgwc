@@ -40,6 +40,7 @@ class spgwcConfigGen():
 		self.fromDockerFile = False
 		self.envForEntrypoint = False
 		self.pushProtocolOption = 'false'
+		self.triggerAssociation = 'false'
 
 	def GenerateSpgwcConfigurer(self):
 		spgwcFile = open('./spgwc-cfg.sh', 'w')
@@ -75,6 +76,7 @@ class spgwcConfigGen():
 		spgwcFile.write('SPGWC_CONF[@DEFAULT_APN@]=$MY_APN\n')
 		spgwcFile.write('SPGWC_CONF[@UE_IP_ADDRESS_POOL@]=\'' + self.ue_pool1_range + '\'\n')
 		spgwcFile.write('SPGWC_CONF[@PUSH_PROTOCOL_OPTION@]=\'' + self.pushProtocolOption + '\'\n')
+		spgwcFile.write('SPGWC_CONF[@TRIGGER_ASSOCIATION@]=\'' + self.triggerAssociation + '\'\n')
 		spgwcFile.write('\n')
 		spgwcFile.write('for K in "${!SPGWC_CONF[@]}"; do \n')
 		spgwcFile.write('  egrep -lRZ "$K" $PREFIX | xargs -0 -l sed -i -e "s|$K|${SPGWC_CONF[$K]}|g"\n')
@@ -91,6 +93,7 @@ class spgwcConfigGen():
 		spgwcFile.write('DEFAULT_DNS_IPV4_ADDRESS=' + str(self.dns1_ip) + '\n')
 		spgwcFile.write('DEFAULT_DNS_SEC_IPV4_ADDRESS=' + str(self.dns2_ip) + '\n')
 		spgwcFile.write('PUSH_PROTOCOL_OPTION=' + self.pushProtocolOption + '\n')
+		spgwcFile.write('TRIGGER_ASSOCIATION=' + self.triggerAssociation + '\n')
 		spgwcFile.write('APN_NI_1=' + self.apn1 + '\n')
 		spgwcFile.write('APN_NI_2=' + self.apn2 + '\n')
 		spgwcFile.write('DEFAULT_APN_NI_1=' + self.apn1 + '\n')

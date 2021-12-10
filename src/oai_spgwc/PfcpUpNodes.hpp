@@ -140,6 +140,11 @@ class PfcpUpNodes {
       std::pair<bool, pfcp::user_plane_ip_resource_information_t>&
           user_plane_ip_resource_information);
 
+  void AssociationSetupResp(
+      const endpoint& remote_endpoint, pfcp::node_id_t& node_id,
+      pfcp::recovery_time_stamp_t& recovery_time_stamp,
+      std::pair<bool, pfcp::up_function_features_s>& up_function_features);
+
   bool AddUpNode(const std::string t_up_ip, const std::string t_apn);
   bool GetUpNode(
       const pfcp::node_id_t& node_id, std::shared_ptr<PfcpUpNode>& su) const;

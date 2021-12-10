@@ -174,6 +174,7 @@ typedef struct cups_cfg_s {
   bool feature_overload_control;
   bool feature_load_control;
   bool use_nwi;
+  bool trigger_association;
 } cups_cfg_t;
 
 class pgw_config {
@@ -288,6 +289,7 @@ class pgw_config {
     cups_.feature_overload_control        = false;
     cups_.feature_load_control            = false;
     cups_.use_nwi                         = false;
+    cups_.trigger_association             = false;
   };
   static bool ParseJson();
 

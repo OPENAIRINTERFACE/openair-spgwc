@@ -223,7 +223,12 @@ check_install_spgwc_deps() {
   if [[ $OS_DISTRO == "ubuntu" ]]; then
     case "$(get_distribution_release)" in
       "ubuntu18.04")
-        specific_packages="libconfig++-dev libasio-dev libboost-all-dev libgcrypt11-dev"
+        # Currently Ubuntu18.04 has boost 1.65 as the latest
+        # We need at least 1.66
+        # PPA has 1.67
+        $SUDO add-apt-repository ppa:mhier/libboost-latest --yes
+        $SUDO $INSTALLER update
+        specific_packages="libconfig++-dev libgcrypt11-dev"
       ;;
   "ubuntu20.04")
       specific_packages="libconfig++-dev libasio-dev libboost-all-dev libgcrypt20-dev"
@@ -232,6 +237,7 @@ check_install_spgwc_deps() {
     # removed libspdlog-dev
     PACKAGE_LIST="\
       $specific_packages \
+      libboost1.67-dev \
       guile-2.0-dev \
       libcurl4-gnutls-dev \
       libevent-dev \
