@@ -471,8 +471,7 @@ bool pgw_config::ParseJson() {
             "Error parsing json value: spgw_app/ue_mtu_ipv4");
         return false;
       }
-      spgw_app_.default_ue_mtu_ipv4 =
-          spgw_app_section["ue_mtu_ipv4"].GetUint();
+      spgw_app_.default_ue_mtu_ipv4 = spgw_app_section["ue_mtu_ipv4"].GetUint();
     }
     if (doc.HasMember("pdns")) {
       const RAPIDJSON_NAMESPACE::Value& pdns_section = doc["pdns"];
@@ -645,6 +644,15 @@ bool pgw_config::ParseJson() {
       }
       cups_.feature_load_control =
           cups_section["feature_load_control"].GetBool();
+    }
+    if (cups_section.HasMember("trigger_association")) {
+      if (!cups_section["trigger_association"].IsBool()) {
+        Logger::pgwc_app().error(
+            "Error parsing json value: "
+            "spgw_app/trigger_association");
+        return false;
+      }
+      cups_.trigger_association = cups_section["trigger_association"].GetBool();
     }
     if (cups_section.HasMember("up_nodes_selection")) {
       const RAPIDJSON_NAMESPACE::Value& nodes_section =

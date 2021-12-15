@@ -242,6 +242,40 @@ void pgwc::PfcpUpNodes::AssociationSetupRequest(
 }
 
 //------------------------------------------------------------------------------
+void pgwc::PfcpUpNodes::AssociationSetupResp(
+    const endpoint& remote_endpoint, pfcp::node_id_t& node_id,
+    pfcp::recovery_time_stamp_t& recovery_time_stamp,
+    std::pair<bool, pfcp::up_function_features_s>& up_function_features) {
+  Logger::pgwc_app().info(
+      "RX AssociationSetupResp FQDN %s", node_id.fqdn.c_str());
+  std::unique_lock<std::mutex> l(m_pending_nodes);
+  bool restore_sx_sessions = false;
+  if (pending_nodes_.size()) {
+    for (auto it = pending_nodes_.begin(); it != pending_nodes_.end(); ++it) {
+      // for (auto it : pending_nodes_) {
+      if (((*it)->association_state_ == kAssocNullState) ||
+          ((*it)->association_state_ == kAssocLost)) {
+        if (((*it)->node_id_ == node_id) || (node_id == (*it)->id_)) {
+          if (pfcp_associations::get_instance().add_association(
+                  remote_endpoint, node_id, recovery_time_stamp,
+                  up_function_features, restore_sx_sessions)) {
+            (*it)->association_state_ = kAssocSetupState;
+            (*it)->node_id_           = node_id;
+            (*it)->hash_node_id_      = std::hash<pfcp::node_id_t>{}(node_id);
+            (*it)->remote_endpoint_   = remote_endpoint;
+            (*it)->peer_recovery_time_stamp_ = recovery_time_stamp;
+            (*it)->peer_function_features_   = up_function_features;
+            up_nodes_.insert((int32_t)(*it)->hash_node_id_, *it);
+            pending_nodes_.erase(it);
+          }
+          return;
+        }  // other cases TODO (ipv4, ipv6)
+      }
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
 bool pgwc::PfcpUpNodes::GetUpNode(
     const pfcp::node_id_t& node_id, std::shared_ptr<PfcpUpNode>& su) const {
   std::size_t hash_node_id = std::hash<pfcp::node_id_t>{}(node_id);
