@@ -43,7 +43,7 @@
     }                                                                          \
   } while (0)
 
-//for PFCP
+// for PFCP
 constexpr uint64_t SECONDS_SINCE_FIRST_EPOCH = 2208988800;
 
 #define NIPADDR(addr)                                                          \
