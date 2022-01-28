@@ -45,7 +45,7 @@ spec:
             destinationDir: rhsm-ca
     strategy:
         dockerStrategy:
-            dockerfilePath: "docker/Dockerfile.debug.centos8"
+            dockerfilePath: "docker/Dockerfile.rhel8"
             from:
                 kind: "ImageStreamTag"
                 name: "oai-spgwc:debug-3rd-party"

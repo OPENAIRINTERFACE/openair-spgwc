@@ -33,9 +33,11 @@ FROM registry.access.redhat.com/ubi8/ubi:latest as oai-spgwc-builder
 # Entitlements and RHSM configurations are Open-Shift Secret and ConfigMaps
 # It is pre-requisite
 # Copy the entitlements
-COPY tmp/entitlement/*.pem /etc/pki/entitlement
+COPY ./etc-pki-entitlement /etc/pki/entitlement
+
 # Copy the subscription manager configurations
-COPY tmp/ca/redhat-uep.pem /etc/rhsm/ca
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
 
 RUN rm /etc/rhsm-host && \
     # Initialize /etc/yum.repos.d/redhat.repo
