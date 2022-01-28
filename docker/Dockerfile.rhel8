@@ -69,7 +69,6 @@ ENV TZ=Europe/Paris
 RUN yum update -y && \
     yum -y install --enablerepo="ubi-8-codeready-builder" \
       tzdata \
-      tcpdump \
       procps-ng \
       psmisc \
       net-tools \
