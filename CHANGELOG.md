@@ -1,5 +1,16 @@
 # RELEASE NOTES: #
 
+## v1.2.0 -- February 2022 ##
+
+* Obsolescence of Legacy OAI-MME
+* Build fixes
+* Docker image layer optimization
+* Association trigger
+* Sanitize leak and UE configurable MTU
+* IE NWI dotted formatting
+* IE UPF Features
+* Custom UPF FQDN support
+
 ## v1.1.2 -- July 2021 ##
 
 *  Sanitize leak fixes
