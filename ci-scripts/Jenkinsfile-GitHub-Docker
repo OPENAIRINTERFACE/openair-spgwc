@@ -397,7 +397,7 @@ pipeline {
             always {
               script {
                 copyArtifacts(projectName: params.CN_EPC_FED_PipelineName,
-                              filter: 'test_results_oai_epc.html',
+                              filter: 'test_results*.html',
                               selector: lastCompleted())
               }
             }
@@ -426,7 +426,7 @@ pipeline {
             always {
               script {
                 copyArtifacts(projectName: params.RHEL8_SanityCheck_PipelineName,
-                              filter: 'test_results_magma_epc_rhel8.html',
+                              filter: 'test_results*.html',
                               selector: lastCompleted())
               }
             }
@@ -512,32 +512,18 @@ pipeline {
         // Generating the HTML report
         if (env.ghprbPullId != null) {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${env.ghprbSourceBranch} --git_src_commit=${env.ghprbActualCommit} --git_pull_request=True --git_target_branch=${env.ghprbTargetBranch} --git_target_commit=${GIT_COMMIT}"
-          if (fileExists('test_results_oai_spgwc.html')) {
-            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_spgwc.html"
-            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_spgwc.html"
-          }
-          if (fileExists('test_results_oai_epc.html')) {
-            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_oai_epc.html"
-            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_oai_epc.html"
-          }
-          if (fileExists('test_results_magma_epc_rhel8.html')) {
-            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' test_results_magma_epc_rhel8.html"
-            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' test_results_magma_epc_rhel8.html"
-          }
         } else {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${GIT_BRANCH} --git_src_commit=${GIT_COMMIT}"
         }
-        if (fileExists('test_results_oai_spgwc.html')) {
-          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_spgwc.html"
-          archiveArtifacts artifacts: 'test_results_oai_spgwc.html'
-        }
-        if (fileExists('test_results_oai_epc.html')) {
-          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_oai_epc.html"
-          archiveArtifacts artifacts: 'test_results_oai_epc.html'
-        }
-        if (fileExists('test_results_magma_epc_rhel8.html')) {
-          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' test_results_magma_epc_rhel8.html"
-          archiveArtifacts artifacts: 'test_results_magma_epc_rhel8.html'
+        listOfFiles = sh returnStdout: true, script: 'ls test_results*.html'
+        String[] htmlFiles = listOfFiles.split("\\n")
+        for (htmlFile in htmlFiles) {
+          if (env.ghprbPullId != null) {
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_LINK#${env.ghprbPullLink}#g' ${htmlFile}"
+            sh "sed -i -e 's#TEMPLATE_PULL_REQUEST_TEMPLATE#${env.ghprbPullTitle}#' ${htmlFile}"
+          }
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' ${htmlFile}"
+          archiveArtifacts artifacts: htmlFile
         }
         // Sending an email to the last committer. Maybe not the Pull Request's author.
         if (params.sendToCommitterEmail != null) {
