@@ -96,6 +96,10 @@ pipeline {
             }
           }
           echo "Git URL    is ${GIT_URL}"
+          if (params.DockerHubCredentials == null) {
+            echo '\u26D4 \u001B[31mNo Credentials to push to DockerHub!\u001B[0m'
+            error "Stopping pipeline!"
+          }
 
           removeGitHubInfo()
           if (env.ghprbPullId != null) {
@@ -429,6 +433,25 @@ pipeline {
                               filter: 'test_results*.html',
                               selector: lastCompleted())
               }
+            }
+          }
+        }
+      }
+    }
+    // For the moment it is Docker-Hub, but we might have a new one internally.
+    stage ('Pushing Image to Official Registry') {
+      steps {
+        script {
+          // Only in case of push to target branch!
+          if (env.ghprbPullId == null) {
+            withCredentials([
+              [$class: 'UsernamePasswordMultiBinding', credentialsId: "${params.DockerHubCredentials}", usernameVariable: 'DH_Username', passwordVariable: 'DH_Password']
+            ]) {
+              myShCmd("echo ${DH_Password} | docker login --username ${DH_Username} --password-stdin", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker image tag oai-spgwc:develop ${DH_Username}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker push ${DH_Username}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker rmi ${DH_Username}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker logout", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
         }
