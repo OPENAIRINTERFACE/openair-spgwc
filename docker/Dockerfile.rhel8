@@ -58,8 +58,10 @@ COPY . /openair-spgwc
 
 # Installing and Building SPGW-C
 WORKDIR /openair-spgwc/build/scripts
-RUN ./build_spgwc --install-deps --force
+RUN ./build_spgwc --install-deps --force && \
+    ldconfig
 RUN ./build_spgwc --clean --build-type Release --jobs --Verbose && \
+    ldd /openair-spgwc/build/spgw_c/build/spgwc && \
     mv /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/build/spgw_c/build/oai_spgwc
 
 #---------------------------------------------------------------------
@@ -76,7 +78,7 @@ RUN yum update -y && \
       net-tools \
       libevent \
   && yum clean all -y \
-  && rm -rf /var/cache/yum
+  && rm -rf /var/cache/yum /var/cache/dnf
 
 # Copying executable and generated libraries
 WORKDIR /openair-spgwc/bin
@@ -94,7 +96,9 @@ COPY --from=oai-spgwc-builder \
     /lib64/libboost_system.so.1.66.0 \
     /usr/local/lib64/libpistache.so.0 \
     /lib64/
-RUN ldconfig
+
+RUN ldconfig && \
+    ldd /openair-spgwc/bin/oai_spgwc
 
 # Copying template configuration files
 # The configuration folder will be flat

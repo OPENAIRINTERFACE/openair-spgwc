@@ -760,7 +760,7 @@ class HtmlReport():
 								result = re.search('oai-spgwc *ci-temp', line)
 							else:
 								result = re.search('oai-spgwc *develop', line)
-							if result is not None:
+							if result is not None and not status:
 								result = re.search('ago *([0-9 A-Z]+)', line)
 								if result is not None:
 									size = result.group(1)
