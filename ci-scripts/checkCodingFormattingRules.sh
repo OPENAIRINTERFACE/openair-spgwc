@@ -139,6 +139,16 @@ then
     exit 1
 fi
 
+# When running in a container, in /home folder
+IS_CONTAINER=`egrep -c "docker|kubepods|podman|buildah|libpod" /proc/self/cgroup || true`
+if [ $IS_CONTAINER -ne 0 ]
+then
+    if [ $PWD = "/home/src" ]
+    then
+       git config --global --add safe.directory /home
+    fi
+fi
+
 # Merge request scenario
 
 MERGE_COMMMIT=`git log -n1 --pretty=format:%H`

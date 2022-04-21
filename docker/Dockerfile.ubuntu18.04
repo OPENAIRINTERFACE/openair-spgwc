@@ -53,8 +53,10 @@ COPY . /openair-spgwc
 
 # Installing and Building SPGW-C
 WORKDIR /openair-spgwc/build/scripts
-RUN ./build_spgwc --install-deps --force
+RUN ./build_spgwc --install-deps --force && \
+    ldconfig
 RUN ./build_spgwc --clean --build-type Release --jobs --Verbose && \
+    ldd /openair-spgwc/build/spgw_c/build/spgwc && \
     mv /openair-spgwc/build/spgw_c/build/spgwc /openair-spgwc/build/spgw_c/build/oai_spgwc
 
 #---------------------------------------------------------------------
@@ -70,7 +72,6 @@ RUN apt-get update && \
       psmisc \
       tzdata \
       net-tools \
-      tshark \
       perl \
       libgoogle-glog0v5 \
       libdouble-conversion1 \
@@ -89,7 +90,8 @@ COPY --from=oai-spgwc-builder \
     /usr/local/lib/libpistache.so.0 \
     /usr/lib/libboost_system.so.1.67.0 \
     ./
-RUN ldconfig
+RUN ldconfig && \
+    ldd /openair-spgwc/bin/oai_spgwc
 
 # Copying template configuration files
 # The configuration folder will be flat
