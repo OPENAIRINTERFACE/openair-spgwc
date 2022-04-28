@@ -52,6 +52,9 @@ def rem_rhel8_resource = params.PodmanContainers
 def spgwc_tag = 'develop'
 def spgwc_branch = 'develop'
 
+// Docker Hub account to push to
+def DH_Account = "oaisoftwarealliance"
+
 //-------------------------------------------------------------------------------
 // Pipeline start
 pipeline {
@@ -453,9 +456,9 @@ pipeline {
               [$class: 'UsernamePasswordMultiBinding', credentialsId: "${params.DockerHubCredentials}", usernameVariable: 'DH_Username', passwordVariable: 'DH_Password']
             ]) {
               myShCmd("echo ${DH_Password} | docker login --username ${DH_Username} --password-stdin", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
-              myShCmd("docker image tag oai-spgwc:develop ${DH_Username}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
-              myShCmd("docker push ${DH_Username}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
-              myShCmd("docker rmi ${DH_Username}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker image tag oai-spgwc:develop ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker push ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker rmi ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               myShCmd("docker logout", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
