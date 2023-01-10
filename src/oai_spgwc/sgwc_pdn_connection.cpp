@@ -88,7 +88,8 @@ void sgw_pdn_connection::remove_eps_bearer(const ebi_t& ebi) {
 //------------------------------------------------------------------------------
 void sgw_pdn_connection::remove_eps_bearer(std::shared_ptr<sgw_eps_bearer> sb) {
   if (sb.get()) {
-    ebi_t ebi = {.ebi = sb->ebi.ebi};
+    ebi_t ebi = {};
+    ebi.ebi   = sb->ebi.ebi;
     sb->deallocate_ressources();
     sgw_eps_bearers.erase(ebi.ebi);
   }

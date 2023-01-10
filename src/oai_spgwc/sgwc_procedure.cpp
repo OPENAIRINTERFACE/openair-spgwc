@@ -187,7 +187,8 @@ int create_session_request_procedure::run(
       ;
       s5s8_csr->gtp_ies.add_bearer_context_to_be_created(b);
 
-      ebi_t cebi                 = {.ebi = ebi};
+      ebi_t cebi                 = {};
+      cebi.ebi                   = ebi.ebi;
       sgw_eps_bearer* eps_bearer = new sgw_eps_bearer();
       eps_bearer->ebi            = cebi;
       // eps_bearer->sgw_fteid_s5_s8_up = s5s8_up_fteid;
@@ -202,7 +203,8 @@ int create_session_request_procedure::run(
       if (i.get(ebi)) b.set(ebi);
       s5s8_csr->gtp_ies.add_bearer_context_to_be_removed(b);
 
-      ebi_t cebi                          = {.ebi = ebi};
+      ebi_t cebi                          = {};
+      cebi.ebi                            = ebi.ebi;
       std::shared_ptr<sgw_eps_bearer> seb = {};
       if (spc->get_eps_bearer(cebi, seb)) {
         seb->deallocate_ressources();
@@ -288,7 +290,8 @@ void create_session_request_procedure::handle_itti_msg(
       ebi_t ebi = {};
       if (i.get(ebi)) b.set(ebi);
       if (cause.cause_value == REQUEST_ACCEPTED) {
-        ebi_t cebi                          = {.ebi = ebi};
+        ebi_t cebi                          = {};
+        cebi.ebi                            = ebi.ebi;
         std::shared_ptr<sgw_eps_bearer> seb = {};
         if (pdn->get_eps_bearer(cebi, seb)) {
           seb->ebi = cebi;
@@ -322,7 +325,8 @@ void create_session_request_procedure::handle_itti_msg(
       if (i.get(ebi)) b.set(ebi);
       s11_csresp->gtp_ies.add_bearer_context_marked_for_removal(b);
 
-      ebi_t cebi                          = {.ebi = ebi};
+      ebi_t cebi                          = {};
+      cebi.ebi                            = ebi.ebi;
       std::shared_ptr<sgw_eps_bearer> seb = {};
       if (pdn->get_eps_bearer(cebi, seb)) {
         if (seb.get()) {

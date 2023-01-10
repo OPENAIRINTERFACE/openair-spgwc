@@ -128,27 +128,19 @@ install_fb_folly_from_source(){
       echo '     message(STATUS "Found gflags from package config ${gflags_CONFIG}")' >> patch.diff
       git apply patch.diff
     else
-      case "$(get_distribution_release)" in
-        "ubuntu20.04")
-          git checkout -f v2021.04.26.00
-        ;;
-        *)
-          git checkout -f v2019.11.11.00
-        ;;
-      esac
+      git checkout -f v2019.11.11.00
     fi
+    sed -i -e "s@#include <algorithm>@#include <algorithm>\n#include <limits>@" folly/TimeoutQueue.cpp
+    sed -i -e "s@folly::constexpr_max@@" -e "s@SIGSTKSZ, @@" ./folly/fibers/FiberManager.cpp
     mkdir _build && cd _build
-    if [[ "$OS_BASEDISTRO" == "fedora" ]]; then
-      cmake3  ..
-    else
-      cmake  ..
-    fi
+    $CMAKE  ..
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     make -j $(nproc)
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     $SUDO make install
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     popd
+    rm -Rf /tmp/folly/_build
   fi
   echo_success "End of folly installation"
   return 0
