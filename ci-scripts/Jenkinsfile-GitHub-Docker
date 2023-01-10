@@ -215,7 +215,7 @@ pipeline {
               }
             }
             success {
-              sh "sudo podman image tag oai-spgwc:" + spgwc_tag + " oai-spgwc:develop"
+              myShCmd('sudo podman image tag oai-spgwc:' + spgwc_tag + ' oai-spgwc:develop', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
               sh "echo 'OAI-SPGW-C PODMAN RHEL8 IMAGE BUILD: OK' >> archives/spgwc_podman_image_build.log"
             }
             unsuccessful {
