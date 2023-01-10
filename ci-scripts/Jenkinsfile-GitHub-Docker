@@ -156,6 +156,13 @@ pipeline {
               // If not satisfactory, we can remove it.
               myShCmd('python3 ./ci-scripts/flatten_image.py --tag oai-spgwc:' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               myShCmd('docker image ls >> archives/spgwc_docker_image_build.log', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              // Pushing to local private registry for testing purpose
+              myShCmd('docker login -u oaicicd -p oaicicd selfix.sboai.cs.eurecom.fr', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker image tag oai-spgwc:' + spgwc_tag + ' selfix.sboai.cs.eurecom.fr/oai-spgwc:' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker push selfix.sboai.cs.eurecom.fr/oai-spgwc:' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd('docker rmi selfix.sboai.cs.eurecom.fr/oai-spgwc:' + spgwc_tag, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              // TODO: Normally once all test-pipelines are using the pushed image; we can also remove oai-spgwc:spgwc_tag
+              myShCmd('docker logout selfix.sboai.cs.eurecom.fr', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             }
           }
           post {
