@@ -114,14 +114,17 @@ pipeline {
             shortenShaOne = shortenShaOne.trim()
             sh "./ci-scripts/doGitHubPullRequestTempMerge.sh --src-branch ${env.ghprbSourceBranch} --src-commit ${env.ghprbActualCommit} --target-branch ${env.ghprbTargetBranch} --target-commit ${GIT_COMMIT}"
             sh "sleep 10"
-            spgwc_tag = 'ci-temp'
-            rhel_spgwc_tag = 'ci-temp-pr-' + env.ghprbPullId + '-' + shortenShaOne
+            spgwc_tag = 'ci-temp-pr-' + env.ghprbPullId + '-' + shortenShaOne
             spgwc_branch = env.ghprbSourceBranch
-            echo "PR TAG     is ${rhel_spgwc_tag}"
+            echo "PR TAG     is ${spgwc_tag}"
           } else {
             echo "======= THIS IS A PUSH EVENT ======"
             echo "Git Branch is ${GIT_BRANCH}"
             echo "Git Commit is ${GIT_COMMIT}"
+            shortenShaOne = sh returnStdout: true, script: 'git log -1 --pretty=format:"%h" ' + env.GIT_COMMIT
+            shortenShaOne = shortenShaOne.trim()
+            spgwc_tag = 'develop-' + shortenShaOne
+            echo "DEV TAG    is ${spgwc_tag}"
             // Making a hard copy of the SHA-ONE
             getCommitSha()
           }
@@ -148,7 +151,7 @@ pipeline {
               if (env.ghprbPullId == null) {
                 // Currently this pipeline only runs for pushes to `develop` branch
                 // First clean image registry
-                myShCmd('docker image rm oai-spgwc:develop', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+                myShCmd('docker image rm oai-spgwc:develop || true', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               }
               myShCmd('docker image prune --force', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               myShCmd('docker build --no-cache --target oai-spgwc --tag oai-spgwc:' + spgwc_tag + ' --file docker/Dockerfile.ubuntu18.04 . > archives/spgwc_docker_image_build.log 2>&1', rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
@@ -188,10 +191,9 @@ pipeline {
                   // Currently this pipeline only runs for pushes to `develop` branch
                   // First clean image registry
                   myShCmd('sudo podman image rm oai-spgwc:develop || true', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
-                } else {
-                  // In case we forgot during a previous run
-                  myShCmd('sudo podman image rm oai-spgwc:' + spgwc_tag + ' || true', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
                 }
+                // In case we forgot during a previous run
+                myShCmd('sudo podman image rm oai-spgwc:' + spgwc_tag + ' || true', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
                 myShCmd('sudo podman image prune --force', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
                 // Copy the RHEL Host certificates for building
                 myShCmd('mkdir -p ./etc-pki-entitlement ./rhsm-conf ./rhsm-ca', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
@@ -203,9 +205,6 @@ pipeline {
                 // If not satisfactory, we can remove it.
                 myShCmd('python3 ./ci-scripts/flatten_image.py --tag oai-spgwc:' + spgwc_tag, rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
                 myShCmd('sudo podman image ls >> archives/spgwc_podman_image_build.log', rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
-                if (env.ghprbPullId != null) {
-                  myShCmd('sudo podman image tag oai-spgwc:' + spgwc_tag + ' oai-spgwc:' + rhel_spgwc_tag, rem_rhel_host_flag, rem_rhel_host_user, rem_rhel_host)
-                }
               }
             }
           }
@@ -216,6 +215,7 @@ pipeline {
               }
             }
             success {
+              sh "sudo podman image tag oai-spgwc:" + spgwc_tag + " oai-spgwc:develop"
               sh "echo 'OAI-SPGW-C PODMAN RHEL8 IMAGE BUILD: OK' >> archives/spgwc_podman_image_build.log"
             }
             unsuccessful {
@@ -463,7 +463,7 @@ pipeline {
               [$class: 'UsernamePasswordMultiBinding', credentialsId: "${params.DockerHubCredentials}", usernameVariable: 'DH_Username', passwordVariable: 'DH_Password']
             ]) {
               myShCmd("echo ${DH_Password} | docker login --username ${DH_Username} --password-stdin", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
-              myShCmd("docker image tag oai-spgwc:develop ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmd("docker image tag oai-spgwc:" + spgwc_tag + " ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               myShCmd("docker push ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               myShCmd("docker rmi ${DH_Account}/oai-spgwc:develop", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
               myShCmd("docker logout", rem_u18_host_flag, rem_u18_host_user, rem_u18_host)

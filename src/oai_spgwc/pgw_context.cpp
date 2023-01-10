@@ -170,7 +170,8 @@ void pgw_pdn_connection::remove_eps_bearer(const ebi_t& ebi) {
 }
 //------------------------------------------------------------------------------
 void pgw_pdn_connection::remove_eps_bearer(pgw_eps_bearer& bearer) {
-  ebi_t ebi = {.ebi = bearer.ebi.ebi};
+  ebi_t ebi = {};
+  ebi.ebi   = bearer.ebi.ebi;
   bearer.deallocate_ressources();
   eps_bearers.erase(ebi.ebi);
 }

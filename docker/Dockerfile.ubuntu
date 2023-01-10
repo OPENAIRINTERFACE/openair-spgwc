@@ -21,36 +21,31 @@
 #---------------------------------------------------------------------
 #
 # Dockerfile for the Open-Air-Interface SPGW-C service
-#   Valid for RHEL8
+#   Valid for Ubuntu-18.04 (bionic)
+#             Ubuntu-20.04 (focal)
+#             Ubuntu-22.04 (jammy)
 #
 #---------------------------------------------------------------------
 
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-FROM registry.access.redhat.com/ubi8/ubi:latest as oai-spgwc-builder
+ARG BASE_IMAGE=ubuntu:bionic
+FROM $BASE_IMAGE as oai-spgwc-builder
 ENV IS_DOCKERFILE=1
-# Entitlements and RHSM configurations are Open-Shift Secret and ConfigMaps
-# It is pre-requisite
-# Copy the entitlements
-COPY ./etc-pki-entitlement /etc/pki/entitlement
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
+      psmisc \
+      software-properties-common \
+      git
 
-# Copy the subscription manager configurations
-COPY ./rhsm-conf /etc/rhsm
-COPY ./rhsm-ca /etc/rhsm/ca
-
-RUN rm /etc/rhsm-host && \
-    # Initialize /etc/yum.repos.d/redhat.repo
-    # See https://access.redhat.com/solutions/1443553
-    yum repolist --disablerepo=* && \
-    subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
-    yum update -y && \
-    yum -y install --enablerepo="codeready-builder-for-rhel-8-x86_64-rpms" \
-       # diff, cmp and file are not in the ubi???
-       diffutils \
-       file \
-       psmisc \
-       git
+# Some GIT configuration command quite useful
+RUN git config --global https.postBuffer 123289600 && \
+    git config --global http.sslverify false
 
 # Copy the workspace as is
 WORKDIR /openair-spgwc
@@ -67,18 +62,21 @@ RUN ./build_spgwc --clean --build-type Release --jobs --Verbose && \
 #---------------------------------------------------------------------
 # TARGET IMAGE
 #---------------------------------------------------------------------
-FROM registry.access.redhat.com/ubi8/ubi:latest as oai-spgwc
+FROM $BASE_IMAGE as oai-spgwc
+ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Paris
 # We install some debug tools for the moment in addition of mandatory libraries
-RUN yum update -y && \
-    yum -y install --enablerepo="ubi-8-codeready-builder" \
-      tzdata \
-      procps-ng \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --yes \
       psmisc \
+      tzdata \
       net-tools \
-      libevent \
-  && yum clean all -y \
-  && rm -rf /var/cache/yum /var/cache/dnf
+      perl \
+      libgoogle-glog0v5 \
+      libdouble-conversion? \
+      libconfig++9v5 && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copying executable and generated libraries
 WORKDIR /openair-spgwc/bin
@@ -87,16 +85,11 @@ COPY --from=oai-spgwc-builder \
     /openair-spgwc/scripts/entrypoint.sh \
     ./
 
-# Copying installed libraries from builder
+WORKDIR /usr/local/lib
 COPY --from=oai-spgwc-builder \
-    /lib64/libgflags.so.2.1 \
-    /lib64/libglog.so.0 \
-    /lib64/libdouble-conversion.so.1 \
-    /lib64/libconfig++.so.9 \
-    /lib64/libboost_system.so.1.66.0 \
-    /usr/local/lib64/libpistache.so.0 \
-    /lib64/
-
+    /usr/local/lib/libpistache.so.0 \
+    /usr/lib/libboost_system.so.1.**.0 \
+    ./
 RUN ldconfig && \
     ldd /openair-spgwc/bin/oai_spgwc
 
@@ -106,6 +99,10 @@ WORKDIR /openair-spgwc/etc
 COPY --from=oai-spgwc-builder /openair-spgwc/etc/spgw_c.json .
 
 WORKDIR /openair-spgwc
+
+# use this label for CI purpose
+LABEL use-json-file="true"
+LABEL support-multi-sgwu-instances="true"
 
 # expose ports
 EXPOSE 2123/udp 8805/udp

@@ -55,7 +55,7 @@ install_fmt() {
     git clone https://github.com/fmtlib/fmt.git
     ret=$?;[[ $ret -ne 0 ]] && return $ret
     cd fmt
-    cmake .
+    $CMAKE .
     ret=$?;[[ $ret -ne 0 ]] && return $ret
     make -j `nproc`
     ret=$?;[[ $ret -ne 0 ]] && return $ret
@@ -103,7 +103,7 @@ install_pistache_from_git() {
         -DPISTACHE_BUILD_EXAMPLES=false \
         -DPISTACHE_BUILD_TESTS=false \
         -DPISTACHE_BUILD_DOCS=false \
-        .. 
+        ..
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     make -j `nproc`
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
@@ -195,7 +195,7 @@ check_install_spgwc_deps() {
       automake \
       bison \
       build-essential \
-      cmake \
+      $CMAKE \
       daemon \
       doxygen \
       flex \
@@ -228,31 +228,30 @@ check_install_spgwc_deps() {
         # PPA has 1.67
         $SUDO add-apt-repository ppa:mhier/libboost-latest --yes
         $SUDO $INSTALLER update
-        specific_packages="libconfig++-dev libgcrypt11-dev"
+        specific_packages="libconfig++-dev libboost1.67-dev libgcrypt11-dev python"
       ;;
-  "ubuntu20.04")
-      specific_packages="libconfig++-dev libasio-dev libboost-all-dev libgcrypt20-dev"
+      "ubuntu20.04")
+        specific_packages="libconfig++-dev libasio-dev libboost1.71-all-dev libgcrypt20-dev python"
+      ;;
+      "ubuntu22.04")
+        specific_packages="libconfig++-dev libasio-dev libboost1.74-all-dev libgcrypt20-dev python2"
       ;;
     esac
     # removed libspdlog-dev
     PACKAGE_LIST="\
       $specific_packages \
-      libboost1.67-dev \
-      guile-2.0-dev \
       libcurl4-gnutls-dev \
       libevent-dev \
       libgmp-dev \
       libhogweed? \
       libidn2-0-dev \
       libidn11-dev \
-      libpthread-stubs0-dev \
       libssl-dev \
       libtool \
       libxml2 \
       libxml2-dev \
       openssl \
       rapidjson-dev \
-      python \
       pkg-config"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
     case "$(get_distribution_release)" in
@@ -265,7 +264,6 @@ check_install_spgwc_deps() {
     esac
     PACKAGE_LIST="\
       $specific_packages \
-      guile-devel \
       libconfig-devel \
       libgcrypt-devel \
       gmp-devel \
@@ -355,12 +353,6 @@ check_install_spgwc_min_deps() {
 
   # Libraries
   if [[ $OS_DISTRO == "ubuntu" ]]; then
-    case "$(get_distribution_release)" in
-      "ubuntu18.04")
-        specific_packages="libconfig++-dev libasio-dev libboost-all-dev"
-      ;;
-    esac
-    # removed libspdlog-dev
     PACKAGE_LIST="\
       libtool"
   elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
