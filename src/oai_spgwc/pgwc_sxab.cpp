@@ -350,11 +350,15 @@ void pgwc_sxab::handle_receive_association_setup_request(
           "IE!, ignore message");
       return;
     }
+    if (msg_ies_container.enterprise_specific.first) {
+      // Do nothing for now
+    }
     PfcpUpNodes::Instance().AssociationSetupRequest(
         trxn_id, remote_endpoint, msg_ies_container.node_id.second,
         msg_ies_container.recovery_time_stamp.second,
         msg_ies_container.up_function_features,
-        msg_ies_container.user_plane_ip_resource_information);
+        msg_ies_container.user_plane_ip_resource_information,
+        msg_ies_container.enterprise_specific);
   }
 }
 //------------------------------------------------------------------------------
@@ -506,15 +510,15 @@ void pgwc_sxab::handle_receive_session_report_request(
 
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_request& i) {
-  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   i.pfcp_ies.set(r);
   send_request(i.r_endpoint, i.pfcp_ies, TASK_PGWC_SX, i.trxn_id);
 }
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_sx_msg(itti_sxab_association_setup_response& i) {
-  pfcp::recovery_time_stamp_t r = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   i.pfcp_ies.set(r);
   if (cp_function_features.has_features()) {
     i.pfcp_ies.set(cp_function_features);
@@ -528,8 +532,8 @@ void pgwc_sxab::send_sx_msg(itti_sxab_session_report_response& i) {
 //------------------------------------------------------------------------------
 void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
   pfcp::pfcp_heartbeat_request h = {};
-  pfcp::recovery_time_stamp_t r  = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r  = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   h.set(r);
   endpoint r_endpoint = a->remote_endpoint;
   r_endpoint.set_port(pfcp::default_port);
@@ -540,8 +544,8 @@ void pgwc_sxab::send_heartbeat_request(std::shared_ptr<pfcp_association>& a) {
 void pgwc_sxab::send_heartbeat_response(
     const endpoint& r_endpoint, const uint64_t trxn_id) {
   pfcp::pfcp_heartbeat_response h = {};
-  pfcp::recovery_time_stamp_t r   = {.recovery_time_stamp =
-                                       (uint32_t) recovery_time_stamp};
+  pfcp::recovery_time_stamp_t r   = {
+      .recovery_time_stamp = (uint32_t) recovery_time_stamp};
   h.set(r);
   send_response(r_endpoint, h, trxn_id, CONTINUE_TX);
 }

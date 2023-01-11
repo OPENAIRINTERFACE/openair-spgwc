@@ -200,7 +200,8 @@ void pgwc::PfcpUpNodes::AssociationSetupRequest(
     pfcp::node_id_t& node_id, pfcp::recovery_time_stamp_t& recovery_time_stamp,
     std::pair<bool, pfcp::up_function_features_s>& up_function_features,
     std::pair<bool, pfcp::user_plane_ip_resource_information_t>&
-        user_plane_ip_resource_information) {
+        user_plane_ip_resource_information,
+    std::pair<bool, pfcp::enterprise_specific_s>& enterprise_specific) {
   Logger::pgwc_app().info(
       "RX AssociationSetupRequest FQDN %s", node_id.fqdn.c_str());
   std::unique_lock<std::mutex> l(m_pending_nodes);
